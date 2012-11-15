@@ -80,7 +80,7 @@ func main() {
         glfw.PollEvents()
 
         // Check if the ESC key was pressed or the window should be closed
-        if w.Key(glfw.KEY_ESCAPE) || w.Param(glfw.CLOSE_REQUESTED) {
+        if w.Key(glfw.KEY_ESCAPE) || w.Param(glfw.CLOSE_REQUESTED)==1 {
             break
         }
     }
