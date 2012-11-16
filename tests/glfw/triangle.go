@@ -1,18 +1,33 @@
 package main
 
-import "code.google.com/p/azul3d"
 import "code.google.com/p/azul3d/wrappers/glfw"
-import "code.google.com/p/azul3d/wrappers/gl"
 import "code.google.com/p/azul3d/wrappers/glu"
+import gl "code.google.com/p/azul3d/wrappers/gl/gl21"
+import "runtime"
 
 func main() {
-    defer azul.Destroy()
+    runtime.GOMAXPROCS(8)
+
+    runtime.LockOSThread()
+    defer runtime.UnlockOSThread()
+
+    err := glfw.Init()
+    if err != nil {
+        panic(err.Error())
+    }
+    defer glfw.Terminate()
+
+    err = gl.Init()
+    if err != nil {
+        panic(err.Error())
+    }
 
     w, err := glfw.CreateWindow(640, 480, glfw.WINDOWED, "Spinning Triangle", nil)
     if err != nil {
         panic(err.Error())
     }
     defer w.Destroy()
+
 
     var x, width, height int
 
@@ -21,17 +36,19 @@ func main() {
 
     for{
         t := glfw.Time()
+        //fmt.Println(t)
         x, _ = w.CursorPos()
 
         // Get window size (may be different than the requested size)
-        width, height = w.Size()
+        //width, height = w.Size()
+        width, height = 640, 480
 
         // Special case: avoid division by zero below
         if height < 0 {
             height = 1
         }
 
-        gl.Viewport(0, 0, width, height)
+        gl.Viewport(0, 0, gl.Sizei(width), gl.Sizei(height))
 
         // Clear color buffer to black
         gl.ClearColor(0.0, 0.0, 0.0, 0.0)
@@ -51,7 +68,7 @@ func main() {
 
         // Draw a rotating colorful triangle
         gl.Translatef(0.0, 14.0, 0.0)
-        gl.Rotatef(0.3 * float32(x) + float32(t) * 100.0, 0.0, 0.0, 1.0);
+        gl.Rotatef(0.3 * gl.Float(x) + gl.Float(t) * 100.0, 0.0, 0.0, 1.0);
 
         gl.Begin(gl.TRIANGLES)
         gl.Color3f(1.0, 0.0, 0.0)
@@ -67,7 +84,7 @@ func main() {
         glfw.PollEvents()
 
         // Check if the ESC key was pressed or the window should be closed
-        if w.Key(glfw.KEY_ESCAPE) || w.Param(glfw.CLOSE_REQUESTED) {
+        if w.Key(glfw.KEY_ESCAPE) || w.Param(glfw.CLOSE_REQUESTED)==1 {
             break
         }
     }

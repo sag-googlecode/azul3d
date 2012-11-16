@@ -1,3 +1,6 @@
+// WARNING: glu is deprectated and should only be used in test
+// WARNING: programs. In addition to that, this wrapper only
+// WARNING: contains a limited amount of bindings.
 package glu
 
 /*
@@ -5,14 +8,6 @@ package glu
 #include <GL/glu.h>
 */
 import "C"
-
-import "fmt"
-
-func init() {
-    fmt.Println("WARNING: glu is deprectated and should only be used in test")
-    fmt.Println("WARNING: programs. In addition to that, this wrapper only")
-    fmt.Println("WARNING: contains a limited amount of bindings.")
-}
 
 /*
 typedef void (GLAPIENTRYP _GLUfuncptr)(void);

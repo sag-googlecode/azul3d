@@ -1,6 +1,6 @@
 package azul
 
-var destroyFunctions = []func(){}
+var destroyFunctions = make([]func(), 0)
 
 func RegisterDestroy(f func()) {
 	destroyFunctions = append(destroyFunctions, f)
