@@ -36,12 +36,10 @@ func main() {
 
     for{
         t := glfw.Time()
-        //fmt.Println(t)
         x, _ = w.CursorPos()
 
         // Get window size (may be different than the requested size)
-        //width, height = w.Size()
-        width, height = 640, 480
+        width, height = w.Size()
 
         // Special case: avoid division by zero below
         if height < 0 {
