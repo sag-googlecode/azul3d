@@ -32,7 +32,6 @@
 package chippy
 
 import "sync"
-import "fmt"
 
 // Resolution represents a Screen's Resolution
 type Resolution struct {
@@ -118,9 +117,8 @@ func (s *Screen) resolutions() []*Resolution {
 }
 
 func (s *Screen) setResolution() {
-    fmt.Println("SET VIDEO MODE", s.resolution)
-    //c_XF86VidModeSwitchToMode(xDisplay, s.xScreenNumber, s.resolution.videoMode)
-    //c_XSync(xDisplay, false)
+    c_XF86VidModeSwitchToMode(xDisplay, s.xScreenNumber, s.resolution.videoMode)
+    c_XSync(xDisplay, false)
 }
 
 func screens() []*Screen {

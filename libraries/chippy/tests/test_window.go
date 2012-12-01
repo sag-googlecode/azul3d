@@ -59,7 +59,6 @@ func main() {
         panic(err.Error())
     }
     fmt.Println("Opened a window with these Frame Buffer configurations:")
-    fmt.Println(win.FBConfig())
     fmt.Println("The window is capable of OpenGL", win.ContextVersionString())
 
     t := 1 * time.Second
@@ -109,7 +108,7 @@ func main() {
 
     fmt.Println("Going fullscreen")
     screen := chippy.DefaultScreen()
-    fmt.Println(screen.Resolutions())
+    //fmt.Println(screen.Resolutions())
     screen.Resolutions()[len(screen.Resolutions())-1].Use()
     //screen.Resolutions()[0].Use()
     //screen.RestoreOriginalResolution()

@@ -160,7 +160,8 @@ func (s *Screen) SetResolution(resolution *Resolution) {
         chippyAccess.Lock()
         defer chippyAccess.Unlock()
 
-        s.setResolution()
+        fmt.Println("SETTING RESOLUTION", resolution)
+        //s.setResolution()
     }
 }
 
