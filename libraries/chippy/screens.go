@@ -45,6 +45,7 @@ func (r *Resolution) String() string {
 // to be active on the Screen
 // This function is thread safe
 func (r *Resolution) Use() {
+    fmt.Println("Use()", r)
     r.Screen().SetResolution(r)
 }
 
@@ -107,18 +108,6 @@ func (s *Screen) Height() uint16 {
     return s.resolution.Height()
 }
 
-// SetResolution sets the current Resolution of this Screen
-func (s *Screen) SetResolution(resolution *Resolution) {
-    s.access.Lock()
-    defer s.access.Unlock()
-
-    // Calling C things, so get lock
-    chippyAccess.Lock()
-    defer chippyAccess.Unlock()
-
-    s.setResolution()
-}
-
 // RestoreOriginalResolution restores the original resolution of this screen
 // just like it was when the application started
 // Chippy will automatically call this for you when you call chippy.Destroy()
@@ -128,6 +117,8 @@ func (s *Screen) RestoreOriginalResolution() {
     s.access.RLock()
     oldResolution := s.origResolution
     s.access.RUnlock()// Important to release before call to SetResolution
+
+    fmt.Println("RestoreOriginalResolution()", oldResolution)
     s.SetResolution(oldResolution)
 }
 
@@ -151,6 +142,25 @@ func (s *Screen) SetAutoRestoreOriginalResolution(restore bool) {
         } else {
             removeDestroyCallback(s.autoRestoreOriginalResolutionCallback)
         }
+    }
+}
+
+// SetResolution sets the current Resolution of this Screen
+func (s *Screen) SetResolution(resolution *Resolution) {
+    s.access.Lock()
+    defer s.access.Unlock()
+
+    fmt.Println("SetResolution()", resolution)
+    fmt.Println("CURRENTLY AT", s.resolution)
+
+    if resolution != s.resolution {
+        s.resolution = resolution
+
+        // Calling C things, so get lock
+        chippyAccess.Lock()
+        defer chippyAccess.Unlock()
+
+        s.setResolution()
     }
 }
 

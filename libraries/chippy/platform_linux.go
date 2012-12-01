@@ -265,6 +265,13 @@ func c_XF86VidModeGetAllModeLines(display *c_Display, screen int32) []*c_XF86Vid
     return modes
 }
 
+func c_XF86VidModeSwitchToMode(display *c_Display, screen int32, mi *c_XF86VidModeModeInfo) error {
+    if C.XF86VidModeSwitchToMode((*C.Display)(display), C.int(screen), (*C.XF86VidModeModeInfo)(mi)) == 0 {
+        return errors.New("Unable to switch to video mode; XF86VidModeSwitchToMode() failed!")
+    }
+    return nil
+}
+
 // Helper to call XF86VidModeGetGammaRampSize
 func c_XF86VidModeGetGammaRampSize(display *c_Display, screen int32) (int32, error) {
     var size C.int
@@ -417,6 +424,11 @@ func c_chooseFBConfig(display *c_Display, screen int32, minAttribs, maxAttribs *
         }
 
         fbconfig.actual = c_GLXFBConfig(config)
+
+        valid := c_glXGetVisualFromFBConfig(xDisplay, c_GLXFBConfig(config))
+        if valid == nil {
+            continue // This is an invalid GLX fb config, probably without GL rendering!
+        }
 
         fbconfigs = append(fbconfigs, &fbconfig)
     }

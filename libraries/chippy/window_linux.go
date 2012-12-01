@@ -65,7 +65,13 @@ type Window struct {
 
 func (w *Window) create() error {
     w.fbConfig = c_chooseFBConfig(xDisplay, w.screen.xScreenNumber, w.minAttribs, w.maxAttribs)
+    if w.fbConfig == nil {
+        return errors.New("Unable to retrieve a matching FBConfig")
+    }
     vi := c_glXGetVisualFromFBConfig(xDisplay, w.fbConfig.actual)
+    if vi == nil {
+        return errors.New("Unexpected FBConfig is invalid! glXGetVisualFromFBConfig() failed!")
+    }
 
     parent := c_XRootWindow(xDisplay, int32(vi.screen))
 

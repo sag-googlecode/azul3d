@@ -63,6 +63,7 @@ package chippy
 
 import "errors"
 import "sync"
+import "fmt"
 
 type Callback struct{
     Callback func()
@@ -144,6 +145,7 @@ func Destroy() {
     if isInit == true {
         chippyAccess.Unlock()
         for i := 0; i < len(destroyCallbacks); i++ {
+            fmt.Println("Calling", destroyCallbacks[i])
             destroyCallbacks[i].Callback()
         }
         chippyAccess.Lock()

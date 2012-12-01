@@ -32,6 +32,7 @@
 package chippy
 
 import "sync"
+import "fmt"
 
 // Resolution represents a Screen's Resolution
 type Resolution struct {
@@ -39,6 +40,9 @@ type Resolution struct {
     width, height uint16
     screen *Screen
     access sync.RWMutex
+
+    // Platform
+    videoMode *c_XF86VidModeModeInfo
 }
 
 // Screen represents a physical screen, you can query which screen
@@ -67,12 +71,21 @@ func newScreen(xScreen *c_Screen) *Screen {
     s.xScreenNumber = c_XScreenNumberOfScreen(s.xScreen)
     s.number = uint16(s.xScreenNumber + 1)
 
-    resolution := Resolution{}
-    resolution.width = uint16(c_XWidthOfScreen(s.xScreen))
-    resolution.height = uint16(c_XHeightOfScreen(s.xScreen))
-    resolution.screen = &s
-    s.resolution = &resolution
-    s.origResolution = &resolution
+    // The largest video mode available is the screen
+    modes := s.resolutions()
+    var largest *Resolution
+    for i := 0; i < len(modes); i++ {
+        if largest == nil {
+            largest = modes[i]
+            continue
+        }
+        if modes[i].width + modes[i].height > largest.width + largest.height {
+            largest = modes[i]
+        }
+    }
+
+    s.resolution = largest
+    s.origResolution = largest
     s.autoRestoreOriginalResolutionCallback = &Callback{func(){
         s.RestoreOriginalResolution()
     }}
@@ -90,31 +103,24 @@ func newScreen(xScreen *c_Screen) *Screen {
 
 func (s *Screen) resolutions() []*Resolution {
     modes := c_XF86VidModeGetAllModeLines(xDisplay, s.xScreenNumber)
-    /*
-    unsigned int	dotclock;
-    unsigned short	hdisplay;
-    unsigned short	hsyncstart;
-    unsigned short	hsyncend;
-    unsigned short	htotal;
-    unsigned short	hskew;
-    unsigned short	vdisplay;
-    unsigned short	vsyncstart;
-    unsigned short	vsyncend;
-    unsigned short	vtotal;
-    unsigned int	flags;
-    int			privsize;
-    */
     resolutions := []*Resolution{}
     for i := 0; i < len(modes); i++ {
+        mode := modes[i]
+
         resolution := Resolution{}
-        resolution.width = uint16(modes[i].hdisplay)
-        resolution.height = uint16(modes[i].vdisplay)
+        resolution.screen = s
+        resolution.width = uint16(mode.hdisplay)
+        resolution.height = uint16(mode.vdisplay)
+        resolution.videoMode = mode
         resolutions = append(resolutions, &resolution)
     }
     return resolutions
 }
 
 func (s *Screen) setResolution() {
+    fmt.Println("SET VIDEO MODE", s.resolution)
+    //c_XF86VidModeSwitchToMode(xDisplay, s.xScreenNumber, s.resolution.videoMode)
+    //c_XSync(xDisplay, false)
 }
 
 func screens() []*Screen {

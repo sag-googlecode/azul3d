@@ -65,6 +65,7 @@ func main() {
     t := 1 * time.Second
     time.Sleep(t)
 
+    /*
     fmt.Println("Changing title")
     win.SetTitle("Hello Chippy World!")
     time.Sleep(t)
@@ -104,11 +105,16 @@ func main() {
     fmt.Println("250px away from top-left window")
     win.SetPos(250, 250)
     time.Sleep(t)
+    */
 
     fmt.Println("Going fullscreen")
     screen := chippy.DefaultScreen()
     fmt.Println(screen.Resolutions())
+    screen.Resolutions()[len(screen.Resolutions())-1].Use()
+    //screen.Resolutions()[0].Use()
+    //screen.RestoreOriginalResolution()
 
+    /*
     win.SetFullscreen(true)
     time.Sleep(t)
 
@@ -119,7 +125,7 @@ func main() {
     fmt.Println("Restoring window")
     win.SetMinimized(false)
     time.Sleep(t)
-
+    */
 
     time.Sleep(t)
 }
