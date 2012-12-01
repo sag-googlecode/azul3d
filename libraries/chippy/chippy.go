@@ -19,7 +19,7 @@
 //       names of its contributors may be used to endorse or promote products
 //       derived from n software without specific prior written permission.
 //
-// n SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
 // ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 // WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
 // DISCLAIMED. IN NO EVENT SHALL LIGHTPOKE BE LIABLE FOR ANY
@@ -31,36 +31,68 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package chippy
 
-// .___________________________________________.
-// |                                           |
-// |              FEATURE SUPPORT              |
-// |___________________________________________|
-// |                   |         |     |       |
-// |      FEATURE      | Windows | Mac | Linux |
-// |___________________|_________|_____|_______|
-// | DirectX Context   | No      | N/A | N/A   |
-// | OpenGL Context    | No      | No  | No    |
-// | Multiple Windows  | No      | No  | No    |
-// | Multiple Monitors | No      | No  | Yes   |
-// | Gamma Corrections | No      | No  | Yes   |
-// | Clipboard Access  | No      | No  | No    |
-// | Custom Cursor     | No      | No  | No    |
-// |___________________|_________|_____|_______|
+//  ______________________________________________
+// |==============================================|
+// |                FEATURE SUPPORT               |
+// |======================|=========|=====|=======|
+// | Core Features        | Windows | Mac | Linux |
+// |======================|=========|=====|=======|
+// | OpenGL Context       | No      | No  | No    |
+// |                      |         |     |       |
+// |======================|=========|=====|=======|
+// | Monitor Features     | Windows | Mac | Linux |
+// |======================|=========|=====|=======|
+// | Multiple Monitors    | No      | No  | Yes   |
+// | Gamma Corrections    | No      | No  | Yes   |
+// | Multiple Windows     | No      | No  | Yes   |
+// |                      |         |     |       |
+// |======================|=========|=====|=======|
+// | Window Features      | Windows | Mac | Linux |
+// |======================|=========|=====|=======|
+// | Specify Screen       | No      | No  | Yes   |
+// | Change Vertical Sync | No      | No  | No    |
+// | Change Decorated     | No      | No  | No    |
+// | Change Visibility    | No      | No  | Yes   |
+// | Change Minimized     | No      | No  | Yes   |
+// | Change Fullscreen    | No      | No  | No    |
+// | Change Title         | No      | No  | Yes   |
+// | Change Width/Height  | No      | No  | No    |
+// | Change Position      | No      | No  | No    |
+// |______________________|_________|_____|_______|
 //
-
 
 import "errors"
 import "sync"
 
+type Callback struct{
+    Callback func()
+}
+
 var chippyAccess sync.Mutex
-var destroyCallbacks []func()
+var destroyCallbacks []*Callback
 var linuxDisplayName string
 var isInit bool
 var initError error
 
 // Helper to add a destroy callback
-func addDestroyCallback(c func()) {
+func addDestroyCallback(c *Callback) {
     destroyCallbacks = append(destroyCallbacks, c)
+}
+
+// Helper to ensure a destroy callback is non-registered. (removed)
+func removeDestroyCallback(c *Callback) {
+    found := false
+    var i int
+    for i = 0; i < len(destroyCallbacks); i++ {
+        if destroyCallbacks[i] == c {
+            found = true
+            break
+        }
+    }
+    if found == false {
+        return // It was never in the destroyCallbacks array, so just continue happily
+    }
+    destroyCallbacks = append(destroyCallbacks[:i], destroyCallbacks[i+1:]...)
 }
 
 // Helper to get intialization
@@ -112,7 +144,7 @@ func Destroy() {
     if isInit == true {
         chippyAccess.Unlock()
         for i := 0; i < len(destroyCallbacks); i++ {
-            destroyCallbacks[i]()
+            destroyCallbacks[i].Callback()
         }
         chippyAccess.Lock()
         platformDestroy()
@@ -120,7 +152,7 @@ func Destroy() {
         linuxDisplayName = ""
         isInit = false
         initError = nil
-        destroyCallbacks = []func(){}
+        destroyCallbacks = []*Callback{}
     }
 }
 

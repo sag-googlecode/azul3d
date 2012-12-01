@@ -19,7 +19,7 @@
 //       names of its contributors may be used to endorse or promote products
 //       derived from n software without specific prior written permission.
 //
-// n SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
 // ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 // WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
 // DISCLAIMED. IN NO EVENT SHALL LIGHTPOKE BE LIABLE FOR ANY
@@ -32,7 +32,7 @@
 package chippy
 
 /*
-#cgo LDFLAGS: -lX11 -lXxf86dga
+#cgo LDFLAGS: -lX11
 #include "includes_linux.h"
 
 int do_select(int fd) {
@@ -43,7 +43,6 @@ int do_select(int fd) {
 
     return select(fd + 1, &fds, NULL, NULL, NULL);
 }
-*/
 import "C"
 
 import "fmt"
@@ -88,7 +87,7 @@ func eventLoop() {
                     XFlush( _glfwLibrary.X11.display );
                 }
             }
-            */
+            
 
 
         xDisplayAccess.RUnlock()
@@ -104,4 +103,6 @@ func startEventLoop() {
 func stopEventLoop() {
     looping = false
 }
+
+*/
 

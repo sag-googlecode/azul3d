@@ -19,7 +19,7 @@
 //       names of its contributors may be used to endorse or promote products
 //       derived from n software without specific prior written permission.
 //
-// n SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
 // ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 // WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
 // DISCLAIMED. IN NO EVENT SHALL LIGHTPOKE BE LIABLE FOR ANY
@@ -32,6 +32,7 @@
 package main
 
 import "code.google.com/p/azul3d/libraries/chippy"
+import "time"
 import "fmt"
 
 func main() {
@@ -41,11 +42,85 @@ func main() {
     }
     defer chippy.Destroy()
 
-    win, err := chippy.NewWindow()
+    minAttribs := chippy.FBConfig{
+        RedBits: 1,
+        BlueBits: 1,
+        GreenBits: 1,
+        AlphaBits: 1,
+        DepthBits: 0,
+        StencilBits: 0,
+        Samples: 0,
+        SampleBuffers: 0,
+        DoubleBuffered: false,
+    }
+
+    win, err := chippy.NewWindow(chippy.DefaultScreen(), &minAttribs, chippy.BestFBConfig)
     if err != nil {
         panic(err.Error())
     }
-    fmt.Println(win)
-    for{}
+    fmt.Println("Opened a window with these Frame Buffer configurations:")
+    fmt.Println(win.FBConfig())
+    fmt.Println("The window is capable of OpenGL", win.ContextVersionString())
+
+    t := 1 * time.Second
+    time.Sleep(t)
+
+    fmt.Println("Changing title")
+    win.SetTitle("Hello Chippy World!")
+    time.Sleep(t)
+
+    fmt.Println("Hiding window")
+    win.SetVisible(false)
+    time.Sleep(t)
+
+    fmt.Println("Showing window")
+    win.SetVisible(true)
+    time.Sleep(t)
+
+    fmt.Println("Decorations = false")
+    win.SetDecorated(false)
+    time.Sleep(t)
+
+    fmt.Println("Decorations = true")
+    win.SetDecorated(true)
+    time.Sleep(t)
+
+    fmt.Println("Smaller window")
+    win.SetSize(100, 100)
+    time.Sleep(t)
+
+    fmt.Println("Larger window")
+    win.SetSize(640, 480)
+    time.Sleep(t)
+
+    fmt.Println("top-left window")
+    win.SetPos(0, 0)
+    time.Sleep(t)
+
+    fmt.Println("Center window")
+    win.SetPosCenter()
+    time.Sleep(t)
+
+    fmt.Println("250px away from top-left window")
+    win.SetPos(250, 250)
+    time.Sleep(t)
+
+    fmt.Println("Going fullscreen")
+    screen := chippy.DefaultScreen()
+    fmt.Println(screen.Resolutions())
+
+    win.SetFullscreen(true)
+    time.Sleep(t)
+
+    fmt.Println("Minimizing window")
+    win.SetMinimized(true)
+    time.Sleep(t)
+
+    fmt.Println("Restoring window")
+    win.SetMinimized(false)
+    time.Sleep(t)
+
+
+    time.Sleep(t)
 }
 

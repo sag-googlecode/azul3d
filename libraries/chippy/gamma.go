@@ -19,7 +19,7 @@
 //       names of its contributors may be used to endorse or promote products
 //       derived from n software without specific prior written permission.
 //
-// n SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
 // ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 // WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
 // DISCLAIMED. IN NO EVENT SHALL LIGHTPOKE BE LIABLE FOR ANY
@@ -33,7 +33,9 @@ package chippy
 
 import "math"
 
-// Re-writes of the SDL functions for these next two helpers
+// These two functions are Go re-writes of the SDL functions
+// that apply a gamma correction curve, you can find lots of
+// information regarding what gamma correction is online
 func calculateGammaRamp(gamma float32) [256]uint16 {
     ramp := [256]uint16{}
     if gamma <= 0.0 {
@@ -62,6 +64,7 @@ func calculateGammaRamp(gamma float32) [256]uint16 {
     return ramp
 }
 
+// Read comments above
 func calculateGammaFromRamp(ramp [256]uint16) float32 {
     gamma := 1.0
     sum := 0.0
@@ -84,17 +87,22 @@ func calculateGammaFromRamp(ramp [256]uint16) float32 {
 
 
 
-
-// Ramp represents a ramp for the gamma of the screen
+// Ramp represents a gamma ramp
 type Ramp struct {
     Red [256]uint16
     Green [256]uint16
     Blue [256]uint16
 }
 
-// SetGammaRamp sets the currently in use Ramp for the gamma
+// SetGammaRamp sets the gamma to the ramp specified, note
+// that this sets the gamma for all attatched monitors, since
+// in most cases there is no way to access a per-monitor gamma
 // This call is thread safe
 func (s *Screen) SetGammaRamp(ramp *Ramp) error {
+    s.access.Lock()
+    defer s.access.Unlock()
+
+    // Calling C things, get the lock
     chippyAccess.Lock()
     defer chippyAccess.Unlock()
 
@@ -106,9 +114,13 @@ func (s *Screen) SetGammaRamp(ramp *Ramp) error {
     return setGammaRamp(s, ramp)
 }
 
-// GammaRamp returns the currently in use Ramp for the gamma
+// GammaRamp returns the currently in use gamma Ramp for all monitors
 // This call is thread safe
 func (s *Screen) GammaRamp() (*Ramp, error) {
+    s.access.Lock()
+    defer s.access.Unlock()
+
+    // Calling C things, get the lock
     chippyAccess.Lock()
     defer chippyAccess.Unlock()
 
@@ -120,14 +132,9 @@ func (s *Screen) GammaRamp() (*Ramp, error) {
     return getGammaRamp(s)
 }
 
-// SetGammaRgb sets the gamma of the screen as rgb float32
+// SetGammaRgb sets the gamma of all monitors as rgb float32
 // This call is thread safe
 func (s *Screen) SetGammaRgb(r, g, b float32) error {
-    err := getInitError()
-    if err != nil {
-        return err
-    }
-
     ramp := Ramp{}
 
     ramp.Red = calculateGammaRamp(r)
@@ -137,19 +144,9 @@ func (s *Screen) SetGammaRgb(r, g, b float32) error {
     return s.SetGammaRamp(&ramp)
 }
 
-// SetGamma sets the rgb gamma of the screen as an float32
+// GammaRgb returns the gamma of all monitors as rgb float32
 // This call is thread safe
-func (s *Screen) SetGamma(gamma float32) error {
-    return s.SetGammaRgb(gamma, gamma, gamma)
-}
-
-// GammaRgb returns the gamma of the screen as rgb float32
 func (s *Screen) GammaRgb() (float32, float32, float32, error) {
-    err := getInitError()
-    if err != nil {
-        return 0, 0, 0, err
-    }
-
     ramp, err := s.GammaRamp()
     if err != nil {
         return 0, 0, 0, err
@@ -161,7 +158,13 @@ func (s *Screen) GammaRgb() (float32, float32, float32, error) {
     return r, g, b, nil
 }
 
-// Gamma returns the rgb gamma of the screen as an float32
+// SetGamma sets the rgb gamma of all monitors as an float32
+// This call is thread safe
+func (s *Screen) SetGamma(gamma float32) error {
+    return s.SetGammaRgb(gamma, gamma, gamma)
+}
+
+// Gamma returns the gamma of all monitors as an float32
 // This call is thread safe
 func (s *Screen) Gamma() (float32, error) {
     r, g, b, err := s.GammaRgb()
