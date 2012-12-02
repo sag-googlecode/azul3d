@@ -49,6 +49,25 @@ GLXFBConfig fbConfigAtIndex(GLXFBConfig* configs, int index) {
 XF86VidModeModeInfo* vidModeAtIndex(XF86VidModeModeInfo** modes, int index) {
     return modes[index];
 }
+
+void setWindowFullscreen(Display* display, Window win, int fullscreen) {
+    Atom netWmState = XInternAtom(display, "_NET_WM_STATE", True);
+    //Atom netWmStateAdd = XInternAtom(display, "_NET_WM_STATE_CHANGE", True);
+    Atom netWmStateFullscreen = XInternAtom(display, "_NET_WM_STATE_FULLSCREEN", True);
+
+    XClientMessageEvent xMessage;
+
+    xMessage.type = ClientMessage;
+    xMessage.serial = 0;
+    xMessage.send_event = True;
+    xMessage.window = win;
+    xMessage.format = 32;
+    xMessage.message_type = netWmState;
+    xMessage.data.l[0] = fullscreen;
+    xMessage.data.l[1] = netWmStateFullscreen;
+    xMessage.data.l[2] = 0;
+	XSendEvent(display, DefaultRootWindow(display), False, SubstructureRedirectMask | SubstructureNotifyMask, (XEvent*)&xMessage);
+}
 */
 import "C"
 
@@ -62,10 +81,13 @@ type c_Atom C.Atom
 type c_Window C.Window
 type c_Visual C.Visual
 type c_Colormap C.Colormap
+type c_Pixmap C.Pixmap
 type c_XSetWindowAttributes C.XSetWindowAttributes
 type c_GLXFBConfig C.GLXFBConfig
 type c_XVisualInfo C.XVisualInfo
 type c_XWindowChanges C.XWindowChanges
+type c_XClientMessageEvent C.XClientMessageEvent
+type c_XEvent C.XEvent
 type c_XF86VidModeModeInfo C.XF86VidModeModeInfo
 type c_Pointer unsafe.Pointer
 
@@ -78,15 +100,49 @@ func (c c_Colormap) C() C.Colormap {
     return C.Colormap(c)
 }
 
+func (c c_Pixmap) C() C.Pixmap {
+    return C.Pixmap(c)
+}
+
+func (c c_Window) C() C.Window {
+    return C.Window(c)
+}
+
+func (c c_Atom) C() C.Atom {
+    return C.Atom(c)
+}
+
+func (c c_XClientMessageEvent) C() C.XClientMessageEvent {
+    return C.XClientMessageEvent(c)
+}
+
+func (c c_XClientMessageEvent) asXEvent() *c_XEvent {
+    return (*c_XEvent)(unsafe.Pointer(&c))
+}
+
 var c_AllocNone int32 = C.AllocNone
-var c_None C.Pixmap = C.None
+//var c_None C.Pixmap = C.None
+var c_None = C.None
 var c_StructureNotifyMask C.long = C.StructureNotifyMask
+var c_SubstructureRedirectMask int64 = C.SubstructureRedirectMask
+var c_SubstructureNotifyMask int64 = C.SubstructureNotifyMask
 var c_InputOutput uint32 = C.InputOutput
 var c_CWBorderPixel uint64 = C.CWBorderPixel
 var c_CWColormap uint64 = C.CWColormap
 var c_CWEventMask uint64 = C.CWEventMask
 var c_PropModeReplace int32 = C.PropModeReplace
+var c_ClientMessage int32 = C.ClientMessage
 
+func c_int(i int32) C.int {
+    return C.int(i)
+}
+
+func c_bool(b bool) C.int {
+    if b{
+        return C.True
+    }
+    return C.False
+}
 
 
 // Helper to call XInitThreads
@@ -184,14 +240,20 @@ func c_XRootWindow(display *c_Display, screen int32) c_Window {
     return (c_Window)(C.XRootWindow((*C.Display)(display), C.int(screen)))
 }
 
-func c_XMapWindow(display *c_Display, window c_Window) {
-    C.XMapWindow((*C.Display)(display), (C.Window)(window))
+func c_XMapWindow(display *c_Display, window c_Window) error {
+    if C.XMapWindow((*C.Display)(display), (C.Window)(window)) == 0 {
+        return errors.New("Unable to map X window; XMapWindow() failed!")
+    }
+    return nil
 }
 
-func c_XStoreName(display *c_Display, window c_Window, title string) {
+func c_XStoreName(display *c_Display, window c_Window, title string) error {
     cstr := C.CString(title)
-    C.XStoreName((*C.Display)(display), (C.Window)(window), cstr)
     //C.free(unsafe.Pointer(&cstr))
+    if C.XStoreName((*C.Display)(display), (C.Window)(window), cstr) == 0 {
+        return errors.New("Unable to store name; XStoreName() failed!")
+    }
+    return nil
 }
 
 func c_XIconifyWindow(display *c_Display, window c_Window, screen_number int32) error {
@@ -219,12 +281,18 @@ func c_XFreeColormap(display *c_Display, cmap c_Colormap) {
     C.XFreeColormap((*C.Display)(display), C.Colormap(cmap))
 }
 
-func c_XMoveWindow(display *c_Display, w c_Window, x, y int32) {
-    C.XMoveWindow((*C.Display)(display), C.Window(w), C.int(x), C.int(y))
+func c_XMoveWindow(display *c_Display, w c_Window, x, y int32) error {
+    if C.XMoveWindow((*C.Display)(display), C.Window(w), C.int(x), C.int(y)) == 0 {
+        return errors.New("Unable to move window, XMoveWindow() failed!")
+    }
+    return nil
 }
 
-func c_XResizeWindow(display *c_Display, w c_Window, x, y uint32) {
-    C.XResizeWindow((*C.Display)(display), C.Window(w), C.uint(x), C.uint(y))
+func c_XResizeWindow(display *c_Display, w c_Window, x, y uint32) error {
+    if C.XResizeWindow((*C.Display)(display), C.Window(w), C.uint(x), C.uint(y)) == 0 {
+        return errors.New("Unable to resize window, XResizeWindow() failed!")
+    }
+    return nil
 }
 
 func c_XInternAtom(display *c_Display, atom string, only_if_exists bool) c_Atom {
@@ -238,20 +306,42 @@ func c_XInternAtom(display *c_Display, atom string, only_if_exists bool) c_Atom 
     return (c_Atom)(C.XInternAtom((*C.Display)(display), cstr, v))
 }
 
-func c_XChangeProperty(display *c_Display, window c_Window, property, _type c_Atom, format, mode int32, data c_Pointer, nelements int32) {
+func c_XChangeProperty(display *c_Display, window c_Window, property, _type c_Atom, format, mode int32, data c_Pointer, nelements int32) error {
     rdata := unsafe.Pointer(data)
-    C.XChangeProperty((*C.Display)(display), C.Window(window), C.Atom(property), C.Atom(_type), C.int(format), C.int(mode), (*C.uchar)(*&rdata), C.int(nelements))
+    if C.XChangeProperty((*C.Display)(display), C.Window(window), C.Atom(property), C.Atom(_type), C.int(format), C.int(mode), (*C.uchar)(*&rdata), C.int(nelements)) == 0 {
+        return errors.New("Unable to change property; XChangeProperty() failed!")
+    }
+    return nil
+}
+
+func c_XWarpPointer(display *c_Display, src_w c_Window, dest_w c_Window, src_x, src_y int32, src_width, src_height uint32, dest_x, dest_y int32) {
+    C.XWarpPointer((*C.Display)(display), C.Window(src_w), C.Window(dest_w), C.int(src_x), C.int(src_y), C.uint(src_width), C.uint(src_height), C.int(dest_x), C.int(dest_y))
+}
+
+func c_XReconfigureWMWindow(display *c_Display, w c_Window, screen_number int32, value_mask uint32, values *c_XWindowChanges) error {
+    ret := C.XReconfigureWMWindow((*C.Display)(display), C.Window(w), C.int(screen_number), C.uint(screen_number), (*C.XWindowChanges)(values))
+    if ret == 0 {
+        return errors.New("call to XReconfigureWMWindow failed!")
+    }
+    return nil
+}
+
+func c_setWindowFullscreen(display *c_Display, w c_Window, fullscreen bool) {
+    C.setWindowFullscreen((*C.Display)(display), C.Window(w), c_bool(fullscreen))
+}
+
+func c_XSendEvent(display *c_Display, w c_Window, propagate bool, event_mask int64, event_send *c_XEvent) error {
+    if C.XSendEvent((*C.Display)(display), C.Window(w), c_bool(propagate), C.long(event_mask), (*C.XEvent)(event_send)) == 0 {
+        return errors.New("Failed to send X event; XSendEvent() failed!")
+    }
+    return nil
 }
 
 
-func c_glXSwapBuffers(display *c_Display, window c_Window) {
-    C.glXSwapBuffers((*C.Display)(display), C.GLXDrawable(window))
-}
 
-func c_glXGetVisualFromFBConfig(display *c_Display, config c_GLXFBConfig) *c_XVisualInfo {
-    return (*c_XVisualInfo)(C.glXGetVisualFromFBConfig((*C.Display)(display), C.GLXFBConfig(config)))
+func c_XF86VidModeSetViewPort(display *c_Display, screen, x, y int32) {
+    C.XF86VidModeSetViewPort((*C.Display)(display), C.int(screen), C.int(x), C.int(y))
 }
-
 
 func c_XF86VidModeGetAllModeLines(display *c_Display, screen int32) []*c_XF86VidModeModeInfo {
     var modecount C.int
@@ -335,14 +425,6 @@ func c_XF86VidModeGetGammaRamp(display *c_Display, screen int32) ([256]uint16, [
     return red, green, blue, nil
 }
 
-func c_XReconfigureWMWindow(display *c_Display, w c_Window, screen_number int32, value_mask uint32, values *c_XWindowChanges) error {
-    ret := C.XReconfigureWMWindow((*C.Display)(display), C.Window(w), C.int(screen_number), C.uint(screen_number), (*C.XWindowChanges)(values))
-    if ret == 0 {
-        return errors.New("call to XReconfigureWMWindow failed!")
-    }
-    return nil
-}
-
 // Helper to set window states
 /*
 func c_SetWindowStates(display *c_Display, window c_Window, states []string) {
@@ -360,6 +442,15 @@ func c_SetWindowStates(display *c_Display, window c_Window, states []string) {
     }
 }
 */
+
+func c_glXSwapBuffers(display *c_Display, window c_Window) {
+    C.glXSwapBuffers((*C.Display)(display), C.GLXDrawable(window))
+}
+
+func c_glXGetVisualFromFBConfig(display *c_Display, config c_GLXFBConfig) *c_XVisualInfo {
+    return (*c_XVisualInfo)(C.glXGetVisualFromFBConfig((*C.Display)(display), C.GLXFBConfig(config)))
+}
+
 
 func c_glXQueryExtension(dpy *c_Display) (int32, int32, error) {
     var errorb, event C.int
@@ -515,10 +606,18 @@ func platformInit() error {
     if major < 1 || minor < 3 {
         return errors.New("Chippy requires GLX version 1.3 or greater")
     }
+
+    err = screensInit()
+    if err != nil {
+        return err
+    }
+
     return nil
 }
 
 func platformDestroy() {
+    screensDestroy()
+
     xDisplayAccess.RLock()
     defer xDisplayAccess.RUnlock()
 

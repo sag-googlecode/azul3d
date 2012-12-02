@@ -47,10 +47,16 @@ func (f *FBConfig) String() string {
 // Use this to avoid an OS call to MakeCurrent in case someone calls it multiple times
 var currentContext *Window
 
-func CurrentContext() *Window {
+func CurrentContext() (*Window, error) {
     chippyAccess.Lock()
     defer chippyAccess.Unlock()
-    return currentContext
+
+    err := getInitError()
+    if err != nil {
+        return nil, err
+    }
+
+    return currentContext, nil
 }
 
 func freeContext(w *Window) {
@@ -64,6 +70,15 @@ func freeContext(w *Window) {
 // as possible to maxAttribs.
 // This function is thread safe
 func NewWindow(screen *Screen, minAttribs, maxAttribs *FBConfig) (*Window, error) {
+    // Calling into C -- Get the lock
+    chippyAccess.Lock()
+    defer chippyAccess.Unlock()
+
+    err := getInitError()
+    if err != nil {
+        return nil, err
+    }
+
     w := Window{}
     w.destroyCallback = &Callback{func(){
             w.Destroy()
@@ -82,10 +97,7 @@ func NewWindow(screen *Screen, minAttribs, maxAttribs *FBConfig) (*Window, error
     w.x = int16((screen.Width() / 2) - (w.width / 2))
     w.y = int16((screen.Height() / 2) - (w.height / 2))
 
-    // Calling into C -- Get the lock
-    chippyAccess.Lock()
-    defer chippyAccess.Unlock()
-    err := w.create()
+    err = w.create()
     if err != nil {
         return nil, err
     }
@@ -110,9 +122,6 @@ func (w *Window) FBConfig() *FBConfig {
         return nil // Window is already destroyed
     }
 
-    // Calling into C -- Get the lock
-    chippyAccess.Lock()
-    defer chippyAccess.Unlock()
     return w.fbConfig
 }
 
@@ -121,6 +130,9 @@ func (w *Window) FBConfig() *FBConfig {
 func (w *Window) Screen() *Screen {
     w.access.RLock()
     defer w.access.RUnlock()
+    if w.destroyed {
+        return nil // Window is already destroyed
+    }
     return w.screen
 }
 
@@ -128,50 +140,80 @@ func (w *Window) Screen() *Screen {
 // This function is thread safe, but do note that OpenGL is state based
 // calling this function makes this OpenGL context the current context within
 // the current thread only.
-func (w *Window) MakeCurrent() {
+func (w *Window) MakeCurrent() error {
     w.access.RLock()
     defer w.access.RUnlock()
     if w.destroyed {
-        return // Window is already destroyed
+        return nil // Window is already destroyed
     }
 
-    // Calling into C -- Get the lock
-    chippyAccess.Lock()
-    defer chippyAccess.Unlock()
     if currentContext != w {
         currentContext = w
-        w.makeCurrent()
+
+        // Calling into C -- Get the lock
+        chippyAccess.Lock()
+        defer chippyAccess.Unlock()
+
+        err := getInitError()
+        if err != nil {
+            return err
+        }
+
+        err = w.makeCurrent()
+        if err != nil {
+            return err
+        }
     }
+    return nil
 }
 
 // SwapBuffers swaps the background and foreground buffers of this Window
 // You should always call this on Windows with DoubleBuffered FBConfigs,
 // It is okay to call this function on a Window that has no DoubleBuffered FBConfig
 // This function is thread safe
-func (w *Window) SwapBuffers() {
+func (w *Window) SwapBuffers() error {
     w.access.RLock()
     defer w.access.RUnlock()
     if w.destroyed {
-        return // Window is already destroyed
+        return nil // Window is already destroyed
     }
 
     if w.fbConfig.DoubleBuffered {
-        
+        // Calling into C -- Get the lock
+        chippyAccess.Lock()
+        defer chippyAccess.Unlock()
+
+        err := getInitError()
+        if err != nil {
+            return err
+        }
+
+        err = w.swapBuffers()
+        if err != nil {
+            return err
+        }
     }
+    return nil
 }
 
 // ContextVersion returns the major, minor, and revision versions of this OpenGL context. For example: [1, 2, 1], or [2, 0, 0]
 // This function is thread safe
-func (w *Window) ContextVersion() (uint8, uint8, uint8) {
+func (w *Window) ContextVersion() (uint8, uint8, uint8, error) {
     w.access.RLock()
     defer w.access.RUnlock()
     if w.destroyed {
-        return 0, 0, 0 // Window is already destroyed
+        return 0, 0, 0, nil // Window is already destroyed
     }
 
     // Calling into C -- Get the lock
     chippyAccess.Lock()
     defer chippyAccess.Unlock()
+
+    err := getInitError()
+    if err != nil {
+        return 0, 0, 0, err
+    }
+
     return w.contextVersion()
 }
 
@@ -179,21 +221,24 @@ func (w *Window) ContextVersion() (uint8, uint8, uint8) {
 // Note that the last ('revision') version is only ommited (in the case of "2.0" vs "1.2.1") if
 // the revision version is zero. The minor version is never ommited, in the case of "2.0" for instance
 // This function is thread safe
-func (w *Window) ContextVersionString() string {
-    major, minor, revision := w.ContextVersion()
-    if revision == 0 {
-        return fmt.Sprintf("%d.%d", major, minor)
+func (w *Window) ContextVersionString() (string, error) {
+    major, minor, revision, err := w.ContextVersion()
+    if err != nil {
+        return "", err
     }
-    return fmt.Sprintf("%d.%d.%d", major, minor, revision)
+    if revision == 0 {
+        return fmt.Sprintf("%d.%d", major, minor), nil
+    }
+    return fmt.Sprintf("%d.%d.%d", major, minor, revision), nil
 }
 
 // SetTitle sets the title string of this Window
 // This function is thread safe
-func (w *Window) SetTitle(title string) {
+func (w *Window) SetTitle(title string) error {
     w.access.RLock()
     defer w.access.RUnlock()
     if w.destroyed {
-        return // Window is already destroyed
+        return nil // Window is already destroyed
     }
     if title != w.title {
         w.title = title
@@ -201,8 +246,18 @@ func (w *Window) SetTitle(title string) {
         // Calling into C -- Get the lock
         chippyAccess.Lock()
         defer chippyAccess.Unlock()
-        w.setTitle()
+
+        err := getInitError()
+        if err != nil {
+            return err
+        }
+
+        err = w.setTitle()
+        if err != nil {
+            return err
+        }
     }
+    return nil
 }
 
 // Title returns the title string of this Window
@@ -215,11 +270,11 @@ func (w *Window) Title() string {
 
 // SetWidth sets the width (in pixels) of this Window
 // This function is thread safe
-func (w *Window) SetWidth(width uint16) {
+func (w *Window) SetWidth(width uint16) error {
     w.access.RLock()
     defer w.access.RUnlock()
     if w.destroyed {
-        return // Window is already destroyed
+        return nil // Window is already destroyed
     }
 
     if width != w.width {
@@ -228,8 +283,18 @@ func (w *Window) SetWidth(width uint16) {
         // Calling into C -- Get the lock
         chippyAccess.Lock()
         defer chippyAccess.Unlock()
-        w.setSize()
+
+        err := getInitError()
+        if err != nil {
+            return err
+        }
+
+        err = w.setSize()
+        if err != nil {
+            return err
+        }
     }
+    return nil
 }
 
 // Width returns the width (in pixels) of this Window
@@ -242,11 +307,11 @@ func (w *Window) Width() uint16 {
 
 // SetHeight sets the height (in pixels) of this Window
 // This function is thread safe
-func (w *Window) SetHeight(height uint16) {
+func (w *Window) SetHeight(height uint16) error {
     w.access.RLock()
     defer w.access.RUnlock()
     if w.destroyed {
-        return // Window is already destroyed
+        return nil // Window is already destroyed
     }
 
     if height != w.height {
@@ -255,15 +320,29 @@ func (w *Window) SetHeight(height uint16) {
         // Calling into C -- Get the lock
         chippyAccess.Lock()
         defer chippyAccess.Unlock()
-        w.setSize()
+
+        err := getInitError()
+        if err != nil {
+            return err
+        }
+
+        err = w.setSize()
+        if err != nil {
+            return err
+        }
     }
+    return nil
 }
 
 // SetSize sets the width and height of this Window (in pixels)
 // This function is thread safe
-func (w *Window) SetSize(width, height uint16) {
-    w.SetWidth(width)
-    w.SetHeight(height)
+func (w *Window) SetSize(width, height uint16) error {
+    err := w.SetWidth(width)
+    err = w.SetHeight(height)
+    if err != nil {
+        return err
+    }
+    return nil
 }
 
 // Size returns the width and height of this Window (in pixels)
@@ -282,11 +361,11 @@ func (w *Window) Height() uint16 {
 
 // SetX sets the x position of this Window (in pixels)
 // This function is thread safe
-func (w *Window) SetX(x int16) {
+func (w *Window) SetX(x int16) error {
     w.access.RLock()
     defer w.access.RUnlock()
     if w.destroyed {
-        return // Window is already destroyed
+        return nil // Window is already destroyed
     }
 
     if x != w.x {
@@ -295,8 +374,18 @@ func (w *Window) SetX(x int16) {
         // Calling into C -- Get the lock
         chippyAccess.Lock()
         defer chippyAccess.Unlock()
-        w.setPos()
+
+        err := getInitError()
+        if err != nil {
+            return err
+        }
+
+        err = w.setPos()
+        if err != nil {
+            return err
+        }
     }
+    return nil
 }
 
 // X returns the x position of this Window (in pixels)
@@ -309,11 +398,11 @@ func (w *Window) X() int16 {
 
 // SetY sets the y position of this Window (in pixels)
 // This function is thread safe
-func (w *Window) SetY(y int16) {
+func (w *Window) SetY(y int16) error {
     w.access.RLock()
     defer w.access.RUnlock()
     if w.destroyed {
-        return // Window is already destroyed
+        return nil // Window is already destroyed
     }
 
     if y != w.y {
@@ -322,8 +411,18 @@ func (w *Window) SetY(y int16) {
         // Calling into C -- Get the lock
         chippyAccess.Lock()
         defer chippyAccess.Unlock()
-        w.setPos()
+
+        err := getInitError()
+        if err != nil {
+            return err
+        }
+
+        err = w.setPos()
+        if err != nil {
+            return err
+        }
     }
+    return nil
 }
 
 // Y returns the y position of this Window (in pixels)
@@ -336,16 +435,20 @@ func (w *Window) Y() int16 {
 
 // SetPos sets the x and y position of this Window (in pixels)
 // This function is thread safe
-func (w *Window) SetPos(x, y int16) {
-    w.SetX(x)
-    w.SetY(y)
+func (w *Window) SetPos(x, y int16) error {
+    err := w.SetX(x)
+    err = w.SetY(y)
+    if err != nil {
+        return err
+    }
+    return nil
 }
 
 // SetPosCenter sets this window to the center of Window.Screen()
 // This just calls Window.SetPos(int16((Window.Screen().Width() / 2) - (Window.Width() / 2)), int16((Window.Screen().Height() / 2) - (Window.Height() / 2)))
 // This function is thread safe
-func (w *Window) SetPosCenter() {
-    w.SetPos(int16((w.Screen().Width() / 2) - (w.Width() / 2)), int16((w.Screen().Height() / 2) - (w.Height() / 2)))
+func (w *Window) SetPosCenter() error {
+    return w.SetPos(int16((w.Screen().Width() / 2) - (w.Width() / 2)), int16((w.Screen().Height() / 2) - (w.Height() / 2)))
 }
 
 // Pos returns the x and y position of this Window (in pixels)
@@ -356,11 +459,11 @@ func (w *Window) Pos() (int16, int16) {
 
 // SetVerticalSync sets weather vertical sync (vsync) will be on or off on this Window
 // This function is thread safe
-func (w *Window) SetVerticalSync(vsync bool) {
+func (w *Window) SetVerticalSync(vsync bool) error {
     w.access.Lock()
     defer w.access.Unlock()
     if w.destroyed {
-        return // Window is already destroyed
+        return nil // Window is already destroyed
     }
 
     if vsync != w.vsync {
@@ -369,8 +472,18 @@ func (w *Window) SetVerticalSync(vsync bool) {
         // Calling into C -- Get the lock
         chippyAccess.Lock()
         defer chippyAccess.Unlock()
-        w.setVerticalSync()
+
+        err := getInitError()
+        if err != nil {
+            return err
+        }
+
+        err = w.setVerticalSync()
+        if err != nil {
+            return err
+        }
     }
+    return nil
 }
 
 // VerticalSync returns weather this Window has vertical sync (vsync) enabled
@@ -383,11 +496,11 @@ func (w *Window) VerticalSync() bool {
 
 // SetHidden sets weather the window is visible or hidden
 // This function is thread safe
-func (w *Window) SetVisible(visible bool) {
+func (w *Window) SetVisible(visible bool) error {
     w.access.Lock()
     defer w.access.Unlock()
     if w.destroyed {
-        return // Window is already destroyed
+        return nil // Window is already destroyed
     }
 
     if visible != w.visible {
@@ -396,8 +509,18 @@ func (w *Window) SetVisible(visible bool) {
         // Calling into C -- Get the lock
         chippyAccess.Lock()
         defer chippyAccess.Unlock()
-        w.setVisible()
+
+        err := getInitError()
+        if err != nil {
+            return err
+        }
+
+        err = w.setVisible()
+        if err != nil {
+            return err
+        }
     }
+    return nil
 }
 
 // Visible returns weather the window is visible or hidden
@@ -410,11 +533,11 @@ func (w *Window) Visible() bool {
 
 // SetMinimized sets weather the window is minimized
 // This function is thread safe
-func (w *Window) SetMinimized(minimized bool) {
+func (w *Window) SetMinimized(minimized bool) error {
     w.access.Lock()
     defer w.access.Unlock()
     if w.destroyed {
-        return // Window is already destroyed
+        return nil // Window is already destroyed
     }
 
     if minimized != w.minimized {
@@ -423,8 +546,18 @@ func (w *Window) SetMinimized(minimized bool) {
         // Calling into C -- Get the lock
         chippyAccess.Lock()
         defer chippyAccess.Unlock()
-        w.setMinimized()
+
+        err := getInitError()
+        if err != nil {
+            return err
+        }
+
+        err = w.setMinimized()
+        if err != nil {
+            return err
+        }
     }
+    return nil
 }
 
 // Minimized returns weather the window is minimized
@@ -437,11 +570,11 @@ func (w *Window) Minimized() bool {
 
 // SetDecoration sets weather the window will have decorations
 // This function is thread safe
-func (w *Window) SetDecorated(decorated bool) {
+func (w *Window) SetDecorated(decorated bool) error {
     w.access.Lock()
     defer w.access.Unlock()
     if w.destroyed {
-        return // Window is already destroyed
+        return nil // Window is already destroyed
     }
 
     if decorated != w.decorated {
@@ -450,8 +583,18 @@ func (w *Window) SetDecorated(decorated bool) {
         // Calling into C -- Get the lock
         chippyAccess.Lock()
         defer chippyAccess.Unlock()
-        w.setDecorated()
+
+        err := getInitError()
+        if err != nil {
+            return err
+        }
+
+        err = w.setDecorated()
+        if err != nil {
+            return err
+        }
     }
+    return nil
 }
 
 // Decorated returns weather the window is decorated
@@ -464,11 +607,11 @@ func (w *Window) Decorated() bool {
 
 // SetFullscreen sets weather the window will be fullscreen
 // This function is thread safe
-func (w *Window) SetFullscreen(fullscreen bool) {
+func (w *Window) SetFullscreen(fullscreen bool) error {
     w.access.Lock()
     defer w.access.Unlock()
     if w.destroyed {
-        return // Window is already destroyed
+        return nil // Window is already destroyed
     }
 
     if fullscreen != w.fullscreen {
@@ -477,8 +620,18 @@ func (w *Window) SetFullscreen(fullscreen bool) {
         // Calling into C -- Get the lock
         chippyAccess.Lock()
         defer chippyAccess.Unlock()
-        w.setFullscreen()
+
+        err := getInitError()
+        if err != nil {
+            return err
+        }
+
+        err = w.setFullscreen()
+        if err != nil {
+            return err
+        }
     }
+    return nil
 }
 
 // Fullscreen returns weather the window is fullscreen

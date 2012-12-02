@@ -1,8 +1,8 @@
 //===========================================================================//
 //============ Chippy, a cross platform windowing library in Go! ============//
 //===========================================================================//
-// File: test_screens.go
-// Created by: Stephen Gutekanst, 11/24/12
+// File: test_ctitle.go
+// Created by: Stephen Gutekanst, 12/01/12
 //===========================================================================//
 //===========================================================================//
 // Copyright (c) 2012, Lightpoke
@@ -32,6 +32,7 @@
 package main
 
 import "code.google.com/p/azul3d/libraries/chippy"
+import "time"
 import "fmt"
 
 func main() {
@@ -41,9 +42,16 @@ func main() {
     }
     defer chippy.Destroy()
 
-    screens, err := chippy.Screens()
-    if err != nil {
-        panic(err.Error())
+    minAttribs := chippy.FBConfig{
+        RedBits: 1,
+        BlueBits: 1,
+        GreenBits: 1,
+        AlphaBits: 1,
+        DepthBits: 0,
+        StencilBits: 0,
+        Samples: 0,
+        SampleBuffers: 0,
+        DoubleBuffered: false,
     }
 
     defaultScreen, err := chippy.DefaultScreen()
@@ -51,8 +59,26 @@ func main() {
         panic(err.Error())
     }
 
-    fmt.Println("There are", len(screens), "screens")
-    fmt.Println("Default screen:", defaultScreen)
-    fmt.Println("Screens", screens)
+    win, err := chippy.NewWindow(defaultScreen, &minAttribs, chippy.BestFBConfig)
+    if err != nil {
+        panic(err.Error())
+    }
+    fmt.Println("Opened a window with these Frame Buffer configurations:")
+    contextVersion, err := win.ContextVersionString()
+    if err != nil {
+        panic(err.Error())
+    }
+    fmt.Println("The window is capable of OpenGL", contextVersion)
+
+    t := 5 * time.Second
+    time.Sleep(t)
+
+    fmt.Println("Window Title set to \"The quick brown fox jumps over the lazy dog\"")
+    win.SetTitle("The quick brown fox jumps over the lazy dog")
+    time.Sleep(t)
+
+    fmt.Println("Window Title set to \"My Window\"")
+    win.SetTitle("My Window")
+    time.Sleep(t)
 }
 

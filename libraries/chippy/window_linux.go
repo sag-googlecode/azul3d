@@ -80,7 +80,7 @@ func (w *Window) create() error {
 
     swa := c_XSetWindowAttributes{}
     swa.colormap = cmap.C()
-    swa.background_pixmap = c_None
+    swa.background_pixmap = c_Pixmap(c_None).C()
     swa.border_pixel = 0
     swa.event_mask = c_StructureNotifyMask
 
@@ -100,67 +100,105 @@ func (w *Window) create() error {
     return nil
 }
 
-func (w *Window) contextVersion() (uint8, uint8, uint8) {
-    return 0, 0, 0
+func (w *Window) contextVersion() (uint8, uint8, uint8, error) {
+    return 0, 0, 0, nil
 }
 
-func (w *Window) swapBuffers() {
+func (w *Window) swapBuffers() error {
     c_glXSwapBuffers(xDisplay, w.window)
+    return nil
 }
 
-func (w *Window) makeCurrent() {
+func (w *Window) makeCurrent() error {
+    return nil
 }
 
-func (w *Window) setTitle() {
-    c_XStoreName(xDisplay, w.window, w.title)
+func (w *Window) setTitle() error {
+    err := c_XStoreName(xDisplay, w.window, w.title)
+    if err != nil {
+        return err
+    }
     c_XSync(xDisplay, false)
+    return nil
 }
 
-func (w *Window) setSize() {
-    c_XResizeWindow(xDisplay, w.window, uint32(w.width), uint32(w.height))
+func (w *Window) setSize() error {
+    width := uint32(w.width)
+    height := uint32(w.height)
+
+    err := c_XResizeWindow(xDisplay, w.window, width, height)
+    if err != nil {
+        return err
+    }
     c_XSync(xDisplay, false)
+    return nil
 }
 
-func (w *Window) setPos() {
-    c_XMoveWindow(xDisplay, w.window, int32(w.x), int32(w.y))
+func (w *Window) setPos() error {
+    x := int32(w.x)
+    y := int32(w.y)
+
+    err := c_XMoveWindow(xDisplay, w.window, x, y)
+    if err != nil {
+        return err
+    }
     c_XSync(xDisplay, false)
+    return nil
 }
 
-func (w *Window) setVerticalSync() {
+func (w *Window) setVerticalSync() error {
+    return nil
 }
 
-func (w *Window) setVisible() {
+func (w *Window) setVisible() error {
     if w.visible {
-        c_XMapWindow(xDisplay, w.window)
+        err := c_XMapWindow(xDisplay, w.window)
+        if err != nil {
+            return err
+        }
     } else {
-        c_XWithdrawWindow(xDisplay, w.window, w.screen.xScreenNumber)
+        err := c_XWithdrawWindow(xDisplay, w.window, w.screen.xScreenNumber)
+        if err != nil {
+            return err
+        }
     }
     // It appears either XMapWindow or XWithdrawWindow (or both)
     // remove the size and/or position of the window so we set
     // it back right here (hence no XSync)
-    w.setSize()
-    w.setPos()
+    err := w.setSize()
+    err = w.setPos()
+    if err != nil {
+        return err
+    }
+    return nil
 }
 
-func (w *Window) setDecorated() {
+func (w *Window) setDecorated() error {
     hints := c_Hints{}
     hints.flags = 2 // Specify that we're changing the window decorations.
-    if w.decorated {
+    if w.decorated && !w.fullscreen {
         hints.decorations = 1 // Decorations on
     } else {
         hints.decorations = 0 // Decorations off
     }
     property := c_XInternAtom(xDisplay, "_MOTIF_WM_HINTS", true)
     if property == 0 {
-        return
+        return errors.New("Unable to remove window decorations; _MOTIF_WM_HINTS not supported!")
     }
-    c_XChangeProperty(xDisplay, w.window, property, property, 32, c_PropModeReplace, c_Pointer(&hints), 5);
+    err := c_XChangeProperty(xDisplay, w.window, property, property, 32, c_PropModeReplace, c_Pointer(&hints), 5);
+    if err != nil {
+        return err
+    }
     c_XSync(xDisplay, false)
+    return nil
 }
 
-func (w *Window) setMinimized() {
+func (w *Window) setMinimized() error {
     if w.minimized {
-        c_XIconifyWindow(xDisplay, w.window, w.screen.xScreenNumber)
+        err := c_XIconifyWindow(xDisplay, w.window, w.screen.xScreenNumber)
+        if err != nil {
+            return err
+        }
     } else {
         // I hope this brings the window back
         // I've only been able to test on Ubuntu 12.10 with Unity,
@@ -168,12 +206,23 @@ func (w *Window) setMinimized() {
         // requests anyway:
         // "Focus Prevention, only the user has the right to give a window focus"
         // We will try anyway here, heh.
-        c_XRaiseWindow(xDisplay, w.window)
+        err := c_XRaiseWindow(xDisplay, w.window)
+        if err != nil {
+            return err
+        }
     }
     c_XSync(xDisplay, false)
+    return nil
 }
 
-func (w *Window) setFullscreen() {
+func (w *Window) setFullscreen() error {
+    err := c_XRaiseWindow(xDisplay, w.window) // This raises the window above all others, or tries to anyway
+    if err != nil {
+        return err
+    }
+    c_setWindowFullscreen(xDisplay, w.window, w.fullscreen)
+    c_XSync(xDisplay, false)
+    return nil
 }
 
 func (w *Window) destroy() {

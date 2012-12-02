@@ -1,8 +1,8 @@
 //===========================================================================//
 //============ Chippy, a cross platform windowing library in Go! ============//
 //===========================================================================//
-// File: test_screens.go
-// Created by: Stephen Gutekanst, 11/24/12
+// File: test_window.go
+// Created by: Stephen Gutekanst, 11/25/12
 //===========================================================================//
 //===========================================================================//
 // Copyright (c) 2012, Lightpoke
@@ -32,6 +32,7 @@
 package main
 
 import "code.google.com/p/azul3d/libraries/chippy"
+import "time"
 import "fmt"
 
 func main() {
@@ -41,18 +42,95 @@ func main() {
     }
     defer chippy.Destroy()
 
-    screens, err := chippy.Screens()
+    minAttribs := chippy.FBConfig{
+        RedBits: 1,
+        BlueBits: 1,
+        GreenBits: 1,
+        AlphaBits: 1,
+        DepthBits: 0,
+        StencilBits: 0,
+        Samples: 0,
+        SampleBuffers: 0,
+        DoubleBuffered: false,
+    }
+
+    win, err := chippy.NewWindow(chippy.DefaultScreen(), &minAttribs, chippy.BestFBConfig)
     if err != nil {
         panic(err.Error())
     }
+    fmt.Println("Opened a window with these Frame Buffer configurations:")
+    fmt.Println("The window is capable of OpenGL", win.ContextVersionString())
 
-    defaultScreen, err := chippy.DefaultScreen()
-    if err != nil {
-        panic(err.Error())
-    }
+    t := 5 * time.Second
+    time.Sleep(t)
 
-    fmt.Println("There are", len(screens), "screens")
-    fmt.Println("Default screen:", defaultScreen)
-    fmt.Println("Screens", screens)
+    /*
+    fmt.Println("Changing title")
+    win.SetTitle("Hello Chippy World!")
+    time.Sleep(t)
+
+    fmt.Println("Hiding window")
+    win.SetVisible(false)
+    time.Sleep(t)
+
+    fmt.Println("Showing window")
+    win.SetVisible(true)
+    time.Sleep(t)
+
+    fmt.Println("Decorations = false")
+    win.SetDecorated(false)
+    time.Sleep(t)
+
+    fmt.Println("Decorations = true")
+    win.SetDecorated(true)
+    time.Sleep(t)
+
+    fmt.Println("Smaller window")
+    win.SetSize(100, 100)
+    time.Sleep(t)
+
+    fmt.Println("Larger window")
+    win.SetSize(640, 480)
+    time.Sleep(t)
+
+    fmt.Println("top-left window")
+    win.SetPos(0, 0)
+    time.Sleep(t)
+
+    fmt.Println("Center window")
+    win.SetPosCenter()
+    time.Sleep(t)
+
+    fmt.Println("250px away from top-left window")
+    win.SetPos(250, 250)
+    time.Sleep(t)
+
+    fmt.Println("Changing resolutions")
+    screen := chippy.DefaultScreen()
+    //fmt.Println(screen.Resolutions())
+    screen.Resolutions()[len(screen.Resolutions())-1].Use()
+    //screen.Resolutions()[0].Use()
+    time.Sleep(t)
+    */
+
+    fmt.Println("Going fullscreen", win.Screen())
+    win.SetFullscreen(true)
+    time.Sleep(t)
+
+    fmt.Println("Leaving fullscreen", win.Screen())
+    win.SetFullscreen(false)
+    time.Sleep(t)
+
+    /*
+    fmt.Println("Minimizing window")
+    win.SetMinimized(true)
+    time.Sleep(t)
+
+    fmt.Println("Restoring window")
+    win.SetMinimized(false)
+    time.Sleep(t)
+    */
+
+    time.Sleep(t)
 }
 

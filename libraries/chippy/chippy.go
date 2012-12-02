@@ -37,28 +37,28 @@ package chippy
 // |======================|=========|=====|=======|
 // | Core Features        | Windows | Mac | Linux |
 // |======================|=========|=====|=======|
-// | OpenGL Context       | No      | No  | No    |
-// |                      |         |     |       |
-// |======================|=========|=====|=======|
-// | Monitor Features     | Windows | Mac | Linux |
-// |======================|=========|=====|=======|
-// | Multiple Monitors    | No      | No  | Yes   |
-// | Gamma Corrections    | No      | No  | Yes   |
-// | Multiple Windows     | No      | No  | Yes   |
-// |                      |         |     |       |
-// |======================|=========|=====|=======|
-// | Window Features      | Windows | Mac | Linux |
-// |======================|=========|=====|=======|
-// | Specify Screen       | No      | No  | Yes   |
-// | Change Vertical Sync | No      | No  | No    |
-// | Change Decorated     | No      | No  | No    |
-// | Change Visibility    | No      | No  | Yes   |
-// | Change Minimized     | No      | No  | Yes   |
-// | Change Fullscreen    | No      | No  | No    |
-// | Change Title         | No      | No  | Yes   |
-// | Change Width/Height  | No      | No  | No    |
-// | Change Position      | No      | No  | No    |
+// | test_screens.go      | No      | No  | Yes   |
+// | test_window.go       | No      | No  | Yes   |
+// | test_ctitle.go       | No      | No  | Yes   |
+// | test_csize.go        | No      | No  | Yes   |
+// | test_cpos.go         | No      | No  | Yes   |
+// | test_cvisible.go     | No      | No  | Yes   |
+// | test_cdecorated.go   | No      | No  | Yes   |
+// | test_cminimize.go    | No      | No  | Yes   |
+// | test_cfullscreen.go  | No      | No  | Yes   |
+// | test_title_utf8.go   | No      | No  | No    |
+// | test_cvsync.go       | No      | No  | No    |
 // |______________________|_________|_____|_______|
+//
+
+// Note about threading: Chippy ensures that all calls are thread-safe,
+// and in all cases can be called from seperate goroutines.
+//
+// X11/GLX: It does this by using a global lock, anything touching X11
+// GLX requires the global lock. Since X11/GLX have no requirements about
+// running on "specifically the main thread", this makes the underlying
+// C library thread-safe. Also we use XInitThreads to ensure no thread
+// local data is used by X11.
 //
 
 import "errors"

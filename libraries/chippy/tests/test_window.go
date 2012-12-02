@@ -54,78 +54,23 @@ func main() {
         DoubleBuffered: false,
     }
 
-    win, err := chippy.NewWindow(chippy.DefaultScreen(), &minAttribs, chippy.BestFBConfig)
+    defaultScreen, err := chippy.DefaultScreen()
+    if err != nil {
+        panic(err.Error())
+    }
+
+    win, err := chippy.NewWindow(defaultScreen, &minAttribs, chippy.BestFBConfig)
     if err != nil {
         panic(err.Error())
     }
     fmt.Println("Opened a window with these Frame Buffer configurations:")
-    fmt.Println("The window is capable of OpenGL", win.ContextVersionString())
+    contextVersion, err := win.ContextVersionString()
+    if err != nil {
+        panic(err.Error())
+    }
+    fmt.Println("The window is capable of OpenGL", contextVersion)
 
-    t := 1 * time.Second
-    time.Sleep(t)
-
-    /*
-    fmt.Println("Changing title")
-    win.SetTitle("Hello Chippy World!")
-    time.Sleep(t)
-
-    fmt.Println("Hiding window")
-    win.SetVisible(false)
-    time.Sleep(t)
-
-    fmt.Println("Showing window")
-    win.SetVisible(true)
-    time.Sleep(t)
-
-    fmt.Println("Decorations = false")
-    win.SetDecorated(false)
-    time.Sleep(t)
-
-    fmt.Println("Decorations = true")
-    win.SetDecorated(true)
-    time.Sleep(t)
-
-    fmt.Println("Smaller window")
-    win.SetSize(100, 100)
-    time.Sleep(t)
-
-    fmt.Println("Larger window")
-    win.SetSize(640, 480)
-    time.Sleep(t)
-
-    fmt.Println("top-left window")
-    win.SetPos(0, 0)
-    time.Sleep(t)
-
-    fmt.Println("Center window")
-    win.SetPosCenter()
-    time.Sleep(t)
-
-    fmt.Println("250px away from top-left window")
-    win.SetPos(250, 250)
-    time.Sleep(t)
-    */
-
-    fmt.Println("Going fullscreen")
-    screen := chippy.DefaultScreen()
-    //fmt.Println(screen.Resolutions())
-    screen.Resolutions()[len(screen.Resolutions())-1].Use()
-    //screen.Resolutions()[0].Use()
-    //screen.RestoreOriginalResolution()
-
-    /*
-    win.SetFullscreen(true)
-    time.Sleep(t)
-
-    fmt.Println("Minimizing window")
-    win.SetMinimized(true)
-    time.Sleep(t)
-
-    fmt.Println("Restoring window")
-    win.SetMinimized(false)
-    time.Sleep(t)
-    */
-
+    t := 5 * time.Second
     time.Sleep(t)
 }
 
