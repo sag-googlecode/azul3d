@@ -83,11 +83,15 @@ type c_Visual C.Visual
 type c_Colormap C.Colormap
 type c_Pixmap C.Pixmap
 type c_XSetWindowAttributes C.XSetWindowAttributes
-type c_GLXFBConfig C.GLXFBConfig
 type c_XVisualInfo C.XVisualInfo
 type c_XWindowChanges C.XWindowChanges
 type c_XClientMessageEvent C.XClientMessageEvent
 type c_XEvent C.XEvent
+type c_XSizeHints C.XSizeHints
+type c_XWMHints C.XWMHints
+type c_XClassHint C.XClassHint
+
+type c_GLXFBConfig C.GLXFBConfig
 type c_XF86VidModeModeInfo C.XF86VidModeModeInfo
 type c_Pointer unsafe.Pointer
 
@@ -325,6 +329,17 @@ func c_XReconfigureWMWindow(display *c_Display, w c_Window, screen_number int32,
     }
     return nil
 }
+
+func c_Xutf8SetWMProperties(display *c_Display, w c_Window, window_name, icon_name, argv string, argc int32, normal_hints *c_XSizeHints, wm_hints *c_XWMHints, class_hints *c_XClassHint) {
+    c_window_name := C.CString(window_name)
+    c_icon_name := C.CString(icon_name)
+    c_argv := C.CString(argv)
+    C.Xutf8SetWMProperties((*C.Display)(display), C.Window(w), c_window_name, c_icon_name, &c_argv, C.int(argc), (*C.XSizeHints)(normal_hints), (*C.XWMHints)(wm_hints), (*C.XClassHint)(class_hints))
+}
+
+
+
+
 
 func c_setWindowFullscreen(display *c_Display, w c_Window, fullscreen bool) {
     C.setWindowFullscreen((*C.Display)(display), C.Window(w), c_bool(fullscreen))

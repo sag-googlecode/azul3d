@@ -1,8 +1,8 @@
 //===========================================================================//
 //============ Chippy, a cross platform windowing library in Go! ============//
 //===========================================================================//
-// File: test_gamma.go
-// Created by: Stephen Gutekanst, 11/24/12
+// File: test_ctitle_utf8.go
+// Created by: Stephen Gutekanst, 12/01/12
 //===========================================================================//
 //===========================================================================//
 // Copyright (c) 2012, Lightpoke
@@ -42,40 +42,39 @@ func main() {
     }
     defer chippy.Destroy()
 
-    screen := chippy.DefaultScreen()
-
-    do := func(x float64) {
-        fmt.Println(x)
-        err := screen.SetGamma(float32(x))
-        if err != nil {
-            // Unable to set gamma
-            panic(err.Error())
-        }
-        time.Sleep(1 * time.Millisecond)
-        gamma, err := screen.Gamma()
-        if err != nil {
-            // Unable to get gamma
-            panic(err.Error())
-        }
-        fmt.Println("Gamma is", gamma)
+    minAttribs := chippy.FBConfig{
+        RedBits: 1,
+        BlueBits: 1,
+        GreenBits: 1,
+        AlphaBits: 1,
+        DepthBits: 0,
+        StencilBits: 0,
+        Samples: 0,
+        SampleBuffers: 0,
+        DoubleBuffered: false,
     }
 
-    for x := 0; x < 3; x ++ {
-        for i := 1.0; i <= 2.0; i += 0.01 {
-            do(i)
-        }
-        for i := 2.0; i >= 0.0; i -= 0.01 {
-            do(i)
-        }
-        for i := 0.0; i <= 1.0; i += 0.01 {
-            do(i)
-        }
-        do(1.0)
+    defaultScreen, err := chippy.DefaultScreen()
+    if err != nil {
+        panic(err.Error())
     }
 
-    do(0.3) // ensure restore works
-    time.Sleep(1 * time.Second)
-    //screen.SetAutoRestoreOriginalGamma(false)
-    //do(1)
+    win, err := chippy.NewWindow(defaultScreen, &minAttribs, chippy.BestFBConfig)
+    if err != nil {
+        panic(err.Error())
+    }
+    fmt.Println("Opened a window with these Frame Buffer configurations:")
+    contextVersion, err := win.ContextVersionString()
+    if err != nil {
+        panic(err.Error())
+    }
+    fmt.Println("The window is capable of OpenGL", contextVersion)
+
+    t := 5 * time.Second
+    time.Sleep(t)
+
+    fmt.Println("Window Title set to \"Hello, 世界\"")
+    win.SetTitle("Hello, 世界")
+    time.Sleep(t)
 }
 

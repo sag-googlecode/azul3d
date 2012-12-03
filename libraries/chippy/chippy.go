@@ -33,9 +33,9 @@ package chippy
 
 //  ______________________________________________
 // |==============================================|
-// |                FEATURE SUPPORT               |
+// |           PLATFORM FEATURE SUPPORT           |
 // |======================|=========|=====|=======|
-// | Core Features        | Windows | Mac | Linux |
+// | Test Name & Passed?  | Windows | Mac | Linux |
 // |======================|=========|=====|=======|
 // | test_screens.go      | No      | No  | Yes   |
 // | test_window.go       | No      | No  | Yes   |
@@ -45,8 +45,12 @@ package chippy
 // | test_cvisible.go     | No      | No  | Yes   |
 // | test_cdecorated.go   | No      | No  | Yes   |
 // | test_cminimize.go    | No      | No  | Yes   |
+// | test_cmaximize.go    | No      | No  | No    |
 // | test_cfullscreen.go  | No      | No  | Yes   |
-// | test_title_utf8.go   | No      | No  | No    |
+// | test_ccursor.go      | No      | No  | No    |
+// | test_ctitle_utf8.go  | No      | No  | Yes   |
+// | test_gl_ctx.go       | No      | No  | No    |
+// | test_gl_ctx_arb.go   | No      | No  | No    |
 // | test_cvsync.go       | No      | No  | No    |
 // |______________________|_________|_____|_______|
 //

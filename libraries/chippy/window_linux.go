@@ -114,10 +114,11 @@ func (w *Window) makeCurrent() error {
 }
 
 func (w *Window) setTitle() error {
-    err := c_XStoreName(xDisplay, w.window, w.title)
-    if err != nil {
-        return err
-    }
+    //err := c_XStoreName(xDisplay, w.window, w.title)
+    //if err != nil {
+    //    return err
+    //}
+	c_Xutf8SetWMProperties(xDisplay, w.window, w.title, w.title, "", 0, nil, nil, nil)
     c_XSync(xDisplay, false)
     return nil
 }
