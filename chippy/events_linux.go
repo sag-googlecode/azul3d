@@ -206,9 +206,14 @@ func handleEvent(ev *c_XEvent) {
 
         case c_GenericEvent:
             cookie := ev.xcookie()
-            if c_XGetEventData(xDisplay, cookie) && cookie.extension == XI_opcode {
-                defer c_XFreeEventData(xDisplay, cookie)
+            fmt.Println("cookie", cookie)
+            fmt.Println("cookie extension", cookie.extension)
+
+            if cookie.extension == XI_opcode {
                 xiEvent := cookie.XIDeviceEvent()
+                if xiEvent == nil {
+                    panic("***************************** XI EVENT IS NIL! ******************************")
+                }
 
                 switch int32(xiEvent.evtype) {
                     case c_XI_RawMotion:
@@ -224,19 +229,20 @@ func handleEvent(ev *c_XEvent) {
                     default:
                         fmt.Println("chippy: Unknown XIDeviceEvent:", xiEvent.evtype)
                 }
-
-            } else {
-                fmt.Println("chippy: Unknown GenericEvent", cookie.extension)
             }
 
         default:
             fmt.Println("chippy: Unknown XEvent:", ev._type())
     }
+    fmt.Println("END OF IT")
 }
 
 func eventDispatcher() {
     for eventsDispatching {
         runtime.Gosched()
+        runtime.GC()
+
+        runtime.LockOSThread()
 
         // Ensure that at this point, all X11 calls where flushed and executed
         c_XSync(xDisplay, false)
@@ -247,11 +253,24 @@ func eventDispatcher() {
         if event {
             // We need to handle every event available
             for c_XPending(xDisplay) > 0 {
-                // Grab the next event, and handle it
                 ev := c_XNextEvent(xDisplay)
+                cookie := ev.xcookie()
+
+                if c_XGetEventData(xDisplay, cookie) {
+                    // Ensure that the next call to XNextEvent only occurs *after* this completes
+                    //handleEvent(ev)
+                } else {
+                    // We are free to continue
+                    //handleEvent(ev)
+                }
+
+                c_XFreeEventData(xDisplay, cookie)
+
                 handleEvent(ev)
+
             }
         }
+        runtime.UnlockOSThread()
     }
 }
 

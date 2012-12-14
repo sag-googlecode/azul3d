@@ -112,11 +112,6 @@ XGenericEventCookie* XGenericEventCookie_xcookie(XEvent event) {
     return ptr;
 }
 
-XIDeviceEvent* XGenericEventCookie_XIDeviceEventPtr(XGenericEventCookie* cookie) {
-    return (XIDeviceEvent*)(cookie->data);
-}
-
-
 long propertyAtIndex(unsigned char *properties, int index) {
     return ((long*)(properties))[index];
 }
@@ -235,7 +230,7 @@ func (c *c_XGenericEventCookie) C() *C.XGenericEventCookie {
 }
 
 func (c *c_XGenericEventCookie) XIDeviceEvent() *c_XIDeviceEvent {
-    return (*c_XIDeviceEvent)(C.XGenericEventCookie_XIDeviceEventPtr(c.C()))
+    return (*c_XIDeviceEvent)(c.data)
 }
 
 
