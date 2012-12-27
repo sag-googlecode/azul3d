@@ -3,6 +3,7 @@
 package main
 
 import "code.google.com/p/azul3d/chippy"
+//import "runtime"
 import "time"
 import "fmt"
 
@@ -45,12 +46,23 @@ func main() {
     t := 5 * time.Second
     time.Sleep(t)
 
-    fmt.Println("Decorations off")
-    win.SetDecorated(false)
+
+    //for{
+    //    runtime.Gosched()
+    //    win.SetMouseGrabbed(true)
+    //    win.SetMouseGrabbed(false)
+    //}
+
+    fmt.Println("Mouse grabbed")
+    win.SetMouseGrabbed(true)
     time.Sleep(t)
 
-    fmt.Println("Decorations on")
-    win.SetDecorated(true)
+    fmt.Println("Mouse released")
+    win.SetMouseGrabbed(false)
+    time.Sleep(t)
+
+    fmt.Println("Mouse grabbed")
+    win.SetMouseGrabbed(true)
     time.Sleep(t)
 }
 

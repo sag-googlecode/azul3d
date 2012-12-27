@@ -42,15 +42,25 @@ func main() {
     }
     fmt.Println("The window is capable of OpenGL", contextVersion)
 
+    win.SetSize(100, 100)
     t := 5 * time.Second
     time.Sleep(t)
 
-    fmt.Println("Decorations off")
-    win.SetDecorated(false)
+
+    fmt.Println("Min size 300x300")
+    win.SetMinSize(300, 300)
     time.Sleep(t)
 
-    fmt.Println("Decorations on")
-    win.SetDecorated(true)
+    fmt.Println("Min size 640x480")
+    win.SetMinSize(640, 480)
+    time.Sleep(t)
+
+    fmt.Println("Min size 800x600")
+    win.SetMinSize(800, 600)
+    time.Sleep(t)
+
+    fmt.Println("Min size 150x150")
+    win.SetMinSize(150, 150)
     time.Sleep(t)
 }
 

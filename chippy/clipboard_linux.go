@@ -3,11 +3,10 @@ package chippy
 //import "fmt"
 //import "unsafe"
 
-func setClipboard(contents string) error {
-    return nil
+func backend_setClipboard(contents string) error {
+	return nil
 }
 
-func clipboard() (string, error) {
-    return "", nil
+func backend_clipboard() (string, error) {
+	return "", nil
 }
-

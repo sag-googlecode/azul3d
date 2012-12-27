@@ -45,12 +45,12 @@ func main() {
     t := 5 * time.Second
     time.Sleep(t)
 
-    fmt.Println("Decorations off")
-    win.SetDecorated(false)
+    fmt.Println("Window Non-Resizable")
+    win.SetResizable(false)
     time.Sleep(t)
 
-    fmt.Println("Decorations on")
-    win.SetDecorated(true)
+    fmt.Println("Window Resizable")
+    win.SetResizable(true)
     time.Sleep(t)
 }
 

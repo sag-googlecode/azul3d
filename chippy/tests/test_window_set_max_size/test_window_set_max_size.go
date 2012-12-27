@@ -45,12 +45,20 @@ func main() {
     t := 5 * time.Second
     time.Sleep(t)
 
-    fmt.Println("Decorations off")
-    win.SetDecorated(false)
+    fmt.Println("Max size 640x480")
+    win.SetMaxSize(640, 480)
     time.Sleep(t)
 
-    fmt.Println("Decorations on")
-    win.SetDecorated(true)
+    fmt.Println("Max size 300x300")
+    win.SetMaxSize(300, 300)
+    time.Sleep(t)
+
+    fmt.Println("Max size 150x150")
+    win.SetMaxSize(150, 150)
+    time.Sleep(t)
+
+    fmt.Println("Max size 800x600")
+    win.SetMaxSize(800, 600)
     time.Sleep(t)
 }
 

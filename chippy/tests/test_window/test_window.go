@@ -2,8 +2,10 @@
 
 package main
 
-import "code.google.com/p/azul3d/chippy"
-import "fmt"
+import(
+    "code.google.com/p/azul3d/chippy"
+    "fmt"
+)
 
 func main() {
     err := chippy.Init()
@@ -29,7 +31,7 @@ func main() {
         panic(err.Error())
     }
 
-    win, err := chippy.NewWindow(defaultScreen, &minAttribs, chippy.BestFBConfig)
+    win, err := chippy.NewWindow(defaultScreen, &minAttribs, chippy.BestFBConfig, nil)
     if err != nil {
         panic(err.Error())
     }

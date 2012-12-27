@@ -30,7 +30,7 @@ func main() {
         panic(err.Error())
     }
 
-    win, err := chippy.NewWindow(defaultScreen, &minAttribs, chippy.BestFBConfig)
+    win, err := chippy.NewWindow(defaultScreen, &minAttribs, chippy.BestFBConfig, nil)
     if err != nil {
         panic(err.Error())
     }
@@ -51,6 +51,10 @@ func main() {
 
     fmt.Println("Window 50x50")
     win.SetPosition(50, 50)
+    time.Sleep(t)
+
+    fmt.Println("Window 100x100")
+    win.SetPosition(100, 100)
     time.Sleep(t)
 }
 
