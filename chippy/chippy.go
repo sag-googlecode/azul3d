@@ -1,133 +1,46 @@
-/*
-Chippy is an high performance OpenGL windowing library supporting Windows, Mac, and Linux.
+// Copyright 2012 Lightpoke. All rights reserved.
+// Use of this source code is governed by an BSD
+// license found in the License.txt file
 
-
-Features
-  | Feature Description          | Windows Support | Mac Support | Linux Support |
-  |                              |                 |             |               |
-  | Multiple Monitors            | No              | No          | Yes           |
-  | Multiple Windows             | No              | No          | Yes           |
-  | Raw Mouse Input              | No              | No          | Yes           |
-  | UTF-8 Clipboard Strings      | No              | No          | No            |
-  | Create Window Notification   | No              | No          | Yes           |
-  | Raise Window Above Others    | No              | No          | Yes           |
-  | Change Window Title (UTF-8)  | No              | No          | Yes           |
-  | Change Window Size           | No              | No          | Yes           |
-  | Change Window Position       | No              | No          | Yes           |
-  | Change Window Visibility     | No              | No          | Yes           |
-  | Change Window Decorations    | No              | No          | Yes           |
-  | Change Window Minimized      | No              | No          | Yes           |
-  | Change Window Maximized      | No              | No          | Yes           |
-  | Change Window Fullscreen     | No              | No          | Yes           |
-  | Change Window Always On Top  | No              | No          | Yes           |
-  | Change Window Maximum Size   | No              | No          | Yes           |
-  | CHange Window Minimum Size   | No              | No          | Yes           |
-  | Change Window Resizable      | No              | No          | Yes           |
-  | Change Window Cursor         | No              | No          | Yes           |
-  | Change Cursor Visibility     | No              | No          | Yes           |
-  | Change Window Vertical Sync  | No              | No          | No            |
-  | Change and get Window Pixel  | No              | No          | No            |
-  | Grabbing Mouse Cursor        | No              | No          | Yes           |
-  | Specify Window Icon          | No              | No          | Yes           |
-  | UTF-8 Keyboard Input         | No              | No          | Yes           |
-  | OpenGL 1.1 - 2.1 Support     | No              | No          | No            |
-  | OpenGL 3.0 - Current Support | No              | No          | No            |
-  | OpenGL Render To Texture     | No              | No          | No            |
-  | Direct3D Support             | Future          | N/A         | N/A           |
-  |
-  | Non-Unicode representable key identification (Caps Lock, Shift, etc)
-  |
-  | United States                | No              | No          | Yes           |
-
-Terminology
- There are a few terms that will help you to understand how certain functions operate or what they do.
-
-
- Region
-     An Window's region is the Window's entire region on the user's screen, it *includes* all
-     window decorations (title bar, borders, etc).
-
-     An Window's region begins in the top-left corner (0, 0), and extends all the way to the bottom-right
-     corner (positive width, positive height).
-
- Drawable Region
-     An Window's drawable region is the Window's inner, drawable region, the area that you are
-     able to draw graphics on to, it *excludes* all window decorations (title bar, borders, etc).
-
-     An Window's drawable region, begins in the top-left corner (0, 0) and extends all the way to
-     the bottom right corner (positive width, positive height).
-
-Concurrency
- There are a few very important things to note about Chippy and concurrency (goroutines / threads)
-
- Functions may be called from another goroutine/thread, without using any special synchronization or
- communication at all between the goroutines, chippy is goroutine/thread safe.
-
- Just because Chippy is thread safe, doesn't mean OpenGL is thread safe, whatever OpenGL wrapper you
- are using, is still non-thread safe, unless it mentions otherwise. (Unlikely!)
-
- There is one specific portion of Chippy that requires special attention regarding seperate goroutines:
-
- Calling MakeCurrent on an Window makes that Window the current OpenGL context, in *that* OS thread. It
- is required because of such, that you use runtime.LockOSThread() and runtime.UnlockOSThread() before
- you call MakeCurrent() and only call runtime.UnlockOSThread() once you're done calling OpenGL api's
- that you wish to occur inside of that Window.
-
- Buffered channels are used to store Window events; this decouples Window events such as mouse input,
- keyboard input, and other Window events such as dragging the Window etc, from the rendering thread.
- It's important to take advantage of this feature, because it will greatly improve the responsiveness
- of your real time application. Because of this feature, there is one small suggestion:
-
- Always have GOMAXPROCS at at least two, even if the computer doesn't have two CPUs. The reason for
- this is because Chippy in some cases will block one OS thread while waiting for events, the timeout
- is small (a fraction of a second), but can cause other portions of your real time application to behave
- badly or sluggish.
-
- You can achieve setting GOMAXPROCS two at least two at all times using the following snippet:
-
-    procs := runtime.NumCPU()
-    if procs < 2 {
-        procs = 2
-    }
-    runtime.GOMAXPROCS(procs)
-
- The above code uses the number of CPU's on the user's computer (with an minimum of two CPUs at all times)
-
-Notes
- 1. Nvidia drivers have an option that allows users with multiple monitors on Linux/X11 to report multiple monitors
- to X11 as an single monitor device. In this case Chippy will only see an single Screen, in addition, per screen
- operations, such as the gamma functions, will operate across all monitors.
-
- 2. "Why does Chippy require that an Window's icon be passed in at Window creation time? Why is there no SetIcon() function
- or other way of changing the Window icon after the Window has been created?", Put simply, many Linux/X11 window managers
- either have no support for changing an Window's icon after the Window has been opened, or it's a very buggy implimentation.
-
- 3. "I'm running Linux/X11, and calling SetMinimized(false), never restores the Window to the non-minimized state?!" Several
- X11 window managers have full rights according to the X documentation to ignore all requests to restore an previously minimized
- Window.
-    Happens with Unity window manager on Ubuntu.
-    Works fine on Gnome 3 window manager (and probably Gnome) on Ubuntu
-    
-
-// Note: Ubuntu (at least on 12.10, probably on all version prior as well) Unity window manager will
-// ignore all requests to restore (SetMinimized(false)) an Window. This is a bug (or 'feature') of
-// Unity.
-
-
-*/
+// Package chippy implements cross platform window managing.
+//
+// Linux Implementation Notes
+//
+// 1. Xlib is required.
+//    We use this to interface with the X server, at this time there are no plans to use xcb or any
+//    other X libraries (xgb, etc), but we're open to suggestions, so if you have valid reasoning,
+//    then talk to us about it.
+//
+// 2. (optional) The X extension Xrandr is highly reccomended
+//  Xrandr provides an accurate way to determine an screen's physical size (Xlib is only accurate
+//  if screen resolution is at max), also, Xrandr provides an way to change the screen resolution
+//  and refresh rate (making the xf86vm extension, below, useless).
+//
+//  Disable at build time with the build tag: 'no_xrandr'
+//
+// 3. (optional) The X extension Xxf86vm is used as an fallback if the Xrandr extension (above) is
+// unavailable.
+//  xf86vm provides an way to change the screen resolution, and refresh rate (but not determine
+//  the physical screen size, as in the case of Xrandr above)
+//
+//  Note: xf86vm appears to sometimes report incorrect display modes, and sometimes refuses to
+//  switch to actually available display modes, specifically in cases where Xrandr reports correct
+//  display modes, and has no problem switching to the same display mode that xf86vm ignores.
+//
+//  Disable at build time with the build tag: 'no_xf86vm'
+//
+// 4. (optional) The X extension Xinput2 is reccomended.
+//  Xinput2 provides access to sub-pixel mouse movement, very important for First Person Shooter
+//  games, for instance.
+//
+//  Disable at build time with the build tag: 'no_xinput2'
 package chippy
 
-// X11/GLX: We ensure that all calls are thread safe by using a global
-// lock, anything touching X11 or GLX requires the global lock. Since
-// X11/GLX have no requirements about running on "specifically the main
-// thread", this makes the underlying C library thread-safe. Also we use
-// XInitThreads to ensure no thread local data is used by X11.
-
 import(
-    "errors"
+    "io/ioutil"
+    "io"
     "sync"
     "log"
-    "os"
 )
 
 // Destroy callbacks here, these callbacks are called when the user calls chippy.Destroy()
@@ -155,7 +68,7 @@ var (
 	// Any function calls that have to go back further into C, need to use this global lock
 	// basically our reasoning for this is that, majority of the underlying C api's are
 	// specifically non-thread safe. So apply this global lock to *most* of the C api we use
-	chippyAccess sync.Mutex
+	globalLock sync.RWMutex
 
 	// Tells weather chippy has been previously Init()
 	isInit bool
@@ -164,46 +77,48 @@ var (
 	initError error
 )
 
-// Helper to get intialization errors
-// You should use chippyAccess with this!
-func getInitError() error {
-	if isInit == false {
-		return errors.New("Chippy is not initialized yet!")
-	}
-	return initError
-}
-
 // IsInit returns weather Chippy has been initialized via a previous call to Init().
 //
 // IsInit() returns false if Destroy() was previously called.
 func IsInit() bool {
-	chippyAccess.Lock()
-	defer chippyAccess.Unlock()
+	globalLock.RLock()
+	defer globalLock.RUnlock()
 
 	return isInit
 }
 
+// Helper to panic unless previously initialized, use globalLock.Rlock with this!
+func panicUnlessInit() {
+    if !IsInit(){
+        panic("Chippy must be initialized before calling this; Use Init() properly!")
+    }
+}
+
+
 var logger *log.Logger
+
+// SetDebugOutput specifies the io.Writer that debug output will be written to (ioutil.Discard by
+// default).
+func SetDebugOutput(w io.Writer) {
+    logger = log.New(w, "chippy: ", log.Ltime | log.Lshortfile)
+}
+
 func init() {
-    logger = log.New(os.Stderr, "chippy: ", log.Ltime | log.Lshortfile)
+    SetDebugOutput(ioutil.Discard)
 }
 
 // Init initializes Chippy, returning an error if there is a problem initializing some
 // lower level part of Chippy, if an error was returned, it is disallowed to call any
-// other Chippy functions. (And any attempt to do so will return the error that this
-// returned.)
+// other Chippy functions. (And any attempt to do so will cause the program to panic.)
 func Init() error {
-	chippyAccess.Lock()
-	defer chippyAccess.Unlock()
+	globalLock.Lock()
+	defer globalLock.Unlock()
 
 	if isInit == false {
-		// Intialize the config system before the backend
-		initConfig()
-
 		// Now we try and initialize the backend, which may fail due to user configurations
 		// or something of the sort (dumb user tries to run application on Linux box without
 		// any working X11 server or something silly)
-		err := backend_init()
+		err := backend_Init()
 		if err != nil {
 			initError = err
 			return initError
@@ -232,19 +147,20 @@ func Init() error {
 //
 // You may call Init() again after calling Destroy() should you want to re-gain access to the API.
 func Destroy() {
-	chippyAccess.Lock()
-	defer chippyAccess.Unlock()
+	globalLock.Lock()
+	defer globalLock.Unlock()
 
 	if isInit == true {
 		// Firstly, we call each destroy callback, chippyAccess is explicitly unlocked here
-        chippyAccess.Unlock()
+        globalLock.Unlock()
 		for i := 0; i < len(destroyCallbacks); i++ {
 			destroyCallbacks[i].callback()
 		}
-        chippyAccess.Lock()
-		backend_destroy()
+        globalLock.Lock()
+		backend_Destroy()
 		isInit = false
 		initError = nil
 		destroyCallbacks = []*callback{}
 	}
 }
+
