@@ -10,198 +10,193 @@ void init();
 */
 import "C"
 
-import(
-    "unsafe"
+import (
+	"unsafe"
 )
 
-type(
-    XAnyEvent C.XAnyEvent
-    XKeyEvent C.XKeyEvent
-    XButtonEvent C.XButtonEvent
-    XMotionEvent C.XMotionEvent
-    XCrossingEvent C.XCrossingEvent
-    XFocusChangeEvent C.XFocusChangeEvent
-    XExposeEvent C.XExposeEvent
-    XGraphicsExposeEvent C.XGraphicsExposeEvent
-    XNoExposeEvent C.XNoExposeEvent
-    XVisibilityEvent C.XVisibilityEvent
-    XCreateWindowEvent C.XCreateWindowEvent
-    XDestroyWindowEvent C.XDestroyWindowEvent
-    XUnmapEvent C.XUnmapEvent
-    XMapEvent C.XMapEvent
-    XMapRequestEvent C.XMapRequestEvent
-    XReparentEvent C.XReparentEvent
-    XConfigureEvent C.XConfigureEvent
-    XGravityEvent C.XGravityEvent
-    XResizeRequestEvent C.XResizeRequestEvent
-    XConfigureRequestEvent C.XConfigureRequestEvent
-    XCirculateEvent C.XCirculateEvent
-    XCirculateRequestEvent C.XCirculateRequestEvent
-    XPropertyEvent C.XPropertyEvent
-    XSelectionClearEvent C.XSelectionClearEvent
-    XSelectionRequestEvent C.XSelectionRequestEvent
-    XSelectionEvent C.XSelectionEvent
-    XColormapEvent C.XColormapEvent
-    XClientMessageEvent C.XClientMessageEvent
-    XMappingEvent C.XMappingEvent
-    XErrorEvent C.XErrorEvent
-    XKeymapEvent C.XKeymapEvent
-    XGenericEvent C.XGenericEvent
-    XGenericEventCookie C.XGenericEventCookie
-    XSetWindowAttributes C.XSetWindowAttributes
-    XWindowAttributes C.XWindowAttributes
-    XWindowChanges C.XWindowChanges
+type (
+	XAnyEvent              C.XAnyEvent
+	XKeyEvent              C.XKeyEvent
+	XButtonEvent           C.XButtonEvent
+	XMotionEvent           C.XMotionEvent
+	XCrossingEvent         C.XCrossingEvent
+	XFocusChangeEvent      C.XFocusChangeEvent
+	XExposeEvent           C.XExposeEvent
+	XGraphicsExposeEvent   C.XGraphicsExposeEvent
+	XNoExposeEvent         C.XNoExposeEvent
+	XVisibilityEvent       C.XVisibilityEvent
+	XCreateWindowEvent     C.XCreateWindowEvent
+	XDestroyWindowEvent    C.XDestroyWindowEvent
+	XUnmapEvent            C.XUnmapEvent
+	XMapEvent              C.XMapEvent
+	XMapRequestEvent       C.XMapRequestEvent
+	XReparentEvent         C.XReparentEvent
+	XConfigureEvent        C.XConfigureEvent
+	XGravityEvent          C.XGravityEvent
+	XResizeRequestEvent    C.XResizeRequestEvent
+	XConfigureRequestEvent C.XConfigureRequestEvent
+	XCirculateEvent        C.XCirculateEvent
+	XCirculateRequestEvent C.XCirculateRequestEvent
+	XPropertyEvent         C.XPropertyEvent
+	XSelectionClearEvent   C.XSelectionClearEvent
+	XSelectionRequestEvent C.XSelectionRequestEvent
+	XSelectionEvent        C.XSelectionEvent
+	XColormapEvent         C.XColormapEvent
+	XClientMessageEvent    C.XClientMessageEvent
+	XMappingEvent          C.XMappingEvent
+	XErrorEvent            C.XErrorEvent
+	XKeymapEvent           C.XKeymapEvent
+	XGenericEvent          C.XGenericEvent
+	XGenericEventCookie    C.XGenericEventCookie
+	XSetWindowAttributes   C.XSetWindowAttributes
+	XWindowAttributes      C.XWindowAttributes
+	XWindowChanges         C.XWindowChanges
 
-    Display C.Display
-    Screen C.Screen
-    Window C.Window
-    Drawable C.Drawable
-    Colormap C.Colormap
-    Visual C.Visual
-    Atom C.Atom
-    Cursor C.Cursor
-    Pixmap C.Pixmap
-    GC C.GC
-    Time C.Time
-    KeySym C.KeySym
-    KeyCode C.KeyCode
+	Display  C.Display
+	Screen   C.Screen
+	Window   C.Window
+	Drawable C.Drawable
+	Colormap C.Colormap
+	Visual   C.Visual
+	Atom     C.Atom
+	Cursor   C.Cursor
+	Pixmap   C.Pixmap
+	GC       C.GC
+	Time     C.Time
+	KeySym   C.KeySym
+	KeyCode  C.KeyCode
 )
 
-const(
-    CurrentTime = C.CurrentTime
-    None = C.None
+const (
+	CurrentTime = C.CurrentTime
+	None        = C.None
 )
-
 
 // Wrapper for XEvent union
 type XEvent struct {
-    _type C.int
-    xany XAnyEvent
-    xkey XKeyEvent
-    xbutton XButtonEvent
-    xmotion XMotionEvent
-    xcrossing XCrossingEvent
-    xfocus XFocusChangeEvent
-    xexpose XExposeEvent
-    xgraphicsexpose XGraphicsExposeEvent
-    xnoexpose XNoExposeEvent
-    xvisibility XVisibilityEvent
-    xcreatewindow XCreateWindowEvent
-    xdestroywindow XDestroyWindowEvent
-    xunmap XUnmapEvent
-    xmap XMapEvent
-    xmaprequest XMapRequestEvent
-    xreparent XReparentEvent
-    xconfigure XConfigureEvent
-    xgravity XGravityEvent
-    xresizerequest XResizeRequestEvent
-    xconfigurerequest XConfigureRequestEvent
-    xcirculate XCirculateEvent
-    xcirculaterequest XCirculateRequestEvent
-    xproperty XPropertyEvent
-    xselectionclear XSelectionClearEvent
-    xselectionrequest XSelectionRequestEvent
-    xselection XSelectionEvent
-    xcolormap XColormapEvent
-    xclient XClientMessageEvent
-    xmapping XMappingEvent
-    xerror XErrorEvent
-    xkeymap XKeymapEvent
-    xgeneric XGenericEvent
-    xcookie XGenericEventCookie
-    pad [24]C.long
+	_type             C.int
+	xany              XAnyEvent
+	xkey              XKeyEvent
+	xbutton           XButtonEvent
+	xmotion           XMotionEvent
+	xcrossing         XCrossingEvent
+	xfocus            XFocusChangeEvent
+	xexpose           XExposeEvent
+	xgraphicsexpose   XGraphicsExposeEvent
+	xnoexpose         XNoExposeEvent
+	xvisibility       XVisibilityEvent
+	xcreatewindow     XCreateWindowEvent
+	xdestroywindow    XDestroyWindowEvent
+	xunmap            XUnmapEvent
+	xmap              XMapEvent
+	xmaprequest       XMapRequestEvent
+	xreparent         XReparentEvent
+	xconfigure        XConfigureEvent
+	xgravity          XGravityEvent
+	xresizerequest    XResizeRequestEvent
+	xconfigurerequest XConfigureRequestEvent
+	xcirculate        XCirculateEvent
+	xcirculaterequest XCirculateRequestEvent
+	xproperty         XPropertyEvent
+	xselectionclear   XSelectionClearEvent
+	xselectionrequest XSelectionRequestEvent
+	xselection        XSelectionEvent
+	xcolormap         XColormapEvent
+	xclient           XClientMessageEvent
+	xmapping          XMappingEvent
+	xerror            XErrorEvent
+	xkeymap           XKeymapEvent
+	xgeneric          XGenericEvent
+	xcookie           XGenericEventCookie
+	pad               [24]C.long
 }
 
 func cBool(b bool) C.Bool {
-    if b == true {
-        return C.True
-    }
-    return C.False
+	if b == true {
+		return C.True
+	}
+	return C.False
 }
-
-
 
 var xErrorHandler func(*Display, *XErrorEvent)
 
 //export fakeXErrorHandler
 func fakeXErrorHandler(d, e unsafe.Pointer) {
-    if xErrorHandler != nil {
-        xErrorHandler((*Display)(d), (*XErrorEvent)(e))
-    }
+	if xErrorHandler != nil {
+		xErrorHandler((*Display)(d), (*XErrorEvent)(e))
+	}
 }
 
 func XSetErrorHandler(handler func(*Display, *XErrorEvent)) {
-    xErrorHandler = handler
+	xErrorHandler = handler
 }
 
-
-
 func init() {
-    C.init()
+	C.init()
 }
 
 func elementAtIndex(ptr unsafe.Pointer, index uintptr, T uintptr) unsafe.Pointer {
-    return unsafe.Pointer(uintptr(ptr) + (uintptr(index) * T))
+	return unsafe.Pointer(uintptr(ptr) + (uintptr(index) * T))
 }
 
 func XInitThreads() {
-    C.XInitThreads()
+	C.XInitThreads()
 }
 
 // display_name defaults to DISPLAY environment variable.
 // returns nil upon failure
 func XOpenDisplay(display_name string) *Display {
-    if len(display_name) > 0 {
-        cstr := C.CString(display_name)
-        defer C.free(unsafe.Pointer(cstr))
-        return (*Display)(C.XOpenDisplay(cstr))
-    }
-    return (*Display)(C.XOpenDisplay(nil))
+	if len(display_name) > 0 {
+		cstr := C.CString(display_name)
+		defer C.free(unsafe.Pointer(cstr))
+		return (*Display)(C.XOpenDisplay(cstr))
+	}
+	return (*Display)(C.XOpenDisplay(nil))
 }
 
 // Can generate BadGC error
 func XCloseDisplay(display *Display) int {
-    return int(C.XCloseDisplay((*C.Display)(display)))
+	return int(C.XCloseDisplay((*C.Display)(display)))
 }
 
 func XFlush(display *Display) int {
-    return int(C.XFlush((*C.Display)(display)))
+	return int(C.XFlush((*C.Display)(display)))
 }
 
 func XSync(display *Display, discard bool) int {
-    return int(C.XSync((*C.Display)(display), cBool(discard)))
+	return int(C.XSync((*C.Display)(display), cBool(discard)))
 }
 
 func XScreenNumberOfScreen(screen *Screen) int {
-    return int(C.XScreenNumberOfScreen((*C.Screen)(screen)))
+	return int(C.XScreenNumberOfScreen((*C.Screen)(screen)))
 }
 
 func XScreenCount(display *Display) int {
-    return int(C.XScreenCount((*C.Display)(display)))
+	return int(C.XScreenCount((*C.Display)(display)))
 }
 
 func XWidthOfScreen(screen *Screen) int {
-    return int(C.XWidthOfScreen((*C.Screen)(screen)))
+	return int(C.XWidthOfScreen((*C.Screen)(screen)))
 }
 
 func XWidthMMOfScreen(screen *Screen) int {
-    return int(C.XWidthMMOfScreen((*C.Screen)(screen)))
+	return int(C.XWidthMMOfScreen((*C.Screen)(screen)))
 }
 
 func XHeightOfScreen(screen *Screen) int {
-    return int(C.XHeightOfScreen((*C.Screen)(screen)))
+	return int(C.XHeightOfScreen((*C.Screen)(screen)))
 }
 
 func XHeightMMOfScreen(screen *Screen) int {
-    return int(C.XHeightMMOfScreen((*C.Screen)(screen)))
+	return int(C.XHeightMMOfScreen((*C.Screen)(screen)))
 }
 
 func XScreenOfDisplay(display *Display, screen_number int) *Screen {
-    return (*Screen)(C.XScreenOfDisplay((*C.Display)(display), C.int(screen_number)))
+	return (*Screen)(C.XScreenOfDisplay((*C.Display)(display), C.int(screen_number)))
 }
 
 func XDefaultScreenOfDisplay(display *Display) *Screen {
-    return (*Screen)(C.XDefaultScreenOfDisplay((*C.Display)(display)))
+	return (*Screen)(C.XDefaultScreenOfDisplay((*C.Display)(display)))
 }
 
 func XDefaultRootWindow(display *Display) Window {
@@ -213,165 +208,165 @@ func XCreateColormap(display *Display, w Window, visual *Visual, alloc int) Colo
 }
 
 func XCreateWindow(display *Display, parent Window, x, y int, width, height, border_width uint, depth int, class uint, visual *Visual, valuemask uint64, attributes *XSetWindowAttributes) Window {
-    return Window(C.XCreateWindow((*C.Display)(display), C.Window(parent), C.int(x), C.int(y), C.uint(width), C.uint(height), C.uint(border_width), C.int(depth), C.uint(class), (*C.Visual)(visual), C.ulong(valuemask), (*C.XSetWindowAttributes)(attributes)))
+	return Window(C.XCreateWindow((*C.Display)(display), C.Window(parent), C.int(x), C.int(y), C.uint(width), C.uint(height), C.uint(border_width), C.int(depth), C.uint(class), (*C.Visual)(visual), C.ulong(valuemask), (*C.XSetWindowAttributes)(attributes)))
 }
 
 func XRootWindow(display *Display, screen int) Window {
-    return Window(C.XRootWindow((*C.Display)(display), C.int(screen)))
+	return Window(C.XRootWindow((*C.Display)(display), C.int(screen)))
 }
 
 func XMapWindow(display *Display, window Window) int {
-    return int(C.XMapWindow((*C.Display)(display), C.Window(window)))
+	return int(C.XMapWindow((*C.Display)(display), C.Window(window)))
 }
 
 func XUnmapWindow(display *Display, window Window) int {
-    return int(C.XUnmapWindow((*C.Display)(display), C.Window(window)))
+	return int(C.XUnmapWindow((*C.Display)(display), C.Window(window)))
 }
 
 func XStoreName(display *Display, window Window, title string) int {
-    cstr := C.CString(title)
-    defer C.free(unsafe.Pointer(cstr))
-    return int(C.XStoreName((*C.Display)(display), C.Window(window), cstr))
+	cstr := C.CString(title)
+	defer C.free(unsafe.Pointer(cstr))
+	return int(C.XStoreName((*C.Display)(display), C.Window(window), cstr))
 }
 
 func XIconifyWindow(display *Display, window Window, screen_number int) int {
-    return int(C.XIconifyWindow((*C.Display)(display), C.Window(window), C.int(screen_number)))
+	return int(C.XIconifyWindow((*C.Display)(display), C.Window(window), C.int(screen_number)))
 }
 
 func XRaiseWindow(display *Display, window Window) int {
-    return int(C.XRaiseWindow((*C.Display)(display), C.Window(window)))
+	return int(C.XRaiseWindow((*C.Display)(display), C.Window(window)))
 }
 
 func XWithdrawWindow(display *Display, window Window, screen_number int) int {
-    return int(C.XWithdrawWindow((*C.Display)(display), C.Window(window), C.int(screen_number)))
+	return int(C.XWithdrawWindow((*C.Display)(display), C.Window(window), C.int(screen_number)))
 }
 
 func XFreeColormap(display *Display, cmap Colormap) {
-    C.XFreeColormap((*C.Display)(display), C.Colormap(cmap))
+	C.XFreeColormap((*C.Display)(display), C.Colormap(cmap))
 }
 
 func XMoveWindow(display *Display, w Window, x, y int) int {
-    return int(C.XMoveWindow((*C.Display)(display), C.Window(w), C.int(x), C.int(y)))
+	return int(C.XMoveWindow((*C.Display)(display), C.Window(w), C.int(x), C.int(y)))
 }
 
 func XResizeWindow(display *Display, w Window, x, y uint) int {
-    return int(C.XResizeWindow((*C.Display)(display), C.Window(w), C.uint(x), C.uint(y)))
+	return int(C.XResizeWindow((*C.Display)(display), C.Window(w), C.uint(x), C.uint(y)))
 }
 
 func XInternAtom(display *Display, atom string, only_if_exists bool) Atom {
-    cstr := C.CString(atom)
-    defer C.free(unsafe.Pointer(cstr))
-    return Atom(C.XInternAtom((*C.Display)(display), cstr, cBool(only_if_exists)))
+	cstr := C.CString(atom)
+	defer C.free(unsafe.Pointer(cstr))
+	return Atom(C.XInternAtom((*C.Display)(display), cstr, cBool(only_if_exists)))
 }
 
 func XChangeProperty(display *Display, window Window, property, _type Atom, format, mode int, data unsafe.Pointer, nelements int) int {
-    return int(C.XChangeProperty((*C.Display)(display), C.Window(window), C.Atom(property), C.Atom(_type), C.int(format), C.int(mode), (*C.uchar)(data), C.int(nelements)))
+	return int(C.XChangeProperty((*C.Display)(display), C.Window(window), C.Atom(property), C.Atom(_type), C.int(format), C.int(mode), (*C.uchar)(data), C.int(nelements)))
 }
 
 func XWarpPointer(display *Display, src_w, dest_w Window, src_x, src_y int, src_width, src_height uint, dest_x, dest_y int) int {
-    return int(C.XWarpPointer((*C.Display)(display), C.Window(src_w), C.Window(dest_w), C.int(src_x), C.int(src_y), C.uint(src_width), C.uint(src_height), C.int(dest_x), C.int(dest_y)))
+	return int(C.XWarpPointer((*C.Display)(display), C.Window(src_w), C.Window(dest_w), C.int(src_x), C.int(src_y), C.uint(src_width), C.uint(src_height), C.int(dest_x), C.int(dest_y)))
 }
 
 func XReconfigureWMWindow(display *Display, w Window, screen_number int, value_mask uint, values *XWindowChanges) int {
-    return int(C.XReconfigureWMWindow((*C.Display)(display), C.Window(w), C.int(screen_number), C.uint(value_mask), (*C.XWindowChanges)(values)))
+	return int(C.XReconfigureWMWindow((*C.Display)(display), C.Window(w), C.int(screen_number), C.uint(value_mask), (*C.XWindowChanges)(values)))
 }
 
 func XSendEvent(display *Display, w Window, propagate bool, event_mask int64, event_send *XEvent) int {
-    return int(C.XSendEvent((*C.Display)(display), C.Window(w), cBool(propagate), C.long(event_mask), (*C.XEvent)(unsafe.Pointer(event_send))))
+	return int(C.XSendEvent((*C.Display)(display), C.Window(w), cBool(propagate), C.long(event_mask), (*C.XEvent)(unsafe.Pointer(event_send))))
 }
 
 func XConnectionNumber(display *Display) int {
-    return int(C.XConnectionNumber((*C.Display)(display)))
+	return int(C.XConnectionNumber((*C.Display)(display)))
 }
 
 func XSelectInput(display *Display, w Window, mask int64) int {
-    return int(C.XSelectInput((*C.Display)(display), C.Window(w), C.long(mask)))
+	return int(C.XSelectInput((*C.Display)(display), C.Window(w), C.long(mask)))
 }
 
 func XDestroyWindow(display *Display, w Window) int {
-    return int(C.XDestroyWindow((*C.Display)(display), C.Window(w)))
+	return int(C.XDestroyWindow((*C.Display)(display), C.Window(w)))
 }
 
 func XNextEvent(display *Display) (int, *XEvent) {
-    var ev *C.XEvent
-    ret := C.XNextEvent((*C.Display)(display), ev)
-    return int(ret), (*XEvent)(unsafe.Pointer(ev))
+	var ev *C.XEvent
+	ret := C.XNextEvent((*C.Display)(display), ev)
+	return int(ret), (*XEvent)(unsafe.Pointer(ev))
 }
 
 func XPending(display *Display) int {
-    return int(C.XPending((*C.Display)(display)))
+	return int(C.XPending((*C.Display)(display)))
 }
 
 func XGetWindowAttributes(display *Display, window Window) (int, *XWindowAttributes) {
-    var att *C.XWindowAttributes
-    ret := C.XGetWindowAttributes((*C.Display)(display), C.Window(window), att)
-    return int(ret), (*XWindowAttributes)(att)
+	var att *C.XWindowAttributes
+	ret := C.XGetWindowAttributes((*C.Display)(display), C.Window(window), att)
+	return int(ret), (*XWindowAttributes)(att)
 }
 
 func XSetWMProtocols(display *Display, window Window, protocols *Atom, count int) int {
-    return int(C.XSetWMProtocols((*C.Display)(display), C.Window(window), (*C.Atom)(protocols), C.int(count)))
+	return int(C.XSetWMProtocols((*C.Display)(display), C.Window(window), (*C.Atom)(protocols), C.int(count)))
 }
 
 func XGetAtomName(display *Display, atom Atom) string {
-    return C.GoString(C.XGetAtomName((*C.Display)(display), C.Atom(atom)))
+	return C.GoString(C.XGetAtomName((*C.Display)(display), C.Atom(atom)))
 }
 
 // returns status, major_opcode_return, first_event_return, first_error_return
 func XQueryExtension(display *Display, name string) (int, int, int, int) {
-    cstr := C.CString(name)
-    defer C.free(unsafe.Pointer(cstr))
-    var major, event, error C.int
-    ret := C.XQueryExtension((*C.Display)(display), cstr, &major, &event, &error)
-    return int(ret), int(major), int(event), int(error)
+	cstr := C.CString(name)
+	defer C.free(unsafe.Pointer(cstr))
+	var major, event, error C.int
+	ret := C.XQueryExtension((*C.Display)(display), cstr, &major, &event, &error)
+	return int(ret), int(major), int(event), int(error)
 }
 
 func XGetEventData(display *Display, cookie *XGenericEventCookie) int {
-    return int(C.XGetEventData((*C.Display)(display), (*C.XGenericEventCookie)(cookie)))
+	return int(C.XGetEventData((*C.Display)(display), (*C.XGenericEventCookie)(cookie)))
 }
 
 func XFreeEventData(display *Display, cookie *XGenericEventCookie) {
-    C.XFreeEventData((*C.Display)(display), (*C.XGenericEventCookie)(cookie))
+	C.XFreeEventData((*C.Display)(display), (*C.XGenericEventCookie)(cookie))
 }
 
 func XDefineCursor(display *Display, window Window, cursor Cursor) int {
-    return int(C.XDefineCursor((*C.Display)(display), C.Window(window), C.Cursor(cursor)))
+	return int(C.XDefineCursor((*C.Display)(display), C.Window(window), C.Cursor(cursor)))
 }
 
 func XFreePixmap(display *Display, pixmap Pixmap) {
-    C.XFreePixmap((*C.Display)(display), C.Pixmap(pixmap))
+	C.XFreePixmap((*C.Display)(display), C.Pixmap(pixmap))
 }
 
 func XFreeGC(display *Display, gc GC) {
-    C.XFreeGC((*C.Display)(display), C.GC(gc))
+	C.XFreeGC((*C.Display)(display), C.GC(gc))
 }
 
 func XGrabPointer(display *Display, grab_window Window, owner_events bool, event_mask uint, pointer_mode, keyboard_mode int, confine_to Window, cursor Cursor, time Time) int {
-    return int(C.XGrabPointer((*C.Display)(display), C.Window(grab_window), cBool(owner_events), C.uint(event_mask), C.int(pointer_mode), C.int(keyboard_mode), C.Window(confine_to), C.Cursor(cursor), C.Time(time)))
+	return int(C.XGrabPointer((*C.Display)(display), C.Window(grab_window), cBool(owner_events), C.uint(event_mask), C.int(pointer_mode), C.int(keyboard_mode), C.Window(confine_to), C.Cursor(cursor), C.Time(time)))
 }
 
 func XUngrabPointer(display *Display, time Time) int {
-    return int(C.XUngrabPointer((*C.Display)(display), C.Time(time)))
+	return int(C.XUngrabPointer((*C.Display)(display), C.Time(time)))
 }
 
 func XGetKeyboardMapping(display *Display, first_keycode KeyCode, keycode_count int) (int, []KeySym) {
-    var keysyms_per_keycode C.int
-    var sym *C.KeySym = C.XGetKeyboardMapping((*C.Display)(display), C.KeyCode(first_keycode), C.int(keycode_count), &keysyms_per_keycode)
-    defer C.XFree(unsafe.Pointer(sym))
+	var keysyms_per_keycode C.int
+	var sym *C.KeySym = C.XGetKeyboardMapping((*C.Display)(display), C.KeyCode(first_keycode), C.int(keycode_count), &keysyms_per_keycode)
+	defer C.XFree(unsafe.Pointer(sym))
 
-    slice := make([]KeySym, keycode_count-1)
-    for i := 0; i < keycode_count; i++ {
-        element := elementAtIndex(unsafe.Pointer(sym), uintptr(i), unsafe.Sizeof(C.KeySym(0)))
-        slice = append(slice, *(*KeySym)(element))
-    }
-    return int(keysyms_per_keycode), slice
+	slice := make([]KeySym, keycode_count-1)
+	for i := 0; i < keycode_count; i++ {
+		element := elementAtIndex(unsafe.Pointer(sym), uintptr(i), unsafe.Sizeof(C.KeySym(0)))
+		slice = append(slice, *(*KeySym)(element))
+	}
+	return int(keysyms_per_keycode), slice
 }
 
 func XAutoRepeatOn(display *Display) {
-    C.XAutoRepeatOn((*C.Display)(display))
+	C.XAutoRepeatOn((*C.Display)(display))
 }
 
 func XAutoRepeatOff(display *Display) {
-    C.XAutoRepeatOff((*C.Display)(display))
+	C.XAutoRepeatOff((*C.Display)(display))
 }
 
 /*
@@ -985,14 +980,14 @@ func c_getGLXConfigurations(display *c_Display, screen int) ([]*Configuration, e
 
 		fbconfig := Configuration{}
         fbconfig.Renderer = OpenGL
-        fbconfig.ColorDepth = uint8(glXGetFBConfigAttrib(display, config, C.GLX_RED_SIZE) + 
-            glXGetFBConfigAttrib(display, config, C.GLX_GREEN_SIZE) + 
-            glXGetFBConfigAttrib(display, config, C.GLX_BLUE_SIZE) + 
+        fbconfig.ColorDepth = uint8(glXGetFBConfigAttrib(display, config, C.GLX_RED_SIZE) +
+            glXGetFBConfigAttrib(display, config, C.GLX_GREEN_SIZE) +
+            glXGetFBConfigAttrib(display, config, C.GLX_BLUE_SIZE) +
             glXGetFBConfigAttrib(display, config, C.GLX_ALPHA_SIZE))
 
-        fbconfig.AccumDepth = uint8(glXGetFBConfigAttrib(display, config, C.GLX_ACCUM_RED_SIZE) + 
-            glXGetFBConfigAttrib(display, config, C.GLX_ACCUM_GREEN_SIZE) + 
-            glXGetFBConfigAttrib(display, config, C.GLX_ACCUM_BLUE_SIZE) + 
+        fbconfig.AccumDepth = uint8(glXGetFBConfigAttrib(display, config, C.GLX_ACCUM_RED_SIZE) +
+            glXGetFBConfigAttrib(display, config, C.GLX_ACCUM_GREEN_SIZE) +
+            glXGetFBConfigAttrib(display, config, C.GLX_ACCUM_BLUE_SIZE) +
             glXGetFBConfigAttrib(display, config, C.GLX_ACCUM_ALPHA_SIZE))
 
 		fbconfig.DepthBits = uint8(glXGetFBConfigAttrib(display, config, C.GLX_DEPTH_SIZE))

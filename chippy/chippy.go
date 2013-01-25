@@ -3,6 +3,14 @@
 // license found in the License.txt file
 
 // Package chippy implements cross platform window managing.
+// Windows Implementation Notes
+// 1. Windows 2000 Professional/Server or higher is required.
+//    Roughly ever windows API we use requires Windows 2000 Professional/Server or higher.
+//
+//    I imagine that most people will be at least at this version, and Microsoft probably no longer
+//    even supports versions older than that, so I imagine we will not any time in the future
+//    either unless someone would like to add and maintain such support as an intirely different
+//    backend.
 //
 // Linux Implementation Notes
 //
@@ -36,11 +44,11 @@
 //  Disable at build time with the build tag: 'no_xinput2'
 package chippy
 
-import(
-    "io/ioutil"
-    "io"
-    "sync"
-    "log"
+import (
+	"io"
+	"io/ioutil"
+	"log"
+	"sync"
 )
 
 // Destroy callbacks here, these callbacks are called when the user calls chippy.Destroy()
@@ -51,6 +59,7 @@ type callback struct {
 var destroyCallbacks []*callback
 
 func addDestroyCallback(c *callback) {
+	removeDestroyCallback(c) // In case it's already in
 	destroyCallbacks = append(destroyCallbacks, c)
 }
 
@@ -89,22 +98,21 @@ func IsInit() bool {
 
 // Helper to panic unless previously initialized, use globalLock.Rlock with this!
 func panicUnlessInit() {
-    if !IsInit(){
-        panic("Chippy must be initialized before calling this; Use Init() properly!")
-    }
+	if !IsInit() {
+		panic("Chippy must be initialized before calling this; Use Init() properly!")
+	}
 }
-
 
 var logger *log.Logger
 
 // SetDebugOutput specifies the io.Writer that debug output will be written to (ioutil.Discard by
 // default).
 func SetDebugOutput(w io.Writer) {
-    logger = log.New(w, "chippy: ", log.Ltime | log.Lshortfile)
+	logger = log.New(w, "chippy: ", log.Ltime|log.Lshortfile)
 }
 
 func init() {
-    SetDebugOutput(ioutil.Discard)
+	SetDebugOutput(ioutil.Discard)
 }
 
 // Init initializes Chippy, returning an error if there is a problem initializing some
@@ -152,15 +160,14 @@ func Destroy() {
 
 	if isInit == true {
 		// Firstly, we call each destroy callback, chippyAccess is explicitly unlocked here
-        globalLock.Unlock()
+		globalLock.Unlock()
 		for i := 0; i < len(destroyCallbacks); i++ {
 			destroyCallbacks[i].callback()
 		}
-        globalLock.Lock()
+		globalLock.Lock()
 		backend_Destroy()
 		isInit = false
 		initError = nil
 		destroyCallbacks = []*callback{}
 	}
 }
-

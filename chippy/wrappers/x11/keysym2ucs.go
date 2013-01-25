@@ -10,7 +10,5 @@ package x11
 import "C"
 
 func Keysym2ucs(keysym KeySym) int {
-    return int(C.keysym2ucs(C.KeySym(keysym)))
+	return int(C.keysym2ucs(C.KeySym(keysym)))
 }
-
-
