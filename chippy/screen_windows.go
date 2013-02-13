@@ -2,7 +2,6 @@ package chippy
 
 import(
     "code.google.com/p/azul3d/chippy/wrappers/win32"
-	"errors"
 	"sort"
 	"math"
 	"sync"
@@ -14,13 +13,15 @@ type w32ScreenMode struct {
 	isCurrentMode bool
 	width, height uint
 	refreshRate float32
+	screen Screen
 
 	w32Bpp        win32.DWORD
 	w32Mode       *win32.DEVMODE
 }
 
-func newScreenMode() *w32ScreenMode {
+func newScreenMode(screen Screen) *w32ScreenMode {
 	m := &w32ScreenMode{}
+	m.screen = screen
 	m.valid = true
 	return m
 }
@@ -58,6 +59,10 @@ func (m *w32ScreenMode) RefreshRate() float32 {
 func (m *w32ScreenMode) BytesPerPixel() uint {
 	m.panicUnlessValid()
     return uint(m.w32Bpp)
+}
+
+func (m *w32ScreenMode) Screen() Screen {
+	return m.screen
 }
 
 
@@ -153,6 +158,10 @@ func (s *w32Screen) ScreenModes() []ScreenMode {
 }
 
 func (s *w32Screen) SetScreenMode(newMode ScreenMode) (err error) {
+	if newMode.Screen() != s {
+		panic("newMode parameter is an invalid screen mode! It did not originate from this screen!")
+	}
+
 	s.access.Lock()
 	defer s.access.Unlock()
 
@@ -170,38 +179,44 @@ func (s *w32Screen) SetScreenMode(newMode ScreenMode) (err error) {
 
 	    ret := win32.ChangeDisplaySettingsEx(s.w32GraphicsDeviceName, mode, win32.CDS_TEST, nil)
 	    if ret != 0 {
-		    err = errors.New("Unable to set screen mode; ChangeDisplaySettingsEx(,,CDS_TEST,) reports bad mode.")
+		    logger.Println("Unable to set screen mode; ChangeDisplaySettingsEx(,,CDS_TEST,) reports bad mode.")
+			err = ErrBadScreenMode
 		    return
 	    }
 
 	    ret = win32.ChangeDisplaySettingsEx(s.w32GraphicsDeviceName, mode, 0, nil)
 
 	    if ret == win32.DISP_CHANGE_BADDUALVIEW {
-            err = errors.New("Unable to set screen mode; Because the system is DualView capable.")
-            return
-	    }
-	    if ret == win32.DISP_CHANGE_BADFLAGS {
-            err = errors.New("Unable to set screen mode; An invalid set of flags was passed in.")
+            logger.Println("Unable to set screen mode; Because the system is DualView capable.")
+			err = ErrDualViewCapable
             return
 	    }
 	    if ret == win32.DISP_CHANGE_BADMODE {
-            err = errors.New("Unable to set screen mode; The graphics mode is not supported.")
+            logger.Println("Unable to set screen mode; The graphics mode is not supported.")
+			err = ErrBadScreenMode
+            return
+	    }
+
+		// highly unlikely errors:
+
+	    if ret == win32.DISP_CHANGE_BADFLAGS {
+            logger.Println("Unable to set screen mode; An invalid set of flags was passed in.")
+			err = ErrBadScreenMode
             return
 	    }
 	    if ret == win32.DISP_CHANGE_BADPARAM {
-            err = errors.New("Unable to set screen mode; Invalid parameter or invalid flag (or combination of)")
-            return
-	    }
-	    if ret == win32.DISP_CHANGE_FAILED {
-            err = errors.New("Unable to set screen mode; Display driver failed the specified graphics mode.")
+            logger.Println("Unable to set screen mode; Invalid parameter or invalid flag (or combination of)")
+			err = ErrBadScreenMode
             return
 	    }
 	    if ret == win32.DISP_CHANGE_NOTUPDATED {
-            err = errors.New("Unable to set screen mode; Unable to write settings to the registry.")
+            logger.Println("Unable to set screen mode; Unable to write settings to the registry.")
+			err = ErrBadScreenMode
             return
 	    }
 	    if ret == win32.DISP_CHANGE_RESTART {
-            err = errors.New("Unable to set screen mode; Windows requires restart to achieve specific mode.")
+            logger.Println("Unable to set screen mode; Windows requires restart to achieve specific mode.")
+			err = ErrBadScreenMode
             return
 	    }
     })
@@ -223,11 +238,11 @@ func (s *w32Screen) OriginalGammaRamp() (*GammaRamp, error) {
 func (s *w32Screen) SetGammaRamp(gammaRamp *GammaRamp) (err error) {
 	gammaRampSize := int(s.GammaRampSize())
 	if gammaRampSize == 0 {
-		return errors.New("Unable to set gamma ramp; GetDeviceCaps(CM_GAMMA_RAMP) reports no support for gamma ramps on this device.")
+		return ErrGammaRampsNotSupported
 	}
 
 	if len(gammaRamp.Red) != gammaRampSize || len(gammaRamp.Green) != gammaRampSize || len(gammaRamp.Blue) != gammaRampSize {
-		return errors.New("Bad gamma ramp; gamma ramp length must be the size returned by Screen.GammaRampSize()!")
+		panic("Incorrect gamma ramp size; gamma ramp size must be of the size returned by GammaRampSize()")
 	}
 
 	s.access.Lock()
@@ -254,11 +269,10 @@ func (s *w32Screen) SetGammaRamp(gammaRamp *GammaRamp) (err error) {
 	    var ramp [3][256]win32.WORD
 	    for i := 0; i < 256; i++ {
 
+			// Convert from float32 to 16 bit unsigned int (WORD)
 			fromFloat := func(v float32) win32.WORD {
 				v = float32(math.Min(math.Max(float64(v), 0.0), 1.0))
 
-				//maxValue := float32(i+1) * 256.0
-				//minValue := float32(i+1) * 128.0
 				maxValue := float32(i+1) * 256.0
 				minValue := float32(i+1) * 128.0
 				rangeValue := maxValue - minValue
@@ -279,7 +293,8 @@ func (s *w32Screen) SetGammaRamp(gammaRamp *GammaRamp) (err error) {
 
 		// On windows 2000, sometimes SetDeviceGammaRamp will return false, even though it worked.
 		if (win2kOrBelow && win32.GetLastError() != 0) || (!win2kOrBelow && !worked) {
-		    err = errors.New(fmt.Sprintf("Unable to set gamma ramp; SetDeviceGammaRamp(): %s", win32.GetLastErrorString()))
+			logger.Println(fmt.Sprintf("Unable to set gamma ramp on %s; SetDeviceGammaRamp(): %s", s.name, win32.GetLastErrorString()))
+		    err = ErrGammaRampsNotSupported
 		}
         return
     })
@@ -307,18 +322,20 @@ func (s *w32Screen) setGammaRampSize() {
 		s.gammaRampSize = 256
 	    return
 	}
-	logger.Println("Unable to get gamma ramp size; GetDeviceCaps(CM_GAMMA_RAMP) reports no support for gamma ramps on this device.")
+	logger.Println("GetDeviceCaps(CM_GAMMA_RAMP) reports no support for gamma ramps on device:", s.name)
 }
 
 func (s *w32Screen) setCurrentGammaRamp() {
 	if s.GammaRampSize() == 0 {
-		s.gammaRampError = errors.New("Unable to get current gamma ramp; GetDeviceCaps(CM_GAMMA_RAMP) reports no support for gamma ramps on this device.")
+		logger.Println("GetDeviceCaps(CM_GAMMA_RAMP) reports no support for gamma ramps on device:", s.name)
+		s.gammaRampError = ErrGammaRampsNotSupported
 		return
 	}
 
 	ret, deviceRamp := win32.GetDeviceGammaRamp(s.dc)
 	if ret == false {
-		s.gammaRampError = errors.New(fmt.Sprintf("Unable to get current gamma ramp; GetDeviceGammaRamp(): %s", win32.GetLastErrorString()))
+		s.gammaRampError = ErrGammaRampsNotSupported
+		logger.Println(fmt.Sprintf("Unable to get current gamma ramp on %s; GetDeviceGammaRamp(): %s", s.name, win32.GetLastErrorString()))
 		return
 	}
 
@@ -330,17 +347,15 @@ func (s *w32Screen) setCurrentGammaRamp() {
 	ramp.Blue = make([]float32, 256)
     for i := 0; i < 256; i++ {
 
+		// Convert from 16 bit unsigned int (WORD) to float32
 		fromWORD := func(v win32.WORD) float32 {
-
 			maxValue := float32(i+1) * 256.0
-			minValue := float32(i+1) * 127.0
+			minValue := float32(i+1) * 128.0
 			rangeValue := maxValue - minValue
-
-			//fmt.Println(v, maxValue)
 
 			// Get our float value back
 			x := (float32(v) - minValue) / rangeValue
-			//fmt.Printf("%.3f, ", x)
+			//logger.Printf("%.3f, ", x)
 			return x
 		}
 
@@ -349,18 +364,16 @@ func (s *w32Screen) setCurrentGammaRamp() {
 		ramp.Blue[i] = fromWORD(deviceRamp[2][i])
     }
 
-	// Make sure this is an copy otherwise they might change it on accident
+	// Make sure this is an copy otherwise they might change it by accident
 	s.originalGammaRamp = s.gammaRamp.Copy()
 }
 
 func (s *w32Screen) setScreenModes() {
-	logger.Println("SetScreenModes()")
-
     hasCurrentMode, mode := win32.EnumDisplaySettings(s.w32GraphicsDeviceName, win32.ENUM_CURRENT_SETTINGS)
 
 	var currentScreenMode *w32ScreenMode
 	if hasCurrentMode {
-	    currentScreenMode = newScreenMode()
+	    currentScreenMode = newScreenMode(s)
 		currentScreenMode.width = uint(mode.DmPelsWidth())
 		currentScreenMode.height = uint(mode.DmPelsHeight())
 		currentScreenMode.refreshRate = float32(mode.DmDisplayFrequency())
@@ -385,7 +398,7 @@ func (s *w32Screen) setScreenModes() {
 				continue
 			}
 
-		    screenMode := newScreenMode()
+		    screenMode := newScreenMode(s)
 		    screenMode.width = uint(mode.DmPelsWidth())
 		    screenMode.height = uint(mode.DmPelsHeight())
 		    screenMode.refreshRate = float32(mode.DmDisplayFrequency())

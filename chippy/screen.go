@@ -35,6 +35,11 @@ type Screen interface {
 
     // SetScreenMode switches this screen to the specified screen mode, or returns an error in the
     // event that we where unable to switch the screen to the specified screen mode.
+	//
+	// The newMode parameter must be an screen mode that originally came from one of the functions
+	// ScreenModes, ScreenMode, or OriginalScreenModeone or else this function will panic.
+	//
+	// If an error is returned, it will be either ErrBadScreenMode, or ErrDualViewCapable.
     SetScreenMode(newMode ScreenMode) error
 
     // ScreenMode returns the current screen mode in use by this screen, this will be either the
@@ -43,28 +48,32 @@ type Screen interface {
     ScreenMode() ScreenMode
 
     // OriginalGammaRamp returns the original gamma ramp of this screen, as it was when this screen
-    // was created, or an error in the event we where unable to get the original gamma ramp for
-    // some reason such as lack of hardware or software support.
+    // was created, or ErrNoGammaRampSupport in the event that there is no support (due to hardware
+	// or software) for gamma ramps on this screen.
     OriginalGammaRamp() (*GammaRamp, error)
 
     // SetGammaRamp sets the screen's gamma ramp (color correction lookup table / LUT) to the
-    // specified gamma ramp, or returns an error if we are unable to set the gamma ramp for some
-    // reason (which may be lack of support by hardware).
+    // specified gamma ramp, or returns ErrNoGammaRampSupport in the event that there is no support
+	// (due to hardware or software) for gamma ramps on this screen.
+	//
+	// The ramp argument must be an gamma ramp where each slice inside the GammaRamp struct is of
+	// the exact length of whatever is returned by GammaRampSize() or else an panic will occur.
     SetGammaRamp(ramp *GammaRamp) error
 
     // GammaRamp returns the screen's current gamma ramp (color correction lookup table / LUT) or
-    // an error should we be unable to retrieve the current GammaRamp for some reason (which may be
-    // lack of support by hardware).
+    // an ErrNoGammaRampSupport in the event that there is no support (due to hardware or software)
+	// for gamma ramps on this screen.
     GammaRamp() (*GammaRamp, error)
 
     // GammaRampSize returns the size of each per-color array that an GammaRamp must have in order
     // for it to be allowed for use on this screen.
     //
-    // This function may return 0, which means there is absolutely no support for setting gamma
-    // ramps at all for some reason -- either due to hardware or possibly software support.
+    // This function may return 0, which can be considered eqivilent of ErrNoGammaRampSupport,
+	// meaning that there is no support (due to hardware or software) for gamma ramps on this
+	// screen.
     //
-    // Even though GammaRamp has Red, Green, and Blue defined as []float32, in reality, each slice
-    // must contain an specific number of elements (that is, the number returned by this function).
+    // Even though GammaRamp has Red, Green, and Blue defined as slices, they actually must contain
+    // an exact number of elements (that is, the number returned by this function).
     GammaRampSize() uint
 }
 

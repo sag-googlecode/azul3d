@@ -58,6 +58,10 @@ type ScreenMode interface {
     // BytesPerPixel returns the number of bytes that represent an single pixel of this ScreenMode,
     // or 0 if the bytes per pixel is unable to be determined.
     BytesPerPixel() uint
+
+	// Screen returns the screen that this screen mode originally came from, via an call to the
+	// ScreenModes() function.
+	Screen() Screen
 }
 
 
