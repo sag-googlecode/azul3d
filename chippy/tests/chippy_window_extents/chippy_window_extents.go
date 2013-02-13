@@ -1,3 +1,7 @@
+// Copyright 2012 Lightpoke. All rights reserved.
+// This source code is subject to the terms and
+// conditions defined in the "License.txt" file.
+
 // Test application - Tells the extents of an window's region and client region
 package main
 

@@ -1,3 +1,7 @@
+// Copyright 2012 Lightpoke. All rights reserved.
+// This source code is subject to the terms and
+// conditions defined in the "License.txt" file.
+
 package chippy
 
 // We use this type for sorting the ScreenModes in backends

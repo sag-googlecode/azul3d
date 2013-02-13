@@ -1,3 +1,7 @@
+// Copyright 2012 Lightpoke. All rights reserved.
+// This source code is subject to the terms and
+// conditions defined in the "License.txt" file.
+
 package chippy
 
 // dispatch() and dispatchRequests() are used by certain backends to implement thread-safe calls,

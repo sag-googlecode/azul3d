@@ -1,6 +1,6 @@
 // Copyright 2012 Lightpoke. All rights reserved.
-// Use of this source code is governed by an BSD
-// license found in the License.txt file
+// This source code is subject to the terms and
+// conditions defined in the "License.txt" file.
 
 package chippy
 
