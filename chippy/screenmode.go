@@ -1,6 +1,7 @@
 package chippy
 
 // We use this type for sorting the ScreenModes in backends
+// ScreenModes are sorted in order by highest resolution, bytes per pixel, and refresh rate.
 type sortedScreenModes []ScreenMode
 
 func (s sortedScreenModes) Len() int {
@@ -26,21 +27,13 @@ func (s sortedScreenModes) Less(i, j int) bool {
 	if iResolution == jResolution && iBytesPerPixel == jBytesPerPixel {
 		return iRefreshRate > jRefreshRate
 
-	// Second case, if resolution is the same, sort by bpp
+	// if resolution is the same, sort by bpp
 	} else if iResolution == jResolution {
 		return iBytesPerPixel > jBytesPerPixel
 	}
 
-	// First case, sort by resolution
+	// otherwise just sort by resolution
 	return iResolution > jResolution
-
-	/*
-	// Multiply by 100.0 to get rid of smaller inconsitencies (where 1366+768+60+8 less than 1360+768+60+32)
-	e := 100.0
-    iWeight := (float32(iWidth) * e) + (float32(iHeight) * e) + (float32(iBytesPerPixel) * e) + (iRefreshRate * e)
-    jWeight := (float32(jWidth) * e) + (float32(jHeight) * e) + (float32(jBytesPerPixel) * e) + (jRefreshRate * e)
-	return iWeight > jWeight
-	*/
 }
 
 // ScreenMode represents an single, unique, screen mode, with an resolution, refresh rate, and bpp.
