@@ -96,29 +96,12 @@ type DISPLAY_DEVICE C.DISPLAY_DEVICE
   } DISPLAY_DEVICEW,*PDISPLAY_DEVICEW,*LPDISPLAY_DEVICEW;
 */
 
-// Wonder if there is an better string conversion for these?
-// FIXME
 func (c *DISPLAY_DEVICE) GetDeviceName() string {
-	slice := []rune{}
-	for i := 0; i < len(c.DeviceName); i++ {
-		c := c.DeviceName[i]
-		if c != 0 {
-			slice = append(slice, rune(c))
-		}
-	}
-	return string(slice)
+	return LPTSTRToString((C.LPTSTR)(unsafe.Pointer(&c.DeviceName)))
 }
 
-// FIXME
 func (c *DISPLAY_DEVICE) GetDeviceString() string {
-	slice := []rune{}
-	for i := 0; i < len(c.DeviceString); i++ {
-		c := c.DeviceString[i]
-		if c != 0 {
-			slice = append(slice, rune(c))
-		}
-	}
-	return string(slice)
+	return LPTSTRToString((C.LPTSTR)(unsafe.Pointer(&c.DeviceString)))
 }
 
 const (
@@ -164,14 +147,7 @@ func NewDEVMODE() *DEVMODE {
 }
 
 func (m *DEVMODE) DmDeviceName() string {
-    // FIXME
-	slice := []rune{}
-	for _, c := range m.dmDeviceName {
-		if c != 0 {
-			slice = append(slice, rune(c))
-		}
-	}
-	return string(slice)
+	return LPTSTRToString((C.LPTSTR)(unsafe.Pointer(&m.dmDeviceName)))
 }
 
 func (m *DEVMODE) DmBitsPerPel() DWORD {
