@@ -25,13 +25,36 @@ type GammaRamp struct {
 	Red, Green, Blue []float32
 }
 
+// Copy returns an 1:1 copy of this GammaRamp, as an pointer to an new gamma ramp.
+func (r *GammaRamp) Copy() *GammaRamp {
+	newRamp := &GammaRamp{}
+
+	newRamp.Red = make([]float32, len(r.Red))
+	newRamp.Green = make([]float32, len(r.Green))
+	newRamp.Blue = make([]float32, len(r.Blue))
+
+	copy(newRamp.Red, r.Red)
+	copy(newRamp.Green, r.Green)
+	copy(newRamp.Blue, r.Blue)
+
+	return newRamp
+}
+
 // SetAsGammaBrightnessContrast sets each respective color in the GammaRamp to one calculated from
 // respective gamma, brightness, and contrast values.
+//
+// If rampSize is zero, an error is returned.
 //
 // If contrast is an negative number, an error is returned.
 //
 // If brightness is outside the inclusive range of -1.0 to 1.0, an error is returned.
-func (r *GammaRamp) SetAsBrightnessContrastGamma(rampSize int, brightness, contrast, gamma float32) error {
+//
+// Since Microsoft Windows limits gamma ramps so much, this doesn't work too well on that operating system.
+func (r *GammaRamp) SetAsBrightnessContrastGamma(rampSize uint, brightness, contrast, gamma float32) error {
+    if rampSize == 0 {
+        return errors.New("Ramp size is zero, hardware has no support for gamma ramps!")
+    }
+
 	if contrast < 0.0 {
 		return errors.New("contrast must be an positive number!")
 	}
@@ -44,12 +67,12 @@ func (r *GammaRamp) SetAsBrightnessContrastGamma(rampSize int, brightness, contr
 	r.Green = make([]float32, rampSize)
 	r.Blue = make([]float32, rampSize)
 
-	for i := 0; i < rampSize; i++ {
+	for i := 0; i < int(rampSize); i++ {
 		intensity := float32(i) / (float32(rampSize) - 1.0)
 
 		value := float32(math.Pow(float64(intensity), float64(gamma))) // gamma
 		value += brightness                                            // brightness
-		value = (value-0.5)*contrast + 0.5                             // contrast
+		value = (value - 0.5) * contrast + 0.5                         // contrast
 
 		if value > 1.0 {
 			value = 1.0
@@ -63,3 +86,22 @@ func (r *GammaRamp) SetAsBrightnessContrastGamma(rampSize int, brightness, contr
 	}
 	return nil
 }
+
+// Sets the linear intensity (brightness) of each color, each color parameter must be in the range
+// of 0.0 (darkest) to 1.0 (lightest).
+func (r *GammaRamp) SetAsLinearIntensity(rampSize uint, red, green, blue float32) {
+	// Clip values at 0.0 to 1.0
+	red = float32(math.Min(math.Max(float64(red), 0), 1))
+	green = float32(math.Min(math.Max(float64(green), 0), 1))
+	blue = float32(math.Min(math.Max(float64(blue), 0), 1))
+
+	r.Red = make([]float32, rampSize)
+	r.Green = make([]float32, rampSize)
+	r.Blue = make([]float32, rampSize)
+	for i := 0; i < int(rampSize); i++ {
+		r.Red[i] = red
+		r.Green[i] = green
+		r.Blue[i] = blue
+	}
+}
+

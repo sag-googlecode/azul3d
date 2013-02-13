@@ -1,3 +1,4 @@
+// Test application - Queries for all available screens, lists and changes screen modes
 package main
 
 import (
@@ -42,6 +43,7 @@ func main() {
 	if screen < 0 || screen > len(screens)-1 {
 		log.Fatal("Incorrect screen number.")
 	}
+    chosenScreen := screens[screen]
 
 	fmt.Printf("Change Screen #%d to mode: #", screen)
 	var mode int
@@ -53,13 +55,14 @@ func main() {
 	if mode < 0 || mode > len(screens[screen].ScreenModes())-1 {
 		log.Fatal("Incorrect screen number.")
 	}
+    chosenMode := chosenScreen.ScreenModes()[mode]
 
 	// Change screen mode
-	screens[screen].ScreenModes()[mode].Use()
+    chosenScreen.SetScreenMode(chosenMode)
 
 	log.Println("Waiting 15 seconds...")
 	<-time.After(15 * time.Second)
 
-	// Disable this with screen.SetAutoRestoreOriginalScreenMode(false)
+	// Disable this with chippy.SetAutoRestoreOriginalScreenMode(false)
 	log.Println("Original resolution should restore now")
 }

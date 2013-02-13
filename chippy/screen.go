@@ -4,21 +4,123 @@
 
 package chippy
 
+import(
+	"sync"
+)
+
+// Screen represents an single physical screen device. It is only possible to get an screen from
+// either the Screens or DefaultScreen functions, creating an Screen struct yourself is strictly
+// forbidden due to the fact that it represents physically attatched and active screen devices.
+type Screen interface {
+    // String returns an nice string representation of this Screen
+    String() string
+
+    // Name returns an formatted string of the screens name, this is something that the user
+    // should be able to relate on their own to the actual physical screen device, this typically
+    // includes device brand name or model etc..
+    Name() string
+
+    // PhysicalSize returns the physical width and height of this screen, in millimeters, or 0 as
+    // both width and height in the event there is no way to determine the physical size of this
+    // screen.
+    PhysicalSize() (width float32, height float32)
+
+    // OriginalScreenMode returns the original screen mode of this screen, as it was when this
+    // screen was created.
+    OriginalScreenMode() ScreenMode
+
+    // ScreenModes returns all available screen modes on this screen, sorted by highest resolution,
+	// then highest bytes per pixel, then highest refresh rate.
+    ScreenModes() []ScreenMode
+
+    // SetScreenMode switches this screen to the specified screen mode, or returns an error in the
+    // event that we where unable to switch the screen to the specified screen mode.
+    SetScreenMode(newMode ScreenMode) error
+
+    // ScreenMode returns the current screen mode in use by this screen, this will be either the
+    // last screen mode set via SetScreenMode, or the original screen mode from OriginalScreenMode
+    // in the event that no screen mode was previously set on this screen.
+    ScreenMode() ScreenMode
+
+    // OriginalGammaRamp returns the original gamma ramp of this screen, as it was when this screen
+    // was created, or an error in the event we where unable to get the original gamma ramp for
+    // some reason such as lack of hardware or software support.
+    OriginalGammaRamp() (*GammaRamp, error)
+
+    // SetGammaRamp sets the screen's gamma ramp (color correction lookup table / LUT) to the
+    // specified gamma ramp, or returns an error if we are unable to set the gamma ramp for some
+    // reason (which may be lack of support by hardware).
+    SetGammaRamp(ramp *GammaRamp) error
+
+    // GammaRamp returns the screen's current gamma ramp (color correction lookup table / LUT) or
+    // an error should we be unable to retrieve the current GammaRamp for some reason (which may be
+    // lack of support by hardware).
+    GammaRamp() (*GammaRamp, error)
+
+    // GammaRampSize returns the size of each per-color array that an GammaRamp must have in order
+    // for it to be allowed for use on this screen.
+    //
+    // This function may return 0, which means there is absolutely no support for setting gamma
+    // ramps at all for some reason -- either due to hardware or possibly software support.
+    //
+    // Even though GammaRamp has Red, Green, and Blue defined as []float32, in reality, each slice
+    // must contain an specific number of elements (that is, the number returned by this function).
+    GammaRampSize() uint
+}
+
+var(
+	screenCacheLock sync.RWMutex
+	cachedScreens []Screen
+	queriedScreensAlready bool
+)
+
+// Screens returns all available, attatched, and activated screens possible. Once this function is
+// called, the result is cached such that future calls to this function are faster and return the
+// cached result.
+//
+// To update the internal screen cache, see the RefreshScreens function.
+func Screens() []Screen {
+	screenCacheLock.RLock()
+	screenCacheLock.RUnlock()
+
+	if !queriedScreensAlready {
+		RefreshScreens()
+	}
+	return cachedScreens
+}
+
+// RefreshScreens queries for all available screens, and updates the internal cache returned by the
+// Screens() function, such that the Screens() function returns newly attatched or detatched Screen
+// devices.
+func RefreshScreens() {
+	screenCacheLock.Lock()
+	defer screenCacheLock.Unlock()
+
+	queriedScreensAlready = true
+	cachedScreens = backend_Screens()
+}
+
+// DefaultScreen returns the 'default' screen, this is determined by either the window manager
+// itself (as per an user's person computer setup and configuration) or will be guessed by Chippy.
+//
+// It is possible for this function to return nil, in the unlikely event that Screens() returns no
+// screens at all, due to an user having none plugged in or activated.
+func DefaultScreen() Screen {
+    return backend_DefaultScreen()
+}
+
+
+
+
+
+
+
+/*
 import (
 	"fmt"
 	"sort"
 	"sync"
 )
-
-type sortedScreenModes []*ScreenMode
-
-func (s sortedScreenModes) Len() int      { return len(s) }
-func (s sortedScreenModes) Swap(i, j int) { s[i], s[j] = s[j], s[i] }
-func (s sortedScreenModes) Less(i, j int) bool {
-	iWeight := float32(s[i].height) + float32(s[i].width) + s[i].refreshRate
-	jWeight := float32(s[j].height) + float32(s[j].width) + s[j].refreshRate
-	return iWeight > jWeight
-}
 
 // Screen represents an physical screen device, such as an physical computer Monitor, or possibly
 // an screen on an mobile phone etc.
@@ -306,16 +408,4 @@ func (s *Screen) BrightnessContrastGamma() (brightness, contrast, gamma float32)
 	defer s.access.RUnlock()
 	return s.brightness, s.contrast, s.gamma
 }
-
-// Screens returns all possible Screen's
-func Screens() []*Screen {
-	return backend_Screens()
-}
-
-// DefaultScreen returns the default Screen, that is, the default Screen to create new Window's on,
-// according to what the window manager says.
-//
-// This will return nil in the event that there are no screens available at all.
-func DefaultScreen() *Screen {
-	return backend_DefaultScreen()
-}
+*/

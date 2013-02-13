@@ -1,34 +1,246 @@
 package chippy
 
-import (
-	"code.google.com/p/azul3d/chippy/wrappers/win32"
+import(
+    "code.google.com/p/azul3d/chippy/wrappers/win32"
 	"errors"
-	"fmt"
+	"sort"
 	"math"
+	"sync"
+    "fmt"
 )
 
-type backend_ScreenMode struct {
+type w32ScreenMode struct {
+	valid bool
 	isCurrentMode bool
-	w32Bpp        uint32
+	width, height uint
+	refreshRate float32
+
+	w32Bpp        win32.DWORD
 	w32Mode       *win32.DEVMODE
 }
 
-type backend_Screen struct {
-	isDefaultScreen                             bool
-	w32MonitorDeviceName, w32GraphicsDeviceName string
+func newScreenMode() *w32ScreenMode {
+	m := &w32ScreenMode{}
+	m.valid = true
+	return m
 }
 
-func (s *Screen) setGammaRamp(gammaRamp *GammaRamp) error {
-	_, err := s.gammaRampSize()
-	if err != nil {
-		return err
+func (m *w32ScreenMode) panicUnlessValid() {
+	if !m.valid {
+		panic("ScreenMode came from an incorrect source; you cannot create it yourself!")
 	}
+}
+
+func (m *w32ScreenMode) String() string {
+	m.panicUnlessValid()
+    w, h := m.Resolution()
+    return fmt.Sprintf("ScreenMode(%d by %dpx, %.1fhz, %dbpp)", w, h, m.RefreshRate(), m.BytesPerPixel())
+}
+
+func (m *w32ScreenMode) Equals(other ScreenMode) bool {
+	m.panicUnlessValid()
+    width, height := m.Resolution()
+    otherWidth, otherHeight := other.Resolution()
+
+    return (width == otherWidth) && (height == otherHeight) && (m.RefreshRate() == other.RefreshRate()) && (m.BytesPerPixel() == other.BytesPerPixel())
+}
+
+func (m *w32ScreenMode) Resolution() (width, height uint) {
+	m.panicUnlessValid()
+	return m.width, m.height
+}
+
+func (m *w32ScreenMode) RefreshRate() float32 {
+	m.panicUnlessValid()
+	return m.refreshRate
+}
+
+func (m *w32ScreenMode) BytesPerPixel() uint {
+	m.panicUnlessValid()
+    return uint(m.w32Bpp)
+}
+
+
+
+type w32Screen struct {
+	access sync.RWMutex
+	valid bool
+
+	name string
+	physicalWidth, physicalHeight float32
+	originalGammaRamp, gammaRamp *GammaRamp
+	originalScreenMode, screenMode ScreenMode
+	screenModes sortedScreenModes
+
+	gammaRampSize uint
+	gammaRampError error
+
+	screenModeChanged, gammaRampChanged bool
+	restoreScreenMode, restoreGammaRamp, cleanup *callback
+
+	isDefaultScreen                             bool
+	w32MonitorDeviceName, w32GraphicsDeviceName string
+	dc win32.HDC
+}
+
+func newScreen() *w32Screen {
+	s := &w32Screen{}
+	s.valid = true
+
+	s.restoreScreenMode = &callback{func() {
+		if AutoRestoreOriginalScreenMode() {
+			s.SetScreenMode(s.OriginalScreenMode())
+		}
+	}}
+	addDestroyCallback(s.restoreScreenMode)
+
+	s.restoreGammaRamp = &callback{func() {
+		if AutoRestoreOriginalGammaRamp() {
+			ramp, err := s.OriginalGammaRamp()
+			if err != nil {
+				logger.Println(err.Error())
+				return
+			}
+			err = s.SetGammaRamp(ramp)
+			if err != nil {
+				logger.Println(err.Error())
+				return
+			}
+		}
+	}}
+	addDestroyCallback(s.restoreGammaRamp)
+
+
+	s.cleanup = &callback{func() {
+		dispatch(func() {
+			// Do screen related cleanup here..
+
+			win32.DeleteDC(s.dc)
+		})
+	}}
+	addDestroyCallback(s.cleanup)
+
+	return s
+}
+
+func (s *w32Screen) String() string {
+	w, h := s.PhysicalSize()
+    return fmt.Sprintf("Screen(\"%s\", %.0f by %.0fmm)", s.Name(), w, h)
+}
+
+func (s *w32Screen) Name() string {
+	s.access.RLock()
+	defer s.access.RUnlock()
+    return s.name
+}
+
+func (s *w32Screen) PhysicalSize() (width float32, height float32) {
+	s.access.RLock()
+	defer s.access.RUnlock()
+    return s.physicalWidth, s.physicalHeight
+}
+
+func (s *w32Screen) OriginalScreenMode() ScreenMode {
+	s.access.RLock()
+	defer s.access.RUnlock()
+    return s.originalScreenMode
+}
+
+func (s *w32Screen) ScreenModes() []ScreenMode {
+	s.access.RLock()
+	defer s.access.RUnlock()
+    return s.screenModes
+}
+
+func (s *w32Screen) SetScreenMode(newMode ScreenMode) (err error) {
+	s.access.Lock()
+	defer s.access.Unlock()
+
+	if s.screenMode.Equals(newMode) {
+		// We're already using this mode -- avoid flicker.
+		return nil
+	}
+
+	s.screenMode = newMode
+
+    dispatch(func() {
+	    mode := s.screenMode.(*w32ScreenMode).w32Mode
+
+	    //mode.SetDmFields(win32.DM_PELSWIDTH & win32.DM_PELSHEIGHT & win32.DM_DISPLAYFREQUENCY)
+
+	    ret := win32.ChangeDisplaySettingsEx(s.w32GraphicsDeviceName, mode, win32.CDS_TEST, nil)
+	    if ret != 0 {
+		    err = errors.New("Unable to set screen mode; ChangeDisplaySettingsEx(,,CDS_TEST,) reports bad mode.")
+		    return
+	    }
+
+	    ret = win32.ChangeDisplaySettingsEx(s.w32GraphicsDeviceName, mode, 0, nil)
+
+	    if ret == win32.DISP_CHANGE_BADDUALVIEW {
+            err = errors.New("Unable to set screen mode; Because the system is DualView capable.")
+            return
+	    }
+	    if ret == win32.DISP_CHANGE_BADFLAGS {
+            err = errors.New("Unable to set screen mode; An invalid set of flags was passed in.")
+            return
+	    }
+	    if ret == win32.DISP_CHANGE_BADMODE {
+            err = errors.New("Unable to set screen mode; The graphics mode is not supported.")
+            return
+	    }
+	    if ret == win32.DISP_CHANGE_BADPARAM {
+            err = errors.New("Unable to set screen mode; Invalid parameter or invalid flag (or combination of)")
+            return
+	    }
+	    if ret == win32.DISP_CHANGE_FAILED {
+            err = errors.New("Unable to set screen mode; Display driver failed the specified graphics mode.")
+            return
+	    }
+	    if ret == win32.DISP_CHANGE_NOTUPDATED {
+            err = errors.New("Unable to set screen mode; Unable to write settings to the registry.")
+            return
+	    }
+	    if ret == win32.DISP_CHANGE_RESTART {
+            err = errors.New("Unable to set screen mode; Windows requires restart to achieve specific mode.")
+            return
+	    }
+    })
+    return
+}
+
+func (s *w32Screen) ScreenMode() ScreenMode {
+	s.access.RLock()
+	defer s.access.RUnlock()
+    return s.screenMode
+}
+
+func (s *w32Screen) OriginalGammaRamp() (*GammaRamp, error) {
+	s.access.RLock()
+	defer s.access.RUnlock()
+    return s.originalGammaRamp, s.gammaRampError
+}
+
+func (s *w32Screen) SetGammaRamp(gammaRamp *GammaRamp) (err error) {
+	gammaRampSize := int(s.GammaRampSize())
+	if gammaRampSize == 0 {
+		return errors.New("Unable to set gamma ramp; GetDeviceCaps(CM_GAMMA_RAMP) reports no support for gamma ramps on this device.")
+	}
+
+	if len(gammaRamp.Red) != gammaRampSize || len(gammaRamp.Green) != gammaRampSize || len(gammaRamp.Blue) != gammaRampSize {
+		return errors.New("Bad gamma ramp; gamma ramp length must be the size returned by Screen.GammaRampSize()!")
+	}
+
+	s.access.Lock()
+	defer s.access.Unlock()
+
+	s.gammaRamp = gammaRamp
+
 
 	// Yay WinDOS! So there are huge gamma ramp restrictions, which you can only get rid of if you
 	// are willing to add an registry key and run your process under an specific account, so I
 	// guess the lesson to be learned here is that your gamma ramps will look much worse on windows
-	// (tiny tiny range, basically only enough for controlling the screen brightness) than they
-	// will on any other modern operating system.. sorry folks!
+	// (tiny tiny range, basically only enough for controlling the screen brightness..) than they
+	// will on any other operating system.. sorry folks!
 	//
 	// Also, to top it off, if you do the above hacky fix, windows will always report that setting
 	// the gamma ramp failed (see: https://bugs.launchpad.net/redshift/+bug/850865)
@@ -37,280 +249,266 @@ func (s *Screen) setGammaRamp(gammaRamp *GammaRamp) error {
 	// See this blog: http://jonls.dk/2010/09/windows-gamma-adjustments/
 	//
 
-	dc := win32.CreateDC(s.w32GraphicsDeviceName, "", nil)
-	if dc != nil {
-		defer win32.DeleteDC(dc)
+    dispatch(func() {
+        // Note: WORD == uint16
+	    var ramp [3][256]win32.WORD
+	    for i := 0; i < 256; i++ {
 
-		var ramp [3][256]uint16
-		for i := 0; i < 256; i++ {
-			ramp[0][i] = uint16(float32(i) * (128.0 + (gammaRamp.Red[i] * 128.0)))
-			ramp[1][i] = uint16(float32(i) * (128.0 + (gammaRamp.Green[i] * 128.0)))
-			ramp[2][i] = uint16(float32(i) * (128.0 + (gammaRamp.Blue[i] * 128.0)))
+			fromFloat := func(v float32) win32.WORD {
+				v = float32(math.Min(math.Max(float64(v), 0.0), 1.0))
+
+				//maxValue := float32(i+1) * 256.0
+				//minValue := float32(i+1) * 128.0
+				maxValue := float32(i+1) * 256.0
+				minValue := float32(i+1) * 128.0
+				rangeValue := maxValue - minValue
+				v = minValue + (rangeValue * v)
+
+				v = float32(math.Min(math.Max(float64(v), float64(minValue)), float64(maxValue-1)))
+				return win32.WORD(v)
+			}
+
+		    ramp[0][i] = fromFloat(gammaRamp.Red[i])
+		    ramp[1][i] = fromFloat(gammaRamp.Green[i])
+		    ramp[2][i] = fromFloat(gammaRamp.Blue[i])
+	    }
+
+		win2kOrBelow := (w32VersionMajor <= 5) || (w32VersionMinor <= 0)
+
+	    worked := win32.SetDeviceGammaRamp(s.dc, ramp)
+
+		// On windows 2000, sometimes SetDeviceGammaRamp will return false, even though it worked.
+		if (win2kOrBelow && win32.GetLastError() != 0) || (!win2kOrBelow && !worked) {
+		    err = errors.New(fmt.Sprintf("Unable to set gamma ramp; SetDeviceGammaRamp(): %s", win32.GetLastErrorString()))
 		}
+        return
+    })
+    return
 
-		worked := win32.SetDeviceGammaRamp(dc, ramp)
-		if !worked {
-			// Despite what it looks like, this error isin't helpful at all
-			// It's always just incorrect argument blah blah.
-			//logger.Println("error:", win32.GetLastErrorString())
 
-			return errors.New("SetDeviceGammaRamp() call failed! Unable to set gamma ramp!")
-		}
-		return nil
-	}
-	return errors.New("CreateDC() failed! Unable to set gamma ramp!")
 }
 
-func (s *Screen) gammaRamp() (*GammaRamp, error) {
-	_, err := s.gammaRampSize()
-	if err != nil {
-		return nil, err
-	}
-
-	dc := win32.CreateDC(s.w32GraphicsDeviceName, "", nil)
-	if dc != nil {
-		defer win32.DeleteDC(dc)
-
-		ret, deviceRamp := win32.GetDeviceGammaRamp(dc)
-		if ret == false {
-			return nil, errors.New("GetDeviceGammaRamp() call failed! Unable to get gamma ramp!")
-		}
-
-		ramp := &GammaRamp{}
-		ramp.Red = make([]float32, 256)
-		ramp.Green = make([]float32, 256)
-		ramp.Blue = make([]float32, 256)
-		for i := 0; i < 256; i++ {
-			ramp.Red[i] = float32(deviceRamp[0][i]) / float32(math.MaxUint16)
-			ramp.Green[i] = float32(deviceRamp[1][i]) / float32(math.MaxUint16)
-			ramp.Blue[i] = float32(deviceRamp[1][i]) / float32(math.MaxUint16)
-		}
-
-		return ramp, nil
-
-	}
-	return nil, errors.New("CreateDC() failed! Unable to get gamma ramp!")
+func (s *w32Screen) GammaRamp() (*GammaRamp, error) {
+	s.access.RLock()
+	defer s.access.RUnlock()
+	return s.gammaRamp, s.gammaRampError
 }
 
-func (s *Screen) gammaRampSize() (int, error) {
-	dc := win32.CreateDC(s.w32GraphicsDeviceName, "", nil)
-	if dc != nil {
-		defer win32.DeleteDC(dc)
-
-		if win32.GetDeviceCaps(dc, win32.CM_GAMMA_RAMP) != 0 {
-			return 256, nil
-		}
-		return 0, errors.New("GetDeviceCaps(CM_GAMMA_RAMP) reports no support for gamma ramps on this device.")
-	}
-	return 0, errors.New("CreateDC() failed! Unable to get gamma ramp size!")
+func (s *w32Screen) GammaRampSize() uint {
+	s.access.RLock()
+	defer s.access.RUnlock()
+    return s.gammaRampSize
 }
 
-func (s *Screen) setScreenMode() {
-	mode := s.screenMode.w32Mode
 
-	//mode.SetDmFields(win32.DM_PELSWIDTH & win32.DM_PELSHEIGHT & win32.DM_DISPLAYFREQUENCY)
 
-	ret := win32.ChangeDisplaySettingsEx(s.w32GraphicsDeviceName, mode, win32.CDS_TEST, nil)
-	if ret != 0 {
-		logger.Println("Unable to set screen mode; CDS_TEST reports bad mode.")
+func (s *w32Screen) setGammaRampSize() {
+	if win32.GetDeviceCaps(s.dc, win32.CM_GAMMA_RAMP) != 0 {
+		s.gammaRampSize = 256
+	    return
+	}
+	logger.Println("Unable to get gamma ramp size; GetDeviceCaps(CM_GAMMA_RAMP) reports no support for gamma ramps on this device.")
+}
+
+func (s *w32Screen) setCurrentGammaRamp() {
+	if s.GammaRampSize() == 0 {
+		s.gammaRampError = errors.New("Unable to get current gamma ramp; GetDeviceCaps(CM_GAMMA_RAMP) reports no support for gamma ramps on this device.")
 		return
 	}
 
-	ret = win32.ChangeDisplaySettingsEx(s.w32GraphicsDeviceName, mode, 0, nil)
+	ret, deviceRamp := win32.GetDeviceGammaRamp(s.dc)
+	if ret == false {
+		s.gammaRampError = errors.New(fmt.Sprintf("Unable to get current gamma ramp; GetDeviceGammaRamp(): %s", win32.GetLastErrorString()))
+		return
+	}
 
-	if ret == win32.DISP_CHANGE_BADDUALVIEW {
-		logger.Println("Unable to set screen mode; because the system is DualView capable.")
-	}
-	if ret == win32.DISP_CHANGE_BADFLAGS {
-		logger.Println("Unable to set screen mode; An invalid set of flags was passed in.")
-	}
-	if ret == win32.DISP_CHANGE_BADMODE {
-		logger.Println("Unable to set screen mode; The graphics mode is not supported.")
-	}
-	if ret == win32.DISP_CHANGE_BADPARAM {
-		logger.Println("Unable to set screen mode; Invalid parameter or invalid flag (or combination of)")
-	}
-	if ret == win32.DISP_CHANGE_FAILED {
-		logger.Println("Unable to set screen mode; Display driver failed the specified graphics mode.")
-	}
-	if ret == win32.DISP_CHANGE_NOTUPDATED {
-		logger.Println("Unable to set screen mode; Unable to write settings to the registry.")
-	}
-	if ret == win32.DISP_CHANGE_RESTART {
-		logger.Println("Unable to set screen mode; Windows requires restart to achieve specific mode.")
-	}
+	s.gammaRamp = new(GammaRamp)
+
+	ramp := s.gammaRamp
+	ramp.Red = make([]float32, 256)
+	ramp.Green = make([]float32, 256)
+	ramp.Blue = make([]float32, 256)
+    for i := 0; i < 256; i++ {
+
+		fromWORD := func(v win32.WORD) float32 {
+
+			maxValue := float32(i+1) * 256.0
+			minValue := float32(i+1) * 127.0
+			rangeValue := maxValue - minValue
+
+			//fmt.Println(v, maxValue)
+
+			// Get our float value back
+			x := (float32(v) - minValue) / rangeValue
+			//fmt.Printf("%.3f, ", x)
+			return x
+		}
+
+		ramp.Red[i] = fromWORD(deviceRamp[0][i])
+		ramp.Green[i] = fromWORD(deviceRamp[1][i])
+		ramp.Blue[i] = fromWORD(deviceRamp[2][i])
+    }
+
+	// Make sure this is an copy otherwise they might change it on accident
+	s.originalGammaRamp = s.gammaRamp.Copy()
 }
 
-func (s *Screen) screenModes() []*ScreenMode {
-	screenModes := []*ScreenMode{}
+func (s *w32Screen) setScreenModes() {
+	logger.Println("SetScreenModes()")
 
-	hasCurrentMode, mode := win32.EnumDisplaySettings(s.w32GraphicsDeviceName, win32.ENUM_CURRENT_SETTINGS)
+    hasCurrentMode, mode := win32.EnumDisplaySettings(s.w32GraphicsDeviceName, win32.ENUM_CURRENT_SETTINGS)
 
-	screenMode := newScreenMode(s)
-	screenMode.width = uint(mode.DmPelsWidth())
-	screenMode.height = uint(mode.DmPelsHeight())
-	screenMode.refreshRate = float32(mode.DmDisplayFrequency())
-	screenMode.w32Bpp = mode.DmBitsPerPel()
-	screenMode.w32Mode = mode
-	screenMode.isCurrentMode = true
-	screenModes = append(screenModes, screenMode)
+	var currentScreenMode *w32ScreenMode
+	if hasCurrentMode {
+	    currentScreenMode = newScreenMode()
+		currentScreenMode.width = uint(mode.DmPelsWidth())
+		currentScreenMode.height = uint(mode.DmPelsHeight())
+		currentScreenMode.refreshRate = float32(mode.DmDisplayFrequency())
+		currentScreenMode.w32Bpp = mode.DmBitsPerPel()
+		//currentScreenMode.w32Mode = mode // See: 'Assign it here' below
+		currentScreenMode.isCurrentMode = true
+		s.screenModes = append(s.screenModes, currentScreenMode)
+	}
 
-	hasNext := true
-	i := 0
-	for hasNext {
-		var mode *win32.DEVMODE
-		hasNext, mode = win32.EnumDisplaySettings(s.w32GraphicsDeviceName, uint32(i))
-		i++
-		if hasNext {
-			// This one is an good one
+    hasNext := true
+    i := 0
+    for hasNext {
+	    var mode *win32.DEVMODE
+	    hasNext, mode = win32.EnumDisplaySettings(s.w32GraphicsDeviceName, win32.DWORD(i))
+	    i++
+	    if hasNext {
+		    // This one is an good one
 
-			// So, windows gives us multiple choices for monitor bpp, we do some magic to choose
-			// only the highest bpp resolution, in the case of multiple duplicate resolutions.
-			screenMode := newScreenMode(s)
-			screenMode.width = uint(mode.DmPelsWidth())
-			screenMode.height = uint(mode.DmPelsHeight())
-			screenMode.refreshRate = float32(mode.DmDisplayFrequency())
-			screenMode.w32Bpp = mode.DmBitsPerPel()
-			screenMode.w32Mode = mode
+			if mode.DmDisplayFixedOutput() != win32.DMDFO_STRETCH {
+				// Skip all modes that are not specified to stretch across the screen (there is
+				// always at least one for each resolution specified as stretching, so no worries)
+				continue
+			}
 
-			doAppend := true
+		    screenMode := newScreenMode()
+		    screenMode.width = uint(mode.DmPelsWidth())
+		    screenMode.height = uint(mode.DmPelsHeight())
+		    screenMode.refreshRate = float32(mode.DmDisplayFrequency())
+		    screenMode.w32Bpp = mode.DmBitsPerPel()
+		    screenMode.w32Mode = mode
 
-			for i, other := range screenModes {
-				if other.width == screenMode.width && other.height == screenMode.height && other.refreshRate == screenMode.refreshRate {
+			if hasCurrentMode {
+				if screenMode.width == currentScreenMode.width && screenMode.height == currentScreenMode.height && screenMode.refreshRate == currentScreenMode.refreshRate && screenMode.w32Bpp == currentScreenMode.w32Bpp {
 
-					// if other is current, we will have two as long as bpp is higher than current
-					// If we're running 1680x1050/16bpp then we should give both 16bpp and 32bpp
-					// options, because we strictly want to avoid forcing them to choose higher bpp
-					if other.isCurrentMode && screenMode.w32Bpp > other.w32Bpp {
-						break
-					}
-
-					doAppend = false
-
-					// Determine which one has an higher bpp and decide to use that one only
-					if screenMode.w32Bpp > other.w32Bpp {
-						screenModes[i] = screenMode
-						break
-					}
+					// Assign it here, avoid issues later on with comparison just in case we ever use it.
+					currentScreenMode.w32Mode = mode
+					continue // We already appended this before
 				}
 			}
+		    s.screenModes = append(s.screenModes, screenMode)
+	    }
+    }
 
-			if doAppend {
-				// It's an new one!
-				screenModes = append(screenModes, screenMode)
-			}
-
-			/*
-			   logger.Println(mode.DmDeviceName())
-			   logger.Println(mode.DmBitsPerPel())
-			   logger.Println(mode.DmPelsWidth())
-			   logger.Println(mode.DmPelsHeight())
-			   logger.Println(mode.DmDisplayFrequency())
-			*/
-		}
-	}
+	sort.Sort(s.screenModes)
 
 	if !hasCurrentMode {
-		// Hopefully this never happens, it really should never though, seriously
-		//
-		// Go out with an bang !
-		screenModes[0].isCurrentMode = true
+		currentScreenMode = s.screenModes[0].(*w32ScreenMode)
+		currentScreenMode.isCurrentMode = true
 	}
 
-	return screenModes
+	s.screenMode = currentScreenMode
+	s.originalScreenMode = currentScreenMode
 }
 
-func backend_Screens() []*Screen {
-	screens := []*Screen{}
 
-	monitorNum := 0
 
-	hasNext := true
-	i := 0
-	for hasNext {
-		var dd *win32.DISPLAY_DEVICE
-		hasNext, dd = win32.EnumDisplayDevices("", uint32(i), 0)
-		i++
-		if hasNext {
-			// We're only interested in active devices (graphics cards)
-			graphicsCardName := dd.GetDeviceName()
-			graphicsCardString := dd.GetDeviceString()
 
-			flags := dd.GetStateFlags()
-			if (flags & win32.DISPLAY_DEVICE_ACTIVE) > 0 {
-				hasMoreMonitors := true
-				j := 0
-				for hasMoreMonitors {
-					hasMoreMonitors, dd = win32.EnumDisplayDevices(dd.GetDeviceName(), 0, 0)
-					j++
+func backend_Screens() (screens []Screen) {
+	dispatch(func() {
+		win2kOrBelow := (w32VersionMajor <= 5) || (w32VersionMinor <= 0)
 
-					// We're only interested in active monitors
-					flags := dd.GetStateFlags()
-					if (flags & win32.DISPLAY_DEVICE_ACTIVE) > 0 {
-						screen := newScreen()
+		monitorNum := 0
+	    hasNext := true
+	    i := 0
+	    for hasNext {
+		    var dd *win32.DISPLAY_DEVICE
+		    hasNext, dd = win32.EnumDisplayDevices("", win32.DWORD(i), 0)
+		    i++
+		    if hasNext {
+			    // We're only interested in active devices (graphics cards)
+			    graphicsCardName := dd.GetDeviceName()
+			    graphicsCardString := dd.GetDeviceString()
 
-						if (flags & win32.DISPLAY_DEVICE_PRIMARY_DEVICE) > 0 {
-							screen.isDefaultScreen = true
-						}
+			    gflags := dd.GetStateFlags()
+			    if (gflags & win32.DISPLAY_DEVICE_ACTIVE) > 0 {
+				    hasMoreMonitors := true
+				    j := 0
+				    for hasMoreMonitors {
+					    hasMoreMonitors, dd = win32.EnumDisplayDevices(dd.GetDeviceName(), 0, 0)
+					    j++
 
-						screen.w32MonitorDeviceName = dd.GetDeviceName()
-						screen.w32GraphicsDeviceName = graphicsCardName
+					    // We're only interested in active monitors, but windows 2000 and below
+						// never sets the DISPLAY_DEVICE_ACTIVE flag.
+						//
+					    flags := dd.GetStateFlags()
+					    if (flags & win32.DISPLAY_DEVICE_ACTIVE) > 0 || win2kOrBelow {
+						    screen := newScreen()
 
-						// Merge the two together, so we get something like the following:
-						// "1. Generic PnP Monitor - Intel(R) HD Graphics Family"
-						// "2. Generic PnP Monitor - Intel(R) HD Graphics Family"
-						monitorNum++
-						screen.name = fmt.Sprintf("%d. %s - %s", monitorNum, dd.GetDeviceString(), graphicsCardString)
+						    if (gflags & win32.DISPLAY_DEVICE_PRIMARY_DEVICE) > 0 && j == 1 {
+							    screen.isDefaultScreen = true
+						    }
 
-						dc := win32.CreateDC(screen.w32GraphicsDeviceName, "", nil)
-						if dc != nil {
-							defer win32.DeleteDC(dc)
+						    screen.w32MonitorDeviceName = dd.GetDeviceName()
+						    screen.w32GraphicsDeviceName = graphicsCardName
 
-							screen.physicalWidth = float32(win32.GetDeviceCaps(dc, win32.HORZSIZE))
-							screen.physicalHeight = float32(win32.GetDeviceCaps(dc, win32.VERTSIZE))
+							// It's difficult to get monitor name or model, and it's only available on Windows 7+
+							// eventually, we should try to fix this, but it seems mingw is missing the proper headers
+							// with these defines..
+							//
+							// See: http://msdn.microsoft.com/en-us/library/windows/hardware/ff553903(v=vs.85).aspx
+							//
+						    monitorNum++
+						    screen.name = fmt.Sprintf("Monitor %d - %s", monitorNum, graphicsCardString)
 
-							var err error
-							screen.originalGammaRamp, err = screen.gammaRamp()
-							if err != nil {
-								logger.Println(err)
-							}
+							screen.dc = win32.CreateDC(screen.w32GraphicsDeviceName, "", nil)
+						    if screen.dc != nil {
+							    screen.physicalWidth = float32(win32.GetDeviceCaps(screen.dc, win32.HORZSIZE))
+							    screen.physicalHeight = float32(win32.GetDeviceCaps(screen.dc, win32.VERTSIZE))
 
-							for _, mode := range screen.screenModes() {
-								if mode.isCurrentMode {
-									screen.screenMode = mode
-									screen.originalScreenMode = mode
-									break
-								}
-							}
+								screen.setGammaRampSize()
+								screen.setCurrentGammaRamp()
+								screen.setScreenModes()
 
-							screens = append(screens, screen)
-						} else {
-							// This hopefully never happens, but if it does that means
-							// there is something wrong with this screen most likely or
-							// an graphics driver bug or something else, who knows?
-							logger.Println("CreateDC() failed! Unable to create device context!")
-							logger.Println("Unable to determine screen physical size, gamma ramp!")
-						}
-					}
-				}
-			}
-		}
-	}
-
-	return screens
+							    screens = append(screens, screen)
+						    } else {
+							    // This hopefully never happens, but if it does that means
+							    // there is something wrong with this screen most likely or
+							    // an graphics driver bug or something else, who knows?
+							    logger.Println("CreateDC() on screen failed! Unable to create device context!")
+							    logger.Println("^ Screen will be ignored!")
+						    }
+					    }
+				    }
+			    }
+		    }
+	    }
+	})
+    return
 }
 
-func backend_DefaultScreen() *Screen {
+func backend_DefaultScreen() Screen {
 	screens := backend_Screens()
-	for _, screen := range screens {
-		if screen.isDefaultScreen {
-			return screen
+	for _, iScreen := range screens {
+		screen, ok := iScreen.(*w32Screen)
+		if ok {
+			if screen.isDefaultScreen {
+				return screen
+			}
 		}
 	}
 
 	// Should never happen
 	if len(screens) > 0 {
+		logger.Println("Unable to find default screen; falling back to first screen as default.")
 		return screens[0]
 	}
+	logger.Println("No screens available!")
 	return nil
 }
+
+
