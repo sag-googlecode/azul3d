@@ -1,3 +1,4 @@
+// Generation script to assist with OpenGL wrapper creation
 package main
 
 import (
@@ -541,7 +542,9 @@ typedef ptrdiff_t GLsizeiptr;
 		}
 		defer code.Close()
 
-		fmt.Fprintf(code, `package opengl
+		fmt.Fprintf(code, `
+// Package 'opengl' implements OpenGL version %s
+package opengl
 
 // #cgo LDFLAGS: -lopengl32
 // #include "%s"
@@ -556,7 +559,7 @@ func boolToGL(b bool) C.GLboolean {
 	return C.GLboolean(0)
 }
 
-`, "gl"+versionWithoutDots+".h")
+`, version, "gl"+versionWithoutDots+".h")
 
 		fmt.Fprintf(code, "const(\n")
 		for constName, constValue := range constants {
