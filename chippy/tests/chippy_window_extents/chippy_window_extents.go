@@ -5,34 +5,33 @@
 // Test application - Tells the extents of an window's region and client region
 package main
 
-import(
-    "code.google.com/p/azul3d/chippy"
-    "log"
-    "os"
+import (
+	"code.google.com/p/azul3d/chippy"
+	"log"
+	"os"
 )
 
 func main() {
-    log.SetFlags(0)
+	log.SetFlags(0)
 
-    // Enable debug output
-    chippy.SetDebugOutput(os.Stdout)
+	// Enable debug output
+	chippy.SetDebugOutput(os.Stdout)
 
-    err := chippy.Init()
-    if err != nil {
-        log.Fatal(err)
-    }
-    defer chippy.Destroy()
+	err := chippy.Init()
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer chippy.Destroy()
 
+	window := chippy.NewWindow()
 
-    window := chippy.NewWindow()
+	// Actually open the windows
+	screen := chippy.DefaultScreen()
+	err = window.Open(screen)
+	if err != nil {
+		log.Fatal(err)
+	}
 
-    // Actually open the windows
-    err = window.Open()
-    if err != nil {
-        log.Fatal(err)
-    }
-
-    // Print out what they currently has property-wise
-    log.Println(window.Extents())
+	// Print out what they currently has property-wise
+	log.Println(window.Extents())
 }
-

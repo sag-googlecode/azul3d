@@ -55,9 +55,9 @@ func (r *GammaRamp) Copy() *GammaRamp {
 //
 // Since Microsoft Windows limits gamma ramps so much, this doesn't work too well on that operating system.
 func (r *GammaRamp) SetAsBrightnessContrastGamma(rampSize uint, brightness, contrast, gamma float32) error {
-    if rampSize == 0 {
-        return errors.New("Ramp size is zero, hardware has no support for gamma ramps!")
-    }
+	if rampSize == 0 {
+		return errors.New("Ramp size is zero, hardware has no support for gamma ramps!")
+	}
 
 	if contrast < 0.0 {
 		return errors.New("contrast must be an positive number!")
@@ -76,7 +76,7 @@ func (r *GammaRamp) SetAsBrightnessContrastGamma(rampSize uint, brightness, cont
 
 		value := float32(math.Pow(float64(intensity), float64(gamma))) // gamma
 		value += brightness                                            // brightness
-		value = (value - 0.5) * contrast + 0.5                         // contrast
+		value = (value-0.5)*contrast + 0.5                             // contrast
 
 		if value > 1.0 {
 			value = 1.0
@@ -108,4 +108,3 @@ func (r *GammaRamp) SetAsLinearIntensity(rampSize uint, red, green, blue float32
 		r.Blue[i] = blue
 	}
 }
-

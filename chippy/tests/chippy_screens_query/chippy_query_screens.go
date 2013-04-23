@@ -47,7 +47,7 @@ func main() {
 	if screen < 0 || screen > len(screens)-1 {
 		log.Fatal("Incorrect screen number.")
 	}
-    chosenScreen := screens[screen]
+	chosenScreen := screens[screen]
 
 	fmt.Printf("Change Screen #%d to mode: #", screen)
 	var mode int
@@ -59,10 +59,10 @@ func main() {
 	if mode < 0 || mode > len(screens[screen].ScreenModes())-1 {
 		log.Fatal("Incorrect screen number.")
 	}
-    chosenMode := chosenScreen.ScreenModes()[mode]
+	chosenMode := chosenScreen.ScreenModes()[mode]
 
 	// Change screen mode
-    chosenScreen.SetScreenMode(chosenMode)
+	chosenScreen.SetScreenMode(chosenMode)
 
 	log.Println("Waiting 15 seconds...")
 	<-time.After(15 * time.Second)

@@ -131,19 +131,19 @@
 //  | chippy_window_extents (Tells the extents of an window's region and client region)               | Yes     | No    | No  |
 //  | chippy_window_single (Opens an single window on the specified screen)                           | Yes     | No    | No  |
 //  | chippy_window_two (Opens an two windows, each on the specified screens)                         | Yes     | No    | No  |
-//  | chippy_window_parents (Opens four windows, each with one parent or child)                       | No      | No    | No  |
-//  | chippy_window_visibile (Opens two windows, changes each of their visibile properties)           | Yes     | No    | No  |
+//  | chippy_window_visible (Opens two windows, changes each of their visibile properties)            | Yes     | No    | No  |
 //  | chippy_window_decorated (Opens two windows, changes each of their decorated properties)         | Yes     | No    | No  |
-//  | chippy_window_title (Opens two windows, changes each of their title properties)                 | No      | No    | No  |
-//  | chippy_window_position (Opens two windows, changes each of their position properties)           | No      | No    | No  |
-//  | chippy_window_size (Opens two windows, changes each of their size properties)                   | No      | No    | No  |
+//  | chippy_window_title (Opens two windows, changes each of their title properties)                 | Yes     | No    | No  |
+//  | chippy_window_position (Opens two windows, changes each of their position properties)           | Yes     | No    | No  |
+//  | chippy_window_size (Opens two windows, changes each of their size properties)                   | Yes     | No    | No  |
 //  | chippy_window_minSize (Opens two windows, changes each of their minimum size properties)        | Yes     | No    | No  |
 //  | chippy_window_maxSize (Opens two windows, changes each of their maximum size properties)        | Yes     | No    | No  |
+//  | chippy_window_aspectRatio (Opens two windows, changes each of their aspect ratio properties)    | Yes     | No    | No  |
 //  | chippy_window_minimized (Opens two windows, changes each of their minimized properties)         | Yes     | No    | No  |
-//  | chippy_window_maximized (Opens two windows, changes each of their maximized properties)         | No      | No    | No  |
+//  | chippy_window_maximized (Opens two windows, changes each of their maximized properties)         | Yes     | No    | No  |
 //  | chippy_window_fullscreen (Opens an single window, changes it's fullscreen property)             | No      | No    | No  |
-//  | chippy_window_alwaysOnTop (Opens two windows, changes each of their alwaysOnTop properties)     | No      | No    | No  |
-//  | chippy_window_notify (Opens two windows, requests each one notify the user of an event)         | No      | No    | No  |
+//  | chippy_window_alwaysOnTop (Opens two windows, changes each of their alwaysOnTop properties)     | Yes     | No    | No  |
+//  | chippy_window_notify (Opens two windows, requests each one notify the user of an event)         | Yes     | No    | No  |
 //  | chippy_window_icon (Opens two windows, changes each of their icon properties)                   | No      | No    | No  |
 //  | chippy_window_cursor (Opens two windows, changes each of their cursor properties)               | No      | No    | No  |
 //  | chippy_window_blit (Opens two windows, uses blitting to copy pixel graphics onto each of them)  | No      | No    | No  |
@@ -263,7 +263,7 @@ func removeDestroyCallback(c *callback) {
 var (
 	globalLock sync.RWMutex
 
-    autoRestoreOriginalScreenMode, autoRestoreOriginalGammaRamp bool
+	autoRestoreOriginalScreenMode, autoRestoreOriginalGammaRamp bool
 
 	// Tells weather chippy has been previously Init()
 	isInit bool
@@ -282,9 +282,9 @@ var (
 // anger users if you alter their screen resolution perminantly, forcing them to change it back by
 // themselves.
 func SetAutoRestoreOriginalScreenMode(restore bool) {
-    globalLock.Lock()
-    defer globalLock.Unlock()
-    autoRestoreOriginalScreenMode = restore
+	globalLock.Lock()
+	defer globalLock.Unlock()
+	autoRestoreOriginalScreenMode = restore
 }
 
 // AutoRestoreOriginalScreenMode tells weather each Screen will currently automatically restore
@@ -292,9 +292,9 @@ func SetAutoRestoreOriginalScreenMode(restore bool) {
 //
 // See: SetAutoRestoreOriginalScreenMode
 func AutoRestoreOriginalScreenMode() bool {
-    globalLock.RLock()
-    defer globalLock.RUnlock()
-    return autoRestoreOriginalScreenMode
+	globalLock.RLock()
+	defer globalLock.RUnlock()
+	return autoRestoreOriginalScreenMode
 }
 
 // SetAutoRestoreOriginalGammaRamp specifies weather each Screen should automatically restore it's
@@ -307,9 +307,9 @@ func AutoRestoreOriginalScreenMode() bool {
 // anger users if you alter their screen's gamma ramp, forcing them to restart their computer in
 // order to restore their original one (most likely).
 func SetAutoRestoreOriginalGammaRamp(restore bool) {
-    globalLock.Lock()
-    defer globalLock.Unlock()
-    autoRestoreOriginalGammaRamp = restore
+	globalLock.Lock()
+	defer globalLock.Unlock()
+	autoRestoreOriginalGammaRamp = restore
 }
 
 // AutoRestoreOriginalGammaRamp tells weather each Screen will currently automatically restore
@@ -317,9 +317,9 @@ func SetAutoRestoreOriginalGammaRamp(restore bool) {
 //
 // See: SetAutoRestoreOriginalGammaRamp
 func AutoRestoreOriginalGammaRamp() bool {
-    globalLock.RLock()
-    defer globalLock.RUnlock()
-    return autoRestoreOriginalGammaRamp
+	globalLock.RLock()
+	defer globalLock.RUnlock()
+	return autoRestoreOriginalGammaRamp
 }
 
 // IsInit returns weather Chippy has been initialized via a previous call to Init().
@@ -334,8 +334,8 @@ func IsInit() bool {
 
 // Helper to panic unless previously initialized
 func panicUnlessInit() {
-    globalLock.RLock()
-    defer globalLock.RUnlock()
+	globalLock.RLock()
+	defer globalLock.RUnlock()
 
 	if !IsInit() {
 		panic("Chippy must be initialized before calling this; Use Init() properly!")
@@ -362,7 +362,7 @@ func Init() error {
 	defer globalLock.Unlock()
 
 	if isInit == false {
-        autoRestoreOriginalScreenMode = true
+		autoRestoreOriginalScreenMode = true
 		autoRestoreOriginalGammaRamp = true
 
 		// Now we try and initialize the backend, which may fail due to user configurations

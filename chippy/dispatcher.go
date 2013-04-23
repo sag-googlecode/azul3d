@@ -17,61 +17,60 @@ package chippy
 // (obviously) dispatch() will only ever execute one function at an time.
 // dispatch() will only return once the function is done executing.
 
-import(
-    "runtime"
+import (
+	"runtime"
 )
 
-type request struct{
-    funcChan chan func()
-    completedChan chan bool
+type request struct {
+	funcChan      chan func()
+	completedChan chan bool
 }
 
-var(
-    requestChan = make(chan *request, 5)
-    shutdownChan = make(chan bool)
+var (
+	requestChan  = make(chan *request, 5)
+	shutdownChan = make(chan bool)
 )
 
 func dispatchRequests() {
-    runtime.LockOSThread()
-    defer runtime.UnlockOSThread()
-    for{
-        select{
-            case r := <-requestChan:
-                action := <-r.funcChan
-                action()
-                r.completedChan <- true
+	runtime.LockOSThread()
+	defer runtime.UnlockOSThread()
+	for {
+		select {
+		case r := <-requestChan:
+			action := <-r.funcChan
+			action()
+			r.completedChan <- true
 
-            case <-shutdownChan:
-                return
-        }
-    }
+		case <-shutdownChan:
+			return
+		}
+	}
 }
 
 func stopDispatching() {
-    shutdownChan <- true
+	shutdownChan <- true
 }
 
 // Dispatches the function on the dispatcher thread, and waits for the operation to complete before
 // returning.
 func dispatch(f func()) {
-    r := &request{
-        make(chan func(), 1),
-        make(chan bool, 1),
-    }
-    requestChan <- r
-    r.funcChan <- f
-    <- r.completedChan
+	r := &request{
+		make(chan func(), 1),
+		make(chan bool, 1),
+	}
+	requestChan <- r
+	r.funcChan <- f
+	<-r.completedChan
 }
 
 // Dispatches the function on the dispatcher thread, and returns immedietly without waiting for the
 // operation to complete.
 func dispatchNoWait(f func()) {
-    r := &request{
-        make(chan func(), 1),
-        make(chan bool, 1),
-    }
-    requestChan <- r
-    r.funcChan <- f
-    //<- r.completedChan
+	r := &request{
+		make(chan func(), 1),
+		make(chan bool, 1),
+	}
+	requestChan <- r
+	r.funcChan <- f
+	//<- r.completedChan
 }
-

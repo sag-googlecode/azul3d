@@ -4,11 +4,11 @@
 
 package chippy
 
-import(
+import (
 	"errors"
 )
 
-var(
+var (
 	// Could happen due to lack of hardware support for the screen mode, or the driver may reject
 	// the screen mode as well, really this could be generically anything but is typically an
 	// hardware or driver issue using the screen mode.
@@ -26,4 +26,3 @@ var(
 	// for them.
 	ErrGammaRampsNotSupported = errors.New("unable to use gamma ramps; the hardware has no support for them.")
 )
-

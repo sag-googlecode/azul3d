@@ -4,6 +4,8 @@
 
 package win32
 
+type BYTE uint8
+
 type Int int32
 type LONG int32
 

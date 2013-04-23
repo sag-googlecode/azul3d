@@ -9,39 +9,38 @@ package main
 //   go install -ldflags "-H windowsgui" path/to/pkg
 // to hide the command prompt
 
-import(
-    "code.google.com/p/azul3d/chippy"
-    "time"
-    "log"
-    "os"
+import (
+	"code.google.com/p/azul3d/chippy"
+	"log"
+	"os"
+	"time"
 )
 
 func main() {
-    log.SetFlags(0)
+	log.SetFlags(0)
 
-    // Enable debug output
-    chippy.SetDebugOutput(os.Stdout)
+	// Enable debug output
+	chippy.SetDebugOutput(os.Stdout)
 
-    err := chippy.Init()
-    if err != nil {
-        log.Fatal(err)
-    }
-    defer chippy.Destroy()
+	err := chippy.Init()
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer chippy.Destroy()
 
+	window := chippy.NewWindow()
 
-    window := chippy.NewWindow()
+	// Actually open the window
+	screen := chippy.DefaultScreen()
+	err = window.Open(screen)
+	if err != nil {
+		log.Fatal(err)
+	}
 
-    // Actually open the window
-    err = window.Open()
-    if err != nil {
-        log.Fatal(err)
-    }
+	// Print out what it currently has property-wise
+	log.Println(window)
 
-    // Print out what it currently has property-wise
-    log.Println(window)
-
-    // Just wait an while so they can enjoy the window
-    log.Println("Waiting 15 seconds...")
-    <- time.After(15 * time.Second)
+	// Just wait an while so they can enjoy the window
+	log.Println("Waiting 15 seconds...")
+	<-time.After(15 * time.Second)
 }
-

@@ -4,6 +4,7 @@
 
 package chippy
 
+/*
 import(
     "image"
 )
@@ -506,4 +507,4 @@ func (w *Window) SetCursor(cursor image.Image) {
     }
 }
 
-
+*/

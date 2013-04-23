@@ -7,10 +7,10 @@ package main
 
 import (
 	"code.google.com/p/azul3d/chippy"
-	"time"
-	"log"
 	"fmt"
+	"log"
 	"os"
+	"time"
 )
 
 func main() {
@@ -43,28 +43,26 @@ func main() {
 	if screen < 0 || screen > len(screens)-1 {
 		log.Fatal("Incorrect screen number.")
 	}
-    chosenScreen := screens[screen]
+	chosenScreen := screens[screen]
 
-    if chosenScreen.GammaRampSize() == 0 {
-        log.Fatal("Chosen screen has no support for gamma ramps (color correction lookup table / LUT)")
-    }
-
-
+	if chosenScreen.GammaRampSize() == 0 {
+		log.Fatal("Chosen screen has no support for gamma ramps (color correction lookup table / LUT)")
+	}
 
 	do := func(red, green, blue float32) {
 		log.Printf("r = %.2f, g = %.2f, b = %.2f\n", red, green, blue)
 
 		// First create an gamma ramp
-        myGammaRamp := new(chippy.GammaRamp)
+		myGammaRamp := new(chippy.GammaRamp)
 
-        // Now intialize the ramp based off ramp size, intensity
-        gammaRampSize := chosenScreen.GammaRampSize()
+		// Now intialize the ramp based off ramp size, intensity
+		gammaRampSize := chosenScreen.GammaRampSize()
 
-        // We could just as easilly use our own LUT calculations here -- see gammaramp.go for more
-        // information.
-        myGammaRamp.SetAsLinearIntensity(gammaRampSize, red, green, blue)
+		// We could just as easilly use our own LUT calculations here -- see gammaramp.go for more
+		// information.
+		myGammaRamp.SetAsLinearIntensity(gammaRampSize, red, green, blue)
 
-        // Now actually tell the screen to use it
+		// Now actually tell the screen to use it
 		err := chosenScreen.SetGammaRamp(myGammaRamp)
 		if err != nil {
 			log.Fatal(err)
@@ -73,7 +71,7 @@ func main() {
 
 	log.Println("\nNormal")
 	do(1.0, 1.0, 1.0)
-	<- time.After(3 * time.Second)
+	<-time.After(3 * time.Second)
 
 	// Stuck on the wrong settings? uncomment this line and you'll get reset to normal here
 	// return
@@ -102,23 +100,20 @@ func main() {
 		<-time.After(60 * time.Millisecond)
 	}
 
-
-
-
 	do = func(brightness, contrast, gamma float32) {
 		log.Printf("brightness = %.2f, contrast = %.2f, gamma = %.2f\n", brightness, contrast, gamma)
 
 		// First create an gamma ramp
-        myGammaRamp := new(chippy.GammaRamp)
+		myGammaRamp := new(chippy.GammaRamp)
 
-        // Now intialize the ramp based off ramp size, intensity
-        gammaRampSize := chosenScreen.GammaRampSize()
+		// Now intialize the ramp based off ramp size, intensity
+		gammaRampSize := chosenScreen.GammaRampSize()
 
-        // We could just as easilly use our own LUT calculations here -- see gammaramp.go for more
-        // information.
-        myGammaRamp.SetAsBrightnessContrastGamma(gammaRampSize, brightness, contrast, gamma)
+		// We could just as easilly use our own LUT calculations here -- see gammaramp.go for more
+		// information.
+		myGammaRamp.SetAsBrightnessContrastGamma(gammaRampSize, brightness, contrast, gamma)
 
-        // Now actually tell the screen to use it
+		// Now actually tell the screen to use it
 		err := chosenScreen.SetGammaRamp(myGammaRamp)
 		if err != nil {
 			log.Fatal(err)
@@ -127,7 +122,7 @@ func main() {
 
 	log.Println("\nNormal")
 	do(1.0, 1.0, 2.2)
-	<- time.After(3 * time.Second)
+	<-time.After(3 * time.Second)
 
 	// Stuck on the wrong settings? uncomment this line and you'll get reset to normal here
 	// return

@@ -4,25 +4,25 @@
 
 #include "_cgo_export.h"
 
-WORD macro_MAKELANGID(USHORT usPrimaryLanguage, USHORT usSubLanguage) {
+WORD win32_MAKELANGID(USHORT usPrimaryLanguage, USHORT usSubLanguage) {
     return MAKELANGID(usPrimaryLanguage, usSubLanguage);
 }
 
-void SetLPTSTRAtIndex(LPTSTR array, int index, WORD v) {
+void win32_SetLPTSTRAtIndex(LPTSTR array, int index, WORD v) {
     array[index] = v;
 }
 
-WORD LPTSTRAtIndex(LPTSTR array, int index) {
+WORD win32_LPTSTRAtIndex(LPTSTR array, int index) {
     return array[index];
 }
 
-LRESULT CALLBACK WndProcWrapper(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
+LRESULT CALLBACK win32_WndProcWrapper(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
     return WndProcCallback(hwnd, msg, wParam, lParam);
 }
 
-WNDPROC WndProcWrapperHandle = WndProcWrapper;
+WNDPROC win32_WndProcWrapperHandle = win32_WndProcWrapper;
 
-DWORD DEVMODE_dmDisplayFixedOutput(DEVMODE* dm) {
+DWORD win32_DEVMODE_dmDisplayFixedOutput(DEVMODE* dm) {
 	return dm->dmDisplayFixedOutput;
 }
 
