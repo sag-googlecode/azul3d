@@ -2,6 +2,7 @@
 // This source code is subject to the terms and
 // conditions defined in the "License.txt" file.
 
+// Do not use - Wrappers around very specific X11 APIs.
 package x11
 
 /*
