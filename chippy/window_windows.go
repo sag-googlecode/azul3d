@@ -6,6 +6,8 @@ package chippy
 
 import (
 	"code.google.com/p/azul3d/chippy/wrappers/win32"
+	//"code.google.com/p/azul3d/chippy/keyboard"
+	"code.google.com/p/azul3d/chippy/mouse"
 	"errors"
 	"fmt"
 	"image"
@@ -17,11 +19,13 @@ import (
 var windowsByHwnd = make(map[win32.HWND]*W32Window)
 
 type W32Window struct {
+	eventDispatcher
+
 	access sync.RWMutex
 
 	icon, cursor image.Image
 
-	wasOpened, isDestroyed, visible, decorated, minimized, maximized, fullscreen, alwaysOnTop,
+	opened, isDestroyed, visible, decorated, minimized, maximized, fullscreen, alwaysOnTop,
 	cursorGrabbed bool
 
 	extentLeft, extentRight, extentBottom, extentTop, width, height, minWidth, minHeight,
@@ -46,9 +50,9 @@ type W32Window struct {
 }
 
 func (w *W32Window) Open(screen Screen) (err error) {
-	// If WasOpened returns true, this function is no-op.
-	// if IsDestroyed returns true, this function is no-op.
-	if w.WasOpened() || w.IsDestroyed() {
+	// If Opened returns true, this function is no-op.
+	// if Destroyed returns true, this function is no-op.
+	if w.Opened() || w.Destroyed() {
 		return nil
 	}
 
@@ -103,8 +107,8 @@ func (w *W32Window) Open(screen Screen) (err error) {
 
 		w.doSetWindowPos()
 
-		// Make sure to enable wasOpened now so that doUpdateStyle sets the new style properly
-		w.wasOpened = true
+		// Make sure to enable opened now so that doUpdateStyle sets the new style properly
+		w.opened = true
 		w.doUpdateStyle()
 
 		if w.visible {
@@ -123,9 +127,9 @@ func (w *W32Window) Open(screen Screen) (err error) {
 }
 
 func (w *W32Window) Destroy() {
-	// If WasOpened returns false, this function is no-op.
-	// If IsDestroyed returns true, this function is no-op.
-	if !w.WasOpened() || w.IsDestroyed() {
+	// If Opened returns false, this function is no-op.
+	// If Destroyed returns true, this function is no-op.
+	if !w.Opened() || w.Destroyed() {
 		return
 	}
 
@@ -159,7 +163,7 @@ func (w *W32Window) Notify() {
 
 		timesBlinked := 0
 		for {
-			if w.IsDestroyed() {
+			if w.Destroyed() {
 				return
 			}
 			if timesBlinked >= maxBlinks {
@@ -182,7 +186,7 @@ func (w *W32Window) SetTitle(title string) {
 
 	if w.title != title {
 		w.title = title
-		if w.wasOpened {
+		if w.opened {
 			dispatch(func() {
 				if !win32.SetWindowText(w.hwnd, w.title) {
 					logger.Println("Unable to set window title; SetWindowText():", win32.GetLastErrorString())
@@ -219,7 +223,7 @@ func (w *W32Window) SetDecorated(decorated bool) {
 
 	if w.decorated != decorated {
 		w.decorated = decorated
-		if w.wasOpened && w.visible {
+		if w.opened && w.visible {
 			unlock()
 			dispatch(func() {
 				w.doUpdateStyle()
@@ -237,7 +241,7 @@ func (w *W32Window) SetPosition(x, y int) {
 	if w.x != x || w.y != y {
 		w.x = x
 		w.y = y
-		if w.wasOpened {
+		if w.opened {
 			unlock()
 			dispatch(func() {
 				w.doSetWindowPos()
@@ -255,7 +259,7 @@ func (w *W32Window) SetSize(width, height uint) {
 	if w.width != width || w.height != height {
 		w.width = width
 		w.height = height
-		if w.wasOpened {
+		if w.opened {
 			unlock()
 			dispatch(func() {
 				w.doSetWindowPos()
@@ -273,7 +277,7 @@ func (w *W32Window) SetMinimumSize(width, height uint) {
 	if w.minWidth != width || w.minHeight != height {
 		w.minWidth = width
 		w.minHeight = height
-		if w.wasOpened {
+		if w.opened {
 			unlock()
 			dispatch(func() {
 				w.doSetWindowPos()
@@ -291,7 +295,7 @@ func (w *W32Window) SetMaximumSize(width, height uint) {
 	if w.maxWidth != width || w.maxHeight != height {
 		w.maxWidth = width
 		w.maxHeight = height
-		if w.wasOpened {
+		if w.opened {
 			unlock()
 			dispatch(func() {
 				w.doSetWindowPos()
@@ -309,7 +313,7 @@ func (w *W32Window) SetAspectRatio(ratio float32) {
 	if w.aspectRatio != ratio {
 		w.aspectRatio = ratio
 
-		if w.wasOpened {
+		if w.opened {
 			unlock()
 			dispatch(func() {
 				w.doSetWindowPos()
@@ -327,7 +331,7 @@ func (w *W32Window) SetMinimized(minimized bool) {
 	w.minimized = minimized
 	if w.minimized {
 		if w.visible {
-			if w.wasOpened {
+			if w.opened {
 				unlock()
 				dispatch(func() {
 					win32.ShowWindow(w.hwnd, win32.SW_MINIMIZE)
@@ -336,7 +340,7 @@ func (w *W32Window) SetMinimized(minimized bool) {
 		}
 	} else {
 		if w.visible {
-			if w.wasOpened {
+			if w.opened {
 				unlock()
 				dispatch(func() {
 					win32.ShowWindow(w.hwnd, win32.SW_RESTORE)
@@ -345,7 +349,7 @@ func (w *W32Window) SetMinimized(minimized bool) {
 		}
 	}
 	unlock()
-	if w.wasOpened {
+	if w.opened {
 		dispatch(func() {
 			win32.EnableWindow(w.hwnd, true)
 			w.doSetWindowPos()
@@ -361,7 +365,7 @@ func (w *W32Window) SetMaximized(maximized bool) {
 	w.maximized = maximized
 	if w.maximized {
 		if w.visible {
-			if w.wasOpened {
+			if w.opened {
 				unlock()
 				dispatch(func() {
 					win32.ShowWindow(w.hwnd, win32.SW_MAXIMIZE)
@@ -369,7 +373,7 @@ func (w *W32Window) SetMaximized(maximized bool) {
 			}
 		}
 	} else {
-		if w.wasOpened {
+		if w.opened {
 			unlock()
 			dispatch(func() {
 				win32.ShowWindow(w.hwnd, win32.SW_RESTORE)
@@ -377,7 +381,7 @@ func (w *W32Window) SetMaximized(maximized bool) {
 		}
 	}
 	unlock()
-	if w.wasOpened {
+	if w.opened {
 		dispatch(func() {
 			win32.EnableWindow(w.hwnd, true)
 		})
@@ -391,7 +395,7 @@ func (w *W32Window) SetFullscreen(fullscreen bool) {
 
 	if w.fullscreen != fullscreen {
 		w.fullscreen = fullscreen
-		if w.wasOpened {
+		if w.opened {
 			unlock()
 			dispatch(func() {
 				w.doUpdateStyle()
@@ -409,7 +413,7 @@ func (w *W32Window) SetAlwaysOnTop(alwaysOnTop bool) {
 
 	if w.alwaysOnTop != alwaysOnTop {
 		w.alwaysOnTop = alwaysOnTop
-		if w.wasOpened {
+		if w.opened {
 			unlock()
 			dispatch(func() {
 				w.doSetWindowPos()
@@ -466,13 +470,13 @@ func (w *W32Window) String() string {
 	return fmt.Sprintf("Window(title=\"%s\", visible=%t, decorated=%t, minimized=%t, maximized=%t, fullscreen=%t, alwaysOnTop=%t, cursorGrabbed=%t, extents=[%d, %d, %d, %d], size=%dx%dpx, minimumSize=%dx%dpx, maximumSize=%dx%dpx, position=%dx%d, cursorPosition=%dx%d)", w.title, w.visible, w.decorated, w.minimized, w.maximized, w.fullscreen, w.alwaysOnTop, w.cursorGrabbed, w.extentLeft, w.extentRight, w.extentBottom, w.extentTop, w.width, w.height, w.minWidth, w.minHeight, w.maxWidth, w.maxHeight, w.x, w.y, w.cursorX, w.cursorY)
 }
 
-func (w *W32Window) WasOpened() bool {
+func (w *W32Window) Opened() bool {
 	w.access.RLock()
 	defer w.access.RUnlock()
-	return w.wasOpened
+	return w.opened
 }
 
-func (w *W32Window) IsDestroyed() bool {
+func (w *W32Window) Destroyed() bool {
 	w.access.RLock()
 	defer w.access.RUnlock()
 	return w.isDestroyed
@@ -642,7 +646,7 @@ func (w *W32Window) doUpdateStyle() {
 		w.styleFlags |= win32.WS_VISIBLE
 	}
 
-	if w.wasOpened {
+	if w.opened {
 		if win32.DWORD(originalStyle) != w.styleFlags {
 			win32.SetWindowLongPtr(w.hwnd, win32.GWL_STYLE, win32.LONG_PTR(w.styleFlags))
 
@@ -760,9 +764,9 @@ func mainWindowProc(hwnd win32.HWND, msg win32.UINT, wParam win32.WPARAM, lParam
 
 		case win32.WM_SIZING:
 			ratio := w.AspectRatio()
-			if ratio != 0 {
-				r := lParam.RECT()
+			r := lParam.RECT()
 
+			if ratio != 0 {
 				width := r.Right() - r.Left()
 				height := r.Bottom() - r.Top()
 
@@ -791,6 +795,142 @@ func mainWindowProc(hwnd win32.HWND, msg win32.UINT, wParam win32.WPARAM, lParam
 				w.lastWmSizingTop = r.Top()
 			}
 
+			newWidth := uint(w.lastWmSizingRight - w.lastWmSizingLeft)
+			newHeight := uint(w.lastWmSizingBottom - w.lastWmSizingTop)
+
+			if newWidth != 0 && newHeight != 0 {
+				if w.width != newWidth || w.height != newHeight {
+					w.width = newWidth
+					w.height = newHeight
+
+					w.addSizeEvent([]uint{w.width, w.height})
+				}
+			}
+
+		case win32.WM_SIZE:
+			if wParam == win32.SIZE_MAXIMIZED {
+				if w.minimized != false {
+					w.minimized = false
+					w.addMinimizedEvent(w.minimized)
+				}
+				if w.maximized != true {
+					w.maximized = true
+					w.addMaximizedEvent(w.maximized)
+				}
+			} else if wParam == win32.SIZE_MINIMIZED {
+				if w.minimized != true {
+					w.minimized = true
+					w.addMinimizedEvent(w.minimized)
+				}
+				if w.maximized != false {
+					w.maximized = false
+					w.addMaximizedEvent(w.maximized)
+				}
+			} else {
+				if w.minimized != false {
+					w.minimized = false
+					w.addMinimizedEvent(w.minimized)
+				}
+				if w.maximized != false {
+					w.maximized = false
+					w.addMaximizedEvent(w.maximized)
+				}
+			}
+
+			if wParam != win32.SIZE_MINIMIZED {
+				newWidth := uint(lParam.LOWORD())
+				newHeight := uint(lParam.HIWORD())
+
+				if w.width != newWidth || w.height != newHeight {
+					w.width = newWidth
+					w.height = newHeight
+
+					w.addSizeEvent([]uint{w.width, w.height})
+				}
+			}
+
+		case win32.WM_MOVE:
+			xPos := int(lParam.LOWORD())
+			yPos := int(lParam.HIWORD())
+
+			if w.x != xPos || w.y != yPos {
+				w.x = xPos
+				w.y = yPos
+				w.addPositionEvent([]int{w.x, w.y})
+			}
+
+		case win32.WM_KEYDOWN:
+			//fmt.Println(lParam, lParam.LOWORD(), lParam.HIWORD(), string(lParam.HIWORD()))
+			//fmt.Println(0x09)
+
+		case win32.WM_MOUSEMOVE:
+			xPos := int(lParam.LOWORD())
+			yPos := int(lParam.HIWORD())
+
+			if w.cursorX != xPos || w.cursorY != yPos {
+				w.cursorX = xPos
+				w.cursorY = yPos
+
+				w.addCursorPositionEvent([]int{w.cursorX, w.cursorY})
+			}
+
+		// Mouse Buttons
+		case win32.WM_LBUTTONDOWN:
+			w.addMouseEvent(&mouse.Event{
+				Button: mouse.Left,
+				State:  mouse.Down,
+			})
+
+		case win32.WM_LBUTTONUP:
+			w.addMouseEvent(&mouse.Event{
+				Button: mouse.Left,
+				State:  mouse.Up,
+			})
+
+		case win32.WM_RBUTTONDOWN:
+			w.addMouseEvent(&mouse.Event{
+				Button: mouse.Right,
+				State:  mouse.Down,
+			})
+
+		case win32.WM_RBUTTONUP:
+			w.addMouseEvent(&mouse.Event{
+				Button: mouse.Right,
+				State:  mouse.Up,
+			})
+
+		case win32.WM_MBUTTONDOWN:
+			w.addMouseEvent(&mouse.Event{
+				Button: mouse.Wheel,
+				State:  mouse.Down,
+			})
+
+		case win32.WM_MBUTTONUP:
+			w.addMouseEvent(&mouse.Event{
+				Button: mouse.Wheel,
+				State:  mouse.Up,
+			})
+
+		case win32.WM_XBUTTONDOWN:
+			fmt.Println(lParam, lParam.LOWORD(), lParam.HIWORD())
+
+		case win32.WM_XBUTTONUP:
+			fmt.Println(lParam, lParam.LOWORD(), lParam.HIWORD())
+
+		case win32.WM_MOUSEWHEEL:
+			fmt.Println(lParam, lParam.LOWORD(), lParam.HIWORD())
+
+		case win32.WM_MOUSEHWHEEL:
+			fmt.Println(lParam, lParam.LOWORD(), lParam.HIWORD())
+
+		//default:
+		//	fmt.Printf("0x%x\n", msg)
+
+		case win32.WM_CLOSE:
+			if !w.addCloseEvent() {
+				go w.Destroy()
+			}
+			return 0
 		}
 	}
 
@@ -799,7 +939,7 @@ func mainWindowProc(hwnd win32.HWND, msg win32.UINT, wParam win32.WPARAM, lParam
 }
 
 func (w *W32Window) panicIfDestroyed() {
-	if w.IsDestroyed() {
+	if w.Destroyed() {
 		panic("Window has already been destroyed.")
 	}
 }

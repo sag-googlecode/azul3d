@@ -453,7 +453,10 @@ func backend_Screens() (screens []Screen) {
 						// never sets the DISPLAY_DEVICE_ACTIVE flag.
 						//
 						flags := dd.GetStateFlags()
-						if (flags&win32.DISPLAY_DEVICE_ACTIVE) > 0 || win2kOrBelow {
+
+						active := (flags & win32.DISPLAY_DEVICE_ACTIVE) > 0
+						attached := (flags & win32.DISPLAY_DEVICE_ATTACHED) > 0
+						if active || attached || win2kOrBelow {
 							screen := newScreen()
 
 							if (gflags&win32.DISPLAY_DEVICE_PRIMARY_DEVICE) > 0 && j == 1 {

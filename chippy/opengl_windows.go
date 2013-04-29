@@ -113,7 +113,7 @@ func (w *W32Window) GLConfig() *GLConfig {
 	return w.glConfig
 }
 
-func (w *W32Window) GLCreateContext(glVersionMinor, glVersionMajor uint) (GLContext, error) {
+func (w *W32Window) GLCreateContext(glVersionMinor, glVersionMajor, glVersionRevision uint) (GLContext, error) {
 	if w.glConfig == nil {
 		panic("Must call GLSetConfig() before GLCreateContext()!")
 	}
@@ -127,9 +127,6 @@ func (w *W32Window) GLCreateContext(glVersionMinor, glVersionMajor uint) (GLCont
 			err = errors.New(fmt.Sprintf("Unable to create OpenGL Context; wglCreateContext(): %s", win32.GetLastErrorString()))
 			return
 		}
-		//logger.Println("Created context;")
-		//logger.Println("makecurrent", win32.WglMakeCurrent(w.dc, c.hglrc))
-		//logger.Println("getprocaddress", win32.WglGetProcAddress("foo"))
 	})
 	if err != nil {
 		return nil, err
@@ -161,6 +158,9 @@ func (w *W32Window) GLMakeCurrent(c GLContext) {
 }
 
 func (w *W32Window) GLSwapBuffers() {
+	if w.Destroyed() {
+		return
+	}
 	if !win32.SwapBuffers(w.dc) {
 		logger.Println("Unable to swap GL buffers; SwapBuffers():", win32.GetLastErrorString())
 	}

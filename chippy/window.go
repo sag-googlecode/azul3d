@@ -17,17 +17,17 @@ type Window interface {
 	// String returns an string representation of this Window
 	String() string
 
-	// Open opens the window using the current settings, on the specific screen, or returns an
+	// Open opens the window using the current settings, on the specified screen, or returns an
 	// error in the event that we are unable to open the window for some reason (the error will be
 	// descriptive).
 	//
 	// If WasOpened returns true, this function is no-op.
 	//
-	// if IsDestroyed returns true, this function is no-op.
+	// if Destroyed returns true, this function is no-op.
 	Open(screen Screen) error
 
-	// WasOpened tells weather there was an previous call to the Open function.
-	WasOpened() bool
+	// Opened tells weather there was an previous call to the Open function or not.
+	Opened() bool
 
 	// Screen returns the screen that this window was created on, via Open()
 	Screen() Screen
@@ -38,18 +38,18 @@ type Window interface {
 	//
 	// If WasOpened returns false, this function is no-op.
 	//
-	// If IsDestroyed returns true, this function is no-op.
+	// If Destroyed returns true, this function is no-op.
 	Destroy()
 
-	// IsDestroyed tells weather there was an previous call to the Destroy function.
-	IsDestroyed() bool
+	// Destroyed tells weather there was an previous call to the Destroy function.
+	Destroyed() bool
 
 	// Notify causes the window to notify the user that an event has happened with the application,
 	// and they should look at the application.
 	//
 	// Typically this is an small flashing animation, etc.
 	//
-	// if IsDestroyed returns true, this function will panic.
+	// if Destroyed returns true, this function will panic.
 	Notify()
 
 	// Extents returns how far the window region extends outward from the client region of this
@@ -60,7 +60,7 @@ type Window interface {
 	// representation, typical places include the windows Title Bar decoration, and in the
 	// icon tray (which displays minimized windows, etc).
 	//
-	// If IsDestroyed returns true, this function will panic.
+	// If Destroyed returns true, this function will panic.
 	SetTitle(title string)
 
 	// Title returns the title of the window, as it was set by SetTitle, or the default title:
@@ -71,7 +71,7 @@ type Window interface {
 	// window will appear simply gone (even though it actually exists, and you may render to it,
 	// and at an later time show the window again).
 	//
-	// If IsDestroyed returns true, this function will panic.
+	// If Destroyed returns true, this function will panic.
 	SetVisible(visible bool)
 
 	// Visible tells weather this window is currently visible to the user, as previously set by the
@@ -81,7 +81,7 @@ type Window interface {
 	// SetDecorated specifies weather this window should have window decorations, this includes the
 	// title bar, exit buttons, borders, system menu buttons, icons, etc.
 	//
-	// If IsDestroyed returns true, this function will panic.
+	// If Destroyed returns true, this function will panic.
 	SetDecorated(decorated bool)
 
 	// Decorations tells weather this window has window decorations on, as previously set by the
@@ -91,18 +91,23 @@ type Window interface {
 	// SetPosition specifies the new x and y position of this window's client region, relative to
 	// the top-left corner of the screen, in pixels.
 	//
-	// If IsDestroyed returns true, this function will panic.
+	// If Destroyed returns true, this function will panic.
 	SetPosition(x, y int)
 
-	// Position tells what the current x and y position of this window is, as set previously by the
-	// SetPosition function, or due to the user dragging the window to an new location, or the
-	// default values of x=100, y=100.
+	// PositionEvents returns an new *PositionEventBuffer on which this Window's position events
+	// will be sent.
+	PositionEvents() *PositionEventBuffer
+
+	// Position tells what the current x and y position of this window's client region.
 	Position() (x, y int)
 
 	// SetSize specifies the new width and height of this window's client region, in pixels.
 	//
-	// If IsDestroyed returns true, this function will panic.
+	// If Destroyed returns true, this function will panic.
 	SetSize(width, height uint)
+
+	// SizeEvents returns an new *SizeEventBuffer on which this Window's size events will be sent.
+	SizeEvents() *SizeEventBuffer
 
 	// Size tells the current width and height of this window, as set previously by an call to the
 	// SetSize function, or due to the user resizing the window through the window manager itself.
@@ -117,7 +122,7 @@ type Window interface {
 	// If the size passed into both SetMinimumSize and SetMaximumSize are the same, then the window
 	// will be non-resizable.
 	//
-	// If IsDestroyed returns true, this function will panic.
+	// If Destroyed returns true, this function will panic.
 	SetMinimumSize(width, height uint)
 
 	// MinimumSize tells the current minimum width and height of this windows client region, as set
@@ -133,7 +138,7 @@ type Window interface {
 	//
 	// If either width or height are zero, then there will be no maximum size restriction placed.
 	//
-	// If IsDestroyed returns true, this function will panic.
+	// If Destroyed returns true, this function will panic.
 	SetMaximumSize(width, height uint)
 
 	// MaximumSize tells the current maximum width and height of this windows client region, as set
@@ -146,7 +151,7 @@ type Window interface {
 	// If the ratio is zero, then the window will be allowed to resize freely, without being
 	// restricted to an aspect ratio.
 	//
-	// If IsDestroyed returns true, this function will panic.
+	// If Destroyed returns true, this function will panic.
 	SetAspectRatio(ratio float32)
 
 	// AspectRatio tells the aspect ratio that the window should try and keep when the user resizes
@@ -161,8 +166,12 @@ type Window interface {
 
 	// SetMinimized specifies weather the window should currently be minimized.
 	//
-	// If IsDestroyed returns true, this function will panic.
+	// If Destroyed returns true, this function will panic.
 	SetMinimized(minimized bool)
+
+	// MinimizedEvents returns an new *MinimizedEventBuffer on which this Window's minimized events
+	// will be sent.
+	MinimizedEvents() *MinimizedEventBuffer
 
 	// Minimized tells weather the window is currently minimized, as previously set via an call to
 	// the SetMinimized function, or due to the user changing the minimized status of the window
@@ -171,8 +180,12 @@ type Window interface {
 
 	// SetMaximized specifies weather the window should currently be maximized.
 	//
-	// If IsDestroyed returns true, this function will panic.
+	// If Destroyed returns true, this function will panic.
 	SetMaximized(maximized bool)
+
+	// MaximizedEvents returns an new *MaximizedEventBuffer on which this Window's maximized events
+	// will be sent.
+	MaximizedEvents() *MaximizedEventBuffer
 
 	// Maximized tells weather the window is currently maximized, as previously set via an call to
 	// the SetMaximized function, or due to the user changing the maximized status of the window
@@ -182,7 +195,7 @@ type Window interface {
 	// SetFullscreen specifies weather the window should be full screen, consuming the entire
 	// screen's size, and being the only thing displayed on the screen.
 	//
-	// If IsDestroyed returns true, this function will panic.
+	// If Destroyed returns true, this function will panic.
 	SetFullscreen(fullscreen bool)
 
 	// Fullscreen tells weather the window is currently full screen, as previously set by an call
@@ -191,7 +204,7 @@ type Window interface {
 
 	// SetAlwaysOnTop specifies weather the window should be always on top of other windows.
 	//
-	// If IsDestroyed returns true, this function will panic.
+	// If Destroyed returns true, this function will panic.
 	SetAlwaysOnTop(alwaysOnTop bool)
 
 	// AlwaysOnTop tells weather the window is currently always on top of other windows, due to an
@@ -204,7 +217,7 @@ type Window interface {
 	//
 	// FIXME: What about icon sizes?
 	//
-	// If IsDestroyed returns true, this function will panic.
+	// If Destroyed returns true, this function will panic.
 	SetIcon(icon image.Image)
 
 	// Icon returns the currently in use icon image, as previously set via an call to SetIcon.
@@ -218,7 +231,7 @@ type Window interface {
 	//
 	// FIXME: What about cursor sizes?
 	//
-	// If IsDestroyed returns true, this function will panic.
+	// If Destroyed returns true, this function will panic.
 	SetCursor(cursor image.Image)
 
 	// Cursor returns the currently in use cursor image, as previously set via an call to SetCursor.
@@ -233,8 +246,12 @@ type Window interface {
 	// It is possible to move the cursor outside both the client region and window region, either
 	// by specifying an negative number, or an positive number larger than the window region.
 	//
-	// If IsDestroyed returns true, this function will panic.
+	// If Destroyed returns true, this function will panic.
 	SetCursorPosition(x, y int)
+
+	// CursorPositionEvents returns an new *CursorPositionEventBuffer on which this Window's cursor
+	// position events will be sent.
+	CursorPositionEvents() *CursorPositionEventBuffer
 
 	// CursorPosition tells the current mouse cursor position, both x and y, relative to the client
 	// region of this window (specified in pixels)
@@ -247,12 +264,24 @@ type Window interface {
 	// If the cursor is being released (false), then the original cursor position will be restored
 	// to where it was originally at the time of the last call to SetCursorGrabbed(true).
 	//
-	// If IsDestroyed returns true, this function will panic.
+	// If Destroyed returns true, this function will panic.
 	SetCursorGrabbed(grabbed bool)
 
 	// CursorGrabbed tells weather the mouse cursor is currently grabbed, as previously set via an
 	// call to the SetCursorGrabbed function.
 	CursorGrabbed() bool
+
+	// CloseEvents returns an new *CloseEventBuffer on which this Window's close events will be
+	// sent.
+	CloseEvents() *CloseEventBuffer
+
+	// MouseEvents returns an new *MouseEventBuffer on which this Window's mouse events will be
+	// sent.
+	MouseEvents() *MouseEventBuffer
+
+	// KeyboardEvents returns an new *KeyboardEventBuffer on which this Window's keyboard events
+	// will be sent.
+	KeyboardEvents() *KeyboardEventBuffer
 }
 
 func NewWindow() Window {

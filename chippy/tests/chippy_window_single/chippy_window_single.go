@@ -13,7 +13,6 @@ import (
 	"code.google.com/p/azul3d/chippy"
 	"log"
 	"os"
-	"time"
 )
 
 func main() {
@@ -40,7 +39,41 @@ func main() {
 	// Print out what it currently has property-wise
 	log.Println(window)
 
-	// Just wait an while so they can enjoy the window
-	log.Println("Waiting 15 seconds...")
-	<-time.After(15 * time.Second)
+	closeEvents := window.CloseEvents()
+	cursorPositionEvents := window.CursorPositionEvents()
+	keyboardEvents := window.KeyboardEvents()
+	maximizedEvents := window.MaximizedEvents()
+	minimizedEvents := window.MinimizedEvents()
+	mouseEvents := window.MouseEvents()
+	positionEvents := window.PositionEvents()
+	sizeEvents := window.SizeEvents()
+
+	for {
+		select {
+		case v := <-closeEvents.Read:
+			log.Println("close", v)
+
+		case v := <-cursorPositionEvents.Read:
+			log.Println("cursorPosition", v)
+
+		case v := <-keyboardEvents.Read:
+			log.Println("keyboard", v)
+
+		case v := <-maximizedEvents.Read:
+			log.Println("maximized", v)
+
+		case v := <-minimizedEvents.Read:
+			log.Println("minimized", v)
+
+		case v := <-mouseEvents.Read:
+			log.Println("mouse", v)
+
+		case v := <-positionEvents.Read:
+			log.Println("position", v)
+
+		case v := <-sizeEvents.Read:
+			log.Println("size", v)
+		}
+		log.Println(window)
+	}
 }

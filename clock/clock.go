@@ -308,7 +308,7 @@ func (c *Clock) Reset() {
 func New() *Clock {
 	c := new(Clock)
 	c.Reset()
-	c.SetMaxFrameRate(60)
+	c.SetMaxFrameRate(330)
 	c.SetAverageFrameRateSamples(120)
 	return c
 }

@@ -2,9 +2,9 @@
 // This source code is subject to the terms and
 // conditions defined in the "License.txt" file.
 
-// +build !no_opengl
+// +build tests,!no_opengl
 
-// Test application - Opens multiple windows, uses OpenGL 1.5 rendering in each of them
+// Test - Opens an window and uses OpenGL 1.5 rendering
 package main
 
 import (
@@ -18,6 +18,80 @@ import (
 	"time"
 )
 
+var(
+	gl *opengl.Context
+	rot float64
+	window chippy.Window
+	glClock *clock.Clock
+)
+
+// Alternative for gluPerspective.
+func gluPerspective(gl *opengl.Context, fovY, aspect, zNear, zFar float64) {
+	fH := math.Tan(fovY/360*math.Pi) * zNear
+	fW := fH * aspect
+	gl.Frustum(-fW, fW, -fH, fH, zNear, zFar)
+}
+
+func initScene() {
+	gl.ClearColor(0.0, 0.0, 0.0, 0.0)
+	gl.ClearDepth(1.0)
+	gl.DepthFunc(opengl.LESS)
+	gl.Enable(opengl.DEPTH_TEST)
+	gl.ShadeModel(opengl.SMOOTH)
+
+	gl.MatrixMode(opengl.PROJECTION)
+	gl.LoadIdentity()
+
+	width, height := window.Size()
+
+	gluPerspective(gl, 45.0, float64(width)/float64(height), 0.1, 100.0)
+
+	gl.MatrixMode(opengl.MODELVIEW)
+}
+
+func resizeScene(width, height int) {
+	gl.Viewport(0, 0, int32(width), int32(height)) // Reset The Current Viewport And Perspective Transformation
+	gl.MatrixMode(opengl.PROJECTION)
+	gl.LoadIdentity()
+	gluPerspective(gl, 45.0, float64(width) / float64(height), 0.1, 100.0)
+	gl.MatrixMode(opengl.MODELVIEW)
+}
+
+func renderScene() {
+	// Clear The Screen And The Depth Buffer
+	gl.Clear(opengl.COLOR_BUFFER_BIT | opengl.DEPTH_BUFFER_BIT)
+	gl.LoadIdentity() // Reset The View
+
+	// Move into the screen 6.0 units.
+	gl.Translatef(0, 0, -6.0)
+
+	// We have smooth color mode on, this will blend across the vertices.
+	// Draw a triangle rotated on the Y axis.
+	gl.Rotatef(float32(rot), 0.0, 1.0, 0.0) // Rotate
+	gl.Begin(opengl.POLYGON)                // Start drawing a polygon
+	gl.Color3f(1.0, 0.0, 0.0)               // Red
+	gl.Vertex3f(0.0, 1.0, 0.0)              // Top
+	gl.Color3f(0.0, 1.0, 0.0)               // Green
+	gl.Vertex3f(1.0, -1.0, 0.0)             // Bottom Right
+	gl.Color3f(0.0, 0.0, 1.0)               // Blue
+	gl.Vertex3f(-1.0, -1.0, 0.0)            // Bottom Left
+	gl.End()                                // We are done with the polygon
+
+	// Determine time since frame began
+	delta := glClock.Delta()
+
+	// Increase the rotation by 90 degrees each second
+	rot += 90.0 * delta.Seconds()
+
+	// Clamp the result to 360 degrees
+	if rot >= 360 {
+		rot = 0
+	}
+	if rot < 0 {
+		rot = 360
+	}
+}
+
 func main() {
 	log.SetFlags(0)
 
@@ -30,7 +104,7 @@ func main() {
 	}
 	defer chippy.Destroy()
 
-	window := chippy.NewWindow()
+	window = chippy.NewWindow()
 
 	// Actually open the windows
 	screen := chippy.DefaultScreen()
@@ -58,7 +132,7 @@ func main() {
 	defer runtime.UnlockOSThread()
 
 	// Create an OpenGL context with the OpenGL version we wish
-	context, err := window.GLCreateContext(1, 5)
+	context, err := window.GLCreateContext(1, 5, 0)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -70,37 +144,17 @@ func main() {
 	// OpenGL context you wish to interace.
 	//
 	// We only make one here (as we are only using one context).
-	gl := opengl.New()
+	gl = opengl.New()
 	if gl == nil {
-		log.Fatal("You have no support for OpenGL 1.1!")
+		log.Fatal("You have no support for OpenGL 1.5!")
 	}
 	log.Println(gl.GetError())
 
 	// Initialize some things
-	gl.ClearColor(0.0, 0.0, 0.0, 0.0)
-	gl.ClearDepth(1.0)
-	gl.DepthFunc(opengl.LESS)
-	gl.Enable(opengl.DEPTH_TEST)
-	gl.ShadeModel(opengl.SMOOTH)
+	initScene()
 
-	gl.MatrixMode(opengl.PROJECTION)
-	gl.LoadIdentity()
-
-	width, height := window.Size()
-
-	// Alternative for gluPerspective.
-	gluPerspective := func(fovY, aspect, zNear, zFar float64) {
-		fH := math.Tan(fovY/360*math.Pi) * zNear
-		fW := fH * aspect
-		gl.Frustum(-fW, fW, -fH, fH, zNear, zFar)
-	}
-
-	gluPerspective(45.0, float64(width)/float64(height), 0.1, 100.0)
-
-	gl.MatrixMode(opengl.MODELVIEW)
-
-	// We'll use this clock for timing things
-	clock := clock.New()
+	// We'll use this glClock for timing things
+	glClock = clock.New()
 
 	// Start an goroutine to display statistics
 	go func() {
@@ -110,51 +164,27 @@ func main() {
 			delay = 1 * time.Second
 
 			// Print our FPS and average FPS
-			log.Printf("FPS: %4.3f\tAverage: %4.3f\tDeviation: %f\n", clock.FrameRate(), clock.AverageFrameRate(), clock.FrameRateDeviation())
-			//log.Println(1.0 / clock.Delta().Seconds())
+			log.Printf("FPS: %4.3f\tAverage: %4.3f\tDeviation: %f\n", glClock.FrameRate(), glClock.AverageFrameRate(), glClock.FrameRateDeviation())
 		}
 	}()
 
-	var rot float64
+
+	sizeEvents := window.SizeEvents()
+
 	// Begin our rendering loop
-	for !window.IsDestroyed() {
+	for !window.Destroyed() {
 		runtime.Gosched()
 
 		// Inform the clock that an new frame has begun
-		clock.Tick()
+		glClock.Tick()
 
-		// Clear The Screen And The Depth Buffer
-		gl.Clear(opengl.COLOR_BUFFER_BIT | opengl.DEPTH_BUFFER_BIT)
-		gl.LoadIdentity() // Reset The View
-
-		// Move into the screen 6.0 units.
-		gl.Translatef(0.0, 0.0, -6.0)
-
-		// We have smooth color mode on, this will blend across the vertices.
-		// Draw a triangle rotated on the Y axis.
-		gl.Rotatef(float32(rot), 0.0, 1.0, 0.0) // Rotate
-		gl.Begin(opengl.POLYGON)                // Start drawing a polygon
-		gl.Color3f(1.0, 0.0, 0.0)               // Red
-		gl.Vertex3f(0.0, 1.0, 0.0)              // Top
-		gl.Color3f(0.0, 1.0, 0.0)               // Green
-		gl.Vertex3f(1.0, -1.0, 0.0)             // Bottom Right
-		gl.Color3f(0.0, 0.0, 1.0)               // Blue
-		gl.Vertex3f(-1.0, -1.0, 0.0)            // Bottom Left
-		gl.End()                                // We are done with the polygon
-
-		// Determine time since frame began
-		delta := clock.Delta()
-
-		// Increase the rotation by 90 degrees each second
-		rot += 90.0 * delta.Seconds()
-
-		// Clamp the result to 360 degrees
-		if rot >= 360 {
-			rot = 0
+		for i := 0; i < sizeEvents.Length(); i++ {
+			size := <-sizeEvents.Read
+			resizeScene(int(size[0]), int(size[1]))
 		}
-		if rot < 0 {
-			rot = 360
-		}
+
+		// Render the scene
+		renderScene()
 
 		// Swap the display buffers
 		window.GLSwapBuffers()

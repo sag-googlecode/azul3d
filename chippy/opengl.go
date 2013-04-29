@@ -27,8 +27,8 @@ type GLRenderable interface {
 	GLConfig() *GLConfig
 
 	// GLCreateContext creates an OpenGL context for the specified OpenGL version, or returns
-	// an error in the event that we cannot create
-	GLCreateContext(glVersionMinor, glVersionMajor uint) (GLContext, error)
+	// an error in the event that we cannot create an context for that version.
+	GLCreateContext(major, minor, revision uint) (GLContext, error)
 
 	// GLDestroyContext destroys the specified OpenGL context.
 	GLDestroyContext(c GLContext)
