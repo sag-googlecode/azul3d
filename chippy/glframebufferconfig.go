@@ -117,11 +117,11 @@ var (
 		GreenBits:      255,
 		BlueBits:       255,
 		AlphaBits:      255,
-		AccumRedBits:   0,
-		AccumGreenBits: 0,
-		AccumBlueBits:  0,
-		AccumAlphaBits: 0,
-		AuxBuffers:     0,
+		AccumRedBits:   255,
+		AccumGreenBits: 255,
+		AccumBlueBits:  255,
+		AccumAlphaBits: 255,
+		AuxBuffers:     255,
 		DepthBits:      255,
 		StencilBits:    255,
 		DoubleBuffered: true,
@@ -248,6 +248,7 @@ func GLChooseConfig(possible []*GLConfig, minConfig, maxConfig *GLConfig) *GLCon
 
 	// Sort by order of closest-to maxConfig in order of
 	//
+	// Accelerated
 	// RedBits, GreenBits, BlueBits, AlphaBits
 	// DoubleBuffered
 	// DepthBits
@@ -262,6 +263,10 @@ func GLChooseConfig(possible []*GLConfig, minConfig, maxConfig *GLConfig) *GLCon
 
 	bc := possible[0]
 	for _, t := range possible {
+		if !t.Accelerated && bc.Accelerated {
+			continue
+		}
+
 		if t.RedBits < bc.RedBits || t.GreenBits < bc.GreenBits || t.BlueBits < bc.BlueBits || t.AlphaBits < bc.AlphaBits {
 			continue
 		}

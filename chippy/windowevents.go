@@ -6,7 +6,7 @@ import (
 	"reflect"
 )
 
-// One-way channel with unlimited bufferwriteg
+// One-way channel with unlimited buffering
 func elasticBuffer(write, read interface{}) (lengthQuery chan int) {
 	buffer := []reflect.Value{}
 

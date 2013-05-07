@@ -104,15 +104,15 @@ func (w *W32Window) GLConfigs() (configs []*GLConfig) {
 }
 
 func (w *W32Window) GLSetConfig(config *GLConfig) {
-	if w.glConfig != nil {
-		return
-	}
-	w.glConfig = config
-
 	if config == nil {
 		panic("Invalid (nil) GLConfig; it must be an valid configuration!")
 	}
 	config.panicUnlessValid()
+
+	if w.glConfig != nil {
+		return
+	}
+	w.glConfig = config
 
 	dispatch(func() {
 		if !win32.SetPixelFormat(w.dc, config.index, nil) {

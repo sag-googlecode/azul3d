@@ -8,6 +8,7 @@ import (
 	"code.google.com/p/azul3d/chippy/wrappers/win32"
 	//"code.google.com/p/azul3d/chippy/keyboard"
 	"code.google.com/p/azul3d/chippy/mouse"
+	"runtime"
 	"errors"
 	"fmt"
 	"image"
@@ -78,6 +79,7 @@ func (w *W32Window) Open(screen Screen) (err error) {
 		w.windowClass = fmt.Sprintf("ChippyWindow%d", nextCounter())
 		windowClass := win32.NewWNDCLASSEX()
 		windowClass.SetLpfnWndProc()
+		windowClass.SetHbrBackground(nil)
 		//windowClass.SetHIcon(win32.LoadIcon(hInstance, szAppName))
 		//windowClass.SetHCursor(win32.LoadCursor(nil, win32.IDC_ARROW))
 		//windowClass.SetHbrBackground(win32.IntToHBRUSH(win32.COLOR_WINDOW+2)) // Black background
@@ -709,6 +711,7 @@ func (w *W32Window) doUpdateVisibility() {
 			win32.ShowWindow(w.hwnd, flag)
 			win32.EnableWindow(w.hwnd, true)
 	*/
+
 }
 
 func (w *W32Window) doUpdateStyle() {
@@ -800,6 +803,9 @@ func mainWindowProc(hwnd win32.HWND, msg win32.UINT, wParam win32.WPARAM, lParam
 	w, ok := windowsByHwnd[hwnd]
 	if ok {
 		switch msg {
+		//case win32.WM_PAINT:
+		//	logger.Println("WM_PAINT")
+
 		case win32.WM_GETMINMAXINFO:
 			minWidth, minHeight := w.MinimumSize()
 			maxWidth, maxHeight := w.MaximumSize()
@@ -840,6 +846,7 @@ func mainWindowProc(hwnd win32.HWND, msg win32.UINT, wParam win32.WPARAM, lParam
 			if maxHeight > 0 {
 				minMaxInfo.PtMaxTrackSize().SetY(int32(newMaxHeight))
 			}
+			return 0
 
 		case win32.WM_SIZING:
 			ratio := w.AspectRatio()
@@ -885,6 +892,7 @@ func mainWindowProc(hwnd win32.HWND, msg win32.UINT, wParam win32.WPARAM, lParam
 					w.addSizeEvent([]uint{w.width, w.height})
 				}
 			}
+			return 0
 
 		case win32.WM_SIZE:
 			if wParam == win32.SIZE_MAXIMIZED {
@@ -927,6 +935,7 @@ func mainWindowProc(hwnd win32.HWND, msg win32.UINT, wParam win32.WPARAM, lParam
 					w.addSizeEvent([]uint{w.width, w.height})
 				}
 			}
+			return 0
 
 		case win32.WM_MOVE:
 			xPos := int(lParam.LOWORD())
@@ -939,6 +948,7 @@ func mainWindowProc(hwnd win32.HWND, msg win32.UINT, wParam win32.WPARAM, lParam
 					w.addPositionEvent([]int{w.x, w.y})
 				}
 			}
+			return 0
 
 		case win32.WM_ACTIVATE:
 			if wParam.LOWORD() == win32.WA_INACTIVE || wParam.HIWORD() != 0 {
@@ -952,13 +962,16 @@ func mainWindowProc(hwnd win32.HWND, msg win32.UINT, wParam win32.WPARAM, lParam
 					w.addFocusedEvent(w.focused)
 				}
 			}
+			return 0
 
 		case win32.WM_GETICON:
-			fmt.Println("Get icon!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+			logger.Println("WM_GETICON")
+			return 0
 
 		case win32.WM_KEYDOWN:
 			//fmt.Println(lParam, lParam.LOWORD(), lParam.HIWORD(), string(lParam.HIWORD()))
 			//fmt.Println(0x09)
+			return 0
 
 		case win32.WM_MOUSEMOVE:
 			xPos := int(lParam.LOWORD())
@@ -970,6 +983,7 @@ func mainWindowProc(hwnd win32.HWND, msg win32.UINT, wParam win32.WPARAM, lParam
 
 				w.addCursorPositionEvent([]int{w.cursorX, w.cursorY})
 			}
+			return 0
 
 		// Mouse Buttons
 		case win32.WM_LBUTTONDOWN:
@@ -977,48 +991,58 @@ func mainWindowProc(hwnd win32.HWND, msg win32.UINT, wParam win32.WPARAM, lParam
 				Button: mouse.Left,
 				State:  mouse.Down,
 			})
+			return 0
 
 		case win32.WM_LBUTTONUP:
 			w.addMouseEvent(&mouse.Event{
 				Button: mouse.Left,
 				State:  mouse.Up,
 			})
+			return 0
 
 		case win32.WM_RBUTTONDOWN:
 			w.addMouseEvent(&mouse.Event{
 				Button: mouse.Right,
 				State:  mouse.Down,
 			})
+			return 0
 
 		case win32.WM_RBUTTONUP:
 			w.addMouseEvent(&mouse.Event{
 				Button: mouse.Right,
 				State:  mouse.Up,
 			})
+			return 0
 
 		case win32.WM_MBUTTONDOWN:
 			w.addMouseEvent(&mouse.Event{
 				Button: mouse.Wheel,
 				State:  mouse.Down,
 			})
+			return 0
 
 		case win32.WM_MBUTTONUP:
 			w.addMouseEvent(&mouse.Event{
 				Button: mouse.Wheel,
 				State:  mouse.Up,
 			})
+			return 0
 
 		case win32.WM_XBUTTONDOWN:
 			fmt.Println(lParam, lParam.LOWORD(), lParam.HIWORD())
+			return 0
 
 		case win32.WM_XBUTTONUP:
 			fmt.Println(lParam, lParam.LOWORD(), lParam.HIWORD())
+			return 0
 
 		case win32.WM_MOUSEWHEEL:
 			fmt.Println(lParam, lParam.LOWORD(), lParam.HIWORD())
+			return 0
 
 		case win32.WM_MOUSEHWHEEL:
 			fmt.Println(lParam, lParam.LOWORD(), lParam.HIWORD())
+			return 0
 
 		//default:
 		//	fmt.Printf("0x%x\n", msg)
@@ -1030,6 +1054,23 @@ func mainWindowProc(hwnd win32.HWND, msg win32.UINT, wParam win32.WPARAM, lParam
 			return 0
 		}
 	}
+
+	// Note: This line is EXTREAMELY important when GOMAXPROCS=1!
+	//
+	// Many win32 API calls simply perform an callback into mainWindowProc and provide little to
+	// no information as to which ones do and when they do.
+	//
+	// Input devices (mice) that generate an lot of WM_MOUSEMOVE events will cause an temporary
+	// block when these input devices send too many messages, the temporary block stops once the
+	// devices stop sending the messages.
+	//
+	// The effect this has is, an call to SwapBuffers() for instance, will block as long as the
+	// user is moving their mouse inside the window constantly:
+	//
+	// /_Causing the render loop to pause while the user moves their mouse_/
+	//
+	// This will pass feedback to the render loop without blocking when the messages are spammed.
+	runtime.Gosched()
 
 	ret = win32.DefWindowProc(hwnd, msg, wParam, lParam)
 	return

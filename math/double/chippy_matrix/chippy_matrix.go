@@ -8,7 +8,7 @@ package main
 import (
 	"code.google.com/p/azul3d/chippy"
 	"code.google.com/p/azul3d/clock"
-	"code.google.com/p/azul3d/math/double"
+	//"code.google.com/p/azul3d/math/double"
 	"code.google.com/p/azul3d/native/opengl/1.5"
 	"log"
 	"math"
@@ -31,13 +31,14 @@ func gluPerspective(gl *opengl.Context, fovY, aspect, zNear, zFar float64) {
 	gl.Frustum(-fW, fW, -fH, fH, zNear, zFar)
 }
 
-func initScene() {
-	gl.ClearColor(0.0, 0.0, 0.0, 0.0)
-	gl.ClearDepth(1.0)
-	gl.DepthFunc(opengl.LESS)
-	gl.Enable(opengl.DEPTH_TEST)
-	gl.ShadeModel(opengl.SMOOTH)
+func resizeScene(width, height int) {
+	gl.Viewport(0, 0, int32(width), int32(height)) // Reset The Current Viewport And Perspective Transformation
+	gl.MatrixMode(opengl.PROJECTION)
+	gl.LoadIdentity()
+	gluPerspective(gl, 45.0, float64(width)/float64(height), 0.1, 100.0)
+	gl.MatrixMode(opengl.MODELVIEW)
 
+	/*
 	gl.MatrixMode(opengl.PROJECTION)
 	//width, height := window.Size()
 	//gluPerspective(gl, 45.0, float64(width)/float64(height), 0.1, 100.0)
@@ -48,14 +49,18 @@ func initScene() {
 
 	gl.LoadMatrixd(&m[0][0])
 	gl.MatrixMode(opengl.MODELVIEW)
+	*/
 }
 
-func resizeScene(width, height int) {
-	gl.Viewport(0, 0, int32(width), int32(height)) // Reset The Current Viewport And Perspective Transformation
-	gl.MatrixMode(opengl.PROJECTION)
-	gl.LoadIdentity()
-	gluPerspective(gl, 45.0, float64(width)/float64(height), 0.1, 100.0)
-	gl.MatrixMode(opengl.MODELVIEW)
+func initScene() {
+	gl.ClearColor(0.0, 0.0, 0.0, 0.0)
+	gl.ClearDepth(1.0)
+	gl.DepthFunc(opengl.LESS)
+	gl.Enable(opengl.DEPTH_TEST)
+	gl.ShadeModel(opengl.SMOOTH)
+
+	width, height := window.Size()
+	resizeScene(int(width), int(height))
 }
 
 func renderScene() {
@@ -121,7 +126,7 @@ func main() {
 	configs := window.GLConfigs()
 
 	// See documentation for this function and vars to see how it determines the 'best' format
-	bestConfig := chippy.GLChooseConfig(configs, chippy.GLWorstHWConfig, chippy.GLBestConfig)
+	bestConfig := chippy.GLChooseConfig(configs, chippy.GLWorstConfig, chippy.GLBestConfig)
 	window.GLSetConfig(bestConfig)
 
 	//for i, c := range configs {
@@ -190,9 +195,15 @@ func main() {
 		//	break
 		//}
 
+		// Since we're not interested in multiple size events that occured in-between frames, we'll
+		// just grab the last size event instead, and ignore all the other ones.
 		for i := 0; i < sizeEvents.Length(); i++ {
 			size := <-sizeEvents.Read
-			resizeScene(int(size[0]), int(size[1]))
+
+			// We only want to apply the latest one, in fact.
+			if i == sizeEvents.Length() {
+				resizeScene(int(size[0]), int(size[1]))
+			}
 		}
 
 		// Render the scene
