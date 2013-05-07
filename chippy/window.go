@@ -56,7 +56,23 @@ type Window interface {
 	// window, in pixels.
 	Extents() (left, right, bottom, top uint)
 
-	// Set the title of the window, this is shown anywhere where there needs to be an string
+	// Focused tells weather this window currently has focus, and is therefor the current window
+	// that is being interacted with by the user.
+	Focused() bool
+
+	// FocusedEvents returns an new *FocusEventBuffer on which this Window's focus events will be
+	// sent.
+	FocusedEvents() *FocusedEventBuffer
+
+	// SetTransparent specifies weather this window should be transparent, used in things like splash screens, etc.
+	//
+	// Default: false
+	SetTransparent(transparent bool)
+
+	// Transparent tells weather this window is transparent, via an previous call to SetTransparent()
+	Transparent() bool
+
+	// SetTitle sets the title of the window, this is shown anywhere where there needs to be an string
 	// representation, typical places include the windows Title Bar decoration, and in the
 	// icon tray (which displays minimized windows, etc).
 	//
@@ -246,7 +262,7 @@ type Window interface {
 	// It is possible to move the cursor outside both the client region and window region, either
 	// by specifying an negative number, or an positive number larger than the window region.
 	//
-	// If Destroyed returns true, this function will panic.
+	// An panic will occur if this window has yet to be opened, or if it has been destroyed.
 	SetCursorPosition(x, y int)
 
 	// CursorPositionEvents returns an new *CursorPositionEventBuffer on which this Window's cursor
@@ -256,6 +272,13 @@ type Window interface {
 	// CursorPosition tells the current mouse cursor position, both x and y, relative to the client
 	// region of this window (specified in pixels)
 	CursorPosition() (x, y int)
+
+	// CursorWithin tells weather the mouse cursor is inside the window's client region or not.
+	CursorWithin() bool
+
+	// CursorWithinEvents returns an new *CursorWithinEventBuffer on which this Window's cursor
+	// within events will be sent.
+	CursorWithinEvents() *CursorWithinEventBuffer
 
 	// SetCursorGrabbed specifies weather the mouse cursor should be grabbed, this means the cursor
 	// will be invisible, and will be forced to stay within the client region of the window. This

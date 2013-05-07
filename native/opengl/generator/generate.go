@@ -74,6 +74,22 @@ func init() {
 		return "BindAttribLocation", "program, index uint32, name string", body, ""
 	}
 	///////////////////////////////////////////////////////////////////////////////////////////////////
+
+	///////////////////////////////////////////////////////////////////////////////////////////////////
+	specialProcedures["glGetActiveAttrib"] = func(ctx, prefix string, p *Procedure) (name, args, body, returns string) {
+		body = fmt.Sprintf(`
+	var(
+		cname C.GLchar
+	)
+
+	C.%sGetActiveAttrib(%s, C.GLuint(program), C.GLuint(index), C.GLsizei(bufSize), (*C.GLsizei)(unsafe.Pointer(&length)), (*C.GLint)(unsafe.Pointer(&size)), (*C.GLenum)(unsafe.Pointer(&Type)), &cname)
+	name = C.GoString((*C.char)(unsafe.Pointer(&cname)))
+	return
+`, prefix, ctx)
+
+		return "GetActiveAttrib", "program, index uint32, bufSize int32", body, "(length int32, size int32, Type uint32, name string)"
+	}
+	///////////////////////////////////////////////////////////////////////////////////////////////////
 }
 
 type Procedure struct {
@@ -141,31 +157,42 @@ func cToGoType(c string) string {
 		return "float64"
 	case "GLsizeiptr":
 		return "int32"
+	case "GLintptr":
+		return "int32"
 
 	case "GLvoid*":
 		return "unsafe.Pointer"
+
+	case "GLchar*":
+		return "*byte"
+	case "GLchar**":
+		return "**byte"
 	case "GLshort*":
-		return "[]int16"
+		return "*int16"
 	case "GLushort*":
-		return "[]uint16"
+		return "*uint16"
 	case "GLint*":
-		return "[]int32"
+		return "*int32"
+	case "GLsizei*":
+		return "*int32"
 	case "GLuint*":
-		return "[]uint32"
+		return "*uint32"
+	case "GLenum*":
+		return "*uint32"
 	case "GLboolean*":
-		return "[]bool"
+		return "*bool"
 	case "GLbyte*":
-		return "[]int8"
+		return "*int8"
 	case "GLubyte*":
-		return "[]uint8"
+		return "*uint8"
 	case "GLfloat*":
-		return "[]float32"
+		return "*float32"
 	case "GLclampf*":
-		return "[]float32"
+		return "*float32"
 	case "GLdouble*":
-		return "[]float64"
+		return "*float64"
 	case "GLclampd*":
-		return "[]float64"
+		return "*float64"
 	}
 	return c
 }
@@ -230,12 +257,17 @@ func autoProcedure(ctx, prefix string, p *Procedure) (name, args, body, returns 
 			argType := split[0]
 			argName := cToGoName(split[1])
 
-			if strings.HasPrefix(cToGoType(argType), "[]") {
+			if strings.HasPrefix(cToGoType(argType), "*") {
 				// Do unsafe conversion
-
-				// Move * to other side
+				dereferences := len(argType)
 				argType = strings.TrimRight(argType, "*")
-				fmt.Fprintf(procArgNames, "(*C.%s)(unsafe.Pointer(&%s[0]))", argType, argName)
+				dereferences -= len(argType)
+
+				fmt.Fprintf(procArgNames, "(")
+				for i := 0; i < dereferences; i++ {
+					fmt.Fprintf(procArgNames, "*")
+				}
+				fmt.Fprintf(procArgNames, "C.%s)(unsafe.Pointer(%s))", argType, argName)
 			} else if argType == "GLvoid*" {
 				fmt.Fprintf(procArgNames, "%s", argName)
 			} else if argType == "GLboolean" {
@@ -387,6 +419,7 @@ typedef double GLdouble;
 typedef double GLclampd;
 typedef void GLvoid;
 typedef ptrdiff_t GLsizeiptr;
+typedef ptrdiff_t GLintptr;
 `)
 		fmt.Fprintf(header, "\n")
 
@@ -450,36 +483,43 @@ typedef ptrdiff_t GLsizeiptr;
 		}
 		defer api.Close()
 
-		fmt.Fprintf(api, "#include <stdbool.h>\n")
-		fmt.Fprintf(api, "#include <stdlib.h>\n")
-		fmt.Fprintf(api, "#ifdef _WIN32\n")
-		fmt.Fprintf(api, "    #include <windows.h>\n")
-		fmt.Fprintf(api, "#endif\n")
-		fmt.Fprintf(api, "#include \"gl%s.h\"\n", versionWithoutDots)
+		cHelperCode := `
+#include <stdbool.h>
+#include <stdlib.h>
 
-		//fmt.Fprintf(api, "#include \"_cgo_export.h\"\n")
-		fmt.Fprintf(api, "\n")
+#ifdef _WIN32
+	#include <windows.h>
+#endif
 
-		fmt.Fprintf(api, "#ifdef _WIN32\n")
-		fmt.Fprintf(api, "    HMODULE gl%sOpenGL32;\n", versionWithoutDots)
-		fmt.Fprintf(api, "    void* doGetProcAddress(char* name) {\n")
-		fmt.Fprintf(api, "        if(gl%sOpenGL32 == NULL) {\n", versionWithoutDots)
-		fmt.Fprintf(api, "            gl%sOpenGL32 = LoadLibrary(TEXT(\"opengl32.dll\"));\n", versionWithoutDots)
-		fmt.Fprintf(api, "        }\n")
-		fmt.Fprintf(api, "        return GetProcAddress(gl%sOpenGL32, TEXT(name));\n", versionWithoutDots)
-		fmt.Fprintf(api, "    }\n")
-		fmt.Fprintf(api, "#endif\n")
-		fmt.Fprintf(api, "\n")
+#include "gl<VERSION_WITHOUT_DOTS>.h"
 
-		/*
-		   HMODULE WINAPI LoadLibrary(
-		     _In_  LPCTSTR lpFileName
-		   );
-		   FARPROC WINAPI GetProcAddress(
-		     _In_  HMODULE hModule,
-		     _In_  LPCSTR lpProcName
-		   );
-		*/
+#ifdef _WIN32
+	HMODULE gl<VERSION_WITHOUT_DOTS>OpenGL32;
+
+	void* gl<VERSION_WITHOUT_DOTS>LibGetProcAddress(char* name) {
+		if(gl<VERSION_WITHOUT_DOTS>OpenGL32 == NULL) {
+			gl<VERSION_WITHOUT_DOTS>OpenGL32 = LoadLibrary(TEXT("opengl32.dll"));
+		}
+		return GetProcAddress(gl<VERSION_WITHOUT_DOTS>OpenGL32, TEXT(name));
+	}
+
+	void* gl<VERSION_WITHOUT_DOTS>GLGetProcAddress(char* name) {
+		void* ptr = wglGetProcAddress(name);
+
+		intptr_t iptr = (intptr_t)ptr;
+
+		if(iptr == 0 || iptr == 1 || iptr == 2 || iptr == 3 || iptr == -1) {
+			return NULL;
+		}
+		return ptr;
+	}
+#endif
+`
+
+		cHelperCode = strings.Replace(cHelperCode, "<VERSION>", version, -1)
+		cHelperCode = strings.Replace(cHelperCode, "<VERSION_WITHOUT_DOTS>", versionWithoutDots, -1)
+		api.Write([]byte(cHelperCode))
+		fmt.Fprintf(api, "\n\n")
 
 		for _, p := range versionProcs {
 			glStripped := strings.TrimLeft(p.Name, "gl")
@@ -532,9 +572,9 @@ typedef ptrdiff_t GLsizeiptr;
 
 			fmt.Fprintf(api, "    glc->fn%s = (%sP%s)", glStripped, prefix, glStripped)
 			if !p.Extension {
-				fmt.Fprintf(api, "doGetProcAddress(\"%s\");\n", p.Name)
+				fmt.Fprintf(api, "gl%sLibGetProcAddress(\"%s\");\n", versionWithoutDots, p.Name)
 			} else {
-				fmt.Fprintf(api, "wglGetProcAddress(\"%s\");\n", p.Name)
+				fmt.Fprintf(api, "gl%sGLGetProcAddress(\"%s\");\n", versionWithoutDots, p.Name)
 			}
 		}
 		fmt.Fprintf(api, "    return glc;\n")
@@ -549,15 +589,20 @@ typedef ptrdiff_t GLsizeiptr;
 		}
 		defer code.Close()
 
-		fmt.Fprintf(code, `
-// Package 'opengl' implements OpenGL version %s
+		helperCode := `
+// Package 'opengl' implements OpenGL version <VERSION>
 package opengl
 
 // #cgo LDFLAGS: -lopengl32
-// #include "%s"
+// #include "gl<VERSION_WITHOUT_DOTS>.h"
 import "C"
 
-import "unsafe"
+import(
+	"strconv"
+	"strings"
+	"unsafe"
+	"fmt"
+)
 
 func boolToGL(b bool) C.GLboolean {
 	if b {
@@ -566,7 +611,76 @@ func boolToGL(b bool) C.GLboolean {
 	return C.GLboolean(0)
 }
 
-`, version, "gl"+versionWithoutDots+".h")
+func parseVersions(s string) (n, major, minor, rev int) {
+	var err error
+
+	versions := strings.Split(s, ".")
+	if len(versions) > 2 {
+		versions = versions[0:3]
+	}
+
+	if len(versions) > 0 {
+		major, err = strconv.Atoi(versions[0])
+		if err != nil {
+			return 0, 0, 0, 0
+		}
+	}
+
+	if len(versions) > 1 {
+		minor, err = strconv.Atoi(versions[1])
+		if err != nil {
+			return 0, 0, 0, 0
+		}
+	}
+	n = len(versions)
+
+	if len(versions) > 2 {
+		_, err = fmt.Sscanf(versions[2] + "\n", "%d", &rev)
+		if err != nil {
+			n = 2
+		}
+	}
+
+	return
+}
+
+func versionSupported(glc *Context) bool {
+	ver := glc.GetString(VERSION)
+	if len(ver) > 0 {
+		n, wantedMajor, wantedMinor, wantedRev := parseVersions("<VERSION>")
+		if n < 2 {
+			fmt.Printf("OpenGL: *** JSON version parsing failed for %q ***\n", "<VERSION>")
+			return false
+		}
+
+		n, major, minor, rev := parseVersions(ver)
+		if n < 2 {
+			fmt.Printf("OpenGL: *** Driver reported version parsing failed for %q ***\n", ver)
+			return false
+		}
+
+
+		if major > wantedMajor {
+			return true
+		}
+		if n == 2 {
+			fmt.Printf("OpenGL: *** Driver reported version has no revision! %q ***\n", ver)
+			if major == wantedMajor && minor >= wantedMinor {
+				return true
+			}
+		} else {
+			if major == wantedMajor && minor == wantedMinor && rev >= wantedRev {
+				return true
+			}
+		}
+	}
+	return false
+}
+`
+
+		helperCode = strings.Replace(helperCode, "<VERSION>", version, -1)
+		helperCode = strings.Replace(helperCode, "<VERSION_WITHOUT_DOTS>", versionWithoutDots, -1)
+		code.Write([]byte(helperCode))
 
 		fmt.Fprintf(code, "const(\n")
 		for constName, constValue := range constants {
@@ -598,20 +712,20 @@ func boolToGL(b bool) C.GLboolean {
 		fmt.Fprintf(code, "    glc.context = C.%sNewContext()\n", prefix)
 		fmt.Fprintf(code, "\n")
 
-		// Verify each mandatory one exists
-		for _, p := range versionProcs {
-			if !p.Extension {
-				glStripped := strings.TrimLeft(p.Name, "gl")
-				fmt.Fprintf(code, "    if glc.context.fn%s == nil { ", glStripped)
+		/*
+			// For debugging
+			for _, p := range versionProcs {
+				if !p.Extension {
+					glStripped := strings.TrimLeft(p.Name, "gl")
+					fmt.Fprintf(code, "    if glc.context.fn%s == nil { ", glStripped)
 
-				// For debugging
-				//fmt.Fprintf(code, "panic(\"%s\")", p.Name)
-				fmt.Fprintf(code, "return nil")
+					fmt.Fprintf(code, "panic(\"%s missing\")", p.Name)
 
-				fmt.Fprintf(code, " }\n")
+					fmt.Fprintf(code, " }\n")
+				}
 			}
-		}
-		fmt.Fprintf(code, "\n")
+			fmt.Fprintf(code, "\n")
+		*/
 
 		// Wrap each function with an closure tied to the object
 		for _, p := range versionProcs {
@@ -634,6 +748,8 @@ func boolToGL(b bool) C.GLboolean {
 			}
 			fmt.Fprintf(code, "    }\n\n")
 		}
+
+		fmt.Fprintf(code, "    if !versionSupported(glc) { return nil }\n")
 		fmt.Fprintf(code, "    return glc\n")
 		fmt.Fprintf(code, "}\n\n")
 	}

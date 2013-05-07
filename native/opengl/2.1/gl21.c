@@ -1,19 +1,35 @@
+
 #include <stdbool.h>
 #include <stdlib.h>
+
 #ifdef _WIN32
-    #include <windows.h>
+	#include <windows.h>
 #endif
+
 #include "gl21.h"
 
 #ifdef _WIN32
-    HMODULE gl21OpenGL32;
-    void* doGetProcAddress(char* name) {
-        if(gl21OpenGL32 == NULL) {
-            gl21OpenGL32 = LoadLibrary(TEXT("opengl32.dll"));
-        }
-        return GetProcAddress(gl21OpenGL32, TEXT(name));
-    }
+	HMODULE gl21OpenGL32;
+
+	void* gl21LibGetProcAddress(char* name) {
+		if(gl21OpenGL32 == NULL) {
+			gl21OpenGL32 = LoadLibrary(TEXT("opengl32.dll"));
+		}
+		return GetProcAddress(gl21OpenGL32, TEXT(name));
+	}
+
+	void* gl21GLGetProcAddress(char* name) {
+		void* ptr = wglGetProcAddress(name);
+
+		intptr_t iptr = (intptr_t)ptr;
+
+		if(iptr == 0 || iptr == 1 || iptr == 2 || iptr == 3 || iptr == -1) {
+			return NULL;
+		}
+		return ptr;
+	}
 #endif
+
 
 void gl21Accum(gl21Context* glc, GLenum op, GLfloat value) {
     return glc->fnAccum(op, value);
@@ -275,6 +291,10 @@ void gl21DepthFunc(gl21Context* glc, GLenum func) {
     return glc->fnDepthFunc(func);
 }
 
+void gl21DepthMask(gl21Context* glc, GLboolean flag) {
+    return glc->fnDepthMask(flag);
+}
+
 void gl21DepthRange(gl21Context* glc, GLclampd zNear, GLclampd zFar) {
     return glc->fnDepthRange(zNear, zFar);
 }
@@ -291,8 +311,8 @@ void gl21DrawBuffer(gl21Context* glc, GLenum mode) {
     return glc->fnDrawBuffer(mode);
 }
 
-void gl21DrawPixels(gl21Context* glc, GLsizei width, GLsizei height, GLenum format, GLenum type, GLvoid* pixels) {
-    return glc->fnDrawPixels(width, height, format, type, pixels);
+void gl21DrawPixels(gl21Context* glc, GLsizei width, GLsizei height, GLenum format, GLenum type, GLvoid* data) {
+    return glc->fnDrawPixels(width, height, format, type, data);
 }
 
 void gl21EdgeFlag(gl21Context* glc, GLboolean flag) {
@@ -305,14 +325,6 @@ void gl21EdgeFlagv(gl21Context* glc, GLboolean* flag) {
 
 void gl21EdgeFlagPointer(gl21Context* glc, GLsizei stride, GLvoid* pointer) {
     return glc->fnEdgeFlagPointer(stride, pointer);
-}
-
-void gl21EnableClientState(gl21Context* glc, GLenum cap) {
-    return glc->fnEnableClientState(cap);
-}
-
-void gl21DisableClientState(gl21Context* glc, GLenum cap) {
-    return glc->fnDisableClientState(cap);
 }
 
 void gl21EvalCoord1d(gl21Context* glc, GLdouble u) {
@@ -467,8 +479,8 @@ void gl21GetPixelMapusv(gl21Context* glc, GLenum map, GLushort* values) {
     return glc->fnGetPixelMapusv(map, values);
 }
 
-void gl21GetPolygonStipple(gl21Context* glc, GLubyte* mask) {
-    return glc->fnGetPolygonStipple(mask);
+void gl21GetPolygonStipple(gl21Context* glc, GLubyte* pattern) {
+    return glc->fnGetPolygonStipple(pattern);
 }
 
 GLubyte* gl21GetString(gl21Context* glc, GLenum name) {
@@ -535,10 +547,6 @@ void gl21Indexs(gl21Context* glc, GLshort c) {
     return glc->fnIndexs(c);
 }
 
-void gl21Indexub(gl21Context* glc, GLubyte c) {
-    return glc->fnIndexub(c);
-}
-
 void gl21Indexdv(gl21Context* glc, GLdouble* c) {
     return glc->fnIndexdv(c);
 }
@@ -555,10 +563,6 @@ void gl21Indexsv(gl21Context* glc, GLshort* c) {
     return glc->fnIndexsv(c);
 }
 
-void gl21Indexubv(gl21Context* glc, GLubyte* c) {
-    return glc->fnIndexubv(c);
-}
-
 void gl21IndexMask(gl21Context* glc, GLuint mask) {
     return glc->fnIndexMask(mask);
 }
@@ -569,10 +573,6 @@ void gl21IndexPointer(gl21Context* glc, GLenum type, GLsizei stride, GLvoid* poi
 
 void gl21InitNames(gl21Context* glc) {
     return glc->fnInitNames();
-}
-
-void gl21InterleavedArrays(gl21Context* glc, GLenum format, GLsizei stride, GLvoid* pointer) {
-    return glc->fnInterleavedArrays(format, stride, pointer);
 }
 
 void gl21IsEnabled(gl21Context* glc, GLenum cap) {
@@ -755,10 +755,6 @@ void gl21Normal3sv(gl21Context* glc, GLshort* v) {
     return glc->fnNormal3sv(v);
 }
 
-void gl21NormalPointer(gl21Context* glc, GLenum type, GLsizei stride, GLvoid* pointer) {
-    return glc->fnNormalPointer(type, stride, pointer);
-}
-
 void gl21Ortho(gl21Context* glc, GLdouble left, GLdouble right, GLdouble bottom, GLdouble top, GLdouble zNear, GLdouble zfar) {
     return glc->fnOrtho(left, right, bottom, top, zNear, zfar);
 }
@@ -811,24 +807,12 @@ void gl21PolygonStipple(gl21Context* glc, GLubyte* mask) {
     return glc->fnPolygonStipple(mask);
 }
 
-void gl21PrioritizeTextures(gl21Context* glc, GLsizei n, GLuint* textures, GLclampf* priorities) {
-    return glc->fnPrioritizeTextures(n, textures, priorities);
-}
-
 void gl21PushAttrib(gl21Context* glc, GLbitfield mask) {
     return glc->fnPushAttrib(mask);
 }
 
 void gl21PopAttrib(gl21Context* glc) {
     return glc->fnPopAttrib();
-}
-
-void gl21PushClientAttrib(gl21Context* glc, GLbitfield mask) {
-    return glc->fnPushClientAttrib(mask);
-}
-
-void gl21PopClientAttrib(gl21Context* glc) {
-    return glc->fnPopClientAttrib();
 }
 
 void gl21PushMatrix(gl21Context* glc) {
@@ -1155,10 +1139,6 @@ void gl21TexCoord4sv(gl21Context* glc, GLshort* v) {
     return glc->fnTexCoord4sv(v);
 }
 
-void gl21TexCoordPointer(gl21Context* glc, GLint size, GLenum type, GLsizei stride, GLvoid* pointer) {
-    return glc->fnTexCoordPointer(size, type, stride, pointer);
-}
-
 void gl21TexEnvf(gl21Context* glc, GLenum target, GLenum pname, GLfloat param) {
     return glc->fnTexEnvf(target, pname, param);
 }
@@ -1207,10 +1187,6 @@ void gl21TexImage2D(gl21Context* glc, GLenum target, GLint level, GLint internal
     return glc->fnTexImage2D(target, level, internalformat, width, height, border, format, type, pixels);
 }
 
-void gl21TexImage3DEXT(gl21Context* glc, GLenum target, GLint level, GLint internalformat, GLsizei width, GLsizei height, GLsizei depth, GLint border, GLenum format, GLenum type, GLvoid* pixels) {
-    return glc->fnTexImage3DEXT(target, level, internalformat, width, height, depth, border, format, type, pixels);
-}
-
 void gl21TexParameterf(gl21Context* glc, GLenum target, GLenum pname, GLfloat param) {
     return glc->fnTexParameterf(target, pname, param);
 }
@@ -1225,18 +1201,6 @@ void gl21TexParameterfv(gl21Context* glc, GLenum target, GLenum pname, GLfloat* 
 
 void gl21TexParameteriv(gl21Context* glc, GLenum target, GLenum pname, GLint* params) {
     return glc->fnTexParameteriv(target, pname, params);
-}
-
-void gl21TexSubImage1D(gl21Context* glc, GLenum target, GLint level, GLint xoffset, GLsizei width, GLenum format, GLenum type, GLvoid* pixels) {
-    return glc->fnTexSubImage1D(target, level, xoffset, width, format, type, pixels);
-}
-
-void gl21TexSubImage2D(gl21Context* glc, GLenum target, GLint level, GLint xoffset, GLint yoffset, GLsizei width, GLsizei height, GLenum format, GLenum type, GLvoid* pixels) {
-    return glc->fnTexSubImage2D(target, level, xoffset, yoffset, width, height, format, type, pixels);
-}
-
-void gl21TexSubImage3DEXT(gl21Context* glc, GLenum target, GLint level, GLint xoffset, GLint yoffset, GLint zoffset, GLsizei width, GLsizei height, GLsizei depth, GLenum format, GLenum type, GLvoid* pixels) {
-    return glc->fnTexSubImage3DEXT(target, level, xoffset, yoffset, zoffset, width, height, depth, format, type, pixels);
 }
 
 void gl21Translated(gl21Context* glc, GLdouble x, GLdouble y, GLdouble z) {
@@ -1295,12 +1259,196 @@ void gl21Vertex4d(gl21Context* glc, GLdouble x, GLdouble y, GLdouble z, GLdouble
     return glc->fnVertex4d(x, y, z, w);
 }
 
-void gl21VertexPointer(gl21Context* glc, GLint size, GLenum type, GLsizei stride, GLvoid* pointer) {
-    return glc->fnVertexPointer(size, type, stride, pointer);
-}
-
 void gl21Viewport(gl21Context* glc, GLint x, GLint y, GLsizei width, GLsizei height) {
     return glc->fnViewport(x, y, width, height);
+}
+
+void gl21GetColorTable(gl21Context* glc, GLenum target, GLenum format, GLenum type, GLvoid* table) {
+    return glc->fnGetColorTable(target, format, type, table);
+}
+
+void gl21GetColorTableParameterfv(gl21Context* glc, GLenum target, GLenum pname, GLfloat* params) {
+    return glc->fnGetColorTableParameterfv(target, pname, params);
+}
+
+void gl21GetColorTableParameteriv(gl21Context* glc, GLenum target, GLenum pname, GLint* params) {
+    return glc->fnGetColorTableParameteriv(target, pname, params);
+}
+
+void gl21GetConvolutionFilter(gl21Context* glc, GLenum target, GLenum format, GLenum type, GLvoid* image) {
+    return glc->fnGetConvolutionFilter(target, format, type, image);
+}
+
+void gl21GetConvolutionParameterfv(gl21Context* glc, GLenum target, GLenum pname, GLfloat* params) {
+    return glc->fnGetConvolutionParameterfv(target, pname, params);
+}
+
+void gl21GetConvolutionParameteriv(gl21Context* glc, GLenum target, GLenum pname, GLint* params) {
+    return glc->fnGetConvolutionParameteriv(target, pname, params);
+}
+
+void gl21GetHistogram(gl21Context* glc, GLenum target, GLboolean reset, GLenum format, GLenum type, GLvoid* values) {
+    return glc->fnGetHistogram(target, reset, format, type, values);
+}
+
+void gl21GetHistogramParameterfv(gl21Context* glc, GLenum target, GLenum pname, GLfloat* params) {
+    return glc->fnGetHistogramParameterfv(target, pname, params);
+}
+
+void gl21GetHistogramParameteriv(gl21Context* glc, GLenum target, GLenum pname, GLint* params) {
+    return glc->fnGetHistogramParameteriv(target, pname, params);
+}
+
+void gl21GetSeparableFilter(gl21Context* glc, GLenum target, GLenum format, GLenum type, GLvoid* row, GLvoid* column, GLvoid* span) {
+    return glc->fnGetSeparableFilter(target, format, type, row, column, span);
+}
+
+void gl21Histogram(gl21Context* glc, GLenum target, GLsizei width, GLenum internalformat, GLboolean sink) {
+    return glc->fnHistogram(target, width, internalformat, sink);
+}
+
+void gl21Minmax(gl21Context* glc, GLenum target, GLenum internalformat, GLboolean sink) {
+    return glc->fnMinmax(target, internalformat, sink);
+}
+
+void gl21MultiTexCoord1s(gl21Context* glc, GLenum target, GLshort s) {
+    return glc->fnMultiTexCoord1s(target, s);
+}
+
+void gl21MultiTexCoord1i(gl21Context* glc, GLenum target, GLint s) {
+    return glc->fnMultiTexCoord1i(target, s);
+}
+
+void gl21MultiTexCoord1f(gl21Context* glc, GLenum target, GLfloat s) {
+    return glc->fnMultiTexCoord1f(target, s);
+}
+
+void gl21MultiTexCoord1d(gl21Context* glc, GLenum target, GLdouble s) {
+    return glc->fnMultiTexCoord1d(target, s);
+}
+
+void gl21MultiTexCoord2s(gl21Context* glc, GLenum target, GLshort s, GLshort t) {
+    return glc->fnMultiTexCoord2s(target, s, t);
+}
+
+void gl21MultiTexCoord2i(gl21Context* glc, GLenum target, GLint s, GLint t) {
+    return glc->fnMultiTexCoord2i(target, s, t);
+}
+
+void gl21MultiTexCoord2f(gl21Context* glc, GLenum target, GLfloat s, GLfloat t) {
+    return glc->fnMultiTexCoord2f(target, s, t);
+}
+
+void gl21MultiTexCoord2d(gl21Context* glc, GLenum target, GLdouble s, GLdouble t) {
+    return glc->fnMultiTexCoord2d(target, s, t);
+}
+
+void gl21MultiTexCoord3s(gl21Context* glc, GLenum target, GLshort s, GLshort t, GLshort r) {
+    return glc->fnMultiTexCoord3s(target, s, t, r);
+}
+
+void gl21MultiTexCoord3i(gl21Context* glc, GLenum target, GLint s, GLint t, GLint r) {
+    return glc->fnMultiTexCoord3i(target, s, t, r);
+}
+
+void gl21MultiTexCoord3f(gl21Context* glc, GLenum target, GLfloat s, GLfloat t, GLfloat r) {
+    return glc->fnMultiTexCoord3f(target, s, t, r);
+}
+
+void gl21MultiTexCoord3d(gl21Context* glc, GLenum target, GLdouble s, GLdouble t, GLdouble r) {
+    return glc->fnMultiTexCoord3d(target, s, t, r);
+}
+
+void gl21MultiTexCoord4s(gl21Context* glc, GLenum target, GLshort s, GLshort t, GLshort r, GLshort q) {
+    return glc->fnMultiTexCoord4s(target, s, t, r, q);
+}
+
+void gl21MultiTexCoord4i(gl21Context* glc, GLenum target, GLint s, GLint t, GLint r, GLint q) {
+    return glc->fnMultiTexCoord4i(target, s, t, r, q);
+}
+
+void gl21MultiTexCoord4f(gl21Context* glc, GLenum target, GLfloat s, GLfloat t, GLfloat r, GLfloat q) {
+    return glc->fnMultiTexCoord4f(target, s, t, r, q);
+}
+
+void gl21MultiTexCoord4d(gl21Context* glc, GLenum target, GLdouble s, GLdouble t, GLdouble r, GLdouble q) {
+    return glc->fnMultiTexCoord4d(target, s, t, r, q);
+}
+
+void gl21MultiTexCoord1sv(gl21Context* glc, GLenum target, GLshort* v) {
+    return glc->fnMultiTexCoord1sv(target, v);
+}
+
+void gl21MultiTexCoord1iv(gl21Context* glc, GLenum target, GLint* v) {
+    return glc->fnMultiTexCoord1iv(target, v);
+}
+
+void gl21MultiTexCoord1fv(gl21Context* glc, GLenum target, GLfloat* v) {
+    return glc->fnMultiTexCoord1fv(target, v);
+}
+
+void gl21MultiTexCoord1dv(gl21Context* glc, GLenum target, GLdouble* v) {
+    return glc->fnMultiTexCoord1dv(target, v);
+}
+
+void gl21MultiTexCoord2sv(gl21Context* glc, GLenum target, GLshort* v) {
+    return glc->fnMultiTexCoord2sv(target, v);
+}
+
+void gl21MultiTexCoord2iv(gl21Context* glc, GLenum target, GLint* v) {
+    return glc->fnMultiTexCoord2iv(target, v);
+}
+
+void gl21MultiTexCoord2fv(gl21Context* glc, GLenum target, GLfloat* v) {
+    return glc->fnMultiTexCoord2fv(target, v);
+}
+
+void gl21MultiTexCoord2dv(gl21Context* glc, GLenum target, GLdouble* v) {
+    return glc->fnMultiTexCoord2dv(target, v);
+}
+
+void gl21MultiTexCoord3sv(gl21Context* glc, GLenum target, GLshort* v) {
+    return glc->fnMultiTexCoord3sv(target, v);
+}
+
+void gl21MultiTexCoord3iv(gl21Context* glc, GLenum target, GLint* v) {
+    return glc->fnMultiTexCoord3iv(target, v);
+}
+
+void gl21MultiTexCoord3fv(gl21Context* glc, GLenum target, GLfloat* v) {
+    return glc->fnMultiTexCoord3fv(target, v);
+}
+
+void gl21MultiTexCoord3dv(gl21Context* glc, GLenum target, GLdouble* v) {
+    return glc->fnMultiTexCoord3dv(target, v);
+}
+
+void gl21MultiTexCoord4sv(gl21Context* glc, GLenum target, GLshort* v) {
+    return glc->fnMultiTexCoord4sv(target, v);
+}
+
+void gl21MultiTexCoord4iv(gl21Context* glc, GLenum target, GLint* v) {
+    return glc->fnMultiTexCoord4iv(target, v);
+}
+
+void gl21MultiTexCoord4fv(gl21Context* glc, GLenum target, GLfloat* v) {
+    return glc->fnMultiTexCoord4fv(target, v);
+}
+
+void gl21MultiTexCoord4dv(gl21Context* glc, GLenum target, GLdouble* v) {
+    return glc->fnMultiTexCoord4dv(target, v);
+}
+
+void gl21ResetHistogram(gl21Context* glc, GLenum target) {
+    return glc->fnResetHistogram(target);
+}
+
+void gl21ResetMinmax(gl21Context* glc, GLenum target) {
+    return glc->fnResetMinmax(target);
+}
+
+void gl21SeparableFilter2D(gl21Context* glc, GLenum target, GLenum internalformat, GLsizei width, GLsizei height, GLenum format, GLenum type, GLvoid* row, GLvoid* column) {
+    return glc->fnSeparableFilter2D(target, internalformat, width, height, format, type, row, column);
 }
 
 GLboolean gl21AreTexturesResident(gl21Context* glc, GLsizei n, GLuint* textures, GLboolean* residences) {
@@ -1363,8 +1511,60 @@ void gl21ColorPointer(gl21Context* glc, GLint size, GLenum type, GLsizei stride,
     return glc->fnColorPointer(size, type, stride, pointer);
 }
 
-void gl21BlendColorEXT(gl21Context* glc, GLclampf red, GLclampf green, GLclampf blue, GLclampf alpha) {
-    return glc->fnBlendColorEXT(red, green, blue, alpha);
+void gl21EnableClientState(gl21Context* glc, GLenum cap) {
+    return glc->fnEnableClientState(cap);
+}
+
+void gl21DisableClientState(gl21Context* glc, GLenum cap) {
+    return glc->fnDisableClientState(cap);
+}
+
+void gl21Indexub(gl21Context* glc, GLubyte c) {
+    return glc->fnIndexub(c);
+}
+
+void gl21Indexubv(gl21Context* glc, GLubyte* c) {
+    return glc->fnIndexubv(c);
+}
+
+void gl21InterleavedArrays(gl21Context* glc, GLenum format, GLsizei stride, GLvoid* pointer) {
+    return glc->fnInterleavedArrays(format, stride, pointer);
+}
+
+void gl21NormalPointer(gl21Context* glc, GLenum type, GLsizei stride, GLvoid* pointer) {
+    return glc->fnNormalPointer(type, stride, pointer);
+}
+
+void gl21PushClientAttrib(gl21Context* glc, GLbitfield mask) {
+    return glc->fnPushClientAttrib(mask);
+}
+
+void gl21PrioritizeTextures(gl21Context* glc, GLsizei n, GLuint* textures, GLclampf* priorities) {
+    return glc->fnPrioritizeTextures(n, textures, priorities);
+}
+
+void gl21PopClientAttrib(gl21Context* glc) {
+    return glc->fnPopClientAttrib();
+}
+
+void gl21TexCoordPointer(gl21Context* glc, GLint size, GLenum type, GLsizei stride, GLvoid* pointer) {
+    return glc->fnTexCoordPointer(size, type, stride, pointer);
+}
+
+void gl21TexSubImage1D(gl21Context* glc, GLenum target, GLint level, GLint xoffset, GLsizei width, GLenum format, GLenum type, GLvoid* pixels) {
+    return glc->fnTexSubImage1D(target, level, xoffset, width, format, type, pixels);
+}
+
+void gl21TexSubImage2D(gl21Context* glc, GLenum target, GLint level, GLint xoffset, GLint yoffset, GLsizei width, GLsizei height, GLenum format, GLenum type, GLvoid* pixels) {
+    return glc->fnTexSubImage2D(target, level, xoffset, yoffset, width, height, format, type, pixels);
+}
+
+void gl21VertexPointer(gl21Context* glc, GLint size, GLenum type, GLsizei stride, GLvoid* pointer) {
+    return glc->fnVertexPointer(size, type, stride, pointer);
+}
+
+void gl21BlendColor(gl21Context* glc, GLclampf red, GLclampf green, GLclampf blue, GLclampf alpha) {
+    return glc->fnBlendColor(red, green, blue, alpha);
 }
 
 void gl21BlendEquation(gl21Context* glc, GLenum mode) {
@@ -1373,6 +1573,18 @@ void gl21BlendEquation(gl21Context* glc, GLenum mode) {
 
 void gl21CopyTexSubImage3D(gl21Context* glc, GLenum target, GLint level, GLint xoffset, GLint yoffset, GLint zoffset, GLint x, GLint y, GLsizei width, GLsizei height) {
     return glc->fnCopyTexSubImage3D(target, level, xoffset, yoffset, zoffset, x, y, width, height);
+}
+
+void gl21DrawRangeElements(gl21Context* glc, GLenum mode, GLuint start, GLuint end, GLsizei count, GLenum type, GLvoid* indices) {
+    return glc->fnDrawRangeElements(mode, start, end, count, type, indices);
+}
+
+void gl21TexImage3D(gl21Context* glc, GLenum target, GLint level, GLint internalformat, GLsizei width, GLsizei height, GLsizei depth, GLint border, GLenum format, GLenum type, GLvoid* pixels) {
+    return glc->fnTexImage3D(target, level, internalformat, width, height, depth, border, format, type, pixels);
+}
+
+void gl21TexSubImage3D(gl21Context* glc, GLenum target, GLint level, GLint xoffset, GLint yoffset, GLint zoffset, GLsizei width, GLsizei height, GLsizei depth, GLenum format, GLenum type, GLvoid* pixels) {
+    return glc->fnTexSubImage3D(target, level, xoffset, yoffset, zoffset, width, height, depth, format, type, pixels);
 }
 
 void gl21ActiveTexture(gl21Context* glc, GLenum texture) {
@@ -1407,8 +1619,200 @@ void gl21CompressedTexSubImage3D(gl21Context* glc, GLenum target, GLint level, G
     return glc->fnCompressedTexSubImage3D(target, level, xoffset, yoffset, zoffset, width, height, depth, format, imageSize, data);
 }
 
+void gl21GetCompressedTexImage(gl21Context* glc, GLenum target, GLint lod, GLvoid* img) {
+    return glc->fnGetCompressedTexImage(target, lod, img);
+}
+
+void gl21LoadTransposeMatrixd(gl21Context* glc, GLdouble* m) {
+    return glc->fnLoadTransposeMatrixd(m);
+}
+
+void gl21LoadTransposeMatrixf(gl21Context* glc, GLdouble* m) {
+    return glc->fnLoadTransposeMatrixf(m);
+}
+
+void gl21MultTransposeMatrixd(gl21Context* glc, GLdouble* m) {
+    return glc->fnMultTransposeMatrixd(m);
+}
+
+void gl21MultTransposeMatrixf(gl21Context* glc, GLfloat* m) {
+    return glc->fnMultTransposeMatrixf(m);
+}
+
+void gl21SampleCoverage(gl21Context* glc, GLclampf value, GLboolean invert) {
+    return glc->fnSampleCoverage(value, invert);
+}
+
 void gl21BlendFuncSeparate(gl21Context* glc, GLenum srcRGB, GLenum dstRGB, GLenum srcAlpha, GLenum dstAlpha) {
     return glc->fnBlendFuncSeparate(srcRGB, dstRGB, srcAlpha, dstAlpha);
+}
+
+void gl21FogCoordPointer(gl21Context* glc, GLenum type, GLsizei stride, GLvoid* pointer) {
+    return glc->fnFogCoordPointer(type, stride, pointer);
+}
+
+void gl21FogCoordd(gl21Context* glc, GLdouble coord) {
+    return glc->fnFogCoordd(coord);
+}
+
+void gl21FogCoordf(gl21Context* glc, GLfloat coord) {
+    return glc->fnFogCoordf(coord);
+}
+
+void gl21FogCoorddv(gl21Context* glc, GLdouble* coord) {
+    return glc->fnFogCoorddv(coord);
+}
+
+void gl21FogCoordfv(gl21Context* glc, GLfloat* coord) {
+    return glc->fnFogCoordfv(coord);
+}
+
+void gl21MultiDrawArrays(gl21Context* glc, GLenum mode, GLint* first, GLsizei* count, GLsizei primcount) {
+    return glc->fnMultiDrawArrays(mode, first, count, primcount);
+}
+
+void gl21MultiDrawElements(gl21Context* glc, GLenum mode, GLsizei* count, GLenum type, GLvoid* indices, GLsizei primcount) {
+    return glc->fnMultiDrawElements(mode, count, type, indices, primcount);
+}
+
+void gl21PointParameterf(gl21Context* glc, GLenum pname, GLfloat param) {
+    return glc->fnPointParameterf(pname, param);
+}
+
+void gl21PointParameteri(gl21Context* glc, GLenum pname, GLint param) {
+    return glc->fnPointParameteri(pname, param);
+}
+
+void gl21SecondaryColor3b(gl21Context* glc, GLbyte red, GLbyte green, GLbyte blue) {
+    return glc->fnSecondaryColor3b(red, green, blue);
+}
+
+void gl21SecondaryColor3s(gl21Context* glc, GLshort red, GLshort green, GLshort blue) {
+    return glc->fnSecondaryColor3s(red, green, blue);
+}
+
+void gl21SecondaryColor3i(gl21Context* glc, GLint red, GLint green, GLint blue) {
+    return glc->fnSecondaryColor3i(red, green, blue);
+}
+
+void gl21SecondaryColor3f(gl21Context* glc, GLfloat red, GLfloat green, GLfloat blue) {
+    return glc->fnSecondaryColor3f(red, green, blue);
+}
+
+void gl21SecondaryColor3d(gl21Context* glc, GLdouble red, GLdouble green, GLdouble blue) {
+    return glc->fnSecondaryColor3d(red, green, blue);
+}
+
+void gl21SecondaryColor3ub(gl21Context* glc, GLubyte red, GLubyte green, GLubyte blue) {
+    return glc->fnSecondaryColor3ub(red, green, blue);
+}
+
+void gl21SecondaryColor3us(gl21Context* glc, GLushort red, GLushort green, GLushort blue) {
+    return glc->fnSecondaryColor3us(red, green, blue);
+}
+
+void gl21SecondaryColor3ui(gl21Context* glc, GLuint red, GLuint green, GLuint blue) {
+    return glc->fnSecondaryColor3ui(red, green, blue);
+}
+
+void gl21SecondaryColor3bv(gl21Context* glc, GLbyte* v) {
+    return glc->fnSecondaryColor3bv(v);
+}
+
+void gl21SecondaryColor3sv(gl21Context* glc, GLshort* v) {
+    return glc->fnSecondaryColor3sv(v);
+}
+
+void gl21SecondaryColor3iv(gl21Context* glc, GLint* v) {
+    return glc->fnSecondaryColor3iv(v);
+}
+
+void gl21SecondaryColor3fv(gl21Context* glc, GLfloat* v) {
+    return glc->fnSecondaryColor3fv(v);
+}
+
+void gl21SecondaryColor3dv(gl21Context* glc, GLdouble* v) {
+    return glc->fnSecondaryColor3dv(v);
+}
+
+void gl21SecondaryColor3ubv(gl21Context* glc, GLubyte* v) {
+    return glc->fnSecondaryColor3ubv(v);
+}
+
+void gl21SecondaryColor3usv(gl21Context* glc, GLushort* v) {
+    return glc->fnSecondaryColor3usv(v);
+}
+
+void gl21SecondaryColor3uiv(gl21Context* glc, GLuint* v) {
+    return glc->fnSecondaryColor3uiv(v);
+}
+
+void gl21SecondaryColorPointer(gl21Context* glc, GLint size, GLenum type, GLsizei stride, GLvoid* pointer) {
+    return glc->fnSecondaryColorPointer(size, type, stride, pointer);
+}
+
+void gl21WindowPos2s(gl21Context* glc, GLshort x, GLshort y) {
+    return glc->fnWindowPos2s(x, y);
+}
+
+void gl21WindowPos2i(gl21Context* glc, GLint x, GLint y) {
+    return glc->fnWindowPos2i(x, y);
+}
+
+void gl21WindowPos2f(gl21Context* glc, GLfloat x, GLfloat y) {
+    return glc->fnWindowPos2f(x, y);
+}
+
+void gl21WindowPos2d(gl21Context* glc, GLdouble x, GLdouble y) {
+    return glc->fnWindowPos2d(x, y);
+}
+
+void gl21WindowPos3s(gl21Context* glc, GLshort x, GLshort y, GLshort z) {
+    return glc->fnWindowPos3s(x, y, z);
+}
+
+void gl21WindowPos3i(gl21Context* glc, GLint x, GLint y, GLint z) {
+    return glc->fnWindowPos3i(x, y, z);
+}
+
+void gl21WindowPos3f(gl21Context* glc, GLfloat x, GLfloat y, GLfloat z) {
+    return glc->fnWindowPos3f(x, y, z);
+}
+
+void gl21WindowPos3d(gl21Context* glc, GLdouble x, GLdouble y, GLdouble z) {
+    return glc->fnWindowPos3d(x, y, z);
+}
+
+void gl21WindowPos2sv(gl21Context* glc, GLshort* v) {
+    return glc->fnWindowPos2sv(v);
+}
+
+void gl21WindowPos2iv(gl21Context* glc, GLint* v) {
+    return glc->fnWindowPos2iv(v);
+}
+
+void gl21WindowPos2fv(gl21Context* glc, GLfloat* v) {
+    return glc->fnWindowPos2fv(v);
+}
+
+void gl21WindowPos2dv(gl21Context* glc, GLdouble* v) {
+    return glc->fnWindowPos2dv(v);
+}
+
+void gl21WindowPos3sv(gl21Context* glc, GLshort* v) {
+    return glc->fnWindowPos3sv(v);
+}
+
+void gl21WindowPos3iv(gl21Context* glc, GLint* v) {
+    return glc->fnWindowPos3iv(v);
+}
+
+void gl21WindowPos3fv(gl21Context* glc, GLfloat* v) {
+    return glc->fnWindowPos3fv(v);
+}
+
+void gl21WindowPos3dv(gl21Context* glc, GLdouble* v) {
+    return glc->fnWindowPos3dv(v);
 }
 
 void gl21BeginQuery(gl21Context* glc, GLenum target, GLuint id) {
@@ -1425,6 +1829,62 @@ void gl21BufferData(gl21Context* glc, GLenum target, GLsizeiptr size, GLvoid* da
 
 void gl21BufferSubData(gl21Context* glc, GLenum target, GLenum offset, GLsizeiptr size, GLvoid* data) {
     return glc->fnBufferSubData(target, offset, size, data);
+}
+
+void gl21DeleteBuffers(gl21Context* glc, GLsizei n, GLuint* buffers) {
+    return glc->fnDeleteBuffers(n, buffers);
+}
+
+void gl21DeleteQueries(gl21Context* glc, GLsizei n, GLuint* ids) {
+    return glc->fnDeleteQueries(n, ids);
+}
+
+void gl21GenBuffers(gl21Context* glc, GLsizei n, GLuint* buffers) {
+    return glc->fnGenBuffers(n, buffers);
+}
+
+void gl21GenQueries(gl21Context* glc, GLsizei n, GLuint* ids) {
+    return glc->fnGenQueries(n, ids);
+}
+
+void gl21GetBufferParameteriv(gl21Context* glc, GLenum target, GLenum value, GLint* data) {
+    return glc->fnGetBufferParameteriv(target, value, data);
+}
+
+void gl21GetBufferPointerv(gl21Context* glc, GLenum target, GLenum pname, GLvoid* params) {
+    return glc->fnGetBufferPointerv(target, pname, params);
+}
+
+void gl21GetBufferSubData(gl21Context* glc, GLenum target, GLintptr offset, GLsizeiptr size, GLvoid* data) {
+    return glc->fnGetBufferSubData(target, offset, size, data);
+}
+
+void gl21GetQueryObjectiv(gl21Context* glc, GLuint id, GLenum pname, GLint* params) {
+    return glc->fnGetQueryObjectiv(id, pname, params);
+}
+
+void gl21GetQueryObjectuiv(gl21Context* glc, GLuint id, GLenum pname, GLuint* params) {
+    return glc->fnGetQueryObjectuiv(id, pname, params);
+}
+
+void gl21GetQueryiv(gl21Context* glc, GLenum target, GLenum pname, GLint* params) {
+    return glc->fnGetQueryiv(target, pname, params);
+}
+
+GLboolean gl21IsBuffer(gl21Context* glc, GLuint buffer) {
+    return glc->fnIsBuffer(buffer);
+}
+
+GLboolean gl21IsQuery(gl21Context* glc, GLuint id) {
+    return glc->fnIsQuery(id);
+}
+
+GLvoid* gl21MapBuffer(gl21Context* glc, GLenum target, GLenum access) {
+    return glc->fnMapBuffer(target, access);
+}
+
+GLboolean gl21UnmapBuffer(gl21Context* glc, GLenum target) {
+    return glc->fnUnmapBuffer(target);
 }
 
 void gl21AttachShader(gl21Context* glc, GLuint program, GLuint shader) {
@@ -1451,369 +1911,945 @@ GLuint gl21CreateShader(gl21Context* glc, GLenum shaderType) {
     return glc->fnCreateShader(shaderType);
 }
 
+void gl21DeleteProgram(gl21Context* glc, GLuint program) {
+    return glc->fnDeleteProgram(program);
+}
+
+void gl21DeleteShader(gl21Context* glc, GLuint shader) {
+    return glc->fnDeleteShader(shader);
+}
+
+void gl21DetachShader(gl21Context* glc, GLuint program, GLuint shader) {
+    return glc->fnDetachShader(program, shader);
+}
+
+void gl21EnableVertexAttribArray(gl21Context* glc, GLuint index) {
+    return glc->fnEnableVertexAttribArray(index);
+}
+
+void gl21DisableVertexAttribArray(gl21Context* glc, GLuint index) {
+    return glc->fnDisableVertexAttribArray(index);
+}
+
+void gl21DrawBuffers(gl21Context* glc, GLsizei n, GLenum* bufs) {
+    return glc->fnDrawBuffers(n, bufs);
+}
+
+void gl21GetActiveAttrib(gl21Context* glc, GLuint program, GLuint index, GLsizei bufSize, GLsizei* length, GLint* size, GLenum* type, GLchar* name) {
+    return glc->fnGetActiveAttrib(program, index, bufSize, length, size, type, name);
+}
+
+void gl21GetActiveUniform(gl21Context* glc, GLuint program, GLuint index, GLsizei bufSize, GLsizei* length, GLint* size, GLenum* type, GLchar* name) {
+    return glc->fnGetActiveUniform(program, index, bufSize, length, size, type, name);
+}
+
+void gl21GetAttachedShaders(gl21Context* glc, GLuint program, GLsizei maxCount, GLsizei* count, GLuint* shaders) {
+    return glc->fnGetAttachedShaders(program, maxCount, count, shaders);
+}
+
+GLint gl21GetAttribLocation(gl21Context* glc, GLuint program, GLchar* name) {
+    return glc->fnGetAttribLocation(program, name);
+}
+
+void gl21GetProgramiv(gl21Context* glc, GLuint program, GLenum pname, GLint* params) {
+    return glc->fnGetProgramiv(program, pname, params);
+}
+
+void gl21GetProgramInfoLog(gl21Context* glc, GLuint program, GLsizei maxLength, GLsizei* length, GLchar* infoLog) {
+    return glc->fnGetProgramInfoLog(program, maxLength, length, infoLog);
+}
+
+void gl21GetShaderiv(gl21Context* glc, GLuint program, GLenum pname, GLint* params) {
+    return glc->fnGetShaderiv(program, pname, params);
+}
+
+void gl21GetShaderInfoLog(gl21Context* glc, GLuint shader, GLsizei maxLength, GLsizei* length, GLchar* infoLog) {
+    return glc->fnGetShaderInfoLog(shader, maxLength, length, infoLog);
+}
+
+void gl21GetShaderSource(gl21Context* glc, GLuint shader, GLsizei bufSize, GLsizei* length, GLchar* source) {
+    return glc->fnGetShaderSource(shader, bufSize, length, source);
+}
+
+void gl21GetUniformfv(gl21Context* glc, GLuint program, GLint location, GLfloat* params) {
+    return glc->fnGetUniformfv(program, location, params);
+}
+
+void gl21GetUniformiv(gl21Context* glc, GLuint program, GLint location, GLint* params) {
+    return glc->fnGetUniformiv(program, location, params);
+}
+
+GLint gl21GetUniformLocation(gl21Context* glc, GLuint program, GLchar* name) {
+    return glc->fnGetUniformLocation(program, name);
+}
+
+void gl21GetVertexAttribdv(gl21Context* glc, GLuint index, GLenum pname, GLdouble* params) {
+    return glc->fnGetVertexAttribdv(index, pname, params);
+}
+
+void gl21GetVertexAttribfv(gl21Context* glc, GLuint index, GLenum pname, GLfloat* params) {
+    return glc->fnGetVertexAttribfv(index, pname, params);
+}
+
+void gl21GetVertexAttribiv(gl21Context* glc, GLuint index, GLenum pname, GLint* params) {
+    return glc->fnGetVertexAttribiv(index, pname, params);
+}
+
+void gl21GetVertexAttribPointerv(gl21Context* glc, GLuint index, GLenum pname, GLvoid* pointer) {
+    return glc->fnGetVertexAttribPointerv(index, pname, pointer);
+}
+
+GLboolean gl21IsProgram(gl21Context* glc, GLuint program) {
+    return glc->fnIsProgram(program);
+}
+
+GLboolean gl21IsShader(gl21Context* glc, GLuint shader) {
+    return glc->fnIsShader(shader);
+}
+
+void gl21LinkProgram(gl21Context* glc, GLuint program) {
+    return glc->fnLinkProgram(program);
+}
+
+void gl21ShaderSource(gl21Context* glc, GLuint shader, GLsizei count, GLchar** string, GLint* length) {
+    return glc->fnShaderSource(shader, count, string, length);
+}
+
+void gl21StencilFuncSeparate(gl21Context* glc, GLenum face, GLenum func, GLint ref, GLuint mask) {
+    return glc->fnStencilFuncSeparate(face, func, ref, mask);
+}
+
+void gl21StencilMaskSeparate(gl21Context* glc, GLenum face, GLuint mask) {
+    return glc->fnStencilMaskSeparate(face, mask);
+}
+
+void gl21StencilOpSeparate(gl21Context* glc, GLenum face, GLenum sfail, GLenum dpfail, GLenum dppass) {
+    return glc->fnStencilOpSeparate(face, sfail, dpfail, dppass);
+}
+
+void gl21Uniform1f(gl21Context* glc, GLint location, GLfloat v0) {
+    return glc->fnUniform1f(location, v0);
+}
+
+void gl21Uniform2f(gl21Context* glc, GLint location, GLfloat v0, GLfloat v1) {
+    return glc->fnUniform2f(location, v0, v1);
+}
+
+void gl21Uniform3f(gl21Context* glc, GLint location, GLfloat v0, GLfloat v1, GLfloat v2) {
+    return glc->fnUniform3f(location, v0, v1, v2);
+}
+
+void gl21Uniform4f(gl21Context* glc, GLint location, GLfloat v0, GLfloat v1, GLfloat v2, GLfloat v3) {
+    return glc->fnUniform4f(location, v0, v1, v2, v3);
+}
+
+void gl21Uniform1i(gl21Context* glc, GLint location, GLint v0) {
+    return glc->fnUniform1i(location, v0);
+}
+
+void gl21Uniform2i(gl21Context* glc, GLint location, GLint v0, GLint v1) {
+    return glc->fnUniform2i(location, v0, v1);
+}
+
+void gl21Uniform3i(gl21Context* glc, GLint location, GLint v0, GLint v1, GLint v2) {
+    return glc->fnUniform3i(location, v0, v1, v2);
+}
+
+void gl21Uniform4i(gl21Context* glc, GLint location, GLint v0, GLint v1, GLint v2, GLint v3) {
+    return glc->fnUniform4i(location, v0, v1, v2, v3);
+}
+
+void gl21Uniform1fv(gl21Context* glc, GLint location, GLsizei count, GLfloat* value) {
+    return glc->fnUniform1fv(location, count, value);
+}
+
+void gl21Uniform2fv(gl21Context* glc, GLint location, GLsizei count, GLfloat* value) {
+    return glc->fnUniform2fv(location, count, value);
+}
+
+void gl21Uniform3fv(gl21Context* glc, GLint location, GLsizei count, GLfloat* value) {
+    return glc->fnUniform3fv(location, count, value);
+}
+
+void gl21Uniform4fv(gl21Context* glc, GLint location, GLsizei count, GLfloat* value) {
+    return glc->fnUniform4fv(location, count, value);
+}
+
+void gl21Uniform1iv(gl21Context* glc, GLint location, GLsizei count, GLint* value) {
+    return glc->fnUniform1iv(location, count, value);
+}
+
+void gl21Uniform2iv(gl21Context* glc, GLint location, GLsizei count, GLint* value) {
+    return glc->fnUniform2iv(location, count, value);
+}
+
+void gl21Uniform3iv(gl21Context* glc, GLint location, GLsizei count, GLint* value) {
+    return glc->fnUniform3iv(location, count, value);
+}
+
+void gl21Uniform4iv(gl21Context* glc, GLint location, GLsizei count, GLint* value) {
+    return glc->fnUniform4iv(location, count, value);
+}
+
+void gl21UseProgram(gl21Context* glc, GLuint program) {
+    return glc->fnUseProgram(program);
+}
+
+void gl21ValidateProgram(gl21Context* glc, GLuint program) {
+    return glc->fnValidateProgram(program);
+}
+
+void gl21VertexAttribPointer(gl21Context* glc, GLuint index, GLint size, GLenum type, GLboolean normalized, GLsizei stride, GLvoid* pointer) {
+    return glc->fnVertexAttribPointer(index, size, type, normalized, stride, pointer);
+}
+
+void gl21VertexAttrib1f(gl21Context* glc, GLuint index, GLfloat v0) {
+    return glc->fnVertexAttrib1f(index, v0);
+}
+
+void gl21VertexAttrib1s(gl21Context* glc, GLuint index, GLshort v0) {
+    return glc->fnVertexAttrib1s(index, v0);
+}
+
+void gl21VertexAttrib1d(gl21Context* glc, GLuint index, GLdouble v0) {
+    return glc->fnVertexAttrib1d(index, v0);
+}
+
+void gl21VertexAttrib2f(gl21Context* glc, GLuint index, GLfloat v0, GLfloat v1) {
+    return glc->fnVertexAttrib2f(index, v0, v1);
+}
+
+void gl21VertexAttrib2s(gl21Context* glc, GLuint index, GLshort v0, GLshort v1) {
+    return glc->fnVertexAttrib2s(index, v0, v1);
+}
+
+void gl21VertexAttrib2d(gl21Context* glc, GLuint index, GLdouble v0, GLdouble v1) {
+    return glc->fnVertexAttrib2d(index, v0, v1);
+}
+
+void gl21VertexAttrib3f(gl21Context* glc, GLuint index, GLfloat v0, GLfloat v1, GLfloat v2) {
+    return glc->fnVertexAttrib3f(index, v0, v1, v2);
+}
+
+void gl21VertexAttrib3s(gl21Context* glc, GLuint index, GLshort v0, GLshort v1, GLshort v2) {
+    return glc->fnVertexAttrib3s(index, v0, v1, v2);
+}
+
+void gl21VertexAttrib3d(gl21Context* glc, GLuint index, GLdouble v0, GLdouble v1, GLdouble v2) {
+    return glc->fnVertexAttrib3d(index, v0, v1, v2);
+}
+
+void gl21VertexAttrib4f(gl21Context* glc, GLuint index, GLfloat v0, GLfloat v1, GLfloat v2, GLfloat v3) {
+    return glc->fnVertexAttrib4f(index, v0, v1, v2, v3);
+}
+
+void gl21VertexAttrib4s(gl21Context* glc, GLuint index, GLshort v0, GLshort v1, GLshort v2, GLshort v3) {
+    return glc->fnVertexAttrib4s(index, v0, v1, v2, v3);
+}
+
+void gl21VertexAttrib4d(gl21Context* glc, GLuint index, GLdouble v0, GLdouble v1, GLdouble v2, GLdouble v3) {
+    return glc->fnVertexAttrib4d(index, v0, v1, v2, v3);
+}
+
+void gl21VertexAttrib4Nuv(gl21Context* glc, GLuint index, GLubyte v0, GLubyte v1, GLubyte v2, GLubyte v3) {
+    return glc->fnVertexAttrib4Nuv(index, v0, v1, v2, v3);
+}
+
+void gl21VertexAttrib1fv(gl21Context* glc, GLuint index, GLfloat* v) {
+    return glc->fnVertexAttrib1fv(index, v);
+}
+
+void gl21VertexAttrib1sv(gl21Context* glc, GLuint index, GLshort* v) {
+    return glc->fnVertexAttrib1sv(index, v);
+}
+
+void gl21VertexAttrib1dv(gl21Context* glc, GLuint index, GLdouble* v) {
+    return glc->fnVertexAttrib1dv(index, v);
+}
+
+void gl21VertexAttrib2fv(gl21Context* glc, GLuint index, GLfloat* v) {
+    return glc->fnVertexAttrib2fv(index, v);
+}
+
+void gl21VertexAttrib2sv(gl21Context* glc, GLuint index, GLshort* v) {
+    return glc->fnVertexAttrib2sv(index, v);
+}
+
+void gl21VertexAttrib2dv(gl21Context* glc, GLuint index, GLdouble* v) {
+    return glc->fnVertexAttrib2dv(index, v);
+}
+
+void gl21VertexAttrib3fv(gl21Context* glc, GLuint index, GLfloat* v) {
+    return glc->fnVertexAttrib3fv(index, v);
+}
+
+void gl21VertexAttrib3sv(gl21Context* glc, GLuint index, GLshort* v) {
+    return glc->fnVertexAttrib3sv(index, v);
+}
+
+void gl21VertexAttrib3dv(gl21Context* glc, GLuint index, GLdouble* v) {
+    return glc->fnVertexAttrib3dv(index, v);
+}
+
+void gl21VertexAttrib4fv(gl21Context* glc, GLuint index, GLfloat* v) {
+    return glc->fnVertexAttrib4fv(index, v);
+}
+
+void gl21VertexAttrib4sv(gl21Context* glc, GLuint index, GLshort* v) {
+    return glc->fnVertexAttrib4sv(index, v);
+}
+
+void gl21VertexAttrib4dv(gl21Context* glc, GLuint index, GLdouble* v) {
+    return glc->fnVertexAttrib4dv(index, v);
+}
+
+void gl21VertexAttrib4iv(gl21Context* glc, GLuint index, GLint* v) {
+    return glc->fnVertexAttrib4iv(index, v);
+}
+
+void gl21VertexAttrib4bv(gl21Context* glc, GLuint index, GLbyte* v) {
+    return glc->fnVertexAttrib4bv(index, v);
+}
+
+void gl21VertexAttrib4ubv(gl21Context* glc, GLuint index, GLubyte* v) {
+    return glc->fnVertexAttrib4ubv(index, v);
+}
+
+void gl21VertexAttrib4usv(gl21Context* glc, GLuint index, GLushort* v) {
+    return glc->fnVertexAttrib4usv(index, v);
+}
+
+void gl21VertexAttrib4uiv(gl21Context* glc, GLuint index, GLuint* v) {
+    return glc->fnVertexAttrib4uiv(index, v);
+}
+
+void gl21VertexAttrib4Nbv(gl21Context* glc, GLuint index, GLbyte* v) {
+    return glc->fnVertexAttrib4Nbv(index, v);
+}
+
+void gl21VertexAttrib4Nsv(gl21Context* glc, GLuint index, GLshort* v) {
+    return glc->fnVertexAttrib4Nsv(index, v);
+}
+
+void gl21VertexAttrib4Niv(gl21Context* glc, GLuint index, GLint* v) {
+    return glc->fnVertexAttrib4Niv(index, v);
+}
+
+void gl21VertexAttrib4Nubv(gl21Context* glc, GLuint index, GLubyte* v) {
+    return glc->fnVertexAttrib4Nubv(index, v);
+}
+
+void gl21VertexAttrib4Nusv(gl21Context* glc, GLuint index, GLushort* v) {
+    return glc->fnVertexAttrib4Nusv(index, v);
+}
+
+void gl21VertexAttrib4Nuiv(gl21Context* glc, GLuint index, GLuint* v) {
+    return glc->fnVertexAttrib4Nuiv(index, v);
+}
+
+void gl21UniformMatrix2fv(gl21Context* glc, GLint location, GLsizei count, GLboolean transpose, GLfloat* value) {
+    return glc->fnUniformMatrix2fv(location, count, transpose, value);
+}
+
+void gl21UniformMatrix3fv(gl21Context* glc, GLint location, GLsizei count, GLboolean transpose, GLfloat* value) {
+    return glc->fnUniformMatrix3fv(location, count, transpose, value);
+}
+
+void gl21UniformMatrix4fv(gl21Context* glc, GLint location, GLsizei count, GLboolean transpose, GLfloat* value) {
+    return glc->fnUniformMatrix4fv(location, count, transpose, value);
+}
+
+void gl21UniformMatrix2x3fv(gl21Context* glc, GLint location, GLsizei count, GLboolean transpose, GLfloat* value) {
+    return glc->fnUniformMatrix2x3fv(location, count, transpose, value);
+}
+
+void gl21UniformMatrix3x2fv(gl21Context* glc, GLint location, GLsizei count, GLboolean transpose, GLfloat* value) {
+    return glc->fnUniformMatrix3x2fv(location, count, transpose, value);
+}
+
+void gl21UniformMatrix2x4fv(gl21Context* glc, GLint location, GLsizei count, GLboolean transpose, GLfloat* value) {
+    return glc->fnUniformMatrix2x4fv(location, count, transpose, value);
+}
+
+void gl21UniformMatrix4x2fv(gl21Context* glc, GLint location, GLsizei count, GLboolean transpose, GLfloat* value) {
+    return glc->fnUniformMatrix4x2fv(location, count, transpose, value);
+}
+
+void gl21UniformMatrix3x4fv(gl21Context* glc, GLint location, GLsizei count, GLboolean transpose, GLfloat* value) {
+    return glc->fnUniformMatrix3x4fv(location, count, transpose, value);
+}
+
+void gl21UniformMatrix4x3fv(gl21Context* glc, GLint location, GLsizei count, GLboolean transpose, GLfloat* value) {
+    return glc->fnUniformMatrix4x3fv(location, count, transpose, value);
+}
+
 gl21Context* gl21NewContext() {
     gl21Context* glc = calloc(1, sizeof(gl21Context));
 
     // Preload all procedures
-    glc->fnAccum = (gl21PAccum)doGetProcAddress("glAccum");
-    glc->fnAlphaFunc = (gl21PAlphaFunc)doGetProcAddress("glAlphaFunc");
-    glc->fnBegin = (gl21PBegin)doGetProcAddress("glBegin");
-    glc->fnEnd = (gl21PEnd)doGetProcAddress("glEnd");
-    glc->fnBitmap = (gl21PBitmap)doGetProcAddress("glBitmap");
-    glc->fnBlendFunc = (gl21PBlendFunc)doGetProcAddress("glBlendFunc");
-    glc->fnCallList = (gl21PCallList)doGetProcAddress("glCallList");
-    glc->fnCallLists = (gl21PCallLists)doGetProcAddress("glCallLists");
-    glc->fnClear = (gl21PClear)doGetProcAddress("glClear");
-    glc->fnClearAccum = (gl21PClearAccum)doGetProcAddress("glClearAccum");
-    glc->fnClearColor = (gl21PClearColor)doGetProcAddress("glClearColor");
-    glc->fnClearDepth = (gl21PClearDepth)doGetProcAddress("glClearDepth");
-    glc->fnClearIndex = (gl21PClearIndex)doGetProcAddress("glClearIndex");
-    glc->fnClearStencil = (gl21PClearStencil)doGetProcAddress("glClearStencil");
-    glc->fnClipPlane = (gl21PClipPlane)doGetProcAddress("glClipPlane");
-    glc->fnColor3b = (gl21PColor3b)doGetProcAddress("glColor3b");
-    glc->fnColor3d = (gl21PColor3d)doGetProcAddress("glColor3d");
-    glc->fnColor3f = (gl21PColor3f)doGetProcAddress("glColor3f");
-    glc->fnColor3i = (gl21PColor3i)doGetProcAddress("glColor3i");
-    glc->fnColor3s = (gl21PColor3s)doGetProcAddress("glColor3s");
-    glc->fnColor3ub = (gl21PColor3ub)doGetProcAddress("glColor3ub");
-    glc->fnColor3ui = (gl21PColor3ui)doGetProcAddress("glColor3ui");
-    glc->fnColor3us = (gl21PColor3us)doGetProcAddress("glColor3us");
-    glc->fnColor4b = (gl21PColor4b)doGetProcAddress("glColor4b");
-    glc->fnColor4d = (gl21PColor4d)doGetProcAddress("glColor4d");
-    glc->fnColor4f = (gl21PColor4f)doGetProcAddress("glColor4f");
-    glc->fnColor4i = (gl21PColor4i)doGetProcAddress("glColor4i");
-    glc->fnColor4s = (gl21PColor4s)doGetProcAddress("glColor4s");
-    glc->fnColor4ub = (gl21PColor4ub)doGetProcAddress("glColor4ub");
-    glc->fnColor4ui = (gl21PColor4ui)doGetProcAddress("glColor4ui");
-    glc->fnColor4us = (gl21PColor4us)doGetProcAddress("glColor4us");
-    glc->fnColor3bv = (gl21PColor3bv)doGetProcAddress("glColor3bv");
-    glc->fnColor3dv = (gl21PColor3dv)doGetProcAddress("glColor3dv");
-    glc->fnColor3fv = (gl21PColor3fv)doGetProcAddress("glColor3fv");
-    glc->fnColor3iv = (gl21PColor3iv)doGetProcAddress("glColor3iv");
-    glc->fnColor3sv = (gl21PColor3sv)doGetProcAddress("glColor3sv");
-    glc->fnColor3ubv = (gl21PColor3ubv)doGetProcAddress("glColor3ubv");
-    glc->fnColor3uiv = (gl21PColor3uiv)doGetProcAddress("glColor3uiv");
-    glc->fnColor3usv = (gl21PColor3usv)doGetProcAddress("glColor3usv");
-    glc->fnColor4bv = (gl21PColor4bv)doGetProcAddress("glColor4bv");
-    glc->fnColor4dv = (gl21PColor4dv)doGetProcAddress("glColor4dv");
-    glc->fnColor4fv = (gl21PColor4fv)doGetProcAddress("glColor4fv");
-    glc->fnColor4iv = (gl21PColor4iv)doGetProcAddress("glColor4iv");
-    glc->fnColor4sv = (gl21PColor4sv)doGetProcAddress("glColor4sv");
-    glc->fnColor4ubv = (gl21PColor4ubv)doGetProcAddress("glColor4ubv");
-    glc->fnColor4uiv = (gl21PColor4uiv)doGetProcAddress("glColor4uiv");
-    glc->fnColor4usv = (gl21PColor4usv)doGetProcAddress("glColor4usv");
-    glc->fnColorMask = (gl21PColorMask)doGetProcAddress("glColorMask");
-    glc->fnColorMaterial = (gl21PColorMaterial)doGetProcAddress("glColorMaterial");
-    glc->fnColorTable = (gl21PColorTable)wglGetProcAddress("glColorTable");
-    glc->fnColorTableParameterfv = (gl21PColorTableParameterfv)wglGetProcAddress("glColorTableParameterfv");
-    glc->fnColorTableParameteriv = (gl21PColorTableParameteriv)wglGetProcAddress("glColorTableParameteriv");
-    glc->fnColorSubTable = (gl21PColorSubTable)wglGetProcAddress("glColorSubTable");
-    glc->fnCopyPixels = (gl21PCopyPixels)doGetProcAddress("glCopyPixels");
-    glc->fnCullFace = (gl21PCullFace)doGetProcAddress("glCullFace");
-    glc->fnConvolutionFilter1D = (gl21PConvolutionFilter1D)wglGetProcAddress("glConvolutionFilter1D");
-    glc->fnConvolutionFilter2D = (gl21PConvolutionFilter2D)wglGetProcAddress("glConvolutionFilter2D");
-    glc->fnConvolutionParameterf = (gl21PConvolutionParameterf)wglGetProcAddress("glConvolutionParameterf");
-    glc->fnConvolutionParameteri = (gl21PConvolutionParameteri)wglGetProcAddress("glConvolutionParameteri");
-    glc->fnCopyColorTable = (gl21PCopyColorTable)wglGetProcAddress("glCopyColorTable");
-    glc->fnCopyColorSubTable = (gl21PCopyColorSubTable)wglGetProcAddress("glCopyColorSubTable");
-    glc->fnCopyConvolutionFilter1D = (gl21PCopyConvolutionFilter1D)wglGetProcAddress("glCopyConvolutionFilter1D");
-    glc->fnCopyConvolutionFilter2D = (gl21PCopyConvolutionFilter2D)wglGetProcAddress("glCopyConvolutionFilter2D");
-    glc->fnDeleteLists = (gl21PDeleteLists)doGetProcAddress("glDeleteLists");
-    glc->fnDepthFunc = (gl21PDepthFunc)doGetProcAddress("glDepthFunc");
-    glc->fnDepthRange = (gl21PDepthRange)doGetProcAddress("glDepthRange");
-    glc->fnEnable = (gl21PEnable)doGetProcAddress("glEnable");
-    glc->fnDisable = (gl21PDisable)doGetProcAddress("glDisable");
-    glc->fnDrawBuffer = (gl21PDrawBuffer)doGetProcAddress("glDrawBuffer");
-    glc->fnDrawPixels = (gl21PDrawPixels)doGetProcAddress("glDrawPixels");
-    glc->fnEdgeFlag = (gl21PEdgeFlag)doGetProcAddress("glEdgeFlag");
-    glc->fnEdgeFlagv = (gl21PEdgeFlagv)doGetProcAddress("glEdgeFlagv");
-    glc->fnEdgeFlagPointer = (gl21PEdgeFlagPointer)doGetProcAddress("glEdgeFlagPointer");
-    glc->fnEnableClientState = (gl21PEnableClientState)doGetProcAddress("glEnableClientState");
-    glc->fnDisableClientState = (gl21PDisableClientState)doGetProcAddress("glDisableClientState");
-    glc->fnEvalCoord1d = (gl21PEvalCoord1d)doGetProcAddress("glEvalCoord1d");
-    glc->fnEvalCoord1f = (gl21PEvalCoord1f)doGetProcAddress("glEvalCoord1f");
-    glc->fnEvalCoord2d = (gl21PEvalCoord2d)doGetProcAddress("glEvalCoord2d");
-    glc->fnEvalCoord2f = (gl21PEvalCoord2f)doGetProcAddress("glEvalCoord2f");
-    glc->fnEvalCoord1dv = (gl21PEvalCoord1dv)doGetProcAddress("glEvalCoord1dv");
-    glc->fnEvalCoord1fv = (gl21PEvalCoord1fv)doGetProcAddress("glEvalCoord1fv");
-    glc->fnEvalCoord2dv = (gl21PEvalCoord2dv)doGetProcAddress("glEvalCoord2dv");
-    glc->fnEvalCoord2fv = (gl21PEvalCoord2fv)doGetProcAddress("glEvalCoord2fv");
-    glc->fnEvalMesh1 = (gl21PEvalMesh1)doGetProcAddress("glEvalMesh1");
-    glc->fnEvalMesh2 = (gl21PEvalMesh2)doGetProcAddress("glEvalMesh2");
-    glc->fnEvalPoint1 = (gl21PEvalPoint1)doGetProcAddress("glEvalPoint1");
-    glc->fnEvalPoint2 = (gl21PEvalPoint2)doGetProcAddress("glEvalPoint2");
-    glc->fnFeedbackBuffer = (gl21PFeedbackBuffer)doGetProcAddress("glFeedbackBuffer");
-    glc->fnFinish = (gl21PFinish)doGetProcAddress("glFinish");
-    glc->fnFlush = (gl21PFlush)doGetProcAddress("glFlush");
-    glc->fnFogf = (gl21PFogf)doGetProcAddress("glFogf");
-    glc->fnFogi = (gl21PFogi)doGetProcAddress("glFogi");
-    glc->fnFogfv = (gl21PFogfv)doGetProcAddress("glFogfv");
-    glc->fnFogiv = (gl21PFogiv)doGetProcAddress("glFogiv");
-    glc->fnFrontFace = (gl21PFrontFace)doGetProcAddress("glFrontFace");
-    glc->fnFrustum = (gl21PFrustum)doGetProcAddress("glFrustum");
-    glc->fnGenLists = (gl21PGenLists)doGetProcAddress("glGenLists");
-    glc->fnGetBooleanv = (gl21PGetBooleanv)doGetProcAddress("glGetBooleanv");
-    glc->fnGetDoublev = (gl21PGetDoublev)doGetProcAddress("glGetDoublev");
-    glc->fnGetFloatv = (gl21PGetFloatv)doGetProcAddress("glGetFloatv");
-    glc->fnGetIntegerv = (gl21PGetIntegerv)doGetProcAddress("glGetIntegerv");
-    glc->fnGetClipPlane = (gl21PGetClipPlane)doGetProcAddress("glGetClipPlane");
-    glc->fnGetError = (gl21PGetError)doGetProcAddress("glGetError");
-    glc->fnGetLightfv = (gl21PGetLightfv)doGetProcAddress("glGetLightfv");
-    glc->fnGetLightiv = (gl21PGetLightiv)doGetProcAddress("glGetLightiv");
-    glc->fnGetMapdv = (gl21PGetMapdv)doGetProcAddress("glGetMapdv");
-    glc->fnGetMapfv = (gl21PGetMapfv)doGetProcAddress("glGetMapfv");
-    glc->fnGetMapiv = (gl21PGetMapiv)doGetProcAddress("glGetMapiv");
-    glc->fnGetMaterialfv = (gl21PGetMaterialfv)doGetProcAddress("glGetMaterialfv");
-    glc->fnGetMaterialiv = (gl21PGetMaterialiv)doGetProcAddress("glGetMaterialiv");
-    glc->fnGetPixelMapfv = (gl21PGetPixelMapfv)doGetProcAddress("glGetPixelMapfv");
-    glc->fnGetPixelMapuiv = (gl21PGetPixelMapuiv)doGetProcAddress("glGetPixelMapuiv");
-    glc->fnGetPixelMapusv = (gl21PGetPixelMapusv)doGetProcAddress("glGetPixelMapusv");
-    glc->fnGetPolygonStipple = (gl21PGetPolygonStipple)doGetProcAddress("glGetPolygonStipple");
-    glc->fnGetString = (gl21PGetString)doGetProcAddress("glGetString");
-    glc->fnGetTexEnvfv = (gl21PGetTexEnvfv)doGetProcAddress("glGetTexEnvfv");
-    glc->fnGetTexEnviv = (gl21PGetTexEnviv)doGetProcAddress("glGetTexEnviv");
-    glc->fnGetTexGendv = (gl21PGetTexGendv)doGetProcAddress("glGetTexGendv");
-    glc->fnGetTexGenfv = (gl21PGetTexGenfv)doGetProcAddress("glGetTexGenfv");
-    glc->fnGetTexGeniv = (gl21PGetTexGeniv)doGetProcAddress("glGetTexGeniv");
-    glc->fnGetTexImage = (gl21PGetTexImage)doGetProcAddress("glGetTexImage");
-    glc->fnGetTexLevelParameterfv = (gl21PGetTexLevelParameterfv)doGetProcAddress("glGetTexLevelParameterfv");
-    glc->fnGetTexLevelParameteriv = (gl21PGetTexLevelParameteriv)doGetProcAddress("glGetTexLevelParameteriv");
-    glc->fnGetTexParameterfv = (gl21PGetTexParameterfv)doGetProcAddress("glGetTexParameterfv");
-    glc->fnGetTexParameteriv = (gl21PGetTexParameteriv)doGetProcAddress("glGetTexParameteriv");
-    glc->fnHint = (gl21PHint)doGetProcAddress("glHint");
-    glc->fnIndexd = (gl21PIndexd)doGetProcAddress("glIndexd");
-    glc->fnIndexf = (gl21PIndexf)doGetProcAddress("glIndexf");
-    glc->fnIndexi = (gl21PIndexi)doGetProcAddress("glIndexi");
-    glc->fnIndexs = (gl21PIndexs)doGetProcAddress("glIndexs");
-    glc->fnIndexub = (gl21PIndexub)doGetProcAddress("glIndexub");
-    glc->fnIndexdv = (gl21PIndexdv)doGetProcAddress("glIndexdv");
-    glc->fnIndexfv = (gl21PIndexfv)doGetProcAddress("glIndexfv");
-    glc->fnIndexiv = (gl21PIndexiv)doGetProcAddress("glIndexiv");
-    glc->fnIndexsv = (gl21PIndexsv)doGetProcAddress("glIndexsv");
-    glc->fnIndexubv = (gl21PIndexubv)doGetProcAddress("glIndexubv");
-    glc->fnIndexMask = (gl21PIndexMask)doGetProcAddress("glIndexMask");
-    glc->fnIndexPointer = (gl21PIndexPointer)doGetProcAddress("glIndexPointer");
-    glc->fnInitNames = (gl21PInitNames)doGetProcAddress("glInitNames");
-    glc->fnInterleavedArrays = (gl21PInterleavedArrays)doGetProcAddress("glInterleavedArrays");
-    glc->fnIsEnabled = (gl21PIsEnabled)doGetProcAddress("glIsEnabled");
-    glc->fnIsList = (gl21PIsList)doGetProcAddress("glIsList");
-    glc->fnLightf = (gl21PLightf)doGetProcAddress("glLightf");
-    glc->fnLighti = (gl21PLighti)doGetProcAddress("glLighti");
-    glc->fnLightfv = (gl21PLightfv)doGetProcAddress("glLightfv");
-    glc->fnLightiv = (gl21PLightiv)doGetProcAddress("glLightiv");
-    glc->fnLightModelf = (gl21PLightModelf)doGetProcAddress("glLightModelf");
-    glc->fnLightModeli = (gl21PLightModeli)doGetProcAddress("glLightModeli");
-    glc->fnLightModelfv = (gl21PLightModelfv)doGetProcAddress("glLightModelfv");
-    glc->fnLightModeliv = (gl21PLightModeliv)doGetProcAddress("glLightModeliv");
-    glc->fnLineStipple = (gl21PLineStipple)doGetProcAddress("glLineStipple");
-    glc->fnLineWidth = (gl21PLineWidth)doGetProcAddress("glLineWidth");
-    glc->fnListBase = (gl21PListBase)doGetProcAddress("glListBase");
-    glc->fnLoadIdentity = (gl21PLoadIdentity)doGetProcAddress("glLoadIdentity");
-    glc->fnLoadMatrixd = (gl21PLoadMatrixd)doGetProcAddress("glLoadMatrixd");
-    glc->fnLoadMatrixf = (gl21PLoadMatrixf)doGetProcAddress("glLoadMatrixf");
-    glc->fnLoadName = (gl21PLoadName)doGetProcAddress("glLoadName");
-    glc->fnLogicOp = (gl21PLogicOp)doGetProcAddress("glLogicOp");
-    glc->fnMap1d = (gl21PMap1d)doGetProcAddress("glMap1d");
-    glc->fnMap1f = (gl21PMap1f)doGetProcAddress("glMap1f");
-    glc->fnMap2d = (gl21PMap2d)doGetProcAddress("glMap2d");
-    glc->fnMap2f = (gl21PMap2f)doGetProcAddress("glMap2f");
-    glc->fnMapGrid1d = (gl21PMapGrid1d)doGetProcAddress("glMapGrid1d");
-    glc->fnMapGrid1f = (gl21PMapGrid1f)doGetProcAddress("glMapGrid1f");
-    glc->fnMapGrid2d = (gl21PMapGrid2d)doGetProcAddress("glMapGrid2d");
-    glc->fnMapGrid2f = (gl21PMapGrid2f)doGetProcAddress("glMapGrid2f");
-    glc->fnMaterialf = (gl21PMaterialf)doGetProcAddress("glMaterialf");
-    glc->fnMateriali = (gl21PMateriali)doGetProcAddress("glMateriali");
-    glc->fnMaterialfv = (gl21PMaterialfv)doGetProcAddress("glMaterialfv");
-    glc->fnMaterialiv = (gl21PMaterialiv)doGetProcAddress("glMaterialiv");
-    glc->fnMatrixMode = (gl21PMatrixMode)doGetProcAddress("glMatrixMode");
-    glc->fnMultMatrixd = (gl21PMultMatrixd)doGetProcAddress("glMultMatrixd");
-    glc->fnMultMatrixf = (gl21PMultMatrixf)doGetProcAddress("glMultMatrixf");
-    glc->fnNewList = (gl21PNewList)doGetProcAddress("glNewList");
-    glc->fnEndList = (gl21PEndList)doGetProcAddress("glEndList");
-    glc->fnNormal3b = (gl21PNormal3b)doGetProcAddress("glNormal3b");
-    glc->fnNormal3d = (gl21PNormal3d)doGetProcAddress("glNormal3d");
-    glc->fnNormal3f = (gl21PNormal3f)doGetProcAddress("glNormal3f");
-    glc->fnNormal3i = (gl21PNormal3i)doGetProcAddress("glNormal3i");
-    glc->fnNormal3s = (gl21PNormal3s)doGetProcAddress("glNormal3s");
-    glc->fnNormal3bv = (gl21PNormal3bv)doGetProcAddress("glNormal3bv");
-    glc->fnNormal3dv = (gl21PNormal3dv)doGetProcAddress("glNormal3dv");
-    glc->fnNormal3fv = (gl21PNormal3fv)doGetProcAddress("glNormal3fv");
-    glc->fnNormal3iv = (gl21PNormal3iv)doGetProcAddress("glNormal3iv");
-    glc->fnNormal3sv = (gl21PNormal3sv)doGetProcAddress("glNormal3sv");
-    glc->fnNormalPointer = (gl21PNormalPointer)doGetProcAddress("glNormalPointer");
-    glc->fnOrtho = (gl21POrtho)doGetProcAddress("glOrtho");
-    glc->fnPassThrough = (gl21PPassThrough)doGetProcAddress("glPassThrough");
-    glc->fnPixelMapfv = (gl21PPixelMapfv)doGetProcAddress("glPixelMapfv");
-    glc->fnPixelMapuiv = (gl21PPixelMapuiv)doGetProcAddress("glPixelMapuiv");
-    glc->fnPixelMapusv = (gl21PPixelMapusv)doGetProcAddress("glPixelMapusv");
-    glc->fnPixelStoref = (gl21PPixelStoref)doGetProcAddress("glPixelStoref");
-    glc->fnPixelStorei = (gl21PPixelStorei)doGetProcAddress("glPixelStorei");
-    glc->fnPixelTransferf = (gl21PPixelTransferf)doGetProcAddress("glPixelTransferf");
-    glc->fnPixelTransferi = (gl21PPixelTransferi)doGetProcAddress("glPixelTransferi");
-    glc->fnPixelZoom = (gl21PPixelZoom)doGetProcAddress("glPixelZoom");
-    glc->fnPointSize = (gl21PPointSize)doGetProcAddress("glPointSize");
-    glc->fnPolygonMode = (gl21PPolygonMode)doGetProcAddress("glPolygonMode");
-    glc->fnPolygonStipple = (gl21PPolygonStipple)doGetProcAddress("glPolygonStipple");
-    glc->fnPrioritizeTextures = (gl21PPrioritizeTextures)doGetProcAddress("glPrioritizeTextures");
-    glc->fnPushAttrib = (gl21PPushAttrib)doGetProcAddress("glPushAttrib");
-    glc->fnPopAttrib = (gl21PPopAttrib)doGetProcAddress("glPopAttrib");
-    glc->fnPushClientAttrib = (gl21PPushClientAttrib)doGetProcAddress("glPushClientAttrib");
-    glc->fnPopClientAttrib = (gl21PPopClientAttrib)doGetProcAddress("glPopClientAttrib");
-    glc->fnPushMatrix = (gl21PPushMatrix)doGetProcAddress("glPushMatrix");
-    glc->fnPopMatrix = (gl21PPopMatrix)doGetProcAddress("glPopMatrix");
-    glc->fnPushName = (gl21PPushName)doGetProcAddress("glPushName");
-    glc->fnPopName = (gl21PPopName)doGetProcAddress("glPopName");
-    glc->fnRasterPos2d = (gl21PRasterPos2d)doGetProcAddress("glRasterPos2d");
-    glc->fnRasterPos2f = (gl21PRasterPos2f)doGetProcAddress("glRasterPos2f");
-    glc->fnRasterPos2i = (gl21PRasterPos2i)doGetProcAddress("glRasterPos2i");
-    glc->fnRasterPos2s = (gl21PRasterPos2s)doGetProcAddress("glRasterPos2s");
-    glc->fnRasterPos3d = (gl21PRasterPos3d)doGetProcAddress("glRasterPos3d");
-    glc->fnRasterPos3f = (gl21PRasterPos3f)doGetProcAddress("glRasterPos3f");
-    glc->fnRasterPos3i = (gl21PRasterPos3i)doGetProcAddress("glRasterPos3i");
-    glc->fnRasterPos3s = (gl21PRasterPos3s)doGetProcAddress("glRasterPos3s");
-    glc->fnRasterPos4d = (gl21PRasterPos4d)doGetProcAddress("glRasterPos4d");
-    glc->fnRasterPos4f = (gl21PRasterPos4f)doGetProcAddress("glRasterPos4f");
-    glc->fnRasterPos4i = (gl21PRasterPos4i)doGetProcAddress("glRasterPos4i");
-    glc->fnRasterPos4s = (gl21PRasterPos4s)doGetProcAddress("glRasterPos4s");
-    glc->fnRasterPos2dv = (gl21PRasterPos2dv)doGetProcAddress("glRasterPos2dv");
-    glc->fnRasterPos2fv = (gl21PRasterPos2fv)doGetProcAddress("glRasterPos2fv");
-    glc->fnRasterPos2iv = (gl21PRasterPos2iv)doGetProcAddress("glRasterPos2iv");
-    glc->fnRasterPos2sv = (gl21PRasterPos2sv)doGetProcAddress("glRasterPos2sv");
-    glc->fnRasterPos3dv = (gl21PRasterPos3dv)doGetProcAddress("glRasterPos3dv");
-    glc->fnRasterPos3fv = (gl21PRasterPos3fv)doGetProcAddress("glRasterPos3fv");
-    glc->fnRasterPos3iv = (gl21PRasterPos3iv)doGetProcAddress("glRasterPos3iv");
-    glc->fnRasterPos3sv = (gl21PRasterPos3sv)doGetProcAddress("glRasterPos3sv");
-    glc->fnRasterPos4dv = (gl21PRasterPos4dv)doGetProcAddress("glRasterPos4dv");
-    glc->fnRasterPos4fv = (gl21PRasterPos4fv)doGetProcAddress("glRasterPos4fv");
-    glc->fnRasterPos4iv = (gl21PRasterPos4iv)doGetProcAddress("glRasterPos4iv");
-    glc->fnRasterPos4sv = (gl21PRasterPos4sv)doGetProcAddress("glRasterPos4sv");
-    glc->fnReadBuffer = (gl21PReadBuffer)doGetProcAddress("glReadBuffer");
-    glc->fnReadPixels = (gl21PReadPixels)doGetProcAddress("glReadPixels");
-    glc->fnRectd = (gl21PRectd)doGetProcAddress("glRectd");
-    glc->fnRectf = (gl21PRectf)doGetProcAddress("glRectf");
-    glc->fnRecti = (gl21PRecti)doGetProcAddress("glRecti");
-    glc->fnRects = (gl21PRects)doGetProcAddress("glRects");
-    glc->fnRectdv = (gl21PRectdv)doGetProcAddress("glRectdv");
-    glc->fnRectfv = (gl21PRectfv)doGetProcAddress("glRectfv");
-    glc->fnRectiv = (gl21PRectiv)doGetProcAddress("glRectiv");
-    glc->fnRectsv = (gl21PRectsv)doGetProcAddress("glRectsv");
-    glc->fnRenderMode = (gl21PRenderMode)doGetProcAddress("glRenderMode");
-    glc->fnRotated = (gl21PRotated)doGetProcAddress("glRotated");
-    glc->fnRotatef = (gl21PRotatef)doGetProcAddress("glRotatef");
-    glc->fnScaled = (gl21PScaled)doGetProcAddress("glScaled");
-    glc->fnScalef = (gl21PScalef)doGetProcAddress("glScalef");
-    glc->fnScissor = (gl21PScissor)doGetProcAddress("glScissor");
-    glc->fnSelectBuffer = (gl21PSelectBuffer)doGetProcAddress("glSelectBuffer");
-    glc->fnShadeModel = (gl21PShadeModel)doGetProcAddress("glShadeModel");
-    glc->fnStencilFunc = (gl21PStencilFunc)doGetProcAddress("glStencilFunc");
-    glc->fnStencilMask = (gl21PStencilMask)doGetProcAddress("glStencilMask");
-    glc->fnStencilOp = (gl21PStencilOp)doGetProcAddress("glStencilOp");
-    glc->fnTexCoord1d = (gl21PTexCoord1d)doGetProcAddress("glTexCoord1d");
-    glc->fnTexCoord1f = (gl21PTexCoord1f)doGetProcAddress("glTexCoord1f");
-    glc->fnTexCoord1i = (gl21PTexCoord1i)doGetProcAddress("glTexCoord1i");
-    glc->fnTexCoord1s = (gl21PTexCoord1s)doGetProcAddress("glTexCoord1s");
-    glc->fnTexCoord2d = (gl21PTexCoord2d)doGetProcAddress("glTexCoord2d");
-    glc->fnTexCoord2f = (gl21PTexCoord2f)doGetProcAddress("glTexCoord2f");
-    glc->fnTexCoord2i = (gl21PTexCoord2i)doGetProcAddress("glTexCoord2i");
-    glc->fnTexCoord2s = (gl21PTexCoord2s)doGetProcAddress("glTexCoord2s");
-    glc->fnTexCoord3d = (gl21PTexCoord3d)doGetProcAddress("glTexCoord3d");
-    glc->fnTexCoord3f = (gl21PTexCoord3f)doGetProcAddress("glTexCoord3f");
-    glc->fnTexCoord3i = (gl21PTexCoord3i)doGetProcAddress("glTexCoord3i");
-    glc->fnTexCoord3s = (gl21PTexCoord3s)doGetProcAddress("glTexCoord3s");
-    glc->fnTexCoord4d = (gl21PTexCoord4d)doGetProcAddress("glTexCoord4d");
-    glc->fnTexCoord4f = (gl21PTexCoord4f)doGetProcAddress("glTexCoord4f");
-    glc->fnTexCoord4i = (gl21PTexCoord4i)doGetProcAddress("glTexCoord4i");
-    glc->fnTexCoord4s = (gl21PTexCoord4s)doGetProcAddress("glTexCoord4s");
-    glc->fnTexCoord1dv = (gl21PTexCoord1dv)doGetProcAddress("glTexCoord1dv");
-    glc->fnTexCoord1fv = (gl21PTexCoord1fv)doGetProcAddress("glTexCoord1fv");
-    glc->fnTexCoord1iv = (gl21PTexCoord1iv)doGetProcAddress("glTexCoord1iv");
-    glc->fnTexCoord1sv = (gl21PTexCoord1sv)doGetProcAddress("glTexCoord1sv");
-    glc->fnTexCoord2dv = (gl21PTexCoord2dv)doGetProcAddress("glTexCoord2dv");
-    glc->fnTexCoord2fv = (gl21PTexCoord2fv)doGetProcAddress("glTexCoord2fv");
-    glc->fnTexCoord2iv = (gl21PTexCoord2iv)doGetProcAddress("glTexCoord2iv");
-    glc->fnTexCoord2sv = (gl21PTexCoord2sv)doGetProcAddress("glTexCoord2sv");
-    glc->fnTexCoord3dv = (gl21PTexCoord3dv)doGetProcAddress("glTexCoord3dv");
-    glc->fnTexCoord3fv = (gl21PTexCoord3fv)doGetProcAddress("glTexCoord3fv");
-    glc->fnTexCoord3iv = (gl21PTexCoord3iv)doGetProcAddress("glTexCoord3iv");
-    glc->fnTexCoord3sv = (gl21PTexCoord3sv)doGetProcAddress("glTexCoord3sv");
-    glc->fnTexCoord4dv = (gl21PTexCoord4dv)doGetProcAddress("glTexCoord4dv");
-    glc->fnTexCoord4fv = (gl21PTexCoord4fv)doGetProcAddress("glTexCoord4fv");
-    glc->fnTexCoord4iv = (gl21PTexCoord4iv)doGetProcAddress("glTexCoord4iv");
-    glc->fnTexCoord4sv = (gl21PTexCoord4sv)doGetProcAddress("glTexCoord4sv");
-    glc->fnTexCoordPointer = (gl21PTexCoordPointer)doGetProcAddress("glTexCoordPointer");
-    glc->fnTexEnvf = (gl21PTexEnvf)doGetProcAddress("glTexEnvf");
-    glc->fnTexEnvi = (gl21PTexEnvi)doGetProcAddress("glTexEnvi");
-    glc->fnTexEnvfv = (gl21PTexEnvfv)doGetProcAddress("glTexEnvfv");
-    glc->fnTexEnviv = (gl21PTexEnviv)doGetProcAddress("glTexEnviv");
-    glc->fnTexGend = (gl21PTexGend)doGetProcAddress("glTexGend");
-    glc->fnTexGenf = (gl21PTexGenf)doGetProcAddress("glTexGenf");
-    glc->fnTexGeni = (gl21PTexGeni)doGetProcAddress("glTexGeni");
-    glc->fnTexGendv = (gl21PTexGendv)doGetProcAddress("glTexGendv");
-    glc->fnTexGenfv = (gl21PTexGenfv)doGetProcAddress("glTexGenfv");
-    glc->fnTexGeniv = (gl21PTexGeniv)doGetProcAddress("glTexGeniv");
-    glc->fnTexImage1D = (gl21PTexImage1D)doGetProcAddress("glTexImage1D");
-    glc->fnTexImage2D = (gl21PTexImage2D)doGetProcAddress("glTexImage2D");
-    glc->fnTexImage3DEXT = (gl21PTexImage3DEXT)wglGetProcAddress("glTexImage3DEXT");
-    glc->fnTexParameterf = (gl21PTexParameterf)doGetProcAddress("glTexParameterf");
-    glc->fnTexParameteri = (gl21PTexParameteri)doGetProcAddress("glTexParameteri");
-    glc->fnTexParameterfv = (gl21PTexParameterfv)doGetProcAddress("glTexParameterfv");
-    glc->fnTexParameteriv = (gl21PTexParameteriv)doGetProcAddress("glTexParameteriv");
-    glc->fnTexSubImage1D = (gl21PTexSubImage1D)doGetProcAddress("glTexSubImage1D");
-    glc->fnTexSubImage2D = (gl21PTexSubImage2D)doGetProcAddress("glTexSubImage2D");
-    glc->fnTexSubImage3DEXT = (gl21PTexSubImage3DEXT)wglGetProcAddress("glTexSubImage3DEXT");
-    glc->fnTranslated = (gl21PTranslated)doGetProcAddress("glTranslated");
-    glc->fnTranslatef = (gl21PTranslatef)doGetProcAddress("glTranslatef");
-    glc->fnVertex2s = (gl21PVertex2s)doGetProcAddress("glVertex2s");
-    glc->fnVertex2i = (gl21PVertex2i)doGetProcAddress("glVertex2i");
-    glc->fnVertex2f = (gl21PVertex2f)doGetProcAddress("glVertex2f");
-    glc->fnVertex2d = (gl21PVertex2d)doGetProcAddress("glVertex2d");
-    glc->fnVertex3s = (gl21PVertex3s)doGetProcAddress("glVertex3s");
-    glc->fnVertex3i = (gl21PVertex3i)doGetProcAddress("glVertex3i");
-    glc->fnVertex3f = (gl21PVertex3f)doGetProcAddress("glVertex3f");
-    glc->fnVertex3d = (gl21PVertex3d)doGetProcAddress("glVertex3d");
-    glc->fnVertex4s = (gl21PVertex4s)doGetProcAddress("glVertex4s");
-    glc->fnVertex4i = (gl21PVertex4i)doGetProcAddress("glVertex4i");
-    glc->fnVertex4f = (gl21PVertex4f)doGetProcAddress("glVertex4f");
-    glc->fnVertex4d = (gl21PVertex4d)doGetProcAddress("glVertex4d");
-    glc->fnVertexPointer = (gl21PVertexPointer)doGetProcAddress("glVertexPointer");
-    glc->fnViewport = (gl21PViewport)doGetProcAddress("glViewport");
-    glc->fnAreTexturesResident = (gl21PAreTexturesResident)doGetProcAddress("glAreTexturesResident");
-    glc->fnArrayElement = (gl21PArrayElement)doGetProcAddress("glArrayElement");
-    glc->fnDrawArrays = (gl21PDrawArrays)doGetProcAddress("glDrawArrays");
-    glc->fnDrawElements = (gl21PDrawElements)doGetProcAddress("glDrawElements");
-    glc->fnGetPointerv = (gl21PGetPointerv)doGetProcAddress("glGetPointerv");
-    glc->fnPolygonOffset = (gl21PPolygonOffset)doGetProcAddress("glPolygonOffset");
-    glc->fnCopyTexImage1D = (gl21PCopyTexImage1D)doGetProcAddress("glCopyTexImage1D");
-    glc->fnCopyTexImage2D = (gl21PCopyTexImage2D)doGetProcAddress("glCopyTexImage2D");
-    glc->fnCopyTexSubImage1D = (gl21PCopyTexSubImage1D)doGetProcAddress("glCopyTexSubImage1D");
-    glc->fnCopyTexSubImage2D = (gl21PCopyTexSubImage2D)doGetProcAddress("glCopyTexSubImage2D");
-    glc->fnBindTexture = (gl21PBindTexture)doGetProcAddress("glBindTexture");
-    glc->fnDeleteTextures = (gl21PDeleteTextures)doGetProcAddress("glDeleteTextures");
-    glc->fnGenTextures = (gl21PGenTextures)doGetProcAddress("glGenTextures");
-    glc->fnIsTexture = (gl21PIsTexture)doGetProcAddress("glIsTexture");
-    glc->fnColorPointer = (gl21PColorPointer)doGetProcAddress("glColorPointer");
-    glc->fnBlendColorEXT = (gl21PBlendColorEXT)wglGetProcAddress("glBlendColorEXT");
-    glc->fnBlendEquation = (gl21PBlendEquation)wglGetProcAddress("glBlendEquation");
-    glc->fnCopyTexSubImage3D = (gl21PCopyTexSubImage3D)wglGetProcAddress("glCopyTexSubImage3D");
-    glc->fnActiveTexture = (gl21PActiveTexture)wglGetProcAddress("glActiveTexture");
-    glc->fnClientActiveTexture = (gl21PClientActiveTexture)wglGetProcAddress("glClientActiveTexture");
-    glc->fnCompressedTexImage1D = (gl21PCompressedTexImage1D)wglGetProcAddress("glCompressedTexImage1D");
-    glc->fnCompressedTexImage2D = (gl21PCompressedTexImage2D)wglGetProcAddress("glCompressedTexImage2D");
-    glc->fnCompressedTexImage3D = (gl21PCompressedTexImage3D)wglGetProcAddress("glCompressedTexImage3D");
-    glc->fnCompressedTexSubImage1D = (gl21PCompressedTexSubImage1D)wglGetProcAddress("glCompressedTexSubImage1D");
-    glc->fnCompressedTexSubImage2D = (gl21PCompressedTexSubImage2D)wglGetProcAddress("glCompressedTexSubImage2D");
-    glc->fnCompressedTexSubImage3D = (gl21PCompressedTexSubImage3D)wglGetProcAddress("glCompressedTexSubImage3D");
-    glc->fnBlendFuncSeparate = (gl21PBlendFuncSeparate)wglGetProcAddress("glBlendFuncSeparate");
-    glc->fnBeginQuery = (gl21PBeginQuery)wglGetProcAddress("glBeginQuery");
-    glc->fnBindBuffer = (gl21PBindBuffer)wglGetProcAddress("glBindBuffer");
-    glc->fnBufferData = (gl21PBufferData)wglGetProcAddress("glBufferData");
-    glc->fnBufferSubData = (gl21PBufferSubData)wglGetProcAddress("glBufferSubData");
-    glc->fnAttachShader = (gl21PAttachShader)doGetProcAddress("glAttachShader");
-    glc->fnBindAttribLocation = (gl21PBindAttribLocation)doGetProcAddress("glBindAttribLocation");
-    glc->fnBlendEquationSeperate = (gl21PBlendEquationSeperate)doGetProcAddress("glBlendEquationSeperate");
-    glc->fnCompileShader = (gl21PCompileShader)doGetProcAddress("glCompileShader");
-    glc->fnCreateProgram = (gl21PCreateProgram)doGetProcAddress("glCreateProgram");
-    glc->fnCreateShader = (gl21PCreateShader)doGetProcAddress("glCreateShader");
+    glc->fnAccum = (gl21PAccum)gl21LibGetProcAddress("glAccum");
+    glc->fnAlphaFunc = (gl21PAlphaFunc)gl21LibGetProcAddress("glAlphaFunc");
+    glc->fnBegin = (gl21PBegin)gl21LibGetProcAddress("glBegin");
+    glc->fnEnd = (gl21PEnd)gl21LibGetProcAddress("glEnd");
+    glc->fnBitmap = (gl21PBitmap)gl21LibGetProcAddress("glBitmap");
+    glc->fnBlendFunc = (gl21PBlendFunc)gl21LibGetProcAddress("glBlendFunc");
+    glc->fnCallList = (gl21PCallList)gl21LibGetProcAddress("glCallList");
+    glc->fnCallLists = (gl21PCallLists)gl21LibGetProcAddress("glCallLists");
+    glc->fnClear = (gl21PClear)gl21LibGetProcAddress("glClear");
+    glc->fnClearAccum = (gl21PClearAccum)gl21LibGetProcAddress("glClearAccum");
+    glc->fnClearColor = (gl21PClearColor)gl21LibGetProcAddress("glClearColor");
+    glc->fnClearDepth = (gl21PClearDepth)gl21LibGetProcAddress("glClearDepth");
+    glc->fnClearIndex = (gl21PClearIndex)gl21LibGetProcAddress("glClearIndex");
+    glc->fnClearStencil = (gl21PClearStencil)gl21LibGetProcAddress("glClearStencil");
+    glc->fnClipPlane = (gl21PClipPlane)gl21LibGetProcAddress("glClipPlane");
+    glc->fnColor3b = (gl21PColor3b)gl21LibGetProcAddress("glColor3b");
+    glc->fnColor3d = (gl21PColor3d)gl21LibGetProcAddress("glColor3d");
+    glc->fnColor3f = (gl21PColor3f)gl21LibGetProcAddress("glColor3f");
+    glc->fnColor3i = (gl21PColor3i)gl21LibGetProcAddress("glColor3i");
+    glc->fnColor3s = (gl21PColor3s)gl21LibGetProcAddress("glColor3s");
+    glc->fnColor3ub = (gl21PColor3ub)gl21LibGetProcAddress("glColor3ub");
+    glc->fnColor3ui = (gl21PColor3ui)gl21LibGetProcAddress("glColor3ui");
+    glc->fnColor3us = (gl21PColor3us)gl21LibGetProcAddress("glColor3us");
+    glc->fnColor4b = (gl21PColor4b)gl21LibGetProcAddress("glColor4b");
+    glc->fnColor4d = (gl21PColor4d)gl21LibGetProcAddress("glColor4d");
+    glc->fnColor4f = (gl21PColor4f)gl21LibGetProcAddress("glColor4f");
+    glc->fnColor4i = (gl21PColor4i)gl21LibGetProcAddress("glColor4i");
+    glc->fnColor4s = (gl21PColor4s)gl21LibGetProcAddress("glColor4s");
+    glc->fnColor4ub = (gl21PColor4ub)gl21LibGetProcAddress("glColor4ub");
+    glc->fnColor4ui = (gl21PColor4ui)gl21LibGetProcAddress("glColor4ui");
+    glc->fnColor4us = (gl21PColor4us)gl21LibGetProcAddress("glColor4us");
+    glc->fnColor3bv = (gl21PColor3bv)gl21LibGetProcAddress("glColor3bv");
+    glc->fnColor3dv = (gl21PColor3dv)gl21LibGetProcAddress("glColor3dv");
+    glc->fnColor3fv = (gl21PColor3fv)gl21LibGetProcAddress("glColor3fv");
+    glc->fnColor3iv = (gl21PColor3iv)gl21LibGetProcAddress("glColor3iv");
+    glc->fnColor3sv = (gl21PColor3sv)gl21LibGetProcAddress("glColor3sv");
+    glc->fnColor3ubv = (gl21PColor3ubv)gl21LibGetProcAddress("glColor3ubv");
+    glc->fnColor3uiv = (gl21PColor3uiv)gl21LibGetProcAddress("glColor3uiv");
+    glc->fnColor3usv = (gl21PColor3usv)gl21LibGetProcAddress("glColor3usv");
+    glc->fnColor4bv = (gl21PColor4bv)gl21LibGetProcAddress("glColor4bv");
+    glc->fnColor4dv = (gl21PColor4dv)gl21LibGetProcAddress("glColor4dv");
+    glc->fnColor4fv = (gl21PColor4fv)gl21LibGetProcAddress("glColor4fv");
+    glc->fnColor4iv = (gl21PColor4iv)gl21LibGetProcAddress("glColor4iv");
+    glc->fnColor4sv = (gl21PColor4sv)gl21LibGetProcAddress("glColor4sv");
+    glc->fnColor4ubv = (gl21PColor4ubv)gl21LibGetProcAddress("glColor4ubv");
+    glc->fnColor4uiv = (gl21PColor4uiv)gl21LibGetProcAddress("glColor4uiv");
+    glc->fnColor4usv = (gl21PColor4usv)gl21LibGetProcAddress("glColor4usv");
+    glc->fnColorMask = (gl21PColorMask)gl21LibGetProcAddress("glColorMask");
+    glc->fnColorMaterial = (gl21PColorMaterial)gl21LibGetProcAddress("glColorMaterial");
+    glc->fnColorTable = (gl21PColorTable)gl21GLGetProcAddress("glColorTable");
+    glc->fnColorTableParameterfv = (gl21PColorTableParameterfv)gl21GLGetProcAddress("glColorTableParameterfv");
+    glc->fnColorTableParameteriv = (gl21PColorTableParameteriv)gl21GLGetProcAddress("glColorTableParameteriv");
+    glc->fnColorSubTable = (gl21PColorSubTable)gl21GLGetProcAddress("glColorSubTable");
+    glc->fnCopyPixels = (gl21PCopyPixels)gl21LibGetProcAddress("glCopyPixels");
+    glc->fnCullFace = (gl21PCullFace)gl21LibGetProcAddress("glCullFace");
+    glc->fnConvolutionFilter1D = (gl21PConvolutionFilter1D)gl21GLGetProcAddress("glConvolutionFilter1D");
+    glc->fnConvolutionFilter2D = (gl21PConvolutionFilter2D)gl21GLGetProcAddress("glConvolutionFilter2D");
+    glc->fnConvolutionParameterf = (gl21PConvolutionParameterf)gl21GLGetProcAddress("glConvolutionParameterf");
+    glc->fnConvolutionParameteri = (gl21PConvolutionParameteri)gl21GLGetProcAddress("glConvolutionParameteri");
+    glc->fnCopyColorTable = (gl21PCopyColorTable)gl21GLGetProcAddress("glCopyColorTable");
+    glc->fnCopyColorSubTable = (gl21PCopyColorSubTable)gl21GLGetProcAddress("glCopyColorSubTable");
+    glc->fnCopyConvolutionFilter1D = (gl21PCopyConvolutionFilter1D)gl21GLGetProcAddress("glCopyConvolutionFilter1D");
+    glc->fnCopyConvolutionFilter2D = (gl21PCopyConvolutionFilter2D)gl21GLGetProcAddress("glCopyConvolutionFilter2D");
+    glc->fnDeleteLists = (gl21PDeleteLists)gl21LibGetProcAddress("glDeleteLists");
+    glc->fnDepthFunc = (gl21PDepthFunc)gl21LibGetProcAddress("glDepthFunc");
+    glc->fnDepthMask = (gl21PDepthMask)gl21LibGetProcAddress("glDepthMask");
+    glc->fnDepthRange = (gl21PDepthRange)gl21LibGetProcAddress("glDepthRange");
+    glc->fnEnable = (gl21PEnable)gl21LibGetProcAddress("glEnable");
+    glc->fnDisable = (gl21PDisable)gl21LibGetProcAddress("glDisable");
+    glc->fnDrawBuffer = (gl21PDrawBuffer)gl21LibGetProcAddress("glDrawBuffer");
+    glc->fnDrawPixels = (gl21PDrawPixels)gl21LibGetProcAddress("glDrawPixels");
+    glc->fnEdgeFlag = (gl21PEdgeFlag)gl21LibGetProcAddress("glEdgeFlag");
+    glc->fnEdgeFlagv = (gl21PEdgeFlagv)gl21LibGetProcAddress("glEdgeFlagv");
+    glc->fnEdgeFlagPointer = (gl21PEdgeFlagPointer)gl21LibGetProcAddress("glEdgeFlagPointer");
+    glc->fnEvalCoord1d = (gl21PEvalCoord1d)gl21LibGetProcAddress("glEvalCoord1d");
+    glc->fnEvalCoord1f = (gl21PEvalCoord1f)gl21LibGetProcAddress("glEvalCoord1f");
+    glc->fnEvalCoord2d = (gl21PEvalCoord2d)gl21LibGetProcAddress("glEvalCoord2d");
+    glc->fnEvalCoord2f = (gl21PEvalCoord2f)gl21LibGetProcAddress("glEvalCoord2f");
+    glc->fnEvalCoord1dv = (gl21PEvalCoord1dv)gl21LibGetProcAddress("glEvalCoord1dv");
+    glc->fnEvalCoord1fv = (gl21PEvalCoord1fv)gl21LibGetProcAddress("glEvalCoord1fv");
+    glc->fnEvalCoord2dv = (gl21PEvalCoord2dv)gl21LibGetProcAddress("glEvalCoord2dv");
+    glc->fnEvalCoord2fv = (gl21PEvalCoord2fv)gl21LibGetProcAddress("glEvalCoord2fv");
+    glc->fnEvalMesh1 = (gl21PEvalMesh1)gl21LibGetProcAddress("glEvalMesh1");
+    glc->fnEvalMesh2 = (gl21PEvalMesh2)gl21LibGetProcAddress("glEvalMesh2");
+    glc->fnEvalPoint1 = (gl21PEvalPoint1)gl21LibGetProcAddress("glEvalPoint1");
+    glc->fnEvalPoint2 = (gl21PEvalPoint2)gl21LibGetProcAddress("glEvalPoint2");
+    glc->fnFeedbackBuffer = (gl21PFeedbackBuffer)gl21LibGetProcAddress("glFeedbackBuffer");
+    glc->fnFinish = (gl21PFinish)gl21LibGetProcAddress("glFinish");
+    glc->fnFlush = (gl21PFlush)gl21LibGetProcAddress("glFlush");
+    glc->fnFogf = (gl21PFogf)gl21LibGetProcAddress("glFogf");
+    glc->fnFogi = (gl21PFogi)gl21LibGetProcAddress("glFogi");
+    glc->fnFogfv = (gl21PFogfv)gl21LibGetProcAddress("glFogfv");
+    glc->fnFogiv = (gl21PFogiv)gl21LibGetProcAddress("glFogiv");
+    glc->fnFrontFace = (gl21PFrontFace)gl21LibGetProcAddress("glFrontFace");
+    glc->fnFrustum = (gl21PFrustum)gl21LibGetProcAddress("glFrustum");
+    glc->fnGenLists = (gl21PGenLists)gl21LibGetProcAddress("glGenLists");
+    glc->fnGetBooleanv = (gl21PGetBooleanv)gl21LibGetProcAddress("glGetBooleanv");
+    glc->fnGetDoublev = (gl21PGetDoublev)gl21LibGetProcAddress("glGetDoublev");
+    glc->fnGetFloatv = (gl21PGetFloatv)gl21LibGetProcAddress("glGetFloatv");
+    glc->fnGetIntegerv = (gl21PGetIntegerv)gl21LibGetProcAddress("glGetIntegerv");
+    glc->fnGetClipPlane = (gl21PGetClipPlane)gl21LibGetProcAddress("glGetClipPlane");
+    glc->fnGetError = (gl21PGetError)gl21LibGetProcAddress("glGetError");
+    glc->fnGetLightfv = (gl21PGetLightfv)gl21LibGetProcAddress("glGetLightfv");
+    glc->fnGetLightiv = (gl21PGetLightiv)gl21LibGetProcAddress("glGetLightiv");
+    glc->fnGetMapdv = (gl21PGetMapdv)gl21LibGetProcAddress("glGetMapdv");
+    glc->fnGetMapfv = (gl21PGetMapfv)gl21LibGetProcAddress("glGetMapfv");
+    glc->fnGetMapiv = (gl21PGetMapiv)gl21LibGetProcAddress("glGetMapiv");
+    glc->fnGetMaterialfv = (gl21PGetMaterialfv)gl21LibGetProcAddress("glGetMaterialfv");
+    glc->fnGetMaterialiv = (gl21PGetMaterialiv)gl21LibGetProcAddress("glGetMaterialiv");
+    glc->fnGetPixelMapfv = (gl21PGetPixelMapfv)gl21LibGetProcAddress("glGetPixelMapfv");
+    glc->fnGetPixelMapuiv = (gl21PGetPixelMapuiv)gl21LibGetProcAddress("glGetPixelMapuiv");
+    glc->fnGetPixelMapusv = (gl21PGetPixelMapusv)gl21LibGetProcAddress("glGetPixelMapusv");
+    glc->fnGetPolygonStipple = (gl21PGetPolygonStipple)gl21LibGetProcAddress("glGetPolygonStipple");
+    glc->fnGetString = (gl21PGetString)gl21LibGetProcAddress("glGetString");
+    glc->fnGetTexEnvfv = (gl21PGetTexEnvfv)gl21LibGetProcAddress("glGetTexEnvfv");
+    glc->fnGetTexEnviv = (gl21PGetTexEnviv)gl21LibGetProcAddress("glGetTexEnviv");
+    glc->fnGetTexGendv = (gl21PGetTexGendv)gl21LibGetProcAddress("glGetTexGendv");
+    glc->fnGetTexGenfv = (gl21PGetTexGenfv)gl21LibGetProcAddress("glGetTexGenfv");
+    glc->fnGetTexGeniv = (gl21PGetTexGeniv)gl21LibGetProcAddress("glGetTexGeniv");
+    glc->fnGetTexImage = (gl21PGetTexImage)gl21LibGetProcAddress("glGetTexImage");
+    glc->fnGetTexLevelParameterfv = (gl21PGetTexLevelParameterfv)gl21LibGetProcAddress("glGetTexLevelParameterfv");
+    glc->fnGetTexLevelParameteriv = (gl21PGetTexLevelParameteriv)gl21LibGetProcAddress("glGetTexLevelParameteriv");
+    glc->fnGetTexParameterfv = (gl21PGetTexParameterfv)gl21LibGetProcAddress("glGetTexParameterfv");
+    glc->fnGetTexParameteriv = (gl21PGetTexParameteriv)gl21LibGetProcAddress("glGetTexParameteriv");
+    glc->fnHint = (gl21PHint)gl21LibGetProcAddress("glHint");
+    glc->fnIndexd = (gl21PIndexd)gl21LibGetProcAddress("glIndexd");
+    glc->fnIndexf = (gl21PIndexf)gl21LibGetProcAddress("glIndexf");
+    glc->fnIndexi = (gl21PIndexi)gl21LibGetProcAddress("glIndexi");
+    glc->fnIndexs = (gl21PIndexs)gl21LibGetProcAddress("glIndexs");
+    glc->fnIndexdv = (gl21PIndexdv)gl21LibGetProcAddress("glIndexdv");
+    glc->fnIndexfv = (gl21PIndexfv)gl21LibGetProcAddress("glIndexfv");
+    glc->fnIndexiv = (gl21PIndexiv)gl21LibGetProcAddress("glIndexiv");
+    glc->fnIndexsv = (gl21PIndexsv)gl21LibGetProcAddress("glIndexsv");
+    glc->fnIndexMask = (gl21PIndexMask)gl21LibGetProcAddress("glIndexMask");
+    glc->fnIndexPointer = (gl21PIndexPointer)gl21LibGetProcAddress("glIndexPointer");
+    glc->fnInitNames = (gl21PInitNames)gl21LibGetProcAddress("glInitNames");
+    glc->fnIsEnabled = (gl21PIsEnabled)gl21LibGetProcAddress("glIsEnabled");
+    glc->fnIsList = (gl21PIsList)gl21LibGetProcAddress("glIsList");
+    glc->fnLightf = (gl21PLightf)gl21LibGetProcAddress("glLightf");
+    glc->fnLighti = (gl21PLighti)gl21LibGetProcAddress("glLighti");
+    glc->fnLightfv = (gl21PLightfv)gl21LibGetProcAddress("glLightfv");
+    glc->fnLightiv = (gl21PLightiv)gl21LibGetProcAddress("glLightiv");
+    glc->fnLightModelf = (gl21PLightModelf)gl21LibGetProcAddress("glLightModelf");
+    glc->fnLightModeli = (gl21PLightModeli)gl21LibGetProcAddress("glLightModeli");
+    glc->fnLightModelfv = (gl21PLightModelfv)gl21LibGetProcAddress("glLightModelfv");
+    glc->fnLightModeliv = (gl21PLightModeliv)gl21LibGetProcAddress("glLightModeliv");
+    glc->fnLineStipple = (gl21PLineStipple)gl21LibGetProcAddress("glLineStipple");
+    glc->fnLineWidth = (gl21PLineWidth)gl21LibGetProcAddress("glLineWidth");
+    glc->fnListBase = (gl21PListBase)gl21LibGetProcAddress("glListBase");
+    glc->fnLoadIdentity = (gl21PLoadIdentity)gl21LibGetProcAddress("glLoadIdentity");
+    glc->fnLoadMatrixd = (gl21PLoadMatrixd)gl21LibGetProcAddress("glLoadMatrixd");
+    glc->fnLoadMatrixf = (gl21PLoadMatrixf)gl21LibGetProcAddress("glLoadMatrixf");
+    glc->fnLoadName = (gl21PLoadName)gl21LibGetProcAddress("glLoadName");
+    glc->fnLogicOp = (gl21PLogicOp)gl21LibGetProcAddress("glLogicOp");
+    glc->fnMap1d = (gl21PMap1d)gl21LibGetProcAddress("glMap1d");
+    glc->fnMap1f = (gl21PMap1f)gl21LibGetProcAddress("glMap1f");
+    glc->fnMap2d = (gl21PMap2d)gl21LibGetProcAddress("glMap2d");
+    glc->fnMap2f = (gl21PMap2f)gl21LibGetProcAddress("glMap2f");
+    glc->fnMapGrid1d = (gl21PMapGrid1d)gl21LibGetProcAddress("glMapGrid1d");
+    glc->fnMapGrid1f = (gl21PMapGrid1f)gl21LibGetProcAddress("glMapGrid1f");
+    glc->fnMapGrid2d = (gl21PMapGrid2d)gl21LibGetProcAddress("glMapGrid2d");
+    glc->fnMapGrid2f = (gl21PMapGrid2f)gl21LibGetProcAddress("glMapGrid2f");
+    glc->fnMaterialf = (gl21PMaterialf)gl21LibGetProcAddress("glMaterialf");
+    glc->fnMateriali = (gl21PMateriali)gl21LibGetProcAddress("glMateriali");
+    glc->fnMaterialfv = (gl21PMaterialfv)gl21LibGetProcAddress("glMaterialfv");
+    glc->fnMaterialiv = (gl21PMaterialiv)gl21LibGetProcAddress("glMaterialiv");
+    glc->fnMatrixMode = (gl21PMatrixMode)gl21LibGetProcAddress("glMatrixMode");
+    glc->fnMultMatrixd = (gl21PMultMatrixd)gl21LibGetProcAddress("glMultMatrixd");
+    glc->fnMultMatrixf = (gl21PMultMatrixf)gl21LibGetProcAddress("glMultMatrixf");
+    glc->fnNewList = (gl21PNewList)gl21LibGetProcAddress("glNewList");
+    glc->fnEndList = (gl21PEndList)gl21LibGetProcAddress("glEndList");
+    glc->fnNormal3b = (gl21PNormal3b)gl21LibGetProcAddress("glNormal3b");
+    glc->fnNormal3d = (gl21PNormal3d)gl21LibGetProcAddress("glNormal3d");
+    glc->fnNormal3f = (gl21PNormal3f)gl21LibGetProcAddress("glNormal3f");
+    glc->fnNormal3i = (gl21PNormal3i)gl21LibGetProcAddress("glNormal3i");
+    glc->fnNormal3s = (gl21PNormal3s)gl21LibGetProcAddress("glNormal3s");
+    glc->fnNormal3bv = (gl21PNormal3bv)gl21LibGetProcAddress("glNormal3bv");
+    glc->fnNormal3dv = (gl21PNormal3dv)gl21LibGetProcAddress("glNormal3dv");
+    glc->fnNormal3fv = (gl21PNormal3fv)gl21LibGetProcAddress("glNormal3fv");
+    glc->fnNormal3iv = (gl21PNormal3iv)gl21LibGetProcAddress("glNormal3iv");
+    glc->fnNormal3sv = (gl21PNormal3sv)gl21LibGetProcAddress("glNormal3sv");
+    glc->fnOrtho = (gl21POrtho)gl21LibGetProcAddress("glOrtho");
+    glc->fnPassThrough = (gl21PPassThrough)gl21LibGetProcAddress("glPassThrough");
+    glc->fnPixelMapfv = (gl21PPixelMapfv)gl21LibGetProcAddress("glPixelMapfv");
+    glc->fnPixelMapuiv = (gl21PPixelMapuiv)gl21LibGetProcAddress("glPixelMapuiv");
+    glc->fnPixelMapusv = (gl21PPixelMapusv)gl21LibGetProcAddress("glPixelMapusv");
+    glc->fnPixelStoref = (gl21PPixelStoref)gl21LibGetProcAddress("glPixelStoref");
+    glc->fnPixelStorei = (gl21PPixelStorei)gl21LibGetProcAddress("glPixelStorei");
+    glc->fnPixelTransferf = (gl21PPixelTransferf)gl21LibGetProcAddress("glPixelTransferf");
+    glc->fnPixelTransferi = (gl21PPixelTransferi)gl21LibGetProcAddress("glPixelTransferi");
+    glc->fnPixelZoom = (gl21PPixelZoom)gl21LibGetProcAddress("glPixelZoom");
+    glc->fnPointSize = (gl21PPointSize)gl21LibGetProcAddress("glPointSize");
+    glc->fnPolygonMode = (gl21PPolygonMode)gl21LibGetProcAddress("glPolygonMode");
+    glc->fnPolygonStipple = (gl21PPolygonStipple)gl21LibGetProcAddress("glPolygonStipple");
+    glc->fnPushAttrib = (gl21PPushAttrib)gl21LibGetProcAddress("glPushAttrib");
+    glc->fnPopAttrib = (gl21PPopAttrib)gl21LibGetProcAddress("glPopAttrib");
+    glc->fnPushMatrix = (gl21PPushMatrix)gl21LibGetProcAddress("glPushMatrix");
+    glc->fnPopMatrix = (gl21PPopMatrix)gl21LibGetProcAddress("glPopMatrix");
+    glc->fnPushName = (gl21PPushName)gl21LibGetProcAddress("glPushName");
+    glc->fnPopName = (gl21PPopName)gl21LibGetProcAddress("glPopName");
+    glc->fnRasterPos2d = (gl21PRasterPos2d)gl21LibGetProcAddress("glRasterPos2d");
+    glc->fnRasterPos2f = (gl21PRasterPos2f)gl21LibGetProcAddress("glRasterPos2f");
+    glc->fnRasterPos2i = (gl21PRasterPos2i)gl21LibGetProcAddress("glRasterPos2i");
+    glc->fnRasterPos2s = (gl21PRasterPos2s)gl21LibGetProcAddress("glRasterPos2s");
+    glc->fnRasterPos3d = (gl21PRasterPos3d)gl21LibGetProcAddress("glRasterPos3d");
+    glc->fnRasterPos3f = (gl21PRasterPos3f)gl21LibGetProcAddress("glRasterPos3f");
+    glc->fnRasterPos3i = (gl21PRasterPos3i)gl21LibGetProcAddress("glRasterPos3i");
+    glc->fnRasterPos3s = (gl21PRasterPos3s)gl21LibGetProcAddress("glRasterPos3s");
+    glc->fnRasterPos4d = (gl21PRasterPos4d)gl21LibGetProcAddress("glRasterPos4d");
+    glc->fnRasterPos4f = (gl21PRasterPos4f)gl21LibGetProcAddress("glRasterPos4f");
+    glc->fnRasterPos4i = (gl21PRasterPos4i)gl21LibGetProcAddress("glRasterPos4i");
+    glc->fnRasterPos4s = (gl21PRasterPos4s)gl21LibGetProcAddress("glRasterPos4s");
+    glc->fnRasterPos2dv = (gl21PRasterPos2dv)gl21LibGetProcAddress("glRasterPos2dv");
+    glc->fnRasterPos2fv = (gl21PRasterPos2fv)gl21LibGetProcAddress("glRasterPos2fv");
+    glc->fnRasterPos2iv = (gl21PRasterPos2iv)gl21LibGetProcAddress("glRasterPos2iv");
+    glc->fnRasterPos2sv = (gl21PRasterPos2sv)gl21LibGetProcAddress("glRasterPos2sv");
+    glc->fnRasterPos3dv = (gl21PRasterPos3dv)gl21LibGetProcAddress("glRasterPos3dv");
+    glc->fnRasterPos3fv = (gl21PRasterPos3fv)gl21LibGetProcAddress("glRasterPos3fv");
+    glc->fnRasterPos3iv = (gl21PRasterPos3iv)gl21LibGetProcAddress("glRasterPos3iv");
+    glc->fnRasterPos3sv = (gl21PRasterPos3sv)gl21LibGetProcAddress("glRasterPos3sv");
+    glc->fnRasterPos4dv = (gl21PRasterPos4dv)gl21LibGetProcAddress("glRasterPos4dv");
+    glc->fnRasterPos4fv = (gl21PRasterPos4fv)gl21LibGetProcAddress("glRasterPos4fv");
+    glc->fnRasterPos4iv = (gl21PRasterPos4iv)gl21LibGetProcAddress("glRasterPos4iv");
+    glc->fnRasterPos4sv = (gl21PRasterPos4sv)gl21LibGetProcAddress("glRasterPos4sv");
+    glc->fnReadBuffer = (gl21PReadBuffer)gl21LibGetProcAddress("glReadBuffer");
+    glc->fnReadPixels = (gl21PReadPixels)gl21LibGetProcAddress("glReadPixels");
+    glc->fnRectd = (gl21PRectd)gl21LibGetProcAddress("glRectd");
+    glc->fnRectf = (gl21PRectf)gl21LibGetProcAddress("glRectf");
+    glc->fnRecti = (gl21PRecti)gl21LibGetProcAddress("glRecti");
+    glc->fnRects = (gl21PRects)gl21LibGetProcAddress("glRects");
+    glc->fnRectdv = (gl21PRectdv)gl21LibGetProcAddress("glRectdv");
+    glc->fnRectfv = (gl21PRectfv)gl21LibGetProcAddress("glRectfv");
+    glc->fnRectiv = (gl21PRectiv)gl21LibGetProcAddress("glRectiv");
+    glc->fnRectsv = (gl21PRectsv)gl21LibGetProcAddress("glRectsv");
+    glc->fnRenderMode = (gl21PRenderMode)gl21LibGetProcAddress("glRenderMode");
+    glc->fnRotated = (gl21PRotated)gl21LibGetProcAddress("glRotated");
+    glc->fnRotatef = (gl21PRotatef)gl21LibGetProcAddress("glRotatef");
+    glc->fnScaled = (gl21PScaled)gl21LibGetProcAddress("glScaled");
+    glc->fnScalef = (gl21PScalef)gl21LibGetProcAddress("glScalef");
+    glc->fnScissor = (gl21PScissor)gl21LibGetProcAddress("glScissor");
+    glc->fnSelectBuffer = (gl21PSelectBuffer)gl21LibGetProcAddress("glSelectBuffer");
+    glc->fnShadeModel = (gl21PShadeModel)gl21LibGetProcAddress("glShadeModel");
+    glc->fnStencilFunc = (gl21PStencilFunc)gl21LibGetProcAddress("glStencilFunc");
+    glc->fnStencilMask = (gl21PStencilMask)gl21LibGetProcAddress("glStencilMask");
+    glc->fnStencilOp = (gl21PStencilOp)gl21LibGetProcAddress("glStencilOp");
+    glc->fnTexCoord1d = (gl21PTexCoord1d)gl21LibGetProcAddress("glTexCoord1d");
+    glc->fnTexCoord1f = (gl21PTexCoord1f)gl21LibGetProcAddress("glTexCoord1f");
+    glc->fnTexCoord1i = (gl21PTexCoord1i)gl21LibGetProcAddress("glTexCoord1i");
+    glc->fnTexCoord1s = (gl21PTexCoord1s)gl21LibGetProcAddress("glTexCoord1s");
+    glc->fnTexCoord2d = (gl21PTexCoord2d)gl21LibGetProcAddress("glTexCoord2d");
+    glc->fnTexCoord2f = (gl21PTexCoord2f)gl21LibGetProcAddress("glTexCoord2f");
+    glc->fnTexCoord2i = (gl21PTexCoord2i)gl21LibGetProcAddress("glTexCoord2i");
+    glc->fnTexCoord2s = (gl21PTexCoord2s)gl21LibGetProcAddress("glTexCoord2s");
+    glc->fnTexCoord3d = (gl21PTexCoord3d)gl21LibGetProcAddress("glTexCoord3d");
+    glc->fnTexCoord3f = (gl21PTexCoord3f)gl21LibGetProcAddress("glTexCoord3f");
+    glc->fnTexCoord3i = (gl21PTexCoord3i)gl21LibGetProcAddress("glTexCoord3i");
+    glc->fnTexCoord3s = (gl21PTexCoord3s)gl21LibGetProcAddress("glTexCoord3s");
+    glc->fnTexCoord4d = (gl21PTexCoord4d)gl21LibGetProcAddress("glTexCoord4d");
+    glc->fnTexCoord4f = (gl21PTexCoord4f)gl21LibGetProcAddress("glTexCoord4f");
+    glc->fnTexCoord4i = (gl21PTexCoord4i)gl21LibGetProcAddress("glTexCoord4i");
+    glc->fnTexCoord4s = (gl21PTexCoord4s)gl21LibGetProcAddress("glTexCoord4s");
+    glc->fnTexCoord1dv = (gl21PTexCoord1dv)gl21LibGetProcAddress("glTexCoord1dv");
+    glc->fnTexCoord1fv = (gl21PTexCoord1fv)gl21LibGetProcAddress("glTexCoord1fv");
+    glc->fnTexCoord1iv = (gl21PTexCoord1iv)gl21LibGetProcAddress("glTexCoord1iv");
+    glc->fnTexCoord1sv = (gl21PTexCoord1sv)gl21LibGetProcAddress("glTexCoord1sv");
+    glc->fnTexCoord2dv = (gl21PTexCoord2dv)gl21LibGetProcAddress("glTexCoord2dv");
+    glc->fnTexCoord2fv = (gl21PTexCoord2fv)gl21LibGetProcAddress("glTexCoord2fv");
+    glc->fnTexCoord2iv = (gl21PTexCoord2iv)gl21LibGetProcAddress("glTexCoord2iv");
+    glc->fnTexCoord2sv = (gl21PTexCoord2sv)gl21LibGetProcAddress("glTexCoord2sv");
+    glc->fnTexCoord3dv = (gl21PTexCoord3dv)gl21LibGetProcAddress("glTexCoord3dv");
+    glc->fnTexCoord3fv = (gl21PTexCoord3fv)gl21LibGetProcAddress("glTexCoord3fv");
+    glc->fnTexCoord3iv = (gl21PTexCoord3iv)gl21LibGetProcAddress("glTexCoord3iv");
+    glc->fnTexCoord3sv = (gl21PTexCoord3sv)gl21LibGetProcAddress("glTexCoord3sv");
+    glc->fnTexCoord4dv = (gl21PTexCoord4dv)gl21LibGetProcAddress("glTexCoord4dv");
+    glc->fnTexCoord4fv = (gl21PTexCoord4fv)gl21LibGetProcAddress("glTexCoord4fv");
+    glc->fnTexCoord4iv = (gl21PTexCoord4iv)gl21LibGetProcAddress("glTexCoord4iv");
+    glc->fnTexCoord4sv = (gl21PTexCoord4sv)gl21LibGetProcAddress("glTexCoord4sv");
+    glc->fnTexEnvf = (gl21PTexEnvf)gl21LibGetProcAddress("glTexEnvf");
+    glc->fnTexEnvi = (gl21PTexEnvi)gl21LibGetProcAddress("glTexEnvi");
+    glc->fnTexEnvfv = (gl21PTexEnvfv)gl21LibGetProcAddress("glTexEnvfv");
+    glc->fnTexEnviv = (gl21PTexEnviv)gl21LibGetProcAddress("glTexEnviv");
+    glc->fnTexGend = (gl21PTexGend)gl21LibGetProcAddress("glTexGend");
+    glc->fnTexGenf = (gl21PTexGenf)gl21LibGetProcAddress("glTexGenf");
+    glc->fnTexGeni = (gl21PTexGeni)gl21LibGetProcAddress("glTexGeni");
+    glc->fnTexGendv = (gl21PTexGendv)gl21LibGetProcAddress("glTexGendv");
+    glc->fnTexGenfv = (gl21PTexGenfv)gl21LibGetProcAddress("glTexGenfv");
+    glc->fnTexGeniv = (gl21PTexGeniv)gl21LibGetProcAddress("glTexGeniv");
+    glc->fnTexImage1D = (gl21PTexImage1D)gl21LibGetProcAddress("glTexImage1D");
+    glc->fnTexImage2D = (gl21PTexImage2D)gl21LibGetProcAddress("glTexImage2D");
+    glc->fnTexParameterf = (gl21PTexParameterf)gl21LibGetProcAddress("glTexParameterf");
+    glc->fnTexParameteri = (gl21PTexParameteri)gl21LibGetProcAddress("glTexParameteri");
+    glc->fnTexParameterfv = (gl21PTexParameterfv)gl21LibGetProcAddress("glTexParameterfv");
+    glc->fnTexParameteriv = (gl21PTexParameteriv)gl21LibGetProcAddress("glTexParameteriv");
+    glc->fnTranslated = (gl21PTranslated)gl21LibGetProcAddress("glTranslated");
+    glc->fnTranslatef = (gl21PTranslatef)gl21LibGetProcAddress("glTranslatef");
+    glc->fnVertex2s = (gl21PVertex2s)gl21LibGetProcAddress("glVertex2s");
+    glc->fnVertex2i = (gl21PVertex2i)gl21LibGetProcAddress("glVertex2i");
+    glc->fnVertex2f = (gl21PVertex2f)gl21LibGetProcAddress("glVertex2f");
+    glc->fnVertex2d = (gl21PVertex2d)gl21LibGetProcAddress("glVertex2d");
+    glc->fnVertex3s = (gl21PVertex3s)gl21LibGetProcAddress("glVertex3s");
+    glc->fnVertex3i = (gl21PVertex3i)gl21LibGetProcAddress("glVertex3i");
+    glc->fnVertex3f = (gl21PVertex3f)gl21LibGetProcAddress("glVertex3f");
+    glc->fnVertex3d = (gl21PVertex3d)gl21LibGetProcAddress("glVertex3d");
+    glc->fnVertex4s = (gl21PVertex4s)gl21LibGetProcAddress("glVertex4s");
+    glc->fnVertex4i = (gl21PVertex4i)gl21LibGetProcAddress("glVertex4i");
+    glc->fnVertex4f = (gl21PVertex4f)gl21LibGetProcAddress("glVertex4f");
+    glc->fnVertex4d = (gl21PVertex4d)gl21LibGetProcAddress("glVertex4d");
+    glc->fnViewport = (gl21PViewport)gl21LibGetProcAddress("glViewport");
+    glc->fnGetColorTable = (gl21PGetColorTable)gl21GLGetProcAddress("glGetColorTable");
+    glc->fnGetColorTableParameterfv = (gl21PGetColorTableParameterfv)gl21GLGetProcAddress("glGetColorTableParameterfv");
+    glc->fnGetColorTableParameteriv = (gl21PGetColorTableParameteriv)gl21GLGetProcAddress("glGetColorTableParameteriv");
+    glc->fnGetConvolutionFilter = (gl21PGetConvolutionFilter)gl21GLGetProcAddress("glGetConvolutionFilter");
+    glc->fnGetConvolutionParameterfv = (gl21PGetConvolutionParameterfv)gl21LibGetProcAddress("glGetConvolutionParameterfv");
+    glc->fnGetConvolutionParameteriv = (gl21PGetConvolutionParameteriv)gl21LibGetProcAddress("glGetConvolutionParameteriv");
+    glc->fnGetHistogram = (gl21PGetHistogram)gl21GLGetProcAddress("glGetHistogram");
+    glc->fnGetHistogramParameterfv = (gl21PGetHistogramParameterfv)gl21GLGetProcAddress("glGetHistogramParameterfv");
+    glc->fnGetHistogramParameteriv = (gl21PGetHistogramParameteriv)gl21GLGetProcAddress("glGetHistogramParameteriv");
+    glc->fnGetSeparableFilter = (gl21PGetSeparableFilter)gl21GLGetProcAddress("glGetSeparableFilter");
+    glc->fnHistogram = (gl21PHistogram)gl21GLGetProcAddress("glHistogram");
+    glc->fnMinmax = (gl21PMinmax)gl21GLGetProcAddress("glMinmax");
+    glc->fnMultiTexCoord1s = (gl21PMultiTexCoord1s)gl21GLGetProcAddress("glMultiTexCoord1s");
+    glc->fnMultiTexCoord1i = (gl21PMultiTexCoord1i)gl21GLGetProcAddress("glMultiTexCoord1i");
+    glc->fnMultiTexCoord1f = (gl21PMultiTexCoord1f)gl21GLGetProcAddress("glMultiTexCoord1f");
+    glc->fnMultiTexCoord1d = (gl21PMultiTexCoord1d)gl21GLGetProcAddress("glMultiTexCoord1d");
+    glc->fnMultiTexCoord2s = (gl21PMultiTexCoord2s)gl21GLGetProcAddress("glMultiTexCoord2s");
+    glc->fnMultiTexCoord2i = (gl21PMultiTexCoord2i)gl21GLGetProcAddress("glMultiTexCoord2i");
+    glc->fnMultiTexCoord2f = (gl21PMultiTexCoord2f)gl21GLGetProcAddress("glMultiTexCoord2f");
+    glc->fnMultiTexCoord2d = (gl21PMultiTexCoord2d)gl21GLGetProcAddress("glMultiTexCoord2d");
+    glc->fnMultiTexCoord3s = (gl21PMultiTexCoord3s)gl21GLGetProcAddress("glMultiTexCoord3s");
+    glc->fnMultiTexCoord3i = (gl21PMultiTexCoord3i)gl21GLGetProcAddress("glMultiTexCoord3i");
+    glc->fnMultiTexCoord3f = (gl21PMultiTexCoord3f)gl21GLGetProcAddress("glMultiTexCoord3f");
+    glc->fnMultiTexCoord3d = (gl21PMultiTexCoord3d)gl21GLGetProcAddress("glMultiTexCoord3d");
+    glc->fnMultiTexCoord4s = (gl21PMultiTexCoord4s)gl21GLGetProcAddress("glMultiTexCoord4s");
+    glc->fnMultiTexCoord4i = (gl21PMultiTexCoord4i)gl21GLGetProcAddress("glMultiTexCoord4i");
+    glc->fnMultiTexCoord4f = (gl21PMultiTexCoord4f)gl21GLGetProcAddress("glMultiTexCoord4f");
+    glc->fnMultiTexCoord4d = (gl21PMultiTexCoord4d)gl21GLGetProcAddress("glMultiTexCoord4d");
+    glc->fnMultiTexCoord1sv = (gl21PMultiTexCoord1sv)gl21GLGetProcAddress("glMultiTexCoord1sv");
+    glc->fnMultiTexCoord1iv = (gl21PMultiTexCoord1iv)gl21GLGetProcAddress("glMultiTexCoord1iv");
+    glc->fnMultiTexCoord1fv = (gl21PMultiTexCoord1fv)gl21GLGetProcAddress("glMultiTexCoord1fv");
+    glc->fnMultiTexCoord1dv = (gl21PMultiTexCoord1dv)gl21GLGetProcAddress("glMultiTexCoord1dv");
+    glc->fnMultiTexCoord2sv = (gl21PMultiTexCoord2sv)gl21GLGetProcAddress("glMultiTexCoord2sv");
+    glc->fnMultiTexCoord2iv = (gl21PMultiTexCoord2iv)gl21GLGetProcAddress("glMultiTexCoord2iv");
+    glc->fnMultiTexCoord2fv = (gl21PMultiTexCoord2fv)gl21GLGetProcAddress("glMultiTexCoord2fv");
+    glc->fnMultiTexCoord2dv = (gl21PMultiTexCoord2dv)gl21GLGetProcAddress("glMultiTexCoord2dv");
+    glc->fnMultiTexCoord3sv = (gl21PMultiTexCoord3sv)gl21GLGetProcAddress("glMultiTexCoord3sv");
+    glc->fnMultiTexCoord3iv = (gl21PMultiTexCoord3iv)gl21GLGetProcAddress("glMultiTexCoord3iv");
+    glc->fnMultiTexCoord3fv = (gl21PMultiTexCoord3fv)gl21GLGetProcAddress("glMultiTexCoord3fv");
+    glc->fnMultiTexCoord3dv = (gl21PMultiTexCoord3dv)gl21GLGetProcAddress("glMultiTexCoord3dv");
+    glc->fnMultiTexCoord4sv = (gl21PMultiTexCoord4sv)gl21GLGetProcAddress("glMultiTexCoord4sv");
+    glc->fnMultiTexCoord4iv = (gl21PMultiTexCoord4iv)gl21GLGetProcAddress("glMultiTexCoord4iv");
+    glc->fnMultiTexCoord4fv = (gl21PMultiTexCoord4fv)gl21GLGetProcAddress("glMultiTexCoord4fv");
+    glc->fnMultiTexCoord4dv = (gl21PMultiTexCoord4dv)gl21GLGetProcAddress("glMultiTexCoord4dv");
+    glc->fnResetHistogram = (gl21PResetHistogram)gl21GLGetProcAddress("glResetHistogram");
+    glc->fnResetMinmax = (gl21PResetMinmax)gl21GLGetProcAddress("glResetMinmax");
+    glc->fnSeparableFilter2D = (gl21PSeparableFilter2D)gl21GLGetProcAddress("glSeparableFilter2D");
+    glc->fnAreTexturesResident = (gl21PAreTexturesResident)gl21LibGetProcAddress("glAreTexturesResident");
+    glc->fnArrayElement = (gl21PArrayElement)gl21LibGetProcAddress("glArrayElement");
+    glc->fnDrawArrays = (gl21PDrawArrays)gl21LibGetProcAddress("glDrawArrays");
+    glc->fnDrawElements = (gl21PDrawElements)gl21LibGetProcAddress("glDrawElements");
+    glc->fnGetPointerv = (gl21PGetPointerv)gl21LibGetProcAddress("glGetPointerv");
+    glc->fnPolygonOffset = (gl21PPolygonOffset)gl21LibGetProcAddress("glPolygonOffset");
+    glc->fnCopyTexImage1D = (gl21PCopyTexImage1D)gl21LibGetProcAddress("glCopyTexImage1D");
+    glc->fnCopyTexImage2D = (gl21PCopyTexImage2D)gl21LibGetProcAddress("glCopyTexImage2D");
+    glc->fnCopyTexSubImage1D = (gl21PCopyTexSubImage1D)gl21LibGetProcAddress("glCopyTexSubImage1D");
+    glc->fnCopyTexSubImage2D = (gl21PCopyTexSubImage2D)gl21LibGetProcAddress("glCopyTexSubImage2D");
+    glc->fnBindTexture = (gl21PBindTexture)gl21LibGetProcAddress("glBindTexture");
+    glc->fnDeleteTextures = (gl21PDeleteTextures)gl21LibGetProcAddress("glDeleteTextures");
+    glc->fnGenTextures = (gl21PGenTextures)gl21LibGetProcAddress("glGenTextures");
+    glc->fnIsTexture = (gl21PIsTexture)gl21LibGetProcAddress("glIsTexture");
+    glc->fnColorPointer = (gl21PColorPointer)gl21LibGetProcAddress("glColorPointer");
+    glc->fnEnableClientState = (gl21PEnableClientState)gl21LibGetProcAddress("glEnableClientState");
+    glc->fnDisableClientState = (gl21PDisableClientState)gl21LibGetProcAddress("glDisableClientState");
+    glc->fnIndexub = (gl21PIndexub)gl21LibGetProcAddress("glIndexub");
+    glc->fnIndexubv = (gl21PIndexubv)gl21LibGetProcAddress("glIndexubv");
+    glc->fnInterleavedArrays = (gl21PInterleavedArrays)gl21LibGetProcAddress("glInterleavedArrays");
+    glc->fnNormalPointer = (gl21PNormalPointer)gl21LibGetProcAddress("glNormalPointer");
+    glc->fnPushClientAttrib = (gl21PPushClientAttrib)gl21LibGetProcAddress("glPushClientAttrib");
+    glc->fnPrioritizeTextures = (gl21PPrioritizeTextures)gl21LibGetProcAddress("glPrioritizeTextures");
+    glc->fnPopClientAttrib = (gl21PPopClientAttrib)gl21LibGetProcAddress("glPopClientAttrib");
+    glc->fnTexCoordPointer = (gl21PTexCoordPointer)gl21LibGetProcAddress("glTexCoordPointer");
+    glc->fnTexSubImage1D = (gl21PTexSubImage1D)gl21LibGetProcAddress("glTexSubImage1D");
+    glc->fnTexSubImage2D = (gl21PTexSubImage2D)gl21LibGetProcAddress("glTexSubImage2D");
+    glc->fnVertexPointer = (gl21PVertexPointer)gl21LibGetProcAddress("glVertexPointer");
+    glc->fnBlendColor = (gl21PBlendColor)gl21GLGetProcAddress("glBlendColor");
+    glc->fnBlendEquation = (gl21PBlendEquation)gl21GLGetProcAddress("glBlendEquation");
+    glc->fnCopyTexSubImage3D = (gl21PCopyTexSubImage3D)gl21GLGetProcAddress("glCopyTexSubImage3D");
+    glc->fnDrawRangeElements = (gl21PDrawRangeElements)gl21GLGetProcAddress("glDrawRangeElements");
+    glc->fnTexImage3D = (gl21PTexImage3D)gl21GLGetProcAddress("glTexImage3D");
+    glc->fnTexSubImage3D = (gl21PTexSubImage3D)gl21GLGetProcAddress("glTexSubImage3D");
+    glc->fnActiveTexture = (gl21PActiveTexture)gl21GLGetProcAddress("glActiveTexture");
+    glc->fnClientActiveTexture = (gl21PClientActiveTexture)gl21GLGetProcAddress("glClientActiveTexture");
+    glc->fnCompressedTexImage1D = (gl21PCompressedTexImage1D)gl21GLGetProcAddress("glCompressedTexImage1D");
+    glc->fnCompressedTexImage2D = (gl21PCompressedTexImage2D)gl21GLGetProcAddress("glCompressedTexImage2D");
+    glc->fnCompressedTexImage3D = (gl21PCompressedTexImage3D)gl21GLGetProcAddress("glCompressedTexImage3D");
+    glc->fnCompressedTexSubImage1D = (gl21PCompressedTexSubImage1D)gl21GLGetProcAddress("glCompressedTexSubImage1D");
+    glc->fnCompressedTexSubImage2D = (gl21PCompressedTexSubImage2D)gl21GLGetProcAddress("glCompressedTexSubImage2D");
+    glc->fnCompressedTexSubImage3D = (gl21PCompressedTexSubImage3D)gl21GLGetProcAddress("glCompressedTexSubImage3D");
+    glc->fnGetCompressedTexImage = (gl21PGetCompressedTexImage)gl21GLGetProcAddress("glGetCompressedTexImage");
+    glc->fnLoadTransposeMatrixd = (gl21PLoadTransposeMatrixd)gl21GLGetProcAddress("glLoadTransposeMatrixd");
+    glc->fnLoadTransposeMatrixf = (gl21PLoadTransposeMatrixf)gl21GLGetProcAddress("glLoadTransposeMatrixf");
+    glc->fnMultTransposeMatrixd = (gl21PMultTransposeMatrixd)gl21GLGetProcAddress("glMultTransposeMatrixd");
+    glc->fnMultTransposeMatrixf = (gl21PMultTransposeMatrixf)gl21GLGetProcAddress("glMultTransposeMatrixf");
+    glc->fnSampleCoverage = (gl21PSampleCoverage)gl21GLGetProcAddress("glSampleCoverage");
+    glc->fnBlendFuncSeparate = (gl21PBlendFuncSeparate)gl21GLGetProcAddress("glBlendFuncSeparate");
+    glc->fnFogCoordPointer = (gl21PFogCoordPointer)gl21GLGetProcAddress("glFogCoordPointer");
+    glc->fnFogCoordd = (gl21PFogCoordd)gl21GLGetProcAddress("glFogCoordd");
+    glc->fnFogCoordf = (gl21PFogCoordf)gl21GLGetProcAddress("glFogCoordf");
+    glc->fnFogCoorddv = (gl21PFogCoorddv)gl21GLGetProcAddress("glFogCoorddv");
+    glc->fnFogCoordfv = (gl21PFogCoordfv)gl21GLGetProcAddress("glFogCoordfv");
+    glc->fnMultiDrawArrays = (gl21PMultiDrawArrays)gl21GLGetProcAddress("glMultiDrawArrays");
+    glc->fnMultiDrawElements = (gl21PMultiDrawElements)gl21GLGetProcAddress("glMultiDrawElements");
+    glc->fnPointParameterf = (gl21PPointParameterf)gl21GLGetProcAddress("glPointParameterf");
+    glc->fnPointParameteri = (gl21PPointParameteri)gl21GLGetProcAddress("glPointParameteri");
+    glc->fnSecondaryColor3b = (gl21PSecondaryColor3b)gl21GLGetProcAddress("glSecondaryColor3b");
+    glc->fnSecondaryColor3s = (gl21PSecondaryColor3s)gl21GLGetProcAddress("glSecondaryColor3s");
+    glc->fnSecondaryColor3i = (gl21PSecondaryColor3i)gl21GLGetProcAddress("glSecondaryColor3i");
+    glc->fnSecondaryColor3f = (gl21PSecondaryColor3f)gl21GLGetProcAddress("glSecondaryColor3f");
+    glc->fnSecondaryColor3d = (gl21PSecondaryColor3d)gl21GLGetProcAddress("glSecondaryColor3d");
+    glc->fnSecondaryColor3ub = (gl21PSecondaryColor3ub)gl21GLGetProcAddress("glSecondaryColor3ub");
+    glc->fnSecondaryColor3us = (gl21PSecondaryColor3us)gl21GLGetProcAddress("glSecondaryColor3us");
+    glc->fnSecondaryColor3ui = (gl21PSecondaryColor3ui)gl21GLGetProcAddress("glSecondaryColor3ui");
+    glc->fnSecondaryColor3bv = (gl21PSecondaryColor3bv)gl21GLGetProcAddress("glSecondaryColor3bv");
+    glc->fnSecondaryColor3sv = (gl21PSecondaryColor3sv)gl21GLGetProcAddress("glSecondaryColor3sv");
+    glc->fnSecondaryColor3iv = (gl21PSecondaryColor3iv)gl21GLGetProcAddress("glSecondaryColor3iv");
+    glc->fnSecondaryColor3fv = (gl21PSecondaryColor3fv)gl21GLGetProcAddress("glSecondaryColor3fv");
+    glc->fnSecondaryColor3dv = (gl21PSecondaryColor3dv)gl21GLGetProcAddress("glSecondaryColor3dv");
+    glc->fnSecondaryColor3ubv = (gl21PSecondaryColor3ubv)gl21GLGetProcAddress("glSecondaryColor3ubv");
+    glc->fnSecondaryColor3usv = (gl21PSecondaryColor3usv)gl21GLGetProcAddress("glSecondaryColor3usv");
+    glc->fnSecondaryColor3uiv = (gl21PSecondaryColor3uiv)gl21GLGetProcAddress("glSecondaryColor3uiv");
+    glc->fnSecondaryColorPointer = (gl21PSecondaryColorPointer)gl21GLGetProcAddress("glSecondaryColorPointer");
+    glc->fnWindowPos2s = (gl21PWindowPos2s)gl21GLGetProcAddress("glWindowPos2s");
+    glc->fnWindowPos2i = (gl21PWindowPos2i)gl21GLGetProcAddress("glWindowPos2i");
+    glc->fnWindowPos2f = (gl21PWindowPos2f)gl21GLGetProcAddress("glWindowPos2f");
+    glc->fnWindowPos2d = (gl21PWindowPos2d)gl21GLGetProcAddress("glWindowPos2d");
+    glc->fnWindowPos3s = (gl21PWindowPos3s)gl21GLGetProcAddress("glWindowPos3s");
+    glc->fnWindowPos3i = (gl21PWindowPos3i)gl21GLGetProcAddress("glWindowPos3i");
+    glc->fnWindowPos3f = (gl21PWindowPos3f)gl21GLGetProcAddress("glWindowPos3f");
+    glc->fnWindowPos3d = (gl21PWindowPos3d)gl21GLGetProcAddress("glWindowPos3d");
+    glc->fnWindowPos2sv = (gl21PWindowPos2sv)gl21GLGetProcAddress("glWindowPos2sv");
+    glc->fnWindowPos2iv = (gl21PWindowPos2iv)gl21GLGetProcAddress("glWindowPos2iv");
+    glc->fnWindowPos2fv = (gl21PWindowPos2fv)gl21GLGetProcAddress("glWindowPos2fv");
+    glc->fnWindowPos2dv = (gl21PWindowPos2dv)gl21GLGetProcAddress("glWindowPos2dv");
+    glc->fnWindowPos3sv = (gl21PWindowPos3sv)gl21GLGetProcAddress("glWindowPos3sv");
+    glc->fnWindowPos3iv = (gl21PWindowPos3iv)gl21GLGetProcAddress("glWindowPos3iv");
+    glc->fnWindowPos3fv = (gl21PWindowPos3fv)gl21GLGetProcAddress("glWindowPos3fv");
+    glc->fnWindowPos3dv = (gl21PWindowPos3dv)gl21GLGetProcAddress("glWindowPos3dv");
+    glc->fnBeginQuery = (gl21PBeginQuery)gl21GLGetProcAddress("glBeginQuery");
+    glc->fnBindBuffer = (gl21PBindBuffer)gl21GLGetProcAddress("glBindBuffer");
+    glc->fnBufferData = (gl21PBufferData)gl21GLGetProcAddress("glBufferData");
+    glc->fnBufferSubData = (gl21PBufferSubData)gl21GLGetProcAddress("glBufferSubData");
+    glc->fnDeleteBuffers = (gl21PDeleteBuffers)gl21GLGetProcAddress("glDeleteBuffers");
+    glc->fnDeleteQueries = (gl21PDeleteQueries)gl21GLGetProcAddress("glDeleteQueries");
+    glc->fnGenBuffers = (gl21PGenBuffers)gl21GLGetProcAddress("glGenBuffers");
+    glc->fnGenQueries = (gl21PGenQueries)gl21GLGetProcAddress("glGenQueries");
+    glc->fnGetBufferParameteriv = (gl21PGetBufferParameteriv)gl21GLGetProcAddress("glGetBufferParameteriv");
+    glc->fnGetBufferPointerv = (gl21PGetBufferPointerv)gl21GLGetProcAddress("glGetBufferPointerv");
+    glc->fnGetBufferSubData = (gl21PGetBufferSubData)gl21GLGetProcAddress("glGetBufferSubData");
+    glc->fnGetQueryObjectiv = (gl21PGetQueryObjectiv)gl21GLGetProcAddress("glGetQueryObjectiv");
+    glc->fnGetQueryObjectuiv = (gl21PGetQueryObjectuiv)gl21GLGetProcAddress("glGetQueryObjectuiv");
+    glc->fnGetQueryiv = (gl21PGetQueryiv)gl21GLGetProcAddress("glGetQueryiv");
+    glc->fnIsBuffer = (gl21PIsBuffer)gl21GLGetProcAddress("glIsBuffer");
+    glc->fnIsQuery = (gl21PIsQuery)gl21GLGetProcAddress("glIsQuery");
+    glc->fnMapBuffer = (gl21PMapBuffer)gl21GLGetProcAddress("glMapBuffer");
+    glc->fnUnmapBuffer = (gl21PUnmapBuffer)gl21GLGetProcAddress("glUnmapBuffer");
+    glc->fnAttachShader = (gl21PAttachShader)gl21GLGetProcAddress("glAttachShader");
+    glc->fnBindAttribLocation = (gl21PBindAttribLocation)gl21GLGetProcAddress("glBindAttribLocation");
+    glc->fnBlendEquationSeperate = (gl21PBlendEquationSeperate)gl21GLGetProcAddress("glBlendEquationSeperate");
+    glc->fnCompileShader = (gl21PCompileShader)gl21GLGetProcAddress("glCompileShader");
+    glc->fnCreateProgram = (gl21PCreateProgram)gl21GLGetProcAddress("glCreateProgram");
+    glc->fnCreateShader = (gl21PCreateShader)gl21GLGetProcAddress("glCreateShader");
+    glc->fnDeleteProgram = (gl21PDeleteProgram)gl21GLGetProcAddress("glDeleteProgram");
+    glc->fnDeleteShader = (gl21PDeleteShader)gl21GLGetProcAddress("glDeleteShader");
+    glc->fnDetachShader = (gl21PDetachShader)gl21GLGetProcAddress("glDetachShader");
+    glc->fnEnableVertexAttribArray = (gl21PEnableVertexAttribArray)gl21GLGetProcAddress("glEnableVertexAttribArray");
+    glc->fnDisableVertexAttribArray = (gl21PDisableVertexAttribArray)gl21GLGetProcAddress("glDisableVertexAttribArray");
+    glc->fnDrawBuffers = (gl21PDrawBuffers)gl21LibGetProcAddress("glDrawBuffers");
+    glc->fnGetActiveAttrib = (gl21PGetActiveAttrib)gl21LibGetProcAddress("glGetActiveAttrib");
+    glc->fnGetActiveUniform = (gl21PGetActiveUniform)gl21LibGetProcAddress("glGetActiveUniform");
+    glc->fnGetAttachedShaders = (gl21PGetAttachedShaders)gl21LibGetProcAddress("glGetAttachedShaders");
+    glc->fnGetAttribLocation = (gl21PGetAttribLocation)gl21LibGetProcAddress("glGetAttribLocation");
+    glc->fnGetProgramiv = (gl21PGetProgramiv)gl21LibGetProcAddress("glGetProgramiv");
+    glc->fnGetProgramInfoLog = (gl21PGetProgramInfoLog)gl21LibGetProcAddress("glGetProgramInfoLog");
+    glc->fnGetShaderiv = (gl21PGetShaderiv)gl21LibGetProcAddress("glGetShaderiv");
+    glc->fnGetShaderInfoLog = (gl21PGetShaderInfoLog)gl21LibGetProcAddress("glGetShaderInfoLog");
+    glc->fnGetShaderSource = (gl21PGetShaderSource)gl21LibGetProcAddress("glGetShaderSource");
+    glc->fnGetUniformfv = (gl21PGetUniformfv)gl21LibGetProcAddress("glGetUniformfv");
+    glc->fnGetUniformiv = (gl21PGetUniformiv)gl21LibGetProcAddress("glGetUniformiv");
+    glc->fnGetUniformLocation = (gl21PGetUniformLocation)gl21LibGetProcAddress("glGetUniformLocation");
+    glc->fnGetVertexAttribdv = (gl21PGetVertexAttribdv)gl21LibGetProcAddress("glGetVertexAttribdv");
+    glc->fnGetVertexAttribfv = (gl21PGetVertexAttribfv)gl21LibGetProcAddress("glGetVertexAttribfv");
+    glc->fnGetVertexAttribiv = (gl21PGetVertexAttribiv)gl21LibGetProcAddress("glGetVertexAttribiv");
+    glc->fnGetVertexAttribPointerv = (gl21PGetVertexAttribPointerv)gl21LibGetProcAddress("glGetVertexAttribPointerv");
+    glc->fnIsProgram = (gl21PIsProgram)gl21LibGetProcAddress("glIsProgram");
+    glc->fnIsShader = (gl21PIsShader)gl21LibGetProcAddress("glIsShader");
+    glc->fnLinkProgram = (gl21PLinkProgram)gl21LibGetProcAddress("glLinkProgram");
+    glc->fnShaderSource = (gl21PShaderSource)gl21LibGetProcAddress("glShaderSource");
+    glc->fnStencilFuncSeparate = (gl21PStencilFuncSeparate)gl21LibGetProcAddress("glStencilFuncSeparate");
+    glc->fnStencilMaskSeparate = (gl21PStencilMaskSeparate)gl21LibGetProcAddress("glStencilMaskSeparate");
+    glc->fnStencilOpSeparate = (gl21PStencilOpSeparate)gl21LibGetProcAddress("glStencilOpSeparate");
+    glc->fnUniform1f = (gl21PUniform1f)gl21LibGetProcAddress("glUniform1f");
+    glc->fnUniform2f = (gl21PUniform2f)gl21LibGetProcAddress("glUniform2f");
+    glc->fnUniform3f = (gl21PUniform3f)gl21LibGetProcAddress("glUniform3f");
+    glc->fnUniform4f = (gl21PUniform4f)gl21LibGetProcAddress("glUniform4f");
+    glc->fnUniform1i = (gl21PUniform1i)gl21LibGetProcAddress("glUniform1i");
+    glc->fnUniform2i = (gl21PUniform2i)gl21LibGetProcAddress("glUniform2i");
+    glc->fnUniform3i = (gl21PUniform3i)gl21LibGetProcAddress("glUniform3i");
+    glc->fnUniform4i = (gl21PUniform4i)gl21LibGetProcAddress("glUniform4i");
+    glc->fnUniform1fv = (gl21PUniform1fv)gl21LibGetProcAddress("glUniform1fv");
+    glc->fnUniform2fv = (gl21PUniform2fv)gl21LibGetProcAddress("glUniform2fv");
+    glc->fnUniform3fv = (gl21PUniform3fv)gl21LibGetProcAddress("glUniform3fv");
+    glc->fnUniform4fv = (gl21PUniform4fv)gl21LibGetProcAddress("glUniform4fv");
+    glc->fnUniform1iv = (gl21PUniform1iv)gl21LibGetProcAddress("glUniform1iv");
+    glc->fnUniform2iv = (gl21PUniform2iv)gl21LibGetProcAddress("glUniform2iv");
+    glc->fnUniform3iv = (gl21PUniform3iv)gl21LibGetProcAddress("glUniform3iv");
+    glc->fnUniform4iv = (gl21PUniform4iv)gl21LibGetProcAddress("glUniform4iv");
+    glc->fnUseProgram = (gl21PUseProgram)gl21LibGetProcAddress("glUseProgram");
+    glc->fnValidateProgram = (gl21PValidateProgram)gl21LibGetProcAddress("glValidateProgram");
+    glc->fnVertexAttribPointer = (gl21PVertexAttribPointer)gl21LibGetProcAddress("glVertexAttribPointer");
+    glc->fnVertexAttrib1f = (gl21PVertexAttrib1f)gl21LibGetProcAddress("glVertexAttrib1f");
+    glc->fnVertexAttrib1s = (gl21PVertexAttrib1s)gl21LibGetProcAddress("glVertexAttrib1s");
+    glc->fnVertexAttrib1d = (gl21PVertexAttrib1d)gl21LibGetProcAddress("glVertexAttrib1d");
+    glc->fnVertexAttrib2f = (gl21PVertexAttrib2f)gl21LibGetProcAddress("glVertexAttrib2f");
+    glc->fnVertexAttrib2s = (gl21PVertexAttrib2s)gl21LibGetProcAddress("glVertexAttrib2s");
+    glc->fnVertexAttrib2d = (gl21PVertexAttrib2d)gl21LibGetProcAddress("glVertexAttrib2d");
+    glc->fnVertexAttrib3f = (gl21PVertexAttrib3f)gl21LibGetProcAddress("glVertexAttrib3f");
+    glc->fnVertexAttrib3s = (gl21PVertexAttrib3s)gl21LibGetProcAddress("glVertexAttrib3s");
+    glc->fnVertexAttrib3d = (gl21PVertexAttrib3d)gl21LibGetProcAddress("glVertexAttrib3d");
+    glc->fnVertexAttrib4f = (gl21PVertexAttrib4f)gl21LibGetProcAddress("glVertexAttrib4f");
+    glc->fnVertexAttrib4s = (gl21PVertexAttrib4s)gl21LibGetProcAddress("glVertexAttrib4s");
+    glc->fnVertexAttrib4d = (gl21PVertexAttrib4d)gl21LibGetProcAddress("glVertexAttrib4d");
+    glc->fnVertexAttrib4Nuv = (gl21PVertexAttrib4Nuv)gl21LibGetProcAddress("glVertexAttrib4Nuv");
+    glc->fnVertexAttrib1fv = (gl21PVertexAttrib1fv)gl21LibGetProcAddress("glVertexAttrib1fv");
+    glc->fnVertexAttrib1sv = (gl21PVertexAttrib1sv)gl21LibGetProcAddress("glVertexAttrib1sv");
+    glc->fnVertexAttrib1dv = (gl21PVertexAttrib1dv)gl21LibGetProcAddress("glVertexAttrib1dv");
+    glc->fnVertexAttrib2fv = (gl21PVertexAttrib2fv)gl21LibGetProcAddress("glVertexAttrib2fv");
+    glc->fnVertexAttrib2sv = (gl21PVertexAttrib2sv)gl21LibGetProcAddress("glVertexAttrib2sv");
+    glc->fnVertexAttrib2dv = (gl21PVertexAttrib2dv)gl21LibGetProcAddress("glVertexAttrib2dv");
+    glc->fnVertexAttrib3fv = (gl21PVertexAttrib3fv)gl21LibGetProcAddress("glVertexAttrib3fv");
+    glc->fnVertexAttrib3sv = (gl21PVertexAttrib3sv)gl21LibGetProcAddress("glVertexAttrib3sv");
+    glc->fnVertexAttrib3dv = (gl21PVertexAttrib3dv)gl21LibGetProcAddress("glVertexAttrib3dv");
+    glc->fnVertexAttrib4fv = (gl21PVertexAttrib4fv)gl21LibGetProcAddress("glVertexAttrib4fv");
+    glc->fnVertexAttrib4sv = (gl21PVertexAttrib4sv)gl21LibGetProcAddress("glVertexAttrib4sv");
+    glc->fnVertexAttrib4dv = (gl21PVertexAttrib4dv)gl21LibGetProcAddress("glVertexAttrib4dv");
+    glc->fnVertexAttrib4iv = (gl21PVertexAttrib4iv)gl21LibGetProcAddress("glVertexAttrib4iv");
+    glc->fnVertexAttrib4bv = (gl21PVertexAttrib4bv)gl21LibGetProcAddress("glVertexAttrib4bv");
+    glc->fnVertexAttrib4ubv = (gl21PVertexAttrib4ubv)gl21LibGetProcAddress("glVertexAttrib4ubv");
+    glc->fnVertexAttrib4usv = (gl21PVertexAttrib4usv)gl21LibGetProcAddress("glVertexAttrib4usv");
+    glc->fnVertexAttrib4uiv = (gl21PVertexAttrib4uiv)gl21LibGetProcAddress("glVertexAttrib4uiv");
+    glc->fnVertexAttrib4Nbv = (gl21PVertexAttrib4Nbv)gl21LibGetProcAddress("glVertexAttrib4Nbv");
+    glc->fnVertexAttrib4Nsv = (gl21PVertexAttrib4Nsv)gl21LibGetProcAddress("glVertexAttrib4Nsv");
+    glc->fnVertexAttrib4Niv = (gl21PVertexAttrib4Niv)gl21LibGetProcAddress("glVertexAttrib4Niv");
+    glc->fnVertexAttrib4Nubv = (gl21PVertexAttrib4Nubv)gl21LibGetProcAddress("glVertexAttrib4Nubv");
+    glc->fnVertexAttrib4Nusv = (gl21PVertexAttrib4Nusv)gl21LibGetProcAddress("glVertexAttrib4Nusv");
+    glc->fnVertexAttrib4Nuiv = (gl21PVertexAttrib4Nuiv)gl21LibGetProcAddress("glVertexAttrib4Nuiv");
+    glc->fnUniformMatrix2fv = (gl21PUniformMatrix2fv)gl21LibGetProcAddress("glUniformMatrix2fv");
+    glc->fnUniformMatrix3fv = (gl21PUniformMatrix3fv)gl21LibGetProcAddress("glUniformMatrix3fv");
+    glc->fnUniformMatrix4fv = (gl21PUniformMatrix4fv)gl21LibGetProcAddress("glUniformMatrix4fv");
+    glc->fnUniformMatrix2x3fv = (gl21PUniformMatrix2x3fv)gl21LibGetProcAddress("glUniformMatrix2x3fv");
+    glc->fnUniformMatrix3x2fv = (gl21PUniformMatrix3x2fv)gl21LibGetProcAddress("glUniformMatrix3x2fv");
+    glc->fnUniformMatrix2x4fv = (gl21PUniformMatrix2x4fv)gl21LibGetProcAddress("glUniformMatrix2x4fv");
+    glc->fnUniformMatrix4x2fv = (gl21PUniformMatrix4x2fv)gl21LibGetProcAddress("glUniformMatrix4x2fv");
+    glc->fnUniformMatrix3x4fv = (gl21PUniformMatrix3x4fv)gl21LibGetProcAddress("glUniformMatrix3x4fv");
+    glc->fnUniformMatrix4x3fv = (gl21PUniformMatrix4x3fv)gl21LibGetProcAddress("glUniformMatrix4x3fv");
     return glc;
 }
 

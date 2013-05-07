@@ -4,13 +4,13 @@
 
 // +build tests,!no_opengl
 
-// Test - Opens an window and uses OpenGL 2.1 rendering
+// Test - Opens an transparent window and uses OpenGL rendering
 package main
 
 import (
 	"code.google.com/p/azul3d/chippy"
 	"code.google.com/p/azul3d/clock"
-	"code.google.com/p/azul3d/native/opengl/2.1"
+	"code.google.com/p/azul3d/native/opengl/1.5"
 	"log"
 	"math"
 	"os"
@@ -106,6 +106,9 @@ func main() {
 
 	window = chippy.NewWindow()
 
+	// Make it transparent
+	window.SetTransparent(true)
+
 	// Actually open the windows
 	screen := chippy.DefaultScreen()
 	err = window.Open(screen)
@@ -132,7 +135,7 @@ func main() {
 	defer runtime.UnlockOSThread()
 
 	// Create an OpenGL context with the OpenGL version we wish
-	context, err := window.GLCreateContext(2, 1, 0)
+	context, err := window.GLCreateContext(1, 5, 0)
 	if err != nil {
 		log.Fatal(err)
 	}

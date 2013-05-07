@@ -414,6 +414,13 @@ type HINSTANCE C.HINSTANCE
 
 type WPARAM C.WPARAM
 
+func (c WPARAM) HIWORD() uint16 {
+	return uint16((uint32(c) >> 16) & 0xFFFF)
+}
+func (c WPARAM) LOWORD() uint16 {
+	return uint16(c)
+}
+
 type POINT C.POINT
 
 func (c *POINT) SetX(x int32) {
@@ -567,6 +574,9 @@ func (w *WNDCLASSEX) SetLpszClassName(v string) {
 
 // http://msdn.microsoft.com/en-us/library/windows/desktop/ms632600(v=vs.85).aspx
 const (
+	// We don't actually, use, we just hog the DC always.
+	CS_OWNDC = C.CS_OWNDC
+
 	// The window has a thin-line border.
 	WS_BORDER = C.WS_BORDER
 
@@ -895,6 +905,7 @@ const (
 	WM_SIZING        = C.WM_SIZING
 
 	WM_SETCURSOR = C.WM_SETCURSOR
+	WM_GETICON   = C.WM_GETICON
 
 	WM_SIZE        = C.WM_SIZE
 	SIZE_MAXIMIZED = C.SIZE_MAXIMIZED
@@ -902,6 +913,11 @@ const (
 	SIZE_RESTORED  = C.SIZE_RESTORED
 
 	WM_CLOSE = C.WM_CLOSE
+
+	WM_ACTIVATE    = C.WM_ACTIVATE
+	WA_INACTIVE    = C.WA_INACTIVE
+	WA_ACTIVE      = C.WA_ACTIVE
+	WA_CLICKACTIVE = C.WA_CLICKACTIVE
 
 	WM_MOUSEMOVE     = C.WM_MOUSEMOVE
 	WM_LBUTTONDOWN   = C.WM_LBUTTONDOWN
@@ -925,6 +941,14 @@ const (
 
 	WM_MOVE = C.WM_MOVE
 )
+
+func IsIconic(hwnd HWND) bool {
+	return C.IsIconic(C.HWND(hwnd)) != 0
+}
+
+func SetCursorPos(x, y int32) bool {
+	return C.SetCursorPos(C.int(x), C.int(y)) != 0
+}
 
 func SetTimer(hwnd HWND, nIDEvent UINT_PTR, uElapse UINT, lpTimerFunc TIMERPROC) (timer UINT_PTR) {
 	timer = UINT_PTR(C.SetTimer(C.HWND(hwnd), C.UINT_PTR(nIDEvent), C.UINT(uElapse), C.TIMERPROC(lpTimerFunc)))

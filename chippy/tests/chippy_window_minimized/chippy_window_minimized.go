@@ -46,7 +46,7 @@ func main() {
 
 	window2.SetMinimized(true)
 
-	// Print out what they currently has property-wise
+	// Print out what they currently have property-wise
 	log.Println(window1)
 	log.Println(window2)
 
@@ -55,6 +55,10 @@ func main() {
 
 	window1.SetMinimized(false)
 	window2.SetMinimized(false)
+
+	// Print out what they currently have property-wise
+	log.Println(window1)
+	log.Println(window2)
 
 	// Just wait an while so they can enjoy the window
 	log.Println("Waiting 15 seconds...")

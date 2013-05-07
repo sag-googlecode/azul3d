@@ -45,6 +45,7 @@ func main() {
 	maximizedEvents := window.MaximizedEvents()
 	minimizedEvents := window.MinimizedEvents()
 	mouseEvents := window.MouseEvents()
+	focusedEvents := window.FocusedEvents()
 	positionEvents := window.PositionEvents()
 	sizeEvents := window.SizeEvents()
 
@@ -67,6 +68,9 @@ func main() {
 
 		case v := <-mouseEvents.Read:
 			log.Println("mouse", v)
+
+		case v := <-focusedEvents.Read:
+			log.Println("focused", v)
 
 		case v := <-positionEvents.Read:
 			log.Println("position", v)

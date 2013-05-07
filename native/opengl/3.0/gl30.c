@@ -1,19 +1,35 @@
+
 #include <stdbool.h>
 #include <stdlib.h>
+
 #ifdef _WIN32
-    #include <windows.h>
+	#include <windows.h>
 #endif
+
 #include "gl30.h"
 
 #ifdef _WIN32
-    HMODULE gl30OpenGL32;
-    void* doGetProcAddress(char* name) {
-        if(gl30OpenGL32 == NULL) {
-            gl30OpenGL32 = LoadLibrary(TEXT("opengl32.dll"));
-        }
-        return GetProcAddress(gl30OpenGL32, TEXT(name));
-    }
+	HMODULE gl30OpenGL32;
+
+	void* gl30LibGetProcAddress(char* name) {
+		if(gl30OpenGL32 == NULL) {
+			gl30OpenGL32 = LoadLibrary(TEXT("opengl32.dll"));
+		}
+		return GetProcAddress(gl30OpenGL32, TEXT(name));
+	}
+
+	void* gl30GLGetProcAddress(char* name) {
+		void* ptr = wglGetProcAddress(name);
+
+		intptr_t iptr = (intptr_t)ptr;
+
+		if(iptr == 0 || iptr == 1 || iptr == 2 || iptr == 3 || iptr == -1) {
+			return NULL;
+		}
+		return ptr;
+	}
 #endif
+
 
 void gl30Accum(gl30Context* glc, GLenum op, GLfloat value) {
     return glc->fnAccum(op, value);
@@ -275,6 +291,10 @@ void gl30DepthFunc(gl30Context* glc, GLenum func) {
     return glc->fnDepthFunc(func);
 }
 
+void gl30DepthMask(gl30Context* glc, GLboolean flag) {
+    return glc->fnDepthMask(flag);
+}
+
 void gl30DepthRange(gl30Context* glc, GLclampd zNear, GLclampd zFar) {
     return glc->fnDepthRange(zNear, zFar);
 }
@@ -291,8 +311,8 @@ void gl30DrawBuffer(gl30Context* glc, GLenum mode) {
     return glc->fnDrawBuffer(mode);
 }
 
-void gl30DrawPixels(gl30Context* glc, GLsizei width, GLsizei height, GLenum format, GLenum type, GLvoid* pixels) {
-    return glc->fnDrawPixels(width, height, format, type, pixels);
+void gl30DrawPixels(gl30Context* glc, GLsizei width, GLsizei height, GLenum format, GLenum type, GLvoid* data) {
+    return glc->fnDrawPixels(width, height, format, type, data);
 }
 
 void gl30EdgeFlag(gl30Context* glc, GLboolean flag) {
@@ -305,14 +325,6 @@ void gl30EdgeFlagv(gl30Context* glc, GLboolean* flag) {
 
 void gl30EdgeFlagPointer(gl30Context* glc, GLsizei stride, GLvoid* pointer) {
     return glc->fnEdgeFlagPointer(stride, pointer);
-}
-
-void gl30EnableClientState(gl30Context* glc, GLenum cap) {
-    return glc->fnEnableClientState(cap);
-}
-
-void gl30DisableClientState(gl30Context* glc, GLenum cap) {
-    return glc->fnDisableClientState(cap);
 }
 
 void gl30EvalCoord1d(gl30Context* glc, GLdouble u) {
@@ -467,8 +479,8 @@ void gl30GetPixelMapusv(gl30Context* glc, GLenum map, GLushort* values) {
     return glc->fnGetPixelMapusv(map, values);
 }
 
-void gl30GetPolygonStipple(gl30Context* glc, GLubyte* mask) {
-    return glc->fnGetPolygonStipple(mask);
+void gl30GetPolygonStipple(gl30Context* glc, GLubyte* pattern) {
+    return glc->fnGetPolygonStipple(pattern);
 }
 
 GLubyte* gl30GetString(gl30Context* glc, GLenum name) {
@@ -535,10 +547,6 @@ void gl30Indexs(gl30Context* glc, GLshort c) {
     return glc->fnIndexs(c);
 }
 
-void gl30Indexub(gl30Context* glc, GLubyte c) {
-    return glc->fnIndexub(c);
-}
-
 void gl30Indexdv(gl30Context* glc, GLdouble* c) {
     return glc->fnIndexdv(c);
 }
@@ -555,10 +563,6 @@ void gl30Indexsv(gl30Context* glc, GLshort* c) {
     return glc->fnIndexsv(c);
 }
 
-void gl30Indexubv(gl30Context* glc, GLubyte* c) {
-    return glc->fnIndexubv(c);
-}
-
 void gl30IndexMask(gl30Context* glc, GLuint mask) {
     return glc->fnIndexMask(mask);
 }
@@ -569,10 +573,6 @@ void gl30IndexPointer(gl30Context* glc, GLenum type, GLsizei stride, GLvoid* poi
 
 void gl30InitNames(gl30Context* glc) {
     return glc->fnInitNames();
-}
-
-void gl30InterleavedArrays(gl30Context* glc, GLenum format, GLsizei stride, GLvoid* pointer) {
-    return glc->fnInterleavedArrays(format, stride, pointer);
 }
 
 void gl30IsEnabled(gl30Context* glc, GLenum cap) {
@@ -755,10 +755,6 @@ void gl30Normal3sv(gl30Context* glc, GLshort* v) {
     return glc->fnNormal3sv(v);
 }
 
-void gl30NormalPointer(gl30Context* glc, GLenum type, GLsizei stride, GLvoid* pointer) {
-    return glc->fnNormalPointer(type, stride, pointer);
-}
-
 void gl30Ortho(gl30Context* glc, GLdouble left, GLdouble right, GLdouble bottom, GLdouble top, GLdouble zNear, GLdouble zfar) {
     return glc->fnOrtho(left, right, bottom, top, zNear, zfar);
 }
@@ -811,24 +807,12 @@ void gl30PolygonStipple(gl30Context* glc, GLubyte* mask) {
     return glc->fnPolygonStipple(mask);
 }
 
-void gl30PrioritizeTextures(gl30Context* glc, GLsizei n, GLuint* textures, GLclampf* priorities) {
-    return glc->fnPrioritizeTextures(n, textures, priorities);
-}
-
 void gl30PushAttrib(gl30Context* glc, GLbitfield mask) {
     return glc->fnPushAttrib(mask);
 }
 
 void gl30PopAttrib(gl30Context* glc) {
     return glc->fnPopAttrib();
-}
-
-void gl30PushClientAttrib(gl30Context* glc, GLbitfield mask) {
-    return glc->fnPushClientAttrib(mask);
-}
-
-void gl30PopClientAttrib(gl30Context* glc) {
-    return glc->fnPopClientAttrib();
 }
 
 void gl30PushMatrix(gl30Context* glc) {
@@ -1155,10 +1139,6 @@ void gl30TexCoord4sv(gl30Context* glc, GLshort* v) {
     return glc->fnTexCoord4sv(v);
 }
 
-void gl30TexCoordPointer(gl30Context* glc, GLint size, GLenum type, GLsizei stride, GLvoid* pointer) {
-    return glc->fnTexCoordPointer(size, type, stride, pointer);
-}
-
 void gl30TexEnvf(gl30Context* glc, GLenum target, GLenum pname, GLfloat param) {
     return glc->fnTexEnvf(target, pname, param);
 }
@@ -1207,10 +1187,6 @@ void gl30TexImage2D(gl30Context* glc, GLenum target, GLint level, GLint internal
     return glc->fnTexImage2D(target, level, internalformat, width, height, border, format, type, pixels);
 }
 
-void gl30TexImage3DEXT(gl30Context* glc, GLenum target, GLint level, GLint internalformat, GLsizei width, GLsizei height, GLsizei depth, GLint border, GLenum format, GLenum type, GLvoid* pixels) {
-    return glc->fnTexImage3DEXT(target, level, internalformat, width, height, depth, border, format, type, pixels);
-}
-
 void gl30TexParameterf(gl30Context* glc, GLenum target, GLenum pname, GLfloat param) {
     return glc->fnTexParameterf(target, pname, param);
 }
@@ -1225,18 +1201,6 @@ void gl30TexParameterfv(gl30Context* glc, GLenum target, GLenum pname, GLfloat* 
 
 void gl30TexParameteriv(gl30Context* glc, GLenum target, GLenum pname, GLint* params) {
     return glc->fnTexParameteriv(target, pname, params);
-}
-
-void gl30TexSubImage1D(gl30Context* glc, GLenum target, GLint level, GLint xoffset, GLsizei width, GLenum format, GLenum type, GLvoid* pixels) {
-    return glc->fnTexSubImage1D(target, level, xoffset, width, format, type, pixels);
-}
-
-void gl30TexSubImage2D(gl30Context* glc, GLenum target, GLint level, GLint xoffset, GLint yoffset, GLsizei width, GLsizei height, GLenum format, GLenum type, GLvoid* pixels) {
-    return glc->fnTexSubImage2D(target, level, xoffset, yoffset, width, height, format, type, pixels);
-}
-
-void gl30TexSubImage3DEXT(gl30Context* glc, GLenum target, GLint level, GLint xoffset, GLint yoffset, GLint zoffset, GLsizei width, GLsizei height, GLsizei depth, GLenum format, GLenum type, GLvoid* pixels) {
-    return glc->fnTexSubImage3DEXT(target, level, xoffset, yoffset, zoffset, width, height, depth, format, type, pixels);
 }
 
 void gl30Translated(gl30Context* glc, GLdouble x, GLdouble y, GLdouble z) {
@@ -1295,12 +1259,196 @@ void gl30Vertex4d(gl30Context* glc, GLdouble x, GLdouble y, GLdouble z, GLdouble
     return glc->fnVertex4d(x, y, z, w);
 }
 
-void gl30VertexPointer(gl30Context* glc, GLint size, GLenum type, GLsizei stride, GLvoid* pointer) {
-    return glc->fnVertexPointer(size, type, stride, pointer);
-}
-
 void gl30Viewport(gl30Context* glc, GLint x, GLint y, GLsizei width, GLsizei height) {
     return glc->fnViewport(x, y, width, height);
+}
+
+void gl30GetColorTable(gl30Context* glc, GLenum target, GLenum format, GLenum type, GLvoid* table) {
+    return glc->fnGetColorTable(target, format, type, table);
+}
+
+void gl30GetColorTableParameterfv(gl30Context* glc, GLenum target, GLenum pname, GLfloat* params) {
+    return glc->fnGetColorTableParameterfv(target, pname, params);
+}
+
+void gl30GetColorTableParameteriv(gl30Context* glc, GLenum target, GLenum pname, GLint* params) {
+    return glc->fnGetColorTableParameteriv(target, pname, params);
+}
+
+void gl30GetConvolutionFilter(gl30Context* glc, GLenum target, GLenum format, GLenum type, GLvoid* image) {
+    return glc->fnGetConvolutionFilter(target, format, type, image);
+}
+
+void gl30GetConvolutionParameterfv(gl30Context* glc, GLenum target, GLenum pname, GLfloat* params) {
+    return glc->fnGetConvolutionParameterfv(target, pname, params);
+}
+
+void gl30GetConvolutionParameteriv(gl30Context* glc, GLenum target, GLenum pname, GLint* params) {
+    return glc->fnGetConvolutionParameteriv(target, pname, params);
+}
+
+void gl30GetHistogram(gl30Context* glc, GLenum target, GLboolean reset, GLenum format, GLenum type, GLvoid* values) {
+    return glc->fnGetHistogram(target, reset, format, type, values);
+}
+
+void gl30GetHistogramParameterfv(gl30Context* glc, GLenum target, GLenum pname, GLfloat* params) {
+    return glc->fnGetHistogramParameterfv(target, pname, params);
+}
+
+void gl30GetHistogramParameteriv(gl30Context* glc, GLenum target, GLenum pname, GLint* params) {
+    return glc->fnGetHistogramParameteriv(target, pname, params);
+}
+
+void gl30GetSeparableFilter(gl30Context* glc, GLenum target, GLenum format, GLenum type, GLvoid* row, GLvoid* column, GLvoid* span) {
+    return glc->fnGetSeparableFilter(target, format, type, row, column, span);
+}
+
+void gl30Histogram(gl30Context* glc, GLenum target, GLsizei width, GLenum internalformat, GLboolean sink) {
+    return glc->fnHistogram(target, width, internalformat, sink);
+}
+
+void gl30Minmax(gl30Context* glc, GLenum target, GLenum internalformat, GLboolean sink) {
+    return glc->fnMinmax(target, internalformat, sink);
+}
+
+void gl30MultiTexCoord1s(gl30Context* glc, GLenum target, GLshort s) {
+    return glc->fnMultiTexCoord1s(target, s);
+}
+
+void gl30MultiTexCoord1i(gl30Context* glc, GLenum target, GLint s) {
+    return glc->fnMultiTexCoord1i(target, s);
+}
+
+void gl30MultiTexCoord1f(gl30Context* glc, GLenum target, GLfloat s) {
+    return glc->fnMultiTexCoord1f(target, s);
+}
+
+void gl30MultiTexCoord1d(gl30Context* glc, GLenum target, GLdouble s) {
+    return glc->fnMultiTexCoord1d(target, s);
+}
+
+void gl30MultiTexCoord2s(gl30Context* glc, GLenum target, GLshort s, GLshort t) {
+    return glc->fnMultiTexCoord2s(target, s, t);
+}
+
+void gl30MultiTexCoord2i(gl30Context* glc, GLenum target, GLint s, GLint t) {
+    return glc->fnMultiTexCoord2i(target, s, t);
+}
+
+void gl30MultiTexCoord2f(gl30Context* glc, GLenum target, GLfloat s, GLfloat t) {
+    return glc->fnMultiTexCoord2f(target, s, t);
+}
+
+void gl30MultiTexCoord2d(gl30Context* glc, GLenum target, GLdouble s, GLdouble t) {
+    return glc->fnMultiTexCoord2d(target, s, t);
+}
+
+void gl30MultiTexCoord3s(gl30Context* glc, GLenum target, GLshort s, GLshort t, GLshort r) {
+    return glc->fnMultiTexCoord3s(target, s, t, r);
+}
+
+void gl30MultiTexCoord3i(gl30Context* glc, GLenum target, GLint s, GLint t, GLint r) {
+    return glc->fnMultiTexCoord3i(target, s, t, r);
+}
+
+void gl30MultiTexCoord3f(gl30Context* glc, GLenum target, GLfloat s, GLfloat t, GLfloat r) {
+    return glc->fnMultiTexCoord3f(target, s, t, r);
+}
+
+void gl30MultiTexCoord3d(gl30Context* glc, GLenum target, GLdouble s, GLdouble t, GLdouble r) {
+    return glc->fnMultiTexCoord3d(target, s, t, r);
+}
+
+void gl30MultiTexCoord4s(gl30Context* glc, GLenum target, GLshort s, GLshort t, GLshort r, GLshort q) {
+    return glc->fnMultiTexCoord4s(target, s, t, r, q);
+}
+
+void gl30MultiTexCoord4i(gl30Context* glc, GLenum target, GLint s, GLint t, GLint r, GLint q) {
+    return glc->fnMultiTexCoord4i(target, s, t, r, q);
+}
+
+void gl30MultiTexCoord4f(gl30Context* glc, GLenum target, GLfloat s, GLfloat t, GLfloat r, GLfloat q) {
+    return glc->fnMultiTexCoord4f(target, s, t, r, q);
+}
+
+void gl30MultiTexCoord4d(gl30Context* glc, GLenum target, GLdouble s, GLdouble t, GLdouble r, GLdouble q) {
+    return glc->fnMultiTexCoord4d(target, s, t, r, q);
+}
+
+void gl30MultiTexCoord1sv(gl30Context* glc, GLenum target, GLshort* v) {
+    return glc->fnMultiTexCoord1sv(target, v);
+}
+
+void gl30MultiTexCoord1iv(gl30Context* glc, GLenum target, GLint* v) {
+    return glc->fnMultiTexCoord1iv(target, v);
+}
+
+void gl30MultiTexCoord1fv(gl30Context* glc, GLenum target, GLfloat* v) {
+    return glc->fnMultiTexCoord1fv(target, v);
+}
+
+void gl30MultiTexCoord1dv(gl30Context* glc, GLenum target, GLdouble* v) {
+    return glc->fnMultiTexCoord1dv(target, v);
+}
+
+void gl30MultiTexCoord2sv(gl30Context* glc, GLenum target, GLshort* v) {
+    return glc->fnMultiTexCoord2sv(target, v);
+}
+
+void gl30MultiTexCoord2iv(gl30Context* glc, GLenum target, GLint* v) {
+    return glc->fnMultiTexCoord2iv(target, v);
+}
+
+void gl30MultiTexCoord2fv(gl30Context* glc, GLenum target, GLfloat* v) {
+    return glc->fnMultiTexCoord2fv(target, v);
+}
+
+void gl30MultiTexCoord2dv(gl30Context* glc, GLenum target, GLdouble* v) {
+    return glc->fnMultiTexCoord2dv(target, v);
+}
+
+void gl30MultiTexCoord3sv(gl30Context* glc, GLenum target, GLshort* v) {
+    return glc->fnMultiTexCoord3sv(target, v);
+}
+
+void gl30MultiTexCoord3iv(gl30Context* glc, GLenum target, GLint* v) {
+    return glc->fnMultiTexCoord3iv(target, v);
+}
+
+void gl30MultiTexCoord3fv(gl30Context* glc, GLenum target, GLfloat* v) {
+    return glc->fnMultiTexCoord3fv(target, v);
+}
+
+void gl30MultiTexCoord3dv(gl30Context* glc, GLenum target, GLdouble* v) {
+    return glc->fnMultiTexCoord3dv(target, v);
+}
+
+void gl30MultiTexCoord4sv(gl30Context* glc, GLenum target, GLshort* v) {
+    return glc->fnMultiTexCoord4sv(target, v);
+}
+
+void gl30MultiTexCoord4iv(gl30Context* glc, GLenum target, GLint* v) {
+    return glc->fnMultiTexCoord4iv(target, v);
+}
+
+void gl30MultiTexCoord4fv(gl30Context* glc, GLenum target, GLfloat* v) {
+    return glc->fnMultiTexCoord4fv(target, v);
+}
+
+void gl30MultiTexCoord4dv(gl30Context* glc, GLenum target, GLdouble* v) {
+    return glc->fnMultiTexCoord4dv(target, v);
+}
+
+void gl30ResetHistogram(gl30Context* glc, GLenum target) {
+    return glc->fnResetHistogram(target);
+}
+
+void gl30ResetMinmax(gl30Context* glc, GLenum target) {
+    return glc->fnResetMinmax(target);
+}
+
+void gl30SeparableFilter2D(gl30Context* glc, GLenum target, GLenum internalformat, GLsizei width, GLsizei height, GLenum format, GLenum type, GLvoid* row, GLvoid* column) {
+    return glc->fnSeparableFilter2D(target, internalformat, width, height, format, type, row, column);
 }
 
 GLboolean gl30AreTexturesResident(gl30Context* glc, GLsizei n, GLuint* textures, GLboolean* residences) {
@@ -1363,8 +1511,60 @@ void gl30ColorPointer(gl30Context* glc, GLint size, GLenum type, GLsizei stride,
     return glc->fnColorPointer(size, type, stride, pointer);
 }
 
-void gl30BlendColorEXT(gl30Context* glc, GLclampf red, GLclampf green, GLclampf blue, GLclampf alpha) {
-    return glc->fnBlendColorEXT(red, green, blue, alpha);
+void gl30EnableClientState(gl30Context* glc, GLenum cap) {
+    return glc->fnEnableClientState(cap);
+}
+
+void gl30DisableClientState(gl30Context* glc, GLenum cap) {
+    return glc->fnDisableClientState(cap);
+}
+
+void gl30Indexub(gl30Context* glc, GLubyte c) {
+    return glc->fnIndexub(c);
+}
+
+void gl30Indexubv(gl30Context* glc, GLubyte* c) {
+    return glc->fnIndexubv(c);
+}
+
+void gl30InterleavedArrays(gl30Context* glc, GLenum format, GLsizei stride, GLvoid* pointer) {
+    return glc->fnInterleavedArrays(format, stride, pointer);
+}
+
+void gl30NormalPointer(gl30Context* glc, GLenum type, GLsizei stride, GLvoid* pointer) {
+    return glc->fnNormalPointer(type, stride, pointer);
+}
+
+void gl30PushClientAttrib(gl30Context* glc, GLbitfield mask) {
+    return glc->fnPushClientAttrib(mask);
+}
+
+void gl30PrioritizeTextures(gl30Context* glc, GLsizei n, GLuint* textures, GLclampf* priorities) {
+    return glc->fnPrioritizeTextures(n, textures, priorities);
+}
+
+void gl30PopClientAttrib(gl30Context* glc) {
+    return glc->fnPopClientAttrib();
+}
+
+void gl30TexCoordPointer(gl30Context* glc, GLint size, GLenum type, GLsizei stride, GLvoid* pointer) {
+    return glc->fnTexCoordPointer(size, type, stride, pointer);
+}
+
+void gl30TexSubImage1D(gl30Context* glc, GLenum target, GLint level, GLint xoffset, GLsizei width, GLenum format, GLenum type, GLvoid* pixels) {
+    return glc->fnTexSubImage1D(target, level, xoffset, width, format, type, pixels);
+}
+
+void gl30TexSubImage2D(gl30Context* glc, GLenum target, GLint level, GLint xoffset, GLint yoffset, GLsizei width, GLsizei height, GLenum format, GLenum type, GLvoid* pixels) {
+    return glc->fnTexSubImage2D(target, level, xoffset, yoffset, width, height, format, type, pixels);
+}
+
+void gl30VertexPointer(gl30Context* glc, GLint size, GLenum type, GLsizei stride, GLvoid* pointer) {
+    return glc->fnVertexPointer(size, type, stride, pointer);
+}
+
+void gl30BlendColor(gl30Context* glc, GLclampf red, GLclampf green, GLclampf blue, GLclampf alpha) {
+    return glc->fnBlendColor(red, green, blue, alpha);
 }
 
 void gl30BlendEquation(gl30Context* glc, GLenum mode) {
@@ -1373,6 +1573,18 @@ void gl30BlendEquation(gl30Context* glc, GLenum mode) {
 
 void gl30CopyTexSubImage3D(gl30Context* glc, GLenum target, GLint level, GLint xoffset, GLint yoffset, GLint zoffset, GLint x, GLint y, GLsizei width, GLsizei height) {
     return glc->fnCopyTexSubImage3D(target, level, xoffset, yoffset, zoffset, x, y, width, height);
+}
+
+void gl30DrawRangeElements(gl30Context* glc, GLenum mode, GLuint start, GLuint end, GLsizei count, GLenum type, GLvoid* indices) {
+    return glc->fnDrawRangeElements(mode, start, end, count, type, indices);
+}
+
+void gl30TexImage3D(gl30Context* glc, GLenum target, GLint level, GLint internalformat, GLsizei width, GLsizei height, GLsizei depth, GLint border, GLenum format, GLenum type, GLvoid* pixels) {
+    return glc->fnTexImage3D(target, level, internalformat, width, height, depth, border, format, type, pixels);
+}
+
+void gl30TexSubImage3D(gl30Context* glc, GLenum target, GLint level, GLint xoffset, GLint yoffset, GLint zoffset, GLsizei width, GLsizei height, GLsizei depth, GLenum format, GLenum type, GLvoid* pixels) {
+    return glc->fnTexSubImage3D(target, level, xoffset, yoffset, zoffset, width, height, depth, format, type, pixels);
 }
 
 void gl30ActiveTexture(gl30Context* glc, GLenum texture) {
@@ -1407,363 +1619,652 @@ void gl30CompressedTexSubImage3D(gl30Context* glc, GLenum target, GLint level, G
     return glc->fnCompressedTexSubImage3D(target, level, xoffset, yoffset, zoffset, width, height, depth, format, imageSize, data);
 }
 
+void gl30GetCompressedTexImage(gl30Context* glc, GLenum target, GLint lod, GLvoid* img) {
+    return glc->fnGetCompressedTexImage(target, lod, img);
+}
+
+void gl30LoadTransposeMatrixd(gl30Context* glc, GLdouble* m) {
+    return glc->fnLoadTransposeMatrixd(m);
+}
+
+void gl30LoadTransposeMatrixf(gl30Context* glc, GLdouble* m) {
+    return glc->fnLoadTransposeMatrixf(m);
+}
+
+void gl30MultTransposeMatrixd(gl30Context* glc, GLdouble* m) {
+    return glc->fnMultTransposeMatrixd(m);
+}
+
+void gl30MultTransposeMatrixf(gl30Context* glc, GLfloat* m) {
+    return glc->fnMultTransposeMatrixf(m);
+}
+
+void gl30SampleCoverage(gl30Context* glc, GLclampf value, GLboolean invert) {
+    return glc->fnSampleCoverage(value, invert);
+}
+
 void gl30BlendFuncSeparate(gl30Context* glc, GLenum srcRGB, GLenum dstRGB, GLenum srcAlpha, GLenum dstAlpha) {
     return glc->fnBlendFuncSeparate(srcRGB, dstRGB, srcAlpha, dstAlpha);
+}
+
+void gl30FogCoordPointer(gl30Context* glc, GLenum type, GLsizei stride, GLvoid* pointer) {
+    return glc->fnFogCoordPointer(type, stride, pointer);
+}
+
+void gl30FogCoordd(gl30Context* glc, GLdouble coord) {
+    return glc->fnFogCoordd(coord);
+}
+
+void gl30FogCoordf(gl30Context* glc, GLfloat coord) {
+    return glc->fnFogCoordf(coord);
+}
+
+void gl30FogCoorddv(gl30Context* glc, GLdouble* coord) {
+    return glc->fnFogCoorddv(coord);
+}
+
+void gl30FogCoordfv(gl30Context* glc, GLfloat* coord) {
+    return glc->fnFogCoordfv(coord);
+}
+
+void gl30MultiDrawArrays(gl30Context* glc, GLenum mode, GLint* first, GLsizei* count, GLsizei primcount) {
+    return glc->fnMultiDrawArrays(mode, first, count, primcount);
+}
+
+void gl30MultiDrawElements(gl30Context* glc, GLenum mode, GLsizei* count, GLenum type, GLvoid* indices, GLsizei primcount) {
+    return glc->fnMultiDrawElements(mode, count, type, indices, primcount);
+}
+
+void gl30PointParameterf(gl30Context* glc, GLenum pname, GLfloat param) {
+    return glc->fnPointParameterf(pname, param);
+}
+
+void gl30PointParameteri(gl30Context* glc, GLenum pname, GLint param) {
+    return glc->fnPointParameteri(pname, param);
+}
+
+void gl30SecondaryColor3b(gl30Context* glc, GLbyte red, GLbyte green, GLbyte blue) {
+    return glc->fnSecondaryColor3b(red, green, blue);
+}
+
+void gl30SecondaryColor3s(gl30Context* glc, GLshort red, GLshort green, GLshort blue) {
+    return glc->fnSecondaryColor3s(red, green, blue);
+}
+
+void gl30SecondaryColor3i(gl30Context* glc, GLint red, GLint green, GLint blue) {
+    return glc->fnSecondaryColor3i(red, green, blue);
+}
+
+void gl30SecondaryColor3f(gl30Context* glc, GLfloat red, GLfloat green, GLfloat blue) {
+    return glc->fnSecondaryColor3f(red, green, blue);
+}
+
+void gl30SecondaryColor3d(gl30Context* glc, GLdouble red, GLdouble green, GLdouble blue) {
+    return glc->fnSecondaryColor3d(red, green, blue);
+}
+
+void gl30SecondaryColor3ub(gl30Context* glc, GLubyte red, GLubyte green, GLubyte blue) {
+    return glc->fnSecondaryColor3ub(red, green, blue);
+}
+
+void gl30SecondaryColor3us(gl30Context* glc, GLushort red, GLushort green, GLushort blue) {
+    return glc->fnSecondaryColor3us(red, green, blue);
+}
+
+void gl30SecondaryColor3ui(gl30Context* glc, GLuint red, GLuint green, GLuint blue) {
+    return glc->fnSecondaryColor3ui(red, green, blue);
+}
+
+void gl30SecondaryColor3bv(gl30Context* glc, GLbyte* v) {
+    return glc->fnSecondaryColor3bv(v);
+}
+
+void gl30SecondaryColor3sv(gl30Context* glc, GLshort* v) {
+    return glc->fnSecondaryColor3sv(v);
+}
+
+void gl30SecondaryColor3iv(gl30Context* glc, GLint* v) {
+    return glc->fnSecondaryColor3iv(v);
+}
+
+void gl30SecondaryColor3fv(gl30Context* glc, GLfloat* v) {
+    return glc->fnSecondaryColor3fv(v);
+}
+
+void gl30SecondaryColor3dv(gl30Context* glc, GLdouble* v) {
+    return glc->fnSecondaryColor3dv(v);
+}
+
+void gl30SecondaryColor3ubv(gl30Context* glc, GLubyte* v) {
+    return glc->fnSecondaryColor3ubv(v);
+}
+
+void gl30SecondaryColor3usv(gl30Context* glc, GLushort* v) {
+    return glc->fnSecondaryColor3usv(v);
+}
+
+void gl30SecondaryColor3uiv(gl30Context* glc, GLuint* v) {
+    return glc->fnSecondaryColor3uiv(v);
+}
+
+void gl30SecondaryColorPointer(gl30Context* glc, GLint size, GLenum type, GLsizei stride, GLvoid* pointer) {
+    return glc->fnSecondaryColorPointer(size, type, stride, pointer);
+}
+
+void gl30WindowPos2s(gl30Context* glc, GLshort x, GLshort y) {
+    return glc->fnWindowPos2s(x, y);
+}
+
+void gl30WindowPos2i(gl30Context* glc, GLint x, GLint y) {
+    return glc->fnWindowPos2i(x, y);
+}
+
+void gl30WindowPos2f(gl30Context* glc, GLfloat x, GLfloat y) {
+    return glc->fnWindowPos2f(x, y);
+}
+
+void gl30WindowPos2d(gl30Context* glc, GLdouble x, GLdouble y) {
+    return glc->fnWindowPos2d(x, y);
+}
+
+void gl30WindowPos3s(gl30Context* glc, GLshort x, GLshort y, GLshort z) {
+    return glc->fnWindowPos3s(x, y, z);
+}
+
+void gl30WindowPos3i(gl30Context* glc, GLint x, GLint y, GLint z) {
+    return glc->fnWindowPos3i(x, y, z);
+}
+
+void gl30WindowPos3f(gl30Context* glc, GLfloat x, GLfloat y, GLfloat z) {
+    return glc->fnWindowPos3f(x, y, z);
+}
+
+void gl30WindowPos3d(gl30Context* glc, GLdouble x, GLdouble y, GLdouble z) {
+    return glc->fnWindowPos3d(x, y, z);
+}
+
+void gl30WindowPos2sv(gl30Context* glc, GLshort* v) {
+    return glc->fnWindowPos2sv(v);
+}
+
+void gl30WindowPos2iv(gl30Context* glc, GLint* v) {
+    return glc->fnWindowPos2iv(v);
+}
+
+void gl30WindowPos2fv(gl30Context* glc, GLfloat* v) {
+    return glc->fnWindowPos2fv(v);
+}
+
+void gl30WindowPos2dv(gl30Context* glc, GLdouble* v) {
+    return glc->fnWindowPos2dv(v);
+}
+
+void gl30WindowPos3sv(gl30Context* glc, GLshort* v) {
+    return glc->fnWindowPos3sv(v);
+}
+
+void gl30WindowPos3iv(gl30Context* glc, GLint* v) {
+    return glc->fnWindowPos3iv(v);
+}
+
+void gl30WindowPos3fv(gl30Context* glc, GLfloat* v) {
+    return glc->fnWindowPos3fv(v);
+}
+
+void gl30WindowPos3dv(gl30Context* glc, GLdouble* v) {
+    return glc->fnWindowPos3dv(v);
 }
 
 gl30Context* gl30NewContext() {
     gl30Context* glc = calloc(1, sizeof(gl30Context));
 
     // Preload all procedures
-    glc->fnAccum = (gl30PAccum)doGetProcAddress("glAccum");
-    glc->fnAlphaFunc = (gl30PAlphaFunc)doGetProcAddress("glAlphaFunc");
-    glc->fnBegin = (gl30PBegin)doGetProcAddress("glBegin");
-    glc->fnEnd = (gl30PEnd)doGetProcAddress("glEnd");
-    glc->fnBitmap = (gl30PBitmap)doGetProcAddress("glBitmap");
-    glc->fnBlendFunc = (gl30PBlendFunc)doGetProcAddress("glBlendFunc");
-    glc->fnCallList = (gl30PCallList)doGetProcAddress("glCallList");
-    glc->fnCallLists = (gl30PCallLists)doGetProcAddress("glCallLists");
-    glc->fnClear = (gl30PClear)doGetProcAddress("glClear");
-    glc->fnClearAccum = (gl30PClearAccum)doGetProcAddress("glClearAccum");
-    glc->fnClearColor = (gl30PClearColor)doGetProcAddress("glClearColor");
-    glc->fnClearDepth = (gl30PClearDepth)doGetProcAddress("glClearDepth");
-    glc->fnClearIndex = (gl30PClearIndex)doGetProcAddress("glClearIndex");
-    glc->fnClearStencil = (gl30PClearStencil)doGetProcAddress("glClearStencil");
-    glc->fnClipPlane = (gl30PClipPlane)doGetProcAddress("glClipPlane");
-    glc->fnColor3b = (gl30PColor3b)doGetProcAddress("glColor3b");
-    glc->fnColor3d = (gl30PColor3d)doGetProcAddress("glColor3d");
-    glc->fnColor3f = (gl30PColor3f)doGetProcAddress("glColor3f");
-    glc->fnColor3i = (gl30PColor3i)doGetProcAddress("glColor3i");
-    glc->fnColor3s = (gl30PColor3s)doGetProcAddress("glColor3s");
-    glc->fnColor3ub = (gl30PColor3ub)doGetProcAddress("glColor3ub");
-    glc->fnColor3ui = (gl30PColor3ui)doGetProcAddress("glColor3ui");
-    glc->fnColor3us = (gl30PColor3us)doGetProcAddress("glColor3us");
-    glc->fnColor4b = (gl30PColor4b)doGetProcAddress("glColor4b");
-    glc->fnColor4d = (gl30PColor4d)doGetProcAddress("glColor4d");
-    glc->fnColor4f = (gl30PColor4f)doGetProcAddress("glColor4f");
-    glc->fnColor4i = (gl30PColor4i)doGetProcAddress("glColor4i");
-    glc->fnColor4s = (gl30PColor4s)doGetProcAddress("glColor4s");
-    glc->fnColor4ub = (gl30PColor4ub)doGetProcAddress("glColor4ub");
-    glc->fnColor4ui = (gl30PColor4ui)doGetProcAddress("glColor4ui");
-    glc->fnColor4us = (gl30PColor4us)doGetProcAddress("glColor4us");
-    glc->fnColor3bv = (gl30PColor3bv)doGetProcAddress("glColor3bv");
-    glc->fnColor3dv = (gl30PColor3dv)doGetProcAddress("glColor3dv");
-    glc->fnColor3fv = (gl30PColor3fv)doGetProcAddress("glColor3fv");
-    glc->fnColor3iv = (gl30PColor3iv)doGetProcAddress("glColor3iv");
-    glc->fnColor3sv = (gl30PColor3sv)doGetProcAddress("glColor3sv");
-    glc->fnColor3ubv = (gl30PColor3ubv)doGetProcAddress("glColor3ubv");
-    glc->fnColor3uiv = (gl30PColor3uiv)doGetProcAddress("glColor3uiv");
-    glc->fnColor3usv = (gl30PColor3usv)doGetProcAddress("glColor3usv");
-    glc->fnColor4bv = (gl30PColor4bv)doGetProcAddress("glColor4bv");
-    glc->fnColor4dv = (gl30PColor4dv)doGetProcAddress("glColor4dv");
-    glc->fnColor4fv = (gl30PColor4fv)doGetProcAddress("glColor4fv");
-    glc->fnColor4iv = (gl30PColor4iv)doGetProcAddress("glColor4iv");
-    glc->fnColor4sv = (gl30PColor4sv)doGetProcAddress("glColor4sv");
-    glc->fnColor4ubv = (gl30PColor4ubv)doGetProcAddress("glColor4ubv");
-    glc->fnColor4uiv = (gl30PColor4uiv)doGetProcAddress("glColor4uiv");
-    glc->fnColor4usv = (gl30PColor4usv)doGetProcAddress("glColor4usv");
-    glc->fnColorMask = (gl30PColorMask)doGetProcAddress("glColorMask");
-    glc->fnColorMaterial = (gl30PColorMaterial)doGetProcAddress("glColorMaterial");
-    glc->fnColorTable = (gl30PColorTable)wglGetProcAddress("glColorTable");
-    glc->fnColorTableParameterfv = (gl30PColorTableParameterfv)wglGetProcAddress("glColorTableParameterfv");
-    glc->fnColorTableParameteriv = (gl30PColorTableParameteriv)wglGetProcAddress("glColorTableParameteriv");
-    glc->fnColorSubTable = (gl30PColorSubTable)wglGetProcAddress("glColorSubTable");
-    glc->fnCopyPixels = (gl30PCopyPixels)doGetProcAddress("glCopyPixels");
-    glc->fnCullFace = (gl30PCullFace)doGetProcAddress("glCullFace");
-    glc->fnConvolutionFilter1D = (gl30PConvolutionFilter1D)wglGetProcAddress("glConvolutionFilter1D");
-    glc->fnConvolutionFilter2D = (gl30PConvolutionFilter2D)wglGetProcAddress("glConvolutionFilter2D");
-    glc->fnConvolutionParameterf = (gl30PConvolutionParameterf)wglGetProcAddress("glConvolutionParameterf");
-    glc->fnConvolutionParameteri = (gl30PConvolutionParameteri)wglGetProcAddress("glConvolutionParameteri");
-    glc->fnCopyColorTable = (gl30PCopyColorTable)wglGetProcAddress("glCopyColorTable");
-    glc->fnCopyColorSubTable = (gl30PCopyColorSubTable)wglGetProcAddress("glCopyColorSubTable");
-    glc->fnCopyConvolutionFilter1D = (gl30PCopyConvolutionFilter1D)wglGetProcAddress("glCopyConvolutionFilter1D");
-    glc->fnCopyConvolutionFilter2D = (gl30PCopyConvolutionFilter2D)wglGetProcAddress("glCopyConvolutionFilter2D");
-    glc->fnDeleteLists = (gl30PDeleteLists)doGetProcAddress("glDeleteLists");
-    glc->fnDepthFunc = (gl30PDepthFunc)doGetProcAddress("glDepthFunc");
-    glc->fnDepthRange = (gl30PDepthRange)doGetProcAddress("glDepthRange");
-    glc->fnEnable = (gl30PEnable)doGetProcAddress("glEnable");
-    glc->fnDisable = (gl30PDisable)doGetProcAddress("glDisable");
-    glc->fnDrawBuffer = (gl30PDrawBuffer)doGetProcAddress("glDrawBuffer");
-    glc->fnDrawPixels = (gl30PDrawPixels)doGetProcAddress("glDrawPixels");
-    glc->fnEdgeFlag = (gl30PEdgeFlag)doGetProcAddress("glEdgeFlag");
-    glc->fnEdgeFlagv = (gl30PEdgeFlagv)doGetProcAddress("glEdgeFlagv");
-    glc->fnEdgeFlagPointer = (gl30PEdgeFlagPointer)doGetProcAddress("glEdgeFlagPointer");
-    glc->fnEnableClientState = (gl30PEnableClientState)doGetProcAddress("glEnableClientState");
-    glc->fnDisableClientState = (gl30PDisableClientState)doGetProcAddress("glDisableClientState");
-    glc->fnEvalCoord1d = (gl30PEvalCoord1d)doGetProcAddress("glEvalCoord1d");
-    glc->fnEvalCoord1f = (gl30PEvalCoord1f)doGetProcAddress("glEvalCoord1f");
-    glc->fnEvalCoord2d = (gl30PEvalCoord2d)doGetProcAddress("glEvalCoord2d");
-    glc->fnEvalCoord2f = (gl30PEvalCoord2f)doGetProcAddress("glEvalCoord2f");
-    glc->fnEvalCoord1dv = (gl30PEvalCoord1dv)doGetProcAddress("glEvalCoord1dv");
-    glc->fnEvalCoord1fv = (gl30PEvalCoord1fv)doGetProcAddress("glEvalCoord1fv");
-    glc->fnEvalCoord2dv = (gl30PEvalCoord2dv)doGetProcAddress("glEvalCoord2dv");
-    glc->fnEvalCoord2fv = (gl30PEvalCoord2fv)doGetProcAddress("glEvalCoord2fv");
-    glc->fnEvalMesh1 = (gl30PEvalMesh1)doGetProcAddress("glEvalMesh1");
-    glc->fnEvalMesh2 = (gl30PEvalMesh2)doGetProcAddress("glEvalMesh2");
-    glc->fnEvalPoint1 = (gl30PEvalPoint1)doGetProcAddress("glEvalPoint1");
-    glc->fnEvalPoint2 = (gl30PEvalPoint2)doGetProcAddress("glEvalPoint2");
-    glc->fnFeedbackBuffer = (gl30PFeedbackBuffer)doGetProcAddress("glFeedbackBuffer");
-    glc->fnFinish = (gl30PFinish)doGetProcAddress("glFinish");
-    glc->fnFlush = (gl30PFlush)doGetProcAddress("glFlush");
-    glc->fnFogf = (gl30PFogf)doGetProcAddress("glFogf");
-    glc->fnFogi = (gl30PFogi)doGetProcAddress("glFogi");
-    glc->fnFogfv = (gl30PFogfv)doGetProcAddress("glFogfv");
-    glc->fnFogiv = (gl30PFogiv)doGetProcAddress("glFogiv");
-    glc->fnFrontFace = (gl30PFrontFace)doGetProcAddress("glFrontFace");
-    glc->fnFrustum = (gl30PFrustum)doGetProcAddress("glFrustum");
-    glc->fnGenLists = (gl30PGenLists)doGetProcAddress("glGenLists");
-    glc->fnGetBooleanv = (gl30PGetBooleanv)doGetProcAddress("glGetBooleanv");
-    glc->fnGetDoublev = (gl30PGetDoublev)doGetProcAddress("glGetDoublev");
-    glc->fnGetFloatv = (gl30PGetFloatv)doGetProcAddress("glGetFloatv");
-    glc->fnGetIntegerv = (gl30PGetIntegerv)doGetProcAddress("glGetIntegerv");
-    glc->fnGetClipPlane = (gl30PGetClipPlane)doGetProcAddress("glGetClipPlane");
-    glc->fnGetError = (gl30PGetError)doGetProcAddress("glGetError");
-    glc->fnGetLightfv = (gl30PGetLightfv)doGetProcAddress("glGetLightfv");
-    glc->fnGetLightiv = (gl30PGetLightiv)doGetProcAddress("glGetLightiv");
-    glc->fnGetMapdv = (gl30PGetMapdv)doGetProcAddress("glGetMapdv");
-    glc->fnGetMapfv = (gl30PGetMapfv)doGetProcAddress("glGetMapfv");
-    glc->fnGetMapiv = (gl30PGetMapiv)doGetProcAddress("glGetMapiv");
-    glc->fnGetMaterialfv = (gl30PGetMaterialfv)doGetProcAddress("glGetMaterialfv");
-    glc->fnGetMaterialiv = (gl30PGetMaterialiv)doGetProcAddress("glGetMaterialiv");
-    glc->fnGetPixelMapfv = (gl30PGetPixelMapfv)doGetProcAddress("glGetPixelMapfv");
-    glc->fnGetPixelMapuiv = (gl30PGetPixelMapuiv)doGetProcAddress("glGetPixelMapuiv");
-    glc->fnGetPixelMapusv = (gl30PGetPixelMapusv)doGetProcAddress("glGetPixelMapusv");
-    glc->fnGetPolygonStipple = (gl30PGetPolygonStipple)doGetProcAddress("glGetPolygonStipple");
-    glc->fnGetString = (gl30PGetString)doGetProcAddress("glGetString");
-    glc->fnGetTexEnvfv = (gl30PGetTexEnvfv)doGetProcAddress("glGetTexEnvfv");
-    glc->fnGetTexEnviv = (gl30PGetTexEnviv)doGetProcAddress("glGetTexEnviv");
-    glc->fnGetTexGendv = (gl30PGetTexGendv)doGetProcAddress("glGetTexGendv");
-    glc->fnGetTexGenfv = (gl30PGetTexGenfv)doGetProcAddress("glGetTexGenfv");
-    glc->fnGetTexGeniv = (gl30PGetTexGeniv)doGetProcAddress("glGetTexGeniv");
-    glc->fnGetTexImage = (gl30PGetTexImage)doGetProcAddress("glGetTexImage");
-    glc->fnGetTexLevelParameterfv = (gl30PGetTexLevelParameterfv)doGetProcAddress("glGetTexLevelParameterfv");
-    glc->fnGetTexLevelParameteriv = (gl30PGetTexLevelParameteriv)doGetProcAddress("glGetTexLevelParameteriv");
-    glc->fnGetTexParameterfv = (gl30PGetTexParameterfv)doGetProcAddress("glGetTexParameterfv");
-    glc->fnGetTexParameteriv = (gl30PGetTexParameteriv)doGetProcAddress("glGetTexParameteriv");
-    glc->fnHint = (gl30PHint)doGetProcAddress("glHint");
-    glc->fnIndexd = (gl30PIndexd)doGetProcAddress("glIndexd");
-    glc->fnIndexf = (gl30PIndexf)doGetProcAddress("glIndexf");
-    glc->fnIndexi = (gl30PIndexi)doGetProcAddress("glIndexi");
-    glc->fnIndexs = (gl30PIndexs)doGetProcAddress("glIndexs");
-    glc->fnIndexub = (gl30PIndexub)doGetProcAddress("glIndexub");
-    glc->fnIndexdv = (gl30PIndexdv)doGetProcAddress("glIndexdv");
-    glc->fnIndexfv = (gl30PIndexfv)doGetProcAddress("glIndexfv");
-    glc->fnIndexiv = (gl30PIndexiv)doGetProcAddress("glIndexiv");
-    glc->fnIndexsv = (gl30PIndexsv)doGetProcAddress("glIndexsv");
-    glc->fnIndexubv = (gl30PIndexubv)doGetProcAddress("glIndexubv");
-    glc->fnIndexMask = (gl30PIndexMask)doGetProcAddress("glIndexMask");
-    glc->fnIndexPointer = (gl30PIndexPointer)doGetProcAddress("glIndexPointer");
-    glc->fnInitNames = (gl30PInitNames)doGetProcAddress("glInitNames");
-    glc->fnInterleavedArrays = (gl30PInterleavedArrays)doGetProcAddress("glInterleavedArrays");
-    glc->fnIsEnabled = (gl30PIsEnabled)doGetProcAddress("glIsEnabled");
-    glc->fnIsList = (gl30PIsList)doGetProcAddress("glIsList");
-    glc->fnLightf = (gl30PLightf)doGetProcAddress("glLightf");
-    glc->fnLighti = (gl30PLighti)doGetProcAddress("glLighti");
-    glc->fnLightfv = (gl30PLightfv)doGetProcAddress("glLightfv");
-    glc->fnLightiv = (gl30PLightiv)doGetProcAddress("glLightiv");
-    glc->fnLightModelf = (gl30PLightModelf)doGetProcAddress("glLightModelf");
-    glc->fnLightModeli = (gl30PLightModeli)doGetProcAddress("glLightModeli");
-    glc->fnLightModelfv = (gl30PLightModelfv)doGetProcAddress("glLightModelfv");
-    glc->fnLightModeliv = (gl30PLightModeliv)doGetProcAddress("glLightModeliv");
-    glc->fnLineStipple = (gl30PLineStipple)doGetProcAddress("glLineStipple");
-    glc->fnLineWidth = (gl30PLineWidth)doGetProcAddress("glLineWidth");
-    glc->fnListBase = (gl30PListBase)doGetProcAddress("glListBase");
-    glc->fnLoadIdentity = (gl30PLoadIdentity)doGetProcAddress("glLoadIdentity");
-    glc->fnLoadMatrixd = (gl30PLoadMatrixd)doGetProcAddress("glLoadMatrixd");
-    glc->fnLoadMatrixf = (gl30PLoadMatrixf)doGetProcAddress("glLoadMatrixf");
-    glc->fnLoadName = (gl30PLoadName)doGetProcAddress("glLoadName");
-    glc->fnLogicOp = (gl30PLogicOp)doGetProcAddress("glLogicOp");
-    glc->fnMap1d = (gl30PMap1d)doGetProcAddress("glMap1d");
-    glc->fnMap1f = (gl30PMap1f)doGetProcAddress("glMap1f");
-    glc->fnMap2d = (gl30PMap2d)doGetProcAddress("glMap2d");
-    glc->fnMap2f = (gl30PMap2f)doGetProcAddress("glMap2f");
-    glc->fnMapGrid1d = (gl30PMapGrid1d)doGetProcAddress("glMapGrid1d");
-    glc->fnMapGrid1f = (gl30PMapGrid1f)doGetProcAddress("glMapGrid1f");
-    glc->fnMapGrid2d = (gl30PMapGrid2d)doGetProcAddress("glMapGrid2d");
-    glc->fnMapGrid2f = (gl30PMapGrid2f)doGetProcAddress("glMapGrid2f");
-    glc->fnMaterialf = (gl30PMaterialf)doGetProcAddress("glMaterialf");
-    glc->fnMateriali = (gl30PMateriali)doGetProcAddress("glMateriali");
-    glc->fnMaterialfv = (gl30PMaterialfv)doGetProcAddress("glMaterialfv");
-    glc->fnMaterialiv = (gl30PMaterialiv)doGetProcAddress("glMaterialiv");
-    glc->fnMatrixMode = (gl30PMatrixMode)doGetProcAddress("glMatrixMode");
-    glc->fnMultMatrixd = (gl30PMultMatrixd)doGetProcAddress("glMultMatrixd");
-    glc->fnMultMatrixf = (gl30PMultMatrixf)doGetProcAddress("glMultMatrixf");
-    glc->fnNewList = (gl30PNewList)doGetProcAddress("glNewList");
-    glc->fnEndList = (gl30PEndList)doGetProcAddress("glEndList");
-    glc->fnNormal3b = (gl30PNormal3b)doGetProcAddress("glNormal3b");
-    glc->fnNormal3d = (gl30PNormal3d)doGetProcAddress("glNormal3d");
-    glc->fnNormal3f = (gl30PNormal3f)doGetProcAddress("glNormal3f");
-    glc->fnNormal3i = (gl30PNormal3i)doGetProcAddress("glNormal3i");
-    glc->fnNormal3s = (gl30PNormal3s)doGetProcAddress("glNormal3s");
-    glc->fnNormal3bv = (gl30PNormal3bv)doGetProcAddress("glNormal3bv");
-    glc->fnNormal3dv = (gl30PNormal3dv)doGetProcAddress("glNormal3dv");
-    glc->fnNormal3fv = (gl30PNormal3fv)doGetProcAddress("glNormal3fv");
-    glc->fnNormal3iv = (gl30PNormal3iv)doGetProcAddress("glNormal3iv");
-    glc->fnNormal3sv = (gl30PNormal3sv)doGetProcAddress("glNormal3sv");
-    glc->fnNormalPointer = (gl30PNormalPointer)doGetProcAddress("glNormalPointer");
-    glc->fnOrtho = (gl30POrtho)doGetProcAddress("glOrtho");
-    glc->fnPassThrough = (gl30PPassThrough)doGetProcAddress("glPassThrough");
-    glc->fnPixelMapfv = (gl30PPixelMapfv)doGetProcAddress("glPixelMapfv");
-    glc->fnPixelMapuiv = (gl30PPixelMapuiv)doGetProcAddress("glPixelMapuiv");
-    glc->fnPixelMapusv = (gl30PPixelMapusv)doGetProcAddress("glPixelMapusv");
-    glc->fnPixelStoref = (gl30PPixelStoref)doGetProcAddress("glPixelStoref");
-    glc->fnPixelStorei = (gl30PPixelStorei)doGetProcAddress("glPixelStorei");
-    glc->fnPixelTransferf = (gl30PPixelTransferf)doGetProcAddress("glPixelTransferf");
-    glc->fnPixelTransferi = (gl30PPixelTransferi)doGetProcAddress("glPixelTransferi");
-    glc->fnPixelZoom = (gl30PPixelZoom)doGetProcAddress("glPixelZoom");
-    glc->fnPointSize = (gl30PPointSize)doGetProcAddress("glPointSize");
-    glc->fnPolygonMode = (gl30PPolygonMode)doGetProcAddress("glPolygonMode");
-    glc->fnPolygonStipple = (gl30PPolygonStipple)doGetProcAddress("glPolygonStipple");
-    glc->fnPrioritizeTextures = (gl30PPrioritizeTextures)doGetProcAddress("glPrioritizeTextures");
-    glc->fnPushAttrib = (gl30PPushAttrib)doGetProcAddress("glPushAttrib");
-    glc->fnPopAttrib = (gl30PPopAttrib)doGetProcAddress("glPopAttrib");
-    glc->fnPushClientAttrib = (gl30PPushClientAttrib)doGetProcAddress("glPushClientAttrib");
-    glc->fnPopClientAttrib = (gl30PPopClientAttrib)doGetProcAddress("glPopClientAttrib");
-    glc->fnPushMatrix = (gl30PPushMatrix)doGetProcAddress("glPushMatrix");
-    glc->fnPopMatrix = (gl30PPopMatrix)doGetProcAddress("glPopMatrix");
-    glc->fnPushName = (gl30PPushName)doGetProcAddress("glPushName");
-    glc->fnPopName = (gl30PPopName)doGetProcAddress("glPopName");
-    glc->fnRasterPos2d = (gl30PRasterPos2d)doGetProcAddress("glRasterPos2d");
-    glc->fnRasterPos2f = (gl30PRasterPos2f)doGetProcAddress("glRasterPos2f");
-    glc->fnRasterPos2i = (gl30PRasterPos2i)doGetProcAddress("glRasterPos2i");
-    glc->fnRasterPos2s = (gl30PRasterPos2s)doGetProcAddress("glRasterPos2s");
-    glc->fnRasterPos3d = (gl30PRasterPos3d)doGetProcAddress("glRasterPos3d");
-    glc->fnRasterPos3f = (gl30PRasterPos3f)doGetProcAddress("glRasterPos3f");
-    glc->fnRasterPos3i = (gl30PRasterPos3i)doGetProcAddress("glRasterPos3i");
-    glc->fnRasterPos3s = (gl30PRasterPos3s)doGetProcAddress("glRasterPos3s");
-    glc->fnRasterPos4d = (gl30PRasterPos4d)doGetProcAddress("glRasterPos4d");
-    glc->fnRasterPos4f = (gl30PRasterPos4f)doGetProcAddress("glRasterPos4f");
-    glc->fnRasterPos4i = (gl30PRasterPos4i)doGetProcAddress("glRasterPos4i");
-    glc->fnRasterPos4s = (gl30PRasterPos4s)doGetProcAddress("glRasterPos4s");
-    glc->fnRasterPos2dv = (gl30PRasterPos2dv)doGetProcAddress("glRasterPos2dv");
-    glc->fnRasterPos2fv = (gl30PRasterPos2fv)doGetProcAddress("glRasterPos2fv");
-    glc->fnRasterPos2iv = (gl30PRasterPos2iv)doGetProcAddress("glRasterPos2iv");
-    glc->fnRasterPos2sv = (gl30PRasterPos2sv)doGetProcAddress("glRasterPos2sv");
-    glc->fnRasterPos3dv = (gl30PRasterPos3dv)doGetProcAddress("glRasterPos3dv");
-    glc->fnRasterPos3fv = (gl30PRasterPos3fv)doGetProcAddress("glRasterPos3fv");
-    glc->fnRasterPos3iv = (gl30PRasterPos3iv)doGetProcAddress("glRasterPos3iv");
-    glc->fnRasterPos3sv = (gl30PRasterPos3sv)doGetProcAddress("glRasterPos3sv");
-    glc->fnRasterPos4dv = (gl30PRasterPos4dv)doGetProcAddress("glRasterPos4dv");
-    glc->fnRasterPos4fv = (gl30PRasterPos4fv)doGetProcAddress("glRasterPos4fv");
-    glc->fnRasterPos4iv = (gl30PRasterPos4iv)doGetProcAddress("glRasterPos4iv");
-    glc->fnRasterPos4sv = (gl30PRasterPos4sv)doGetProcAddress("glRasterPos4sv");
-    glc->fnReadBuffer = (gl30PReadBuffer)doGetProcAddress("glReadBuffer");
-    glc->fnReadPixels = (gl30PReadPixels)doGetProcAddress("glReadPixels");
-    glc->fnRectd = (gl30PRectd)doGetProcAddress("glRectd");
-    glc->fnRectf = (gl30PRectf)doGetProcAddress("glRectf");
-    glc->fnRecti = (gl30PRecti)doGetProcAddress("glRecti");
-    glc->fnRects = (gl30PRects)doGetProcAddress("glRects");
-    glc->fnRectdv = (gl30PRectdv)doGetProcAddress("glRectdv");
-    glc->fnRectfv = (gl30PRectfv)doGetProcAddress("glRectfv");
-    glc->fnRectiv = (gl30PRectiv)doGetProcAddress("glRectiv");
-    glc->fnRectsv = (gl30PRectsv)doGetProcAddress("glRectsv");
-    glc->fnRenderMode = (gl30PRenderMode)doGetProcAddress("glRenderMode");
-    glc->fnRotated = (gl30PRotated)doGetProcAddress("glRotated");
-    glc->fnRotatef = (gl30PRotatef)doGetProcAddress("glRotatef");
-    glc->fnScaled = (gl30PScaled)doGetProcAddress("glScaled");
-    glc->fnScalef = (gl30PScalef)doGetProcAddress("glScalef");
-    glc->fnScissor = (gl30PScissor)doGetProcAddress("glScissor");
-    glc->fnSelectBuffer = (gl30PSelectBuffer)doGetProcAddress("glSelectBuffer");
-    glc->fnShadeModel = (gl30PShadeModel)doGetProcAddress("glShadeModel");
-    glc->fnStencilFunc = (gl30PStencilFunc)doGetProcAddress("glStencilFunc");
-    glc->fnStencilMask = (gl30PStencilMask)doGetProcAddress("glStencilMask");
-    glc->fnStencilOp = (gl30PStencilOp)doGetProcAddress("glStencilOp");
-    glc->fnTexCoord1d = (gl30PTexCoord1d)doGetProcAddress("glTexCoord1d");
-    glc->fnTexCoord1f = (gl30PTexCoord1f)doGetProcAddress("glTexCoord1f");
-    glc->fnTexCoord1i = (gl30PTexCoord1i)doGetProcAddress("glTexCoord1i");
-    glc->fnTexCoord1s = (gl30PTexCoord1s)doGetProcAddress("glTexCoord1s");
-    glc->fnTexCoord2d = (gl30PTexCoord2d)doGetProcAddress("glTexCoord2d");
-    glc->fnTexCoord2f = (gl30PTexCoord2f)doGetProcAddress("glTexCoord2f");
-    glc->fnTexCoord2i = (gl30PTexCoord2i)doGetProcAddress("glTexCoord2i");
-    glc->fnTexCoord2s = (gl30PTexCoord2s)doGetProcAddress("glTexCoord2s");
-    glc->fnTexCoord3d = (gl30PTexCoord3d)doGetProcAddress("glTexCoord3d");
-    glc->fnTexCoord3f = (gl30PTexCoord3f)doGetProcAddress("glTexCoord3f");
-    glc->fnTexCoord3i = (gl30PTexCoord3i)doGetProcAddress("glTexCoord3i");
-    glc->fnTexCoord3s = (gl30PTexCoord3s)doGetProcAddress("glTexCoord3s");
-    glc->fnTexCoord4d = (gl30PTexCoord4d)doGetProcAddress("glTexCoord4d");
-    glc->fnTexCoord4f = (gl30PTexCoord4f)doGetProcAddress("glTexCoord4f");
-    glc->fnTexCoord4i = (gl30PTexCoord4i)doGetProcAddress("glTexCoord4i");
-    glc->fnTexCoord4s = (gl30PTexCoord4s)doGetProcAddress("glTexCoord4s");
-    glc->fnTexCoord1dv = (gl30PTexCoord1dv)doGetProcAddress("glTexCoord1dv");
-    glc->fnTexCoord1fv = (gl30PTexCoord1fv)doGetProcAddress("glTexCoord1fv");
-    glc->fnTexCoord1iv = (gl30PTexCoord1iv)doGetProcAddress("glTexCoord1iv");
-    glc->fnTexCoord1sv = (gl30PTexCoord1sv)doGetProcAddress("glTexCoord1sv");
-    glc->fnTexCoord2dv = (gl30PTexCoord2dv)doGetProcAddress("glTexCoord2dv");
-    glc->fnTexCoord2fv = (gl30PTexCoord2fv)doGetProcAddress("glTexCoord2fv");
-    glc->fnTexCoord2iv = (gl30PTexCoord2iv)doGetProcAddress("glTexCoord2iv");
-    glc->fnTexCoord2sv = (gl30PTexCoord2sv)doGetProcAddress("glTexCoord2sv");
-    glc->fnTexCoord3dv = (gl30PTexCoord3dv)doGetProcAddress("glTexCoord3dv");
-    glc->fnTexCoord3fv = (gl30PTexCoord3fv)doGetProcAddress("glTexCoord3fv");
-    glc->fnTexCoord3iv = (gl30PTexCoord3iv)doGetProcAddress("glTexCoord3iv");
-    glc->fnTexCoord3sv = (gl30PTexCoord3sv)doGetProcAddress("glTexCoord3sv");
-    glc->fnTexCoord4dv = (gl30PTexCoord4dv)doGetProcAddress("glTexCoord4dv");
-    glc->fnTexCoord4fv = (gl30PTexCoord4fv)doGetProcAddress("glTexCoord4fv");
-    glc->fnTexCoord4iv = (gl30PTexCoord4iv)doGetProcAddress("glTexCoord4iv");
-    glc->fnTexCoord4sv = (gl30PTexCoord4sv)doGetProcAddress("glTexCoord4sv");
-    glc->fnTexCoordPointer = (gl30PTexCoordPointer)doGetProcAddress("glTexCoordPointer");
-    glc->fnTexEnvf = (gl30PTexEnvf)doGetProcAddress("glTexEnvf");
-    glc->fnTexEnvi = (gl30PTexEnvi)doGetProcAddress("glTexEnvi");
-    glc->fnTexEnvfv = (gl30PTexEnvfv)doGetProcAddress("glTexEnvfv");
-    glc->fnTexEnviv = (gl30PTexEnviv)doGetProcAddress("glTexEnviv");
-    glc->fnTexGend = (gl30PTexGend)doGetProcAddress("glTexGend");
-    glc->fnTexGenf = (gl30PTexGenf)doGetProcAddress("glTexGenf");
-    glc->fnTexGeni = (gl30PTexGeni)doGetProcAddress("glTexGeni");
-    glc->fnTexGendv = (gl30PTexGendv)doGetProcAddress("glTexGendv");
-    glc->fnTexGenfv = (gl30PTexGenfv)doGetProcAddress("glTexGenfv");
-    glc->fnTexGeniv = (gl30PTexGeniv)doGetProcAddress("glTexGeniv");
-    glc->fnTexImage1D = (gl30PTexImage1D)doGetProcAddress("glTexImage1D");
-    glc->fnTexImage2D = (gl30PTexImage2D)doGetProcAddress("glTexImage2D");
-    glc->fnTexImage3DEXT = (gl30PTexImage3DEXT)wglGetProcAddress("glTexImage3DEXT");
-    glc->fnTexParameterf = (gl30PTexParameterf)doGetProcAddress("glTexParameterf");
-    glc->fnTexParameteri = (gl30PTexParameteri)doGetProcAddress("glTexParameteri");
-    glc->fnTexParameterfv = (gl30PTexParameterfv)doGetProcAddress("glTexParameterfv");
-    glc->fnTexParameteriv = (gl30PTexParameteriv)doGetProcAddress("glTexParameteriv");
-    glc->fnTexSubImage1D = (gl30PTexSubImage1D)doGetProcAddress("glTexSubImage1D");
-    glc->fnTexSubImage2D = (gl30PTexSubImage2D)doGetProcAddress("glTexSubImage2D");
-    glc->fnTexSubImage3DEXT = (gl30PTexSubImage3DEXT)wglGetProcAddress("glTexSubImage3DEXT");
-    glc->fnTranslated = (gl30PTranslated)doGetProcAddress("glTranslated");
-    glc->fnTranslatef = (gl30PTranslatef)doGetProcAddress("glTranslatef");
-    glc->fnVertex2s = (gl30PVertex2s)doGetProcAddress("glVertex2s");
-    glc->fnVertex2i = (gl30PVertex2i)doGetProcAddress("glVertex2i");
-    glc->fnVertex2f = (gl30PVertex2f)doGetProcAddress("glVertex2f");
-    glc->fnVertex2d = (gl30PVertex2d)doGetProcAddress("glVertex2d");
-    glc->fnVertex3s = (gl30PVertex3s)doGetProcAddress("glVertex3s");
-    glc->fnVertex3i = (gl30PVertex3i)doGetProcAddress("glVertex3i");
-    glc->fnVertex3f = (gl30PVertex3f)doGetProcAddress("glVertex3f");
-    glc->fnVertex3d = (gl30PVertex3d)doGetProcAddress("glVertex3d");
-    glc->fnVertex4s = (gl30PVertex4s)doGetProcAddress("glVertex4s");
-    glc->fnVertex4i = (gl30PVertex4i)doGetProcAddress("glVertex4i");
-    glc->fnVertex4f = (gl30PVertex4f)doGetProcAddress("glVertex4f");
-    glc->fnVertex4d = (gl30PVertex4d)doGetProcAddress("glVertex4d");
-    glc->fnVertexPointer = (gl30PVertexPointer)doGetProcAddress("glVertexPointer");
-    glc->fnViewport = (gl30PViewport)doGetProcAddress("glViewport");
-    glc->fnAreTexturesResident = (gl30PAreTexturesResident)doGetProcAddress("glAreTexturesResident");
-    glc->fnArrayElement = (gl30PArrayElement)doGetProcAddress("glArrayElement");
-    glc->fnDrawArrays = (gl30PDrawArrays)doGetProcAddress("glDrawArrays");
-    glc->fnDrawElements = (gl30PDrawElements)doGetProcAddress("glDrawElements");
-    glc->fnGetPointerv = (gl30PGetPointerv)doGetProcAddress("glGetPointerv");
-    glc->fnPolygonOffset = (gl30PPolygonOffset)doGetProcAddress("glPolygonOffset");
-    glc->fnCopyTexImage1D = (gl30PCopyTexImage1D)doGetProcAddress("glCopyTexImage1D");
-    glc->fnCopyTexImage2D = (gl30PCopyTexImage2D)doGetProcAddress("glCopyTexImage2D");
-    glc->fnCopyTexSubImage1D = (gl30PCopyTexSubImage1D)doGetProcAddress("glCopyTexSubImage1D");
-    glc->fnCopyTexSubImage2D = (gl30PCopyTexSubImage2D)doGetProcAddress("glCopyTexSubImage2D");
-    glc->fnBindTexture = (gl30PBindTexture)doGetProcAddress("glBindTexture");
-    glc->fnDeleteTextures = (gl30PDeleteTextures)doGetProcAddress("glDeleteTextures");
-    glc->fnGenTextures = (gl30PGenTextures)doGetProcAddress("glGenTextures");
-    glc->fnIsTexture = (gl30PIsTexture)doGetProcAddress("glIsTexture");
-    glc->fnColorPointer = (gl30PColorPointer)doGetProcAddress("glColorPointer");
-    glc->fnBlendColorEXT = (gl30PBlendColorEXT)wglGetProcAddress("glBlendColorEXT");
-    glc->fnBlendEquation = (gl30PBlendEquation)wglGetProcAddress("glBlendEquation");
-    glc->fnCopyTexSubImage3D = (gl30PCopyTexSubImage3D)wglGetProcAddress("glCopyTexSubImage3D");
-    glc->fnActiveTexture = (gl30PActiveTexture)wglGetProcAddress("glActiveTexture");
-    glc->fnClientActiveTexture = (gl30PClientActiveTexture)wglGetProcAddress("glClientActiveTexture");
-    glc->fnCompressedTexImage1D = (gl30PCompressedTexImage1D)wglGetProcAddress("glCompressedTexImage1D");
-    glc->fnCompressedTexImage2D = (gl30PCompressedTexImage2D)wglGetProcAddress("glCompressedTexImage2D");
-    glc->fnCompressedTexImage3D = (gl30PCompressedTexImage3D)wglGetProcAddress("glCompressedTexImage3D");
-    glc->fnCompressedTexSubImage1D = (gl30PCompressedTexSubImage1D)wglGetProcAddress("glCompressedTexSubImage1D");
-    glc->fnCompressedTexSubImage2D = (gl30PCompressedTexSubImage2D)wglGetProcAddress("glCompressedTexSubImage2D");
-    glc->fnCompressedTexSubImage3D = (gl30PCompressedTexSubImage3D)wglGetProcAddress("glCompressedTexSubImage3D");
-    glc->fnBlendFuncSeparate = (gl30PBlendFuncSeparate)wglGetProcAddress("glBlendFuncSeparate");
+    glc->fnAccum = (gl30PAccum)gl30LibGetProcAddress("glAccum");
+    glc->fnAlphaFunc = (gl30PAlphaFunc)gl30LibGetProcAddress("glAlphaFunc");
+    glc->fnBegin = (gl30PBegin)gl30LibGetProcAddress("glBegin");
+    glc->fnEnd = (gl30PEnd)gl30LibGetProcAddress("glEnd");
+    glc->fnBitmap = (gl30PBitmap)gl30LibGetProcAddress("glBitmap");
+    glc->fnBlendFunc = (gl30PBlendFunc)gl30LibGetProcAddress("glBlendFunc");
+    glc->fnCallList = (gl30PCallList)gl30LibGetProcAddress("glCallList");
+    glc->fnCallLists = (gl30PCallLists)gl30LibGetProcAddress("glCallLists");
+    glc->fnClear = (gl30PClear)gl30LibGetProcAddress("glClear");
+    glc->fnClearAccum = (gl30PClearAccum)gl30LibGetProcAddress("glClearAccum");
+    glc->fnClearColor = (gl30PClearColor)gl30LibGetProcAddress("glClearColor");
+    glc->fnClearDepth = (gl30PClearDepth)gl30LibGetProcAddress("glClearDepth");
+    glc->fnClearIndex = (gl30PClearIndex)gl30LibGetProcAddress("glClearIndex");
+    glc->fnClearStencil = (gl30PClearStencil)gl30LibGetProcAddress("glClearStencil");
+    glc->fnClipPlane = (gl30PClipPlane)gl30LibGetProcAddress("glClipPlane");
+    glc->fnColor3b = (gl30PColor3b)gl30LibGetProcAddress("glColor3b");
+    glc->fnColor3d = (gl30PColor3d)gl30LibGetProcAddress("glColor3d");
+    glc->fnColor3f = (gl30PColor3f)gl30LibGetProcAddress("glColor3f");
+    glc->fnColor3i = (gl30PColor3i)gl30LibGetProcAddress("glColor3i");
+    glc->fnColor3s = (gl30PColor3s)gl30LibGetProcAddress("glColor3s");
+    glc->fnColor3ub = (gl30PColor3ub)gl30LibGetProcAddress("glColor3ub");
+    glc->fnColor3ui = (gl30PColor3ui)gl30LibGetProcAddress("glColor3ui");
+    glc->fnColor3us = (gl30PColor3us)gl30LibGetProcAddress("glColor3us");
+    glc->fnColor4b = (gl30PColor4b)gl30LibGetProcAddress("glColor4b");
+    glc->fnColor4d = (gl30PColor4d)gl30LibGetProcAddress("glColor4d");
+    glc->fnColor4f = (gl30PColor4f)gl30LibGetProcAddress("glColor4f");
+    glc->fnColor4i = (gl30PColor4i)gl30LibGetProcAddress("glColor4i");
+    glc->fnColor4s = (gl30PColor4s)gl30LibGetProcAddress("glColor4s");
+    glc->fnColor4ub = (gl30PColor4ub)gl30LibGetProcAddress("glColor4ub");
+    glc->fnColor4ui = (gl30PColor4ui)gl30LibGetProcAddress("glColor4ui");
+    glc->fnColor4us = (gl30PColor4us)gl30LibGetProcAddress("glColor4us");
+    glc->fnColor3bv = (gl30PColor3bv)gl30LibGetProcAddress("glColor3bv");
+    glc->fnColor3dv = (gl30PColor3dv)gl30LibGetProcAddress("glColor3dv");
+    glc->fnColor3fv = (gl30PColor3fv)gl30LibGetProcAddress("glColor3fv");
+    glc->fnColor3iv = (gl30PColor3iv)gl30LibGetProcAddress("glColor3iv");
+    glc->fnColor3sv = (gl30PColor3sv)gl30LibGetProcAddress("glColor3sv");
+    glc->fnColor3ubv = (gl30PColor3ubv)gl30LibGetProcAddress("glColor3ubv");
+    glc->fnColor3uiv = (gl30PColor3uiv)gl30LibGetProcAddress("glColor3uiv");
+    glc->fnColor3usv = (gl30PColor3usv)gl30LibGetProcAddress("glColor3usv");
+    glc->fnColor4bv = (gl30PColor4bv)gl30LibGetProcAddress("glColor4bv");
+    glc->fnColor4dv = (gl30PColor4dv)gl30LibGetProcAddress("glColor4dv");
+    glc->fnColor4fv = (gl30PColor4fv)gl30LibGetProcAddress("glColor4fv");
+    glc->fnColor4iv = (gl30PColor4iv)gl30LibGetProcAddress("glColor4iv");
+    glc->fnColor4sv = (gl30PColor4sv)gl30LibGetProcAddress("glColor4sv");
+    glc->fnColor4ubv = (gl30PColor4ubv)gl30LibGetProcAddress("glColor4ubv");
+    glc->fnColor4uiv = (gl30PColor4uiv)gl30LibGetProcAddress("glColor4uiv");
+    glc->fnColor4usv = (gl30PColor4usv)gl30LibGetProcAddress("glColor4usv");
+    glc->fnColorMask = (gl30PColorMask)gl30LibGetProcAddress("glColorMask");
+    glc->fnColorMaterial = (gl30PColorMaterial)gl30LibGetProcAddress("glColorMaterial");
+    glc->fnColorTable = (gl30PColorTable)gl30GLGetProcAddress("glColorTable");
+    glc->fnColorTableParameterfv = (gl30PColorTableParameterfv)gl30GLGetProcAddress("glColorTableParameterfv");
+    glc->fnColorTableParameteriv = (gl30PColorTableParameteriv)gl30GLGetProcAddress("glColorTableParameteriv");
+    glc->fnColorSubTable = (gl30PColorSubTable)gl30GLGetProcAddress("glColorSubTable");
+    glc->fnCopyPixels = (gl30PCopyPixels)gl30LibGetProcAddress("glCopyPixels");
+    glc->fnCullFace = (gl30PCullFace)gl30LibGetProcAddress("glCullFace");
+    glc->fnConvolutionFilter1D = (gl30PConvolutionFilter1D)gl30GLGetProcAddress("glConvolutionFilter1D");
+    glc->fnConvolutionFilter2D = (gl30PConvolutionFilter2D)gl30GLGetProcAddress("glConvolutionFilter2D");
+    glc->fnConvolutionParameterf = (gl30PConvolutionParameterf)gl30GLGetProcAddress("glConvolutionParameterf");
+    glc->fnConvolutionParameteri = (gl30PConvolutionParameteri)gl30GLGetProcAddress("glConvolutionParameteri");
+    glc->fnCopyColorTable = (gl30PCopyColorTable)gl30GLGetProcAddress("glCopyColorTable");
+    glc->fnCopyColorSubTable = (gl30PCopyColorSubTable)gl30GLGetProcAddress("glCopyColorSubTable");
+    glc->fnCopyConvolutionFilter1D = (gl30PCopyConvolutionFilter1D)gl30GLGetProcAddress("glCopyConvolutionFilter1D");
+    glc->fnCopyConvolutionFilter2D = (gl30PCopyConvolutionFilter2D)gl30GLGetProcAddress("glCopyConvolutionFilter2D");
+    glc->fnDeleteLists = (gl30PDeleteLists)gl30LibGetProcAddress("glDeleteLists");
+    glc->fnDepthFunc = (gl30PDepthFunc)gl30LibGetProcAddress("glDepthFunc");
+    glc->fnDepthMask = (gl30PDepthMask)gl30LibGetProcAddress("glDepthMask");
+    glc->fnDepthRange = (gl30PDepthRange)gl30LibGetProcAddress("glDepthRange");
+    glc->fnEnable = (gl30PEnable)gl30LibGetProcAddress("glEnable");
+    glc->fnDisable = (gl30PDisable)gl30LibGetProcAddress("glDisable");
+    glc->fnDrawBuffer = (gl30PDrawBuffer)gl30LibGetProcAddress("glDrawBuffer");
+    glc->fnDrawPixels = (gl30PDrawPixels)gl30LibGetProcAddress("glDrawPixels");
+    glc->fnEdgeFlag = (gl30PEdgeFlag)gl30LibGetProcAddress("glEdgeFlag");
+    glc->fnEdgeFlagv = (gl30PEdgeFlagv)gl30LibGetProcAddress("glEdgeFlagv");
+    glc->fnEdgeFlagPointer = (gl30PEdgeFlagPointer)gl30LibGetProcAddress("glEdgeFlagPointer");
+    glc->fnEvalCoord1d = (gl30PEvalCoord1d)gl30LibGetProcAddress("glEvalCoord1d");
+    glc->fnEvalCoord1f = (gl30PEvalCoord1f)gl30LibGetProcAddress("glEvalCoord1f");
+    glc->fnEvalCoord2d = (gl30PEvalCoord2d)gl30LibGetProcAddress("glEvalCoord2d");
+    glc->fnEvalCoord2f = (gl30PEvalCoord2f)gl30LibGetProcAddress("glEvalCoord2f");
+    glc->fnEvalCoord1dv = (gl30PEvalCoord1dv)gl30LibGetProcAddress("glEvalCoord1dv");
+    glc->fnEvalCoord1fv = (gl30PEvalCoord1fv)gl30LibGetProcAddress("glEvalCoord1fv");
+    glc->fnEvalCoord2dv = (gl30PEvalCoord2dv)gl30LibGetProcAddress("glEvalCoord2dv");
+    glc->fnEvalCoord2fv = (gl30PEvalCoord2fv)gl30LibGetProcAddress("glEvalCoord2fv");
+    glc->fnEvalMesh1 = (gl30PEvalMesh1)gl30LibGetProcAddress("glEvalMesh1");
+    glc->fnEvalMesh2 = (gl30PEvalMesh2)gl30LibGetProcAddress("glEvalMesh2");
+    glc->fnEvalPoint1 = (gl30PEvalPoint1)gl30LibGetProcAddress("glEvalPoint1");
+    glc->fnEvalPoint2 = (gl30PEvalPoint2)gl30LibGetProcAddress("glEvalPoint2");
+    glc->fnFeedbackBuffer = (gl30PFeedbackBuffer)gl30LibGetProcAddress("glFeedbackBuffer");
+    glc->fnFinish = (gl30PFinish)gl30LibGetProcAddress("glFinish");
+    glc->fnFlush = (gl30PFlush)gl30LibGetProcAddress("glFlush");
+    glc->fnFogf = (gl30PFogf)gl30LibGetProcAddress("glFogf");
+    glc->fnFogi = (gl30PFogi)gl30LibGetProcAddress("glFogi");
+    glc->fnFogfv = (gl30PFogfv)gl30LibGetProcAddress("glFogfv");
+    glc->fnFogiv = (gl30PFogiv)gl30LibGetProcAddress("glFogiv");
+    glc->fnFrontFace = (gl30PFrontFace)gl30LibGetProcAddress("glFrontFace");
+    glc->fnFrustum = (gl30PFrustum)gl30LibGetProcAddress("glFrustum");
+    glc->fnGenLists = (gl30PGenLists)gl30LibGetProcAddress("glGenLists");
+    glc->fnGetBooleanv = (gl30PGetBooleanv)gl30LibGetProcAddress("glGetBooleanv");
+    glc->fnGetDoublev = (gl30PGetDoublev)gl30LibGetProcAddress("glGetDoublev");
+    glc->fnGetFloatv = (gl30PGetFloatv)gl30LibGetProcAddress("glGetFloatv");
+    glc->fnGetIntegerv = (gl30PGetIntegerv)gl30LibGetProcAddress("glGetIntegerv");
+    glc->fnGetClipPlane = (gl30PGetClipPlane)gl30LibGetProcAddress("glGetClipPlane");
+    glc->fnGetError = (gl30PGetError)gl30LibGetProcAddress("glGetError");
+    glc->fnGetLightfv = (gl30PGetLightfv)gl30LibGetProcAddress("glGetLightfv");
+    glc->fnGetLightiv = (gl30PGetLightiv)gl30LibGetProcAddress("glGetLightiv");
+    glc->fnGetMapdv = (gl30PGetMapdv)gl30LibGetProcAddress("glGetMapdv");
+    glc->fnGetMapfv = (gl30PGetMapfv)gl30LibGetProcAddress("glGetMapfv");
+    glc->fnGetMapiv = (gl30PGetMapiv)gl30LibGetProcAddress("glGetMapiv");
+    glc->fnGetMaterialfv = (gl30PGetMaterialfv)gl30LibGetProcAddress("glGetMaterialfv");
+    glc->fnGetMaterialiv = (gl30PGetMaterialiv)gl30LibGetProcAddress("glGetMaterialiv");
+    glc->fnGetPixelMapfv = (gl30PGetPixelMapfv)gl30LibGetProcAddress("glGetPixelMapfv");
+    glc->fnGetPixelMapuiv = (gl30PGetPixelMapuiv)gl30LibGetProcAddress("glGetPixelMapuiv");
+    glc->fnGetPixelMapusv = (gl30PGetPixelMapusv)gl30LibGetProcAddress("glGetPixelMapusv");
+    glc->fnGetPolygonStipple = (gl30PGetPolygonStipple)gl30LibGetProcAddress("glGetPolygonStipple");
+    glc->fnGetString = (gl30PGetString)gl30LibGetProcAddress("glGetString");
+    glc->fnGetTexEnvfv = (gl30PGetTexEnvfv)gl30LibGetProcAddress("glGetTexEnvfv");
+    glc->fnGetTexEnviv = (gl30PGetTexEnviv)gl30LibGetProcAddress("glGetTexEnviv");
+    glc->fnGetTexGendv = (gl30PGetTexGendv)gl30LibGetProcAddress("glGetTexGendv");
+    glc->fnGetTexGenfv = (gl30PGetTexGenfv)gl30LibGetProcAddress("glGetTexGenfv");
+    glc->fnGetTexGeniv = (gl30PGetTexGeniv)gl30LibGetProcAddress("glGetTexGeniv");
+    glc->fnGetTexImage = (gl30PGetTexImage)gl30LibGetProcAddress("glGetTexImage");
+    glc->fnGetTexLevelParameterfv = (gl30PGetTexLevelParameterfv)gl30LibGetProcAddress("glGetTexLevelParameterfv");
+    glc->fnGetTexLevelParameteriv = (gl30PGetTexLevelParameteriv)gl30LibGetProcAddress("glGetTexLevelParameteriv");
+    glc->fnGetTexParameterfv = (gl30PGetTexParameterfv)gl30LibGetProcAddress("glGetTexParameterfv");
+    glc->fnGetTexParameteriv = (gl30PGetTexParameteriv)gl30LibGetProcAddress("glGetTexParameteriv");
+    glc->fnHint = (gl30PHint)gl30LibGetProcAddress("glHint");
+    glc->fnIndexd = (gl30PIndexd)gl30LibGetProcAddress("glIndexd");
+    glc->fnIndexf = (gl30PIndexf)gl30LibGetProcAddress("glIndexf");
+    glc->fnIndexi = (gl30PIndexi)gl30LibGetProcAddress("glIndexi");
+    glc->fnIndexs = (gl30PIndexs)gl30LibGetProcAddress("glIndexs");
+    glc->fnIndexdv = (gl30PIndexdv)gl30LibGetProcAddress("glIndexdv");
+    glc->fnIndexfv = (gl30PIndexfv)gl30LibGetProcAddress("glIndexfv");
+    glc->fnIndexiv = (gl30PIndexiv)gl30LibGetProcAddress("glIndexiv");
+    glc->fnIndexsv = (gl30PIndexsv)gl30LibGetProcAddress("glIndexsv");
+    glc->fnIndexMask = (gl30PIndexMask)gl30LibGetProcAddress("glIndexMask");
+    glc->fnIndexPointer = (gl30PIndexPointer)gl30LibGetProcAddress("glIndexPointer");
+    glc->fnInitNames = (gl30PInitNames)gl30LibGetProcAddress("glInitNames");
+    glc->fnIsEnabled = (gl30PIsEnabled)gl30LibGetProcAddress("glIsEnabled");
+    glc->fnIsList = (gl30PIsList)gl30LibGetProcAddress("glIsList");
+    glc->fnLightf = (gl30PLightf)gl30LibGetProcAddress("glLightf");
+    glc->fnLighti = (gl30PLighti)gl30LibGetProcAddress("glLighti");
+    glc->fnLightfv = (gl30PLightfv)gl30LibGetProcAddress("glLightfv");
+    glc->fnLightiv = (gl30PLightiv)gl30LibGetProcAddress("glLightiv");
+    glc->fnLightModelf = (gl30PLightModelf)gl30LibGetProcAddress("glLightModelf");
+    glc->fnLightModeli = (gl30PLightModeli)gl30LibGetProcAddress("glLightModeli");
+    glc->fnLightModelfv = (gl30PLightModelfv)gl30LibGetProcAddress("glLightModelfv");
+    glc->fnLightModeliv = (gl30PLightModeliv)gl30LibGetProcAddress("glLightModeliv");
+    glc->fnLineStipple = (gl30PLineStipple)gl30LibGetProcAddress("glLineStipple");
+    glc->fnLineWidth = (gl30PLineWidth)gl30LibGetProcAddress("glLineWidth");
+    glc->fnListBase = (gl30PListBase)gl30LibGetProcAddress("glListBase");
+    glc->fnLoadIdentity = (gl30PLoadIdentity)gl30LibGetProcAddress("glLoadIdentity");
+    glc->fnLoadMatrixd = (gl30PLoadMatrixd)gl30LibGetProcAddress("glLoadMatrixd");
+    glc->fnLoadMatrixf = (gl30PLoadMatrixf)gl30LibGetProcAddress("glLoadMatrixf");
+    glc->fnLoadName = (gl30PLoadName)gl30LibGetProcAddress("glLoadName");
+    glc->fnLogicOp = (gl30PLogicOp)gl30LibGetProcAddress("glLogicOp");
+    glc->fnMap1d = (gl30PMap1d)gl30LibGetProcAddress("glMap1d");
+    glc->fnMap1f = (gl30PMap1f)gl30LibGetProcAddress("glMap1f");
+    glc->fnMap2d = (gl30PMap2d)gl30LibGetProcAddress("glMap2d");
+    glc->fnMap2f = (gl30PMap2f)gl30LibGetProcAddress("glMap2f");
+    glc->fnMapGrid1d = (gl30PMapGrid1d)gl30LibGetProcAddress("glMapGrid1d");
+    glc->fnMapGrid1f = (gl30PMapGrid1f)gl30LibGetProcAddress("glMapGrid1f");
+    glc->fnMapGrid2d = (gl30PMapGrid2d)gl30LibGetProcAddress("glMapGrid2d");
+    glc->fnMapGrid2f = (gl30PMapGrid2f)gl30LibGetProcAddress("glMapGrid2f");
+    glc->fnMaterialf = (gl30PMaterialf)gl30LibGetProcAddress("glMaterialf");
+    glc->fnMateriali = (gl30PMateriali)gl30LibGetProcAddress("glMateriali");
+    glc->fnMaterialfv = (gl30PMaterialfv)gl30LibGetProcAddress("glMaterialfv");
+    glc->fnMaterialiv = (gl30PMaterialiv)gl30LibGetProcAddress("glMaterialiv");
+    glc->fnMatrixMode = (gl30PMatrixMode)gl30LibGetProcAddress("glMatrixMode");
+    glc->fnMultMatrixd = (gl30PMultMatrixd)gl30LibGetProcAddress("glMultMatrixd");
+    glc->fnMultMatrixf = (gl30PMultMatrixf)gl30LibGetProcAddress("glMultMatrixf");
+    glc->fnNewList = (gl30PNewList)gl30LibGetProcAddress("glNewList");
+    glc->fnEndList = (gl30PEndList)gl30LibGetProcAddress("glEndList");
+    glc->fnNormal3b = (gl30PNormal3b)gl30LibGetProcAddress("glNormal3b");
+    glc->fnNormal3d = (gl30PNormal3d)gl30LibGetProcAddress("glNormal3d");
+    glc->fnNormal3f = (gl30PNormal3f)gl30LibGetProcAddress("glNormal3f");
+    glc->fnNormal3i = (gl30PNormal3i)gl30LibGetProcAddress("glNormal3i");
+    glc->fnNormal3s = (gl30PNormal3s)gl30LibGetProcAddress("glNormal3s");
+    glc->fnNormal3bv = (gl30PNormal3bv)gl30LibGetProcAddress("glNormal3bv");
+    glc->fnNormal3dv = (gl30PNormal3dv)gl30LibGetProcAddress("glNormal3dv");
+    glc->fnNormal3fv = (gl30PNormal3fv)gl30LibGetProcAddress("glNormal3fv");
+    glc->fnNormal3iv = (gl30PNormal3iv)gl30LibGetProcAddress("glNormal3iv");
+    glc->fnNormal3sv = (gl30PNormal3sv)gl30LibGetProcAddress("glNormal3sv");
+    glc->fnOrtho = (gl30POrtho)gl30LibGetProcAddress("glOrtho");
+    glc->fnPassThrough = (gl30PPassThrough)gl30LibGetProcAddress("glPassThrough");
+    glc->fnPixelMapfv = (gl30PPixelMapfv)gl30LibGetProcAddress("glPixelMapfv");
+    glc->fnPixelMapuiv = (gl30PPixelMapuiv)gl30LibGetProcAddress("glPixelMapuiv");
+    glc->fnPixelMapusv = (gl30PPixelMapusv)gl30LibGetProcAddress("glPixelMapusv");
+    glc->fnPixelStoref = (gl30PPixelStoref)gl30LibGetProcAddress("glPixelStoref");
+    glc->fnPixelStorei = (gl30PPixelStorei)gl30LibGetProcAddress("glPixelStorei");
+    glc->fnPixelTransferf = (gl30PPixelTransferf)gl30LibGetProcAddress("glPixelTransferf");
+    glc->fnPixelTransferi = (gl30PPixelTransferi)gl30LibGetProcAddress("glPixelTransferi");
+    glc->fnPixelZoom = (gl30PPixelZoom)gl30LibGetProcAddress("glPixelZoom");
+    glc->fnPointSize = (gl30PPointSize)gl30LibGetProcAddress("glPointSize");
+    glc->fnPolygonMode = (gl30PPolygonMode)gl30LibGetProcAddress("glPolygonMode");
+    glc->fnPolygonStipple = (gl30PPolygonStipple)gl30LibGetProcAddress("glPolygonStipple");
+    glc->fnPushAttrib = (gl30PPushAttrib)gl30LibGetProcAddress("glPushAttrib");
+    glc->fnPopAttrib = (gl30PPopAttrib)gl30LibGetProcAddress("glPopAttrib");
+    glc->fnPushMatrix = (gl30PPushMatrix)gl30LibGetProcAddress("glPushMatrix");
+    glc->fnPopMatrix = (gl30PPopMatrix)gl30LibGetProcAddress("glPopMatrix");
+    glc->fnPushName = (gl30PPushName)gl30LibGetProcAddress("glPushName");
+    glc->fnPopName = (gl30PPopName)gl30LibGetProcAddress("glPopName");
+    glc->fnRasterPos2d = (gl30PRasterPos2d)gl30LibGetProcAddress("glRasterPos2d");
+    glc->fnRasterPos2f = (gl30PRasterPos2f)gl30LibGetProcAddress("glRasterPos2f");
+    glc->fnRasterPos2i = (gl30PRasterPos2i)gl30LibGetProcAddress("glRasterPos2i");
+    glc->fnRasterPos2s = (gl30PRasterPos2s)gl30LibGetProcAddress("glRasterPos2s");
+    glc->fnRasterPos3d = (gl30PRasterPos3d)gl30LibGetProcAddress("glRasterPos3d");
+    glc->fnRasterPos3f = (gl30PRasterPos3f)gl30LibGetProcAddress("glRasterPos3f");
+    glc->fnRasterPos3i = (gl30PRasterPos3i)gl30LibGetProcAddress("glRasterPos3i");
+    glc->fnRasterPos3s = (gl30PRasterPos3s)gl30LibGetProcAddress("glRasterPos3s");
+    glc->fnRasterPos4d = (gl30PRasterPos4d)gl30LibGetProcAddress("glRasterPos4d");
+    glc->fnRasterPos4f = (gl30PRasterPos4f)gl30LibGetProcAddress("glRasterPos4f");
+    glc->fnRasterPos4i = (gl30PRasterPos4i)gl30LibGetProcAddress("glRasterPos4i");
+    glc->fnRasterPos4s = (gl30PRasterPos4s)gl30LibGetProcAddress("glRasterPos4s");
+    glc->fnRasterPos2dv = (gl30PRasterPos2dv)gl30LibGetProcAddress("glRasterPos2dv");
+    glc->fnRasterPos2fv = (gl30PRasterPos2fv)gl30LibGetProcAddress("glRasterPos2fv");
+    glc->fnRasterPos2iv = (gl30PRasterPos2iv)gl30LibGetProcAddress("glRasterPos2iv");
+    glc->fnRasterPos2sv = (gl30PRasterPos2sv)gl30LibGetProcAddress("glRasterPos2sv");
+    glc->fnRasterPos3dv = (gl30PRasterPos3dv)gl30LibGetProcAddress("glRasterPos3dv");
+    glc->fnRasterPos3fv = (gl30PRasterPos3fv)gl30LibGetProcAddress("glRasterPos3fv");
+    glc->fnRasterPos3iv = (gl30PRasterPos3iv)gl30LibGetProcAddress("glRasterPos3iv");
+    glc->fnRasterPos3sv = (gl30PRasterPos3sv)gl30LibGetProcAddress("glRasterPos3sv");
+    glc->fnRasterPos4dv = (gl30PRasterPos4dv)gl30LibGetProcAddress("glRasterPos4dv");
+    glc->fnRasterPos4fv = (gl30PRasterPos4fv)gl30LibGetProcAddress("glRasterPos4fv");
+    glc->fnRasterPos4iv = (gl30PRasterPos4iv)gl30LibGetProcAddress("glRasterPos4iv");
+    glc->fnRasterPos4sv = (gl30PRasterPos4sv)gl30LibGetProcAddress("glRasterPos4sv");
+    glc->fnReadBuffer = (gl30PReadBuffer)gl30LibGetProcAddress("glReadBuffer");
+    glc->fnReadPixels = (gl30PReadPixels)gl30LibGetProcAddress("glReadPixels");
+    glc->fnRectd = (gl30PRectd)gl30LibGetProcAddress("glRectd");
+    glc->fnRectf = (gl30PRectf)gl30LibGetProcAddress("glRectf");
+    glc->fnRecti = (gl30PRecti)gl30LibGetProcAddress("glRecti");
+    glc->fnRects = (gl30PRects)gl30LibGetProcAddress("glRects");
+    glc->fnRectdv = (gl30PRectdv)gl30LibGetProcAddress("glRectdv");
+    glc->fnRectfv = (gl30PRectfv)gl30LibGetProcAddress("glRectfv");
+    glc->fnRectiv = (gl30PRectiv)gl30LibGetProcAddress("glRectiv");
+    glc->fnRectsv = (gl30PRectsv)gl30LibGetProcAddress("glRectsv");
+    glc->fnRenderMode = (gl30PRenderMode)gl30LibGetProcAddress("glRenderMode");
+    glc->fnRotated = (gl30PRotated)gl30LibGetProcAddress("glRotated");
+    glc->fnRotatef = (gl30PRotatef)gl30LibGetProcAddress("glRotatef");
+    glc->fnScaled = (gl30PScaled)gl30LibGetProcAddress("glScaled");
+    glc->fnScalef = (gl30PScalef)gl30LibGetProcAddress("glScalef");
+    glc->fnScissor = (gl30PScissor)gl30LibGetProcAddress("glScissor");
+    glc->fnSelectBuffer = (gl30PSelectBuffer)gl30LibGetProcAddress("glSelectBuffer");
+    glc->fnShadeModel = (gl30PShadeModel)gl30LibGetProcAddress("glShadeModel");
+    glc->fnStencilFunc = (gl30PStencilFunc)gl30LibGetProcAddress("glStencilFunc");
+    glc->fnStencilMask = (gl30PStencilMask)gl30LibGetProcAddress("glStencilMask");
+    glc->fnStencilOp = (gl30PStencilOp)gl30LibGetProcAddress("glStencilOp");
+    glc->fnTexCoord1d = (gl30PTexCoord1d)gl30LibGetProcAddress("glTexCoord1d");
+    glc->fnTexCoord1f = (gl30PTexCoord1f)gl30LibGetProcAddress("glTexCoord1f");
+    glc->fnTexCoord1i = (gl30PTexCoord1i)gl30LibGetProcAddress("glTexCoord1i");
+    glc->fnTexCoord1s = (gl30PTexCoord1s)gl30LibGetProcAddress("glTexCoord1s");
+    glc->fnTexCoord2d = (gl30PTexCoord2d)gl30LibGetProcAddress("glTexCoord2d");
+    glc->fnTexCoord2f = (gl30PTexCoord2f)gl30LibGetProcAddress("glTexCoord2f");
+    glc->fnTexCoord2i = (gl30PTexCoord2i)gl30LibGetProcAddress("glTexCoord2i");
+    glc->fnTexCoord2s = (gl30PTexCoord2s)gl30LibGetProcAddress("glTexCoord2s");
+    glc->fnTexCoord3d = (gl30PTexCoord3d)gl30LibGetProcAddress("glTexCoord3d");
+    glc->fnTexCoord3f = (gl30PTexCoord3f)gl30LibGetProcAddress("glTexCoord3f");
+    glc->fnTexCoord3i = (gl30PTexCoord3i)gl30LibGetProcAddress("glTexCoord3i");
+    glc->fnTexCoord3s = (gl30PTexCoord3s)gl30LibGetProcAddress("glTexCoord3s");
+    glc->fnTexCoord4d = (gl30PTexCoord4d)gl30LibGetProcAddress("glTexCoord4d");
+    glc->fnTexCoord4f = (gl30PTexCoord4f)gl30LibGetProcAddress("glTexCoord4f");
+    glc->fnTexCoord4i = (gl30PTexCoord4i)gl30LibGetProcAddress("glTexCoord4i");
+    glc->fnTexCoord4s = (gl30PTexCoord4s)gl30LibGetProcAddress("glTexCoord4s");
+    glc->fnTexCoord1dv = (gl30PTexCoord1dv)gl30LibGetProcAddress("glTexCoord1dv");
+    glc->fnTexCoord1fv = (gl30PTexCoord1fv)gl30LibGetProcAddress("glTexCoord1fv");
+    glc->fnTexCoord1iv = (gl30PTexCoord1iv)gl30LibGetProcAddress("glTexCoord1iv");
+    glc->fnTexCoord1sv = (gl30PTexCoord1sv)gl30LibGetProcAddress("glTexCoord1sv");
+    glc->fnTexCoord2dv = (gl30PTexCoord2dv)gl30LibGetProcAddress("glTexCoord2dv");
+    glc->fnTexCoord2fv = (gl30PTexCoord2fv)gl30LibGetProcAddress("glTexCoord2fv");
+    glc->fnTexCoord2iv = (gl30PTexCoord2iv)gl30LibGetProcAddress("glTexCoord2iv");
+    glc->fnTexCoord2sv = (gl30PTexCoord2sv)gl30LibGetProcAddress("glTexCoord2sv");
+    glc->fnTexCoord3dv = (gl30PTexCoord3dv)gl30LibGetProcAddress("glTexCoord3dv");
+    glc->fnTexCoord3fv = (gl30PTexCoord3fv)gl30LibGetProcAddress("glTexCoord3fv");
+    glc->fnTexCoord3iv = (gl30PTexCoord3iv)gl30LibGetProcAddress("glTexCoord3iv");
+    glc->fnTexCoord3sv = (gl30PTexCoord3sv)gl30LibGetProcAddress("glTexCoord3sv");
+    glc->fnTexCoord4dv = (gl30PTexCoord4dv)gl30LibGetProcAddress("glTexCoord4dv");
+    glc->fnTexCoord4fv = (gl30PTexCoord4fv)gl30LibGetProcAddress("glTexCoord4fv");
+    glc->fnTexCoord4iv = (gl30PTexCoord4iv)gl30LibGetProcAddress("glTexCoord4iv");
+    glc->fnTexCoord4sv = (gl30PTexCoord4sv)gl30LibGetProcAddress("glTexCoord4sv");
+    glc->fnTexEnvf = (gl30PTexEnvf)gl30LibGetProcAddress("glTexEnvf");
+    glc->fnTexEnvi = (gl30PTexEnvi)gl30LibGetProcAddress("glTexEnvi");
+    glc->fnTexEnvfv = (gl30PTexEnvfv)gl30LibGetProcAddress("glTexEnvfv");
+    glc->fnTexEnviv = (gl30PTexEnviv)gl30LibGetProcAddress("glTexEnviv");
+    glc->fnTexGend = (gl30PTexGend)gl30LibGetProcAddress("glTexGend");
+    glc->fnTexGenf = (gl30PTexGenf)gl30LibGetProcAddress("glTexGenf");
+    glc->fnTexGeni = (gl30PTexGeni)gl30LibGetProcAddress("glTexGeni");
+    glc->fnTexGendv = (gl30PTexGendv)gl30LibGetProcAddress("glTexGendv");
+    glc->fnTexGenfv = (gl30PTexGenfv)gl30LibGetProcAddress("glTexGenfv");
+    glc->fnTexGeniv = (gl30PTexGeniv)gl30LibGetProcAddress("glTexGeniv");
+    glc->fnTexImage1D = (gl30PTexImage1D)gl30LibGetProcAddress("glTexImage1D");
+    glc->fnTexImage2D = (gl30PTexImage2D)gl30LibGetProcAddress("glTexImage2D");
+    glc->fnTexParameterf = (gl30PTexParameterf)gl30LibGetProcAddress("glTexParameterf");
+    glc->fnTexParameteri = (gl30PTexParameteri)gl30LibGetProcAddress("glTexParameteri");
+    glc->fnTexParameterfv = (gl30PTexParameterfv)gl30LibGetProcAddress("glTexParameterfv");
+    glc->fnTexParameteriv = (gl30PTexParameteriv)gl30LibGetProcAddress("glTexParameteriv");
+    glc->fnTranslated = (gl30PTranslated)gl30LibGetProcAddress("glTranslated");
+    glc->fnTranslatef = (gl30PTranslatef)gl30LibGetProcAddress("glTranslatef");
+    glc->fnVertex2s = (gl30PVertex2s)gl30LibGetProcAddress("glVertex2s");
+    glc->fnVertex2i = (gl30PVertex2i)gl30LibGetProcAddress("glVertex2i");
+    glc->fnVertex2f = (gl30PVertex2f)gl30LibGetProcAddress("glVertex2f");
+    glc->fnVertex2d = (gl30PVertex2d)gl30LibGetProcAddress("glVertex2d");
+    glc->fnVertex3s = (gl30PVertex3s)gl30LibGetProcAddress("glVertex3s");
+    glc->fnVertex3i = (gl30PVertex3i)gl30LibGetProcAddress("glVertex3i");
+    glc->fnVertex3f = (gl30PVertex3f)gl30LibGetProcAddress("glVertex3f");
+    glc->fnVertex3d = (gl30PVertex3d)gl30LibGetProcAddress("glVertex3d");
+    glc->fnVertex4s = (gl30PVertex4s)gl30LibGetProcAddress("glVertex4s");
+    glc->fnVertex4i = (gl30PVertex4i)gl30LibGetProcAddress("glVertex4i");
+    glc->fnVertex4f = (gl30PVertex4f)gl30LibGetProcAddress("glVertex4f");
+    glc->fnVertex4d = (gl30PVertex4d)gl30LibGetProcAddress("glVertex4d");
+    glc->fnViewport = (gl30PViewport)gl30LibGetProcAddress("glViewport");
+    glc->fnGetColorTable = (gl30PGetColorTable)gl30GLGetProcAddress("glGetColorTable");
+    glc->fnGetColorTableParameterfv = (gl30PGetColorTableParameterfv)gl30GLGetProcAddress("glGetColorTableParameterfv");
+    glc->fnGetColorTableParameteriv = (gl30PGetColorTableParameteriv)gl30GLGetProcAddress("glGetColorTableParameteriv");
+    glc->fnGetConvolutionFilter = (gl30PGetConvolutionFilter)gl30GLGetProcAddress("glGetConvolutionFilter");
+    glc->fnGetConvolutionParameterfv = (gl30PGetConvolutionParameterfv)gl30LibGetProcAddress("glGetConvolutionParameterfv");
+    glc->fnGetConvolutionParameteriv = (gl30PGetConvolutionParameteriv)gl30LibGetProcAddress("glGetConvolutionParameteriv");
+    glc->fnGetHistogram = (gl30PGetHistogram)gl30GLGetProcAddress("glGetHistogram");
+    glc->fnGetHistogramParameterfv = (gl30PGetHistogramParameterfv)gl30GLGetProcAddress("glGetHistogramParameterfv");
+    glc->fnGetHistogramParameteriv = (gl30PGetHistogramParameteriv)gl30GLGetProcAddress("glGetHistogramParameteriv");
+    glc->fnGetSeparableFilter = (gl30PGetSeparableFilter)gl30GLGetProcAddress("glGetSeparableFilter");
+    glc->fnHistogram = (gl30PHistogram)gl30GLGetProcAddress("glHistogram");
+    glc->fnMinmax = (gl30PMinmax)gl30GLGetProcAddress("glMinmax");
+    glc->fnMultiTexCoord1s = (gl30PMultiTexCoord1s)gl30GLGetProcAddress("glMultiTexCoord1s");
+    glc->fnMultiTexCoord1i = (gl30PMultiTexCoord1i)gl30GLGetProcAddress("glMultiTexCoord1i");
+    glc->fnMultiTexCoord1f = (gl30PMultiTexCoord1f)gl30GLGetProcAddress("glMultiTexCoord1f");
+    glc->fnMultiTexCoord1d = (gl30PMultiTexCoord1d)gl30GLGetProcAddress("glMultiTexCoord1d");
+    glc->fnMultiTexCoord2s = (gl30PMultiTexCoord2s)gl30GLGetProcAddress("glMultiTexCoord2s");
+    glc->fnMultiTexCoord2i = (gl30PMultiTexCoord2i)gl30GLGetProcAddress("glMultiTexCoord2i");
+    glc->fnMultiTexCoord2f = (gl30PMultiTexCoord2f)gl30GLGetProcAddress("glMultiTexCoord2f");
+    glc->fnMultiTexCoord2d = (gl30PMultiTexCoord2d)gl30GLGetProcAddress("glMultiTexCoord2d");
+    glc->fnMultiTexCoord3s = (gl30PMultiTexCoord3s)gl30GLGetProcAddress("glMultiTexCoord3s");
+    glc->fnMultiTexCoord3i = (gl30PMultiTexCoord3i)gl30GLGetProcAddress("glMultiTexCoord3i");
+    glc->fnMultiTexCoord3f = (gl30PMultiTexCoord3f)gl30GLGetProcAddress("glMultiTexCoord3f");
+    glc->fnMultiTexCoord3d = (gl30PMultiTexCoord3d)gl30GLGetProcAddress("glMultiTexCoord3d");
+    glc->fnMultiTexCoord4s = (gl30PMultiTexCoord4s)gl30GLGetProcAddress("glMultiTexCoord4s");
+    glc->fnMultiTexCoord4i = (gl30PMultiTexCoord4i)gl30GLGetProcAddress("glMultiTexCoord4i");
+    glc->fnMultiTexCoord4f = (gl30PMultiTexCoord4f)gl30GLGetProcAddress("glMultiTexCoord4f");
+    glc->fnMultiTexCoord4d = (gl30PMultiTexCoord4d)gl30GLGetProcAddress("glMultiTexCoord4d");
+    glc->fnMultiTexCoord1sv = (gl30PMultiTexCoord1sv)gl30GLGetProcAddress("glMultiTexCoord1sv");
+    glc->fnMultiTexCoord1iv = (gl30PMultiTexCoord1iv)gl30GLGetProcAddress("glMultiTexCoord1iv");
+    glc->fnMultiTexCoord1fv = (gl30PMultiTexCoord1fv)gl30GLGetProcAddress("glMultiTexCoord1fv");
+    glc->fnMultiTexCoord1dv = (gl30PMultiTexCoord1dv)gl30GLGetProcAddress("glMultiTexCoord1dv");
+    glc->fnMultiTexCoord2sv = (gl30PMultiTexCoord2sv)gl30GLGetProcAddress("glMultiTexCoord2sv");
+    glc->fnMultiTexCoord2iv = (gl30PMultiTexCoord2iv)gl30GLGetProcAddress("glMultiTexCoord2iv");
+    glc->fnMultiTexCoord2fv = (gl30PMultiTexCoord2fv)gl30GLGetProcAddress("glMultiTexCoord2fv");
+    glc->fnMultiTexCoord2dv = (gl30PMultiTexCoord2dv)gl30GLGetProcAddress("glMultiTexCoord2dv");
+    glc->fnMultiTexCoord3sv = (gl30PMultiTexCoord3sv)gl30GLGetProcAddress("glMultiTexCoord3sv");
+    glc->fnMultiTexCoord3iv = (gl30PMultiTexCoord3iv)gl30GLGetProcAddress("glMultiTexCoord3iv");
+    glc->fnMultiTexCoord3fv = (gl30PMultiTexCoord3fv)gl30GLGetProcAddress("glMultiTexCoord3fv");
+    glc->fnMultiTexCoord3dv = (gl30PMultiTexCoord3dv)gl30GLGetProcAddress("glMultiTexCoord3dv");
+    glc->fnMultiTexCoord4sv = (gl30PMultiTexCoord4sv)gl30GLGetProcAddress("glMultiTexCoord4sv");
+    glc->fnMultiTexCoord4iv = (gl30PMultiTexCoord4iv)gl30GLGetProcAddress("glMultiTexCoord4iv");
+    glc->fnMultiTexCoord4fv = (gl30PMultiTexCoord4fv)gl30GLGetProcAddress("glMultiTexCoord4fv");
+    glc->fnMultiTexCoord4dv = (gl30PMultiTexCoord4dv)gl30GLGetProcAddress("glMultiTexCoord4dv");
+    glc->fnResetHistogram = (gl30PResetHistogram)gl30GLGetProcAddress("glResetHistogram");
+    glc->fnResetMinmax = (gl30PResetMinmax)gl30GLGetProcAddress("glResetMinmax");
+    glc->fnSeparableFilter2D = (gl30PSeparableFilter2D)gl30GLGetProcAddress("glSeparableFilter2D");
+    glc->fnAreTexturesResident = (gl30PAreTexturesResident)gl30LibGetProcAddress("glAreTexturesResident");
+    glc->fnArrayElement = (gl30PArrayElement)gl30LibGetProcAddress("glArrayElement");
+    glc->fnDrawArrays = (gl30PDrawArrays)gl30LibGetProcAddress("glDrawArrays");
+    glc->fnDrawElements = (gl30PDrawElements)gl30LibGetProcAddress("glDrawElements");
+    glc->fnGetPointerv = (gl30PGetPointerv)gl30LibGetProcAddress("glGetPointerv");
+    glc->fnPolygonOffset = (gl30PPolygonOffset)gl30LibGetProcAddress("glPolygonOffset");
+    glc->fnCopyTexImage1D = (gl30PCopyTexImage1D)gl30LibGetProcAddress("glCopyTexImage1D");
+    glc->fnCopyTexImage2D = (gl30PCopyTexImage2D)gl30LibGetProcAddress("glCopyTexImage2D");
+    glc->fnCopyTexSubImage1D = (gl30PCopyTexSubImage1D)gl30LibGetProcAddress("glCopyTexSubImage1D");
+    glc->fnCopyTexSubImage2D = (gl30PCopyTexSubImage2D)gl30LibGetProcAddress("glCopyTexSubImage2D");
+    glc->fnBindTexture = (gl30PBindTexture)gl30LibGetProcAddress("glBindTexture");
+    glc->fnDeleteTextures = (gl30PDeleteTextures)gl30LibGetProcAddress("glDeleteTextures");
+    glc->fnGenTextures = (gl30PGenTextures)gl30LibGetProcAddress("glGenTextures");
+    glc->fnIsTexture = (gl30PIsTexture)gl30LibGetProcAddress("glIsTexture");
+    glc->fnColorPointer = (gl30PColorPointer)gl30LibGetProcAddress("glColorPointer");
+    glc->fnEnableClientState = (gl30PEnableClientState)gl30LibGetProcAddress("glEnableClientState");
+    glc->fnDisableClientState = (gl30PDisableClientState)gl30LibGetProcAddress("glDisableClientState");
+    glc->fnIndexub = (gl30PIndexub)gl30LibGetProcAddress("glIndexub");
+    glc->fnIndexubv = (gl30PIndexubv)gl30LibGetProcAddress("glIndexubv");
+    glc->fnInterleavedArrays = (gl30PInterleavedArrays)gl30LibGetProcAddress("glInterleavedArrays");
+    glc->fnNormalPointer = (gl30PNormalPointer)gl30LibGetProcAddress("glNormalPointer");
+    glc->fnPushClientAttrib = (gl30PPushClientAttrib)gl30LibGetProcAddress("glPushClientAttrib");
+    glc->fnPrioritizeTextures = (gl30PPrioritizeTextures)gl30LibGetProcAddress("glPrioritizeTextures");
+    glc->fnPopClientAttrib = (gl30PPopClientAttrib)gl30LibGetProcAddress("glPopClientAttrib");
+    glc->fnTexCoordPointer = (gl30PTexCoordPointer)gl30LibGetProcAddress("glTexCoordPointer");
+    glc->fnTexSubImage1D = (gl30PTexSubImage1D)gl30LibGetProcAddress("glTexSubImage1D");
+    glc->fnTexSubImage2D = (gl30PTexSubImage2D)gl30LibGetProcAddress("glTexSubImage2D");
+    glc->fnVertexPointer = (gl30PVertexPointer)gl30LibGetProcAddress("glVertexPointer");
+    glc->fnBlendColor = (gl30PBlendColor)gl30GLGetProcAddress("glBlendColor");
+    glc->fnBlendEquation = (gl30PBlendEquation)gl30GLGetProcAddress("glBlendEquation");
+    glc->fnCopyTexSubImage3D = (gl30PCopyTexSubImage3D)gl30GLGetProcAddress("glCopyTexSubImage3D");
+    glc->fnDrawRangeElements = (gl30PDrawRangeElements)gl30GLGetProcAddress("glDrawRangeElements");
+    glc->fnTexImage3D = (gl30PTexImage3D)gl30GLGetProcAddress("glTexImage3D");
+    glc->fnTexSubImage3D = (gl30PTexSubImage3D)gl30GLGetProcAddress("glTexSubImage3D");
+    glc->fnActiveTexture = (gl30PActiveTexture)gl30GLGetProcAddress("glActiveTexture");
+    glc->fnClientActiveTexture = (gl30PClientActiveTexture)gl30GLGetProcAddress("glClientActiveTexture");
+    glc->fnCompressedTexImage1D = (gl30PCompressedTexImage1D)gl30GLGetProcAddress("glCompressedTexImage1D");
+    glc->fnCompressedTexImage2D = (gl30PCompressedTexImage2D)gl30GLGetProcAddress("glCompressedTexImage2D");
+    glc->fnCompressedTexImage3D = (gl30PCompressedTexImage3D)gl30GLGetProcAddress("glCompressedTexImage3D");
+    glc->fnCompressedTexSubImage1D = (gl30PCompressedTexSubImage1D)gl30GLGetProcAddress("glCompressedTexSubImage1D");
+    glc->fnCompressedTexSubImage2D = (gl30PCompressedTexSubImage2D)gl30GLGetProcAddress("glCompressedTexSubImage2D");
+    glc->fnCompressedTexSubImage3D = (gl30PCompressedTexSubImage3D)gl30GLGetProcAddress("glCompressedTexSubImage3D");
+    glc->fnGetCompressedTexImage = (gl30PGetCompressedTexImage)gl30GLGetProcAddress("glGetCompressedTexImage");
+    glc->fnLoadTransposeMatrixd = (gl30PLoadTransposeMatrixd)gl30GLGetProcAddress("glLoadTransposeMatrixd");
+    glc->fnLoadTransposeMatrixf = (gl30PLoadTransposeMatrixf)gl30GLGetProcAddress("glLoadTransposeMatrixf");
+    glc->fnMultTransposeMatrixd = (gl30PMultTransposeMatrixd)gl30GLGetProcAddress("glMultTransposeMatrixd");
+    glc->fnMultTransposeMatrixf = (gl30PMultTransposeMatrixf)gl30GLGetProcAddress("glMultTransposeMatrixf");
+    glc->fnSampleCoverage = (gl30PSampleCoverage)gl30GLGetProcAddress("glSampleCoverage");
+    glc->fnBlendFuncSeparate = (gl30PBlendFuncSeparate)gl30GLGetProcAddress("glBlendFuncSeparate");
+    glc->fnFogCoordPointer = (gl30PFogCoordPointer)gl30GLGetProcAddress("glFogCoordPointer");
+    glc->fnFogCoordd = (gl30PFogCoordd)gl30GLGetProcAddress("glFogCoordd");
+    glc->fnFogCoordf = (gl30PFogCoordf)gl30GLGetProcAddress("glFogCoordf");
+    glc->fnFogCoorddv = (gl30PFogCoorddv)gl30GLGetProcAddress("glFogCoorddv");
+    glc->fnFogCoordfv = (gl30PFogCoordfv)gl30GLGetProcAddress("glFogCoordfv");
+    glc->fnMultiDrawArrays = (gl30PMultiDrawArrays)gl30GLGetProcAddress("glMultiDrawArrays");
+    glc->fnMultiDrawElements = (gl30PMultiDrawElements)gl30GLGetProcAddress("glMultiDrawElements");
+    glc->fnPointParameterf = (gl30PPointParameterf)gl30GLGetProcAddress("glPointParameterf");
+    glc->fnPointParameteri = (gl30PPointParameteri)gl30GLGetProcAddress("glPointParameteri");
+    glc->fnSecondaryColor3b = (gl30PSecondaryColor3b)gl30GLGetProcAddress("glSecondaryColor3b");
+    glc->fnSecondaryColor3s = (gl30PSecondaryColor3s)gl30GLGetProcAddress("glSecondaryColor3s");
+    glc->fnSecondaryColor3i = (gl30PSecondaryColor3i)gl30GLGetProcAddress("glSecondaryColor3i");
+    glc->fnSecondaryColor3f = (gl30PSecondaryColor3f)gl30GLGetProcAddress("glSecondaryColor3f");
+    glc->fnSecondaryColor3d = (gl30PSecondaryColor3d)gl30GLGetProcAddress("glSecondaryColor3d");
+    glc->fnSecondaryColor3ub = (gl30PSecondaryColor3ub)gl30GLGetProcAddress("glSecondaryColor3ub");
+    glc->fnSecondaryColor3us = (gl30PSecondaryColor3us)gl30GLGetProcAddress("glSecondaryColor3us");
+    glc->fnSecondaryColor3ui = (gl30PSecondaryColor3ui)gl30GLGetProcAddress("glSecondaryColor3ui");
+    glc->fnSecondaryColor3bv = (gl30PSecondaryColor3bv)gl30GLGetProcAddress("glSecondaryColor3bv");
+    glc->fnSecondaryColor3sv = (gl30PSecondaryColor3sv)gl30GLGetProcAddress("glSecondaryColor3sv");
+    glc->fnSecondaryColor3iv = (gl30PSecondaryColor3iv)gl30GLGetProcAddress("glSecondaryColor3iv");
+    glc->fnSecondaryColor3fv = (gl30PSecondaryColor3fv)gl30GLGetProcAddress("glSecondaryColor3fv");
+    glc->fnSecondaryColor3dv = (gl30PSecondaryColor3dv)gl30GLGetProcAddress("glSecondaryColor3dv");
+    glc->fnSecondaryColor3ubv = (gl30PSecondaryColor3ubv)gl30GLGetProcAddress("glSecondaryColor3ubv");
+    glc->fnSecondaryColor3usv = (gl30PSecondaryColor3usv)gl30GLGetProcAddress("glSecondaryColor3usv");
+    glc->fnSecondaryColor3uiv = (gl30PSecondaryColor3uiv)gl30GLGetProcAddress("glSecondaryColor3uiv");
+    glc->fnSecondaryColorPointer = (gl30PSecondaryColorPointer)gl30GLGetProcAddress("glSecondaryColorPointer");
+    glc->fnWindowPos2s = (gl30PWindowPos2s)gl30GLGetProcAddress("glWindowPos2s");
+    glc->fnWindowPos2i = (gl30PWindowPos2i)gl30GLGetProcAddress("glWindowPos2i");
+    glc->fnWindowPos2f = (gl30PWindowPos2f)gl30GLGetProcAddress("glWindowPos2f");
+    glc->fnWindowPos2d = (gl30PWindowPos2d)gl30GLGetProcAddress("glWindowPos2d");
+    glc->fnWindowPos3s = (gl30PWindowPos3s)gl30GLGetProcAddress("glWindowPos3s");
+    glc->fnWindowPos3i = (gl30PWindowPos3i)gl30GLGetProcAddress("glWindowPos3i");
+    glc->fnWindowPos3f = (gl30PWindowPos3f)gl30GLGetProcAddress("glWindowPos3f");
+    glc->fnWindowPos3d = (gl30PWindowPos3d)gl30GLGetProcAddress("glWindowPos3d");
+    glc->fnWindowPos2sv = (gl30PWindowPos2sv)gl30GLGetProcAddress("glWindowPos2sv");
+    glc->fnWindowPos2iv = (gl30PWindowPos2iv)gl30GLGetProcAddress("glWindowPos2iv");
+    glc->fnWindowPos2fv = (gl30PWindowPos2fv)gl30GLGetProcAddress("glWindowPos2fv");
+    glc->fnWindowPos2dv = (gl30PWindowPos2dv)gl30GLGetProcAddress("glWindowPos2dv");
+    glc->fnWindowPos3sv = (gl30PWindowPos3sv)gl30GLGetProcAddress("glWindowPos3sv");
+    glc->fnWindowPos3iv = (gl30PWindowPos3iv)gl30GLGetProcAddress("glWindowPos3iv");
+    glc->fnWindowPos3fv = (gl30PWindowPos3fv)gl30GLGetProcAddress("glWindowPos3fv");
+    glc->fnWindowPos3dv = (gl30PWindowPos3dv)gl30GLGetProcAddress("glWindowPos3dv");
     return glc;
 }
 

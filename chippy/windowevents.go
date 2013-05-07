@@ -111,6 +111,15 @@ func (b *CursorPositionEventBuffer) Length() int {
 	return <-b.lengthQuery
 }
 
+type CursorWithinEventBuffer struct {
+	Read, write chan bool
+	lengthQuery chan int
+}
+
+func (b *CursorWithinEventBuffer) Length() int {
+	return <-b.lengthQuery
+}
+
 type KeyboardEventBuffer struct {
 	Read, write chan *keyboard.Event
 	lengthQuery chan int
@@ -156,6 +165,15 @@ func (b *MouseEventBuffer) Length() int {
 	return <-b.lengthQuery
 }
 
+type FocusedEventBuffer struct {
+	Read, write chan bool
+	lengthQuery chan int
+}
+
+func (b *FocusedEventBuffer) Length() int {
+	return <-b.lengthQuery
+}
+
 type PositionEventBuffer struct {
 	Read, write chan []int
 	lengthQuery chan int
@@ -177,10 +195,12 @@ func (b *SizeEventBuffer) Length() int {
 type eventDispatcher struct {
 	closeEvents          []*CloseEventBuffer
 	cursorPositionEvents []*CursorPositionEventBuffer
+	cursorWithinEvents   []*CursorWithinEventBuffer
 	keyboardEvents       []*KeyboardEventBuffer
 	maximizedEvents      []*MaximizedEventBuffer
 	minimizedEvents      []*MinimizedEventBuffer
 	mouseEvents          []*MouseEventBuffer
+	focusedEvents        []*FocusedEventBuffer
 	positionEvents       []*PositionEventBuffer
 	sizeEvents           []*SizeEventBuffer
 }
@@ -214,6 +234,20 @@ func (e *eventDispatcher) CursorPositionEvents() *CursorPositionEventBuffer {
 }
 func (e *eventDispatcher) addCursorPositionEvent(v []int) {
 	for _, buf := range e.cursorPositionEvents {
+		buf.write <- v
+	}
+}
+
+func (e *eventDispatcher) CursorWithinEvents() *CursorWithinEventBuffer {
+	buf := new(CursorWithinEventBuffer)
+	buf.Read = make(chan bool)
+	buf.write = make(chan bool)
+	buf.lengthQuery = elasticBuffer(buf.write, buf.Read)
+	e.cursorWithinEvents = append(e.cursorWithinEvents, buf)
+	return buf
+}
+func (e *eventDispatcher) addCursorWithinEvent(v bool) {
+	for _, buf := range e.cursorWithinEvents {
 		buf.write <- v
 	}
 }
@@ -270,6 +304,20 @@ func (e *eventDispatcher) MouseEvents() *MouseEventBuffer {
 }
 func (e *eventDispatcher) addMouseEvent(v *mouse.Event) {
 	for _, buf := range e.mouseEvents {
+		buf.write <- v
+	}
+}
+
+func (e *eventDispatcher) FocusedEvents() *FocusedEventBuffer {
+	buf := new(FocusedEventBuffer)
+	buf.Read = make(chan bool)
+	buf.write = make(chan bool)
+	buf.lengthQuery = elasticBuffer(buf.write, buf.Read)
+	e.focusedEvents = append(e.focusedEvents, buf)
+	return buf
+}
+func (e *eventDispatcher) addFocusedEvent(v bool) {
+	for _, buf := range e.focusedEvents {
 		buf.write <- v
 	}
 }

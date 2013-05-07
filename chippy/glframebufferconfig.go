@@ -17,6 +17,15 @@ type GLConfig struct {
 	// An GLConfig is 'valid' when the user did not create it themself.
 	valid bool
 
+	// Tells weather this configuration is hardware accelerated or uses some software
+	// implementation version of OpenGL.
+	//
+	// Note: Most software implementations are very low OpenGL versions. (I.e. GL 1.1)
+	Accelerated bool
+
+	// Number of anti-aliasing samples this configuration supports
+	Samples uint8
+
 	// The number of bits that represent an color per pixel in the frame buffer.
 	RedBits, GreenBits, BlueBits, AlphaBits uint8
 
@@ -53,7 +62,7 @@ func (c *GLConfig) panicUnlessValid() {
 }
 
 func (c *GLConfig) String() string {
-	return fmt.Sprintf("GLConfig(%dbpp[%d,%d,%d,%d], AccumBits=[%d,%d,%d,%d], AuxBuffers=%d, DepthBits=%d, StencilBits=%d, DoubleBuffered=%t, StereoScopic=%t)", c.RedBits+c.GreenBits+c.BlueBits+c.AlphaBits, c.RedBits, c.GreenBits, c.BlueBits, c.AlphaBits, c.AccumRedBits, c.AccumGreenBits, c.AccumBlueBits, c.AccumAlphaBits, c.AuxBuffers, c.DepthBits, c.StencilBits, c.DoubleBuffered, c.StereoScopic)
+	return fmt.Sprintf("GLConfig(Accelerated=%t, %dbpp[%d,%d,%d,%d], AccumBits=[%d,%d,%d,%d], AuxBuffers=%d, DepthBits=%d, StencilBits=%d, DoubleBuffered=%t, StereoScopic=%t)", c.Accelerated, c.RedBits+c.GreenBits+c.BlueBits+c.AlphaBits, c.RedBits, c.GreenBits, c.BlueBits, c.AlphaBits, c.AccumRedBits, c.AccumGreenBits, c.AccumBlueBits, c.AccumAlphaBits, c.AuxBuffers, c.DepthBits, c.StencilBits, c.DoubleBuffered, c.StereoScopic)
 }
 
 // Equals tells weather this GLConfig equals the other GLFrameBufferConfig, by comparing
@@ -61,7 +70,7 @@ func (c *GLConfig) String() string {
 func (c *GLConfig) Equals(other *GLConfig) bool {
 	o := other
 
-	if c.RedBits != o.RedBits || c.GreenBits != o.GreenBits || c.BlueBits != o.BlueBits || c.AlphaBits != o.AlphaBits || c.AccumRedBits != o.AccumRedBits || c.AccumGreenBits != o.AccumGreenBits || c.AccumBlueBits != o.AccumBlueBits || c.AccumAlphaBits != o.AccumAlphaBits || c.AuxBuffers != o.AuxBuffers || c.DepthBits != o.DepthBits || c.StencilBits != o.StencilBits || c.DoubleBuffered != o.DoubleBuffered || c.StereoScopic != o.StereoScopic {
+	if c.Accelerated != o.Accelerated || c.RedBits != o.RedBits || c.GreenBits != o.GreenBits || c.BlueBits != o.BlueBits || c.AlphaBits != o.AlphaBits || c.AccumRedBits != o.AccumRedBits || c.AccumGreenBits != o.AccumGreenBits || c.AccumBlueBits != o.AccumBlueBits || c.AccumAlphaBits != o.AccumAlphaBits || c.AuxBuffers != o.AuxBuffers || c.DepthBits != o.DepthBits || c.StencilBits != o.StencilBits || c.DoubleBuffered != o.DoubleBuffered || c.StereoScopic != o.StereoScopic {
 		return false
 	}
 	return true
@@ -69,6 +78,24 @@ func (c *GLConfig) Equals(other *GLConfig) bool {
 
 var (
 	GLWorstConfig = &GLConfig{
+		Accelerated:    false,
+		RedBits:        0,
+		GreenBits:      0,
+		BlueBits:       0,
+		AlphaBits:      0,
+		AccumRedBits:   0,
+		AccumGreenBits: 0,
+		AccumBlueBits:  0,
+		AccumAlphaBits: 0,
+		AuxBuffers:     0,
+		DepthBits:      0,
+		StencilBits:    0,
+		DoubleBuffered: false,
+		StereoScopic:   false,
+	}
+
+	GLWorstHWConfig = &GLConfig{
+		Accelerated:    true,
 		RedBits:        0,
 		GreenBits:      0,
 		BlueBits:       0,
@@ -85,6 +112,7 @@ var (
 	}
 
 	GLBestConfig = &GLConfig{
+		Accelerated:    true,
 		RedBits:        255,
 		GreenBits:      255,
 		BlueBits:       255,
@@ -115,6 +143,7 @@ func GLChooseConfig(possible []*GLConfig, minConfig, maxConfig *GLConfig) *GLCon
 	max := maxConfig
 
 	// Remove any which are below minConfig
+	var removed []*GLConfig
 	for _, c := range possible {
 		if c.RedBits < min.RedBits {
 			continue
@@ -151,15 +180,22 @@ func GLChooseConfig(possible []*GLConfig, minConfig, maxConfig *GLConfig) *GLCon
 		if c.StencilBits < min.StencilBits {
 			continue
 		}
+
+		if min.Accelerated && !c.Accelerated {
+			continue
+		}
 		if min.DoubleBuffered && !c.DoubleBuffered {
 			continue
 		}
 		if min.StereoScopic && !c.StereoScopic {
 			continue
 		}
+		removed = append(removed, c)
 	}
+	possible = removed
 
 	// Remove any which are above maxConfig
+	removed = make([]*GLConfig, 0)
 	for _, c := range possible {
 		if c.RedBits > max.RedBits {
 			continue
@@ -196,13 +232,19 @@ func GLChooseConfig(possible []*GLConfig, minConfig, maxConfig *GLConfig) *GLCon
 		if c.StencilBits > max.StencilBits {
 			continue
 		}
+
+		if c.Accelerated && !max.Accelerated {
+			continue
+		}
 		if c.DoubleBuffered && !max.DoubleBuffered {
 			continue
 		}
 		if c.StereoScopic && !max.StereoScopic {
 			continue
 		}
+		removed = append(removed, c)
 	}
+	possible = removed
 
 	// Sort by order of closest-to maxConfig in order of
 	//

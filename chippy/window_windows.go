@@ -25,8 +25,8 @@ type W32Window struct {
 
 	icon, cursor image.Image
 
-	opened, isDestroyed, visible, decorated, minimized, maximized, fullscreen, alwaysOnTop,
-	cursorGrabbed bool
+	opened, isDestroyed, focused, visible, decorated, minimized, maximized, fullscreen,
+	alwaysOnTop, cursorGrabbed, cursorWithin, transparent bool
 
 	extentLeft, extentRight, extentBottom, extentTop, width, height, minWidth, minHeight,
 	maxWidth, maxHeight uint
@@ -39,8 +39,8 @@ type W32Window struct {
 
 	title string
 
-	dc                                                                       win32.HDC
-	hwnd                                                                     win32.HWND
+	dc, dcRender                                                             win32.HDC
+	hwnd, hwndRender                                                         win32.HWND
 	windowClass                                                              string
 	styleFlags                                                               win32.DWORD
 	lastWmSizingLeft, lastWmSizingRight, lastWmSizingBottom, lastWmSizingTop win32.LONG
@@ -59,6 +59,8 @@ func (w *W32Window) Open(screen Screen) (err error) {
 	w.access.Lock()
 	defer w.access.Unlock()
 
+	w.focused = true
+	w.addFocusedEvent(w.focused)
 	w.screen = screen
 
 	dispatch(func() {
@@ -94,6 +96,13 @@ func (w *W32Window) Open(screen Screen) (err error) {
 		// CreateWindowEx to avoid some flicker
 		w.doUpdateStyle()
 
+		// SetPixelFormat() may only be called once -- so if we want to change any pixel format
+		// values then our only option is to destroy the window and create it again.
+		//
+		// Since that would provide an largely noticable flicker to the user, we instead have an
+		// 'rendering' window parented to our 'user managed' window, and we create the 'rendering'
+		// window whenever we want to, thus bypassing the SetPixelFormat() issue noted above.
+		//
 		w.hwnd = win32.CreateWindowEx(0, w.windowClass, w.title, w.styleFlags, 0, 0, 0, 0, nil, nil, hInstance, nil)
 		if w.hwnd == nil {
 			err = errors.New(fmt.Sprintf("Unable to open window; CreateWindowEx(): %s", win32.GetLastErrorString()))
@@ -104,6 +113,19 @@ func (w *W32Window) Open(screen Screen) (err error) {
 			err = errors.New(fmt.Sprintf("Unable to get window DC; GetDC(): %s", win32.GetLastErrorString()))
 			return
 		}
+
+		/*
+			w.hwndRender = win32.CreateWindowEx(0, w.windowClass, "", win32.WS_CHILD, 0, 0, 100, 100, w.hwnd, nil, hInstance, nil)
+			if w.hwndRender == nil {
+				err = errors.New(fmt.Sprintf("Unable to open render window; CreateWindowEx(): %s", win32.GetLastErrorString()))
+				return
+			}
+			w.dcRender = win32.GetDC(w.hwndRender)
+			if w.dcRender == nil {
+				err = errors.New(fmt.Sprintf("Unable to get render window DC; GetDC(): %s", win32.GetLastErrorString()))
+				return
+			}
+		*/
 
 		w.doSetWindowPos()
 
@@ -178,11 +200,33 @@ func (w *W32Window) Notify() {
 	}()
 }
 
+func (w *W32Window) SetTransparent(transparent bool) {
+	w.panicIfDestroyed()
+
+	unlock := w.newAttemptUnlocker()
+	defer unlock()
+
+	if w.transparent != transparent {
+		w.transparent = transparent
+		if w.opened {
+			unlock()
+			dispatch(func() {
+				bb := win32.DWM_BLURBEHIND{}
+				bb.DwFlags = win32.DWM_BB_ENABLE
+				bb.FEnable = 1
+				bb.HRgbBlur = 0
+				bb.FTransitionOnMaximized = 1
+				win32.DwmEnableBlurBehindWindow(w.hwnd, &bb)
+			})
+		}
+	}
+}
+
 func (w *W32Window) SetTitle(title string) {
 	w.panicIfDestroyed()
 
-	w.access.Lock()
-	defer w.access.Unlock()
+	unlock := w.newAttemptUnlocker()
+	defer unlock()
 
 	if w.title != title {
 		w.title = title
@@ -200,6 +244,7 @@ func (w *W32Window) SetVisible(visible bool) {
 	w.panicIfDestroyed()
 
 	unlock := w.newAttemptUnlocker()
+	defer unlock()
 
 	w.visible = visible
 	if w.visible {
@@ -220,6 +265,7 @@ func (w *W32Window) SetDecorated(decorated bool) {
 	w.panicIfDestroyed()
 
 	unlock := w.newAttemptUnlocker()
+	defer unlock()
 
 	if w.decorated != decorated {
 		w.decorated = decorated
@@ -230,13 +276,13 @@ func (w *W32Window) SetDecorated(decorated bool) {
 			})
 		}
 	}
-	unlock()
 }
 
 func (w *W32Window) SetPosition(x, y int) {
 	w.panicIfDestroyed()
 
 	unlock := w.newAttemptUnlocker()
+	defer unlock()
 
 	if w.x != x || w.y != y {
 		w.x = x
@@ -248,13 +294,13 @@ func (w *W32Window) SetPosition(x, y int) {
 			})
 		}
 	}
-	unlock()
 }
 
 func (w *W32Window) SetSize(width, height uint) {
 	w.panicIfDestroyed()
 
 	unlock := w.newAttemptUnlocker()
+	defer unlock()
 
 	if w.width != width || w.height != height {
 		w.width = width
@@ -266,13 +312,13 @@ func (w *W32Window) SetSize(width, height uint) {
 			})
 		}
 	}
-	unlock()
 }
 
 func (w *W32Window) SetMinimumSize(width, height uint) {
 	w.panicIfDestroyed()
 
 	unlock := w.newAttemptUnlocker()
+	defer unlock()
 
 	if w.minWidth != width || w.minHeight != height {
 		w.minWidth = width
@@ -284,13 +330,13 @@ func (w *W32Window) SetMinimumSize(width, height uint) {
 			})
 		}
 	}
-	unlock()
 }
 
 func (w *W32Window) SetMaximumSize(width, height uint) {
 	w.panicIfDestroyed()
 
 	unlock := w.newAttemptUnlocker()
+	defer unlock()
 
 	if w.maxWidth != width || w.maxHeight != height {
 		w.maxWidth = width
@@ -302,13 +348,13 @@ func (w *W32Window) SetMaximumSize(width, height uint) {
 			})
 		}
 	}
-	unlock()
 }
 
 func (w *W32Window) SetAspectRatio(ratio float32) {
 	w.panicIfDestroyed()
 
 	unlock := w.newAttemptUnlocker()
+	defer unlock()
 
 	if w.aspectRatio != ratio {
 		w.aspectRatio = ratio
@@ -320,13 +366,13 @@ func (w *W32Window) SetAspectRatio(ratio float32) {
 			})
 		}
 	}
-	unlock()
 }
 
 func (w *W32Window) SetMinimized(minimized bool) {
 	w.panicIfDestroyed()
 
 	unlock := w.newAttemptUnlocker()
+	defer unlock()
 
 	w.minimized = minimized
 	if w.minimized {
@@ -348,8 +394,9 @@ func (w *W32Window) SetMinimized(minimized bool) {
 			}
 		}
 	}
-	unlock()
+
 	if w.opened {
+		unlock()
 		dispatch(func() {
 			win32.EnableWindow(w.hwnd, true)
 			w.doSetWindowPos()
@@ -361,6 +408,7 @@ func (w *W32Window) SetMaximized(maximized bool) {
 	w.panicIfDestroyed()
 
 	unlock := w.newAttemptUnlocker()
+	defer unlock()
 
 	w.maximized = maximized
 	if w.maximized {
@@ -380,8 +428,9 @@ func (w *W32Window) SetMaximized(maximized bool) {
 			})
 		}
 	}
-	unlock()
+
 	if w.opened {
+		unlock()
 		dispatch(func() {
 			win32.EnableWindow(w.hwnd, true)
 		})
@@ -392,6 +441,7 @@ func (w *W32Window) SetFullscreen(fullscreen bool) {
 	w.panicIfDestroyed()
 
 	unlock := w.newAttemptUnlocker()
+	defer unlock()
 
 	if w.fullscreen != fullscreen {
 		w.fullscreen = fullscreen
@@ -403,13 +453,13 @@ func (w *W32Window) SetFullscreen(fullscreen bool) {
 			})
 		}
 	}
-	unlock()
 }
 
 func (w *W32Window) SetAlwaysOnTop(alwaysOnTop bool) {
 	w.panicIfDestroyed()
 
 	unlock := w.newAttemptUnlocker()
+	defer unlock()
 
 	if w.alwaysOnTop != alwaysOnTop {
 		w.alwaysOnTop = alwaysOnTop
@@ -420,35 +470,45 @@ func (w *W32Window) SetAlwaysOnTop(alwaysOnTop bool) {
 			})
 		}
 	}
-	unlock()
 }
 
 func (w *W32Window) SetIcon(icon image.Image) {
 	w.panicIfDestroyed()
 
-	// FIXME
-	w.access.Lock()
-	defer w.access.Unlock()
+	unlock := w.newAttemptUnlocker()
+	defer unlock()
+
+	w.icon = icon
 }
 
-func (w *W32Window) SetCursor(Cursor image.Image) {
+func (w *W32Window) SetCursor(cursor image.Image) {
 	w.panicIfDestroyed()
 
-	// FIXME
-	w.access.Lock()
-	defer w.access.Unlock()
+	unlock := w.newAttemptUnlocker()
+	defer unlock()
+
+	w.cursor = cursor
 }
 
 func (w *W32Window) SetCursorPosition(x, y int) {
+	w.panicUnlessOpen()
 	w.panicIfDestroyed()
 
-	// FIXME
-	w.access.Lock()
-	defer w.access.Unlock()
+	unlock := w.newAttemptUnlocker()
+	defer unlock()
 
 	if w.cursorX != x || w.cursorY != y {
 		w.cursorX = x
 		w.cursorY = y
+
+		if w.opened {
+			unlock()
+			dispatch(func() {
+				if !win32.SetCursorPos(int32(w.x+w.cursorX), int32(w.y+w.cursorY)) {
+					logger.Println("Unable to set cursor position: SetCursorPos():", win32.GetLastErrorString())
+				}
+			})
+		}
 	}
 }
 
@@ -456,8 +516,8 @@ func (w *W32Window) SetCursorGrabbed(grabbed bool) {
 	w.panicIfDestroyed()
 
 	// FIXME
-	w.access.Lock()
-	defer w.access.Unlock()
+	unlock := w.newAttemptUnlocker()
+	defer unlock()
 
 	if w.cursorGrabbed != grabbed {
 		w.cursorGrabbed = grabbed
@@ -467,7 +527,7 @@ func (w *W32Window) SetCursorGrabbed(grabbed bool) {
 func (w *W32Window) String() string {
 	w.access.RLock()
 	defer w.access.RUnlock()
-	return fmt.Sprintf("Window(title=\"%s\", visible=%t, decorated=%t, minimized=%t, maximized=%t, fullscreen=%t, alwaysOnTop=%t, cursorGrabbed=%t, extents=[%d, %d, %d, %d], size=%dx%dpx, minimumSize=%dx%dpx, maximumSize=%dx%dpx, position=%dx%d, cursorPosition=%dx%d)", w.title, w.visible, w.decorated, w.minimized, w.maximized, w.fullscreen, w.alwaysOnTop, w.cursorGrabbed, w.extentLeft, w.extentRight, w.extentBottom, w.extentTop, w.width, w.height, w.minWidth, w.minHeight, w.maxWidth, w.maxHeight, w.x, w.y, w.cursorX, w.cursorY)
+	return fmt.Sprintf("Window(title=\"%s\", focused=%t, visible=%t, decorated=%t, transparent=%t, minimized=%t, maximized=%t, fullscreen=%t, alwaysOnTop=%t, cursorGrabbed=%t, extents=[%d, %d, %d, %d], size=%dx%dpx, minimumSize=%dx%dpx, maximumSize=%dx%dpx, position=%dx%d, cursorPosition=%dx%d)", w.title, w.focused, w.visible, w.decorated, w.transparent, w.minimized, w.maximized, w.fullscreen, w.alwaysOnTop, w.cursorGrabbed, w.extentLeft, w.extentRight, w.extentBottom, w.extentTop, w.width, w.height, w.minWidth, w.minHeight, w.maxWidth, w.maxHeight, w.x, w.y, w.cursorX, w.cursorY)
 }
 
 func (w *W32Window) Opened() bool {
@@ -482,6 +542,12 @@ func (w *W32Window) Destroyed() bool {
 	return w.isDestroyed
 }
 
+func (w *W32Window) Transparent() bool {
+	w.access.RLock()
+	defer w.access.RUnlock()
+	return w.transparent
+}
+
 func (w *W32Window) Screen() Screen {
 	w.access.RLock()
 	defer w.access.RUnlock()
@@ -492,6 +558,12 @@ func (w *W32Window) Extents() (left, right, bottom, top uint) {
 	w.access.RLock()
 	defer w.access.RUnlock()
 	return w.extentLeft, w.extentRight, w.extentBottom, w.extentTop
+}
+
+func (w *W32Window) Focused() bool {
+	w.access.RLock()
+	defer w.access.RUnlock()
+	return w.focused
 }
 
 func (w *W32Window) Title() string {
@@ -584,16 +656,23 @@ func (w *W32Window) CursorPosition() (x, y int) {
 	return w.cursorX, w.cursorY
 }
 
+func (w *W32Window) CursorWithin() bool {
+	w.access.RLock()
+	defer w.access.RUnlock()
+	return w.cursorWithin
+}
+
 func (w *W32Window) CursorGrabbed() bool {
 	w.access.RLock()
 	defer w.access.RUnlock()
 	return w.cursorGrabbed
 }
 
-// HWND returns the handle to this Window (HWND), this is of course, Windows specific, and
-// is only useful when doing an small, select amount of things.
-func (w *W32Window) HWND() win32.HWND {
-	return w.hwnd
+// HWND returns the win32 handle to this Window, and it's child render window HWND.
+//
+// This is only useful when doing an few very select hack-ish things.
+func (w *W32Window) HWND() (managed, render win32.HWND) {
+	return w.hwnd, w.hwndRender
 }
 
 // Class returns the window class string of this Window (lpClassName), this is of course, Windows
@@ -853,11 +932,29 @@ func mainWindowProc(hwnd win32.HWND, msg win32.UINT, wParam win32.WPARAM, lParam
 			xPos := int(lParam.LOWORD())
 			yPos := int(lParam.HIWORD())
 
-			if w.x != xPos || w.y != yPos {
-				w.x = xPos
-				w.y = yPos
-				w.addPositionEvent([]int{w.x, w.y})
+			if !win32.IsIconic(w.hwnd) {
+				if w.x != xPos || w.y != yPos {
+					w.x = xPos
+					w.y = yPos
+					w.addPositionEvent([]int{w.x, w.y})
+				}
 			}
+
+		case win32.WM_ACTIVATE:
+			if wParam.LOWORD() == win32.WA_INACTIVE || wParam.HIWORD() != 0 {
+				if w.focused {
+					w.focused = false
+					w.addFocusedEvent(w.focused)
+				}
+			} else {
+				if !w.focused {
+					w.focused = true
+					w.addFocusedEvent(w.focused)
+				}
+			}
+
+		case win32.WM_GETICON:
+			fmt.Println("Get icon!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
 
 		case win32.WM_KEYDOWN:
 			//fmt.Println(lParam, lParam.LOWORD(), lParam.HIWORD(), string(lParam.HIWORD()))
@@ -941,6 +1038,12 @@ func mainWindowProc(hwnd win32.HWND, msg win32.UINT, wParam win32.WPARAM, lParam
 func (w *W32Window) panicIfDestroyed() {
 	if w.Destroyed() {
 		panic("Window has already been destroyed.")
+	}
+}
+
+func (w *W32Window) panicUnlessOpen() {
+	if !w.Opened() {
+		panic("Window is not open.")
 	}
 }
 
