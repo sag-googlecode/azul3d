@@ -79,7 +79,7 @@ func (w *W32Window) Open(screen Screen) (err error) {
 		w.windowClass = fmt.Sprintf("ChippyWindow%d", nextCounter())
 		windowClass := win32.NewWNDCLASSEX()
 		windowClass.SetLpfnWndProc()
-		windowClass.SetHbrBackground(nil)
+		windowClass.SetHbrBackground(win32.CreateSolidBrush(0x00000000))
 		//windowClass.SetHIcon(win32.LoadIcon(hInstance, szAppName))
 		//windowClass.SetHCursor(win32.LoadCursor(nil, win32.IDC_ARROW))
 		//windowClass.SetHbrBackground(win32.IntToHBRUSH(win32.COLOR_WINDOW+2)) // Black background
@@ -116,19 +116,37 @@ func (w *W32Window) Open(screen Screen) (err error) {
 			return
 		}
 
-		/*
-			w.hwndRender = win32.CreateWindowEx(0, w.windowClass, "", win32.WS_CHILD, 0, 0, 100, 100, w.hwnd, nil, hInstance, nil)
-			if w.hwndRender == nil {
-				err = errors.New(fmt.Sprintf("Unable to open render window; CreateWindowEx(): %s", win32.GetLastErrorString()))
-				return
-			}
-			w.dcRender = win32.GetDC(w.hwndRender)
-			if w.dcRender == nil {
-				err = errors.New(fmt.Sprintf("Unable to get render window DC; GetDC(): %s", win32.GetLastErrorString()))
-				return
-			}
-		*/
+		childWindowClassName := w.windowClass + "-child"
+		childWindowClass := win32.NewWNDCLASSEX()
+		//childWindowClass.SetStyle(win32.CS_PARENTDC)
+		childWindowClass.SetLpfnWndProc()
+		childWindowClass.SetHbrBackground(win32.CreateSolidBrush(0x00000000))
+		//windowClass.SetHIcon(win32.LoadIcon(hInstance, szAppName))
+		//windowClass.SetHCursor(win32.LoadCursor(nil, win32.IDC_ARROW))
+		//windowClass.SetHbrBackground(win32.IntToHBRUSH(win32.COLOR_WINDOW+2)) // Black background
+		//windowClass.SetLpszMenuName(szAppName)
 
+		childWindowClass.SetHInstance(hInstance)
+		childWindowClass.SetLpszClassName(childWindowClassName)
+
+		childClassAtom := win32.RegisterClassEx(childWindowClass)
+		if childClassAtom == 0 {
+			err = errors.New(fmt.Sprintf("Unable to open child window; RegisterClassEx(): %s", win32.GetLastErrorString()))
+			return
+		}
+
+		w.hwndRender = win32.CreateWindowEx(0, childWindowClassName, "", win32.WS_VISIBLE|win32.WS_OVERLAPPED|win32.WS_POPUP, 0, 0, 640, 480, nil, nil, hInstance, nil)
+		if w.hwndRender == nil {
+			err = errors.New(fmt.Sprintf("Unable to open render window; CreateWindowEx(): %s", win32.GetLastErrorString()))
+			return
+		}
+		w.dcRender = win32.GetDC(w.hwndRender)
+		if w.dcRender == nil {
+			err = errors.New(fmt.Sprintf("Unable to get render window DC; GetDC(): %s", win32.GetLastErrorString()))
+			return
+		}
+
+		w.doUpdateTransparency()
 		w.doSetWindowPos()
 
 		// Make sure to enable opened now so that doUpdateStyle sets the new style properly
@@ -213,12 +231,7 @@ func (w *W32Window) SetTransparent(transparent bool) {
 		if w.opened {
 			unlock()
 			dispatch(func() {
-				bb := win32.DWM_BLURBEHIND{}
-				bb.DwFlags = win32.DWM_BB_ENABLE
-				bb.FEnable = 1
-				bb.HRgbBlur = 0
-				bb.FTransitionOnMaximized = 1
-				win32.DwmEnableBlurBehindWindow(w.hwnd, &bb)
+				w.doUpdateTransparency()
 			})
 		}
 	}
@@ -714,6 +727,26 @@ func (w *W32Window) doUpdateVisibility() {
 
 }
 
+func (w *W32Window) doUpdateTransparency() {
+	bb := win32.DWM_BLURBEHIND{}
+	bb.DwFlags = win32.DWM_BB_ENABLE|win32.DWM_BB_BLURREGION
+	if w.transparent {
+		bb.FEnable = 1
+	} else {
+		bb.FEnable = 0
+	}
+	rgn := win32.CreateRectRgn(0, 0, -1, -1)
+	bb.HRgbBlur = rgn
+	err := win32.DwmEnableBlurBehindWindow(w.hwnd, &bb)
+	if err != nil {
+		logger.Println(err)
+	}
+	err = win32.DwmEnableBlurBehindWindow(w.hwndRender, &bb)
+	if err != nil {
+		logger.Println(err)
+	}
+}
+
 func (w *W32Window) doUpdateStyle() {
 	originalStyle := win32.GetWindowLongPtr(w.hwnd, win32.GWL_STYLE)
 
@@ -934,6 +967,10 @@ func mainWindowProc(hwnd win32.HWND, msg win32.UINT, wParam win32.WPARAM, lParam
 
 					w.addSizeEvent([]uint{w.width, w.height})
 				}
+
+				if !win32.MoveWindow(w.hwndRender, win32.Int(w.x), win32.Int(w.y), win32.Int(w.width), win32.Int(w.height), false) {
+					logger.Println("Unable to resize child window; MoveWindow():", win32.GetLastErrorString())
+				}
 			}
 			return 0
 
@@ -947,6 +984,10 @@ func mainWindowProc(hwnd win32.HWND, msg win32.UINT, wParam win32.WPARAM, lParam
 					w.y = yPos
 					w.addPositionEvent([]int{w.x, w.y})
 				}
+			}
+
+			if !win32.MoveWindow(w.hwndRender, win32.Int(w.x), win32.Int(w.y), win32.Int(w.width), win32.Int(w.height), false) {
+				logger.Println("Unable to resize child window; MoveWindow():", win32.GetLastErrorString())
 			}
 			return 0
 

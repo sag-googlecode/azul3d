@@ -32,29 +32,27 @@ func gluPerspective(gl *opengl.Context, fovY, aspect, zNear, zFar float64) {
 	gl.Frustum(-fW, fW, -fH, fH, zNear, zFar)
 }
 
-func initScene() {
-	gl.ClearColor(0.0, 0.0, 0.0, 0.0)
-	gl.ClearDepth(1.0)
-	gl.DepthFunc(opengl.LESS)
-	gl.Enable(opengl.DEPTH_TEST)
-	gl.ShadeModel(opengl.SMOOTH)
-
-	gl.MatrixMode(opengl.PROJECTION)
-	gl.LoadIdentity()
-
-	width, height := window.Size()
-
-	gluPerspective(gl, 45.0, float64(width)/float64(height), 0.1, 100.0)
-
-	gl.MatrixMode(opengl.MODELVIEW)
-}
-
 func resizeScene(width, height int) {
 	gl.Viewport(0, 0, int32(width), int32(height)) // Reset The Current Viewport And Perspective Transformation
 	gl.MatrixMode(opengl.PROJECTION)
 	gl.LoadIdentity()
 	gluPerspective(gl, 45.0, float64(width) / float64(height), 0.1, 100.0)
 	gl.MatrixMode(opengl.MODELVIEW)
+}
+
+func initScene() {
+	gl.Enable(opengl.BLEND)
+	gl.Enable(opengl.ALPHA_TEST)
+	gl.Enable(opengl.DEPTH_TEST)
+
+    gl.BlendFunc(opengl.SRC_ALPHA, opengl.ONE_MINUS_SRC_ALPHA)
+	gl.ClearColor(0.0, 0.0, 0.0, 0.3)
+
+	gl.ClearDepth(1.0)
+	gl.ShadeModel(opengl.SMOOTH)
+
+	width, height := window.Size()
+	resizeScene(int(width), int(height))
 }
 
 func renderScene() {
@@ -76,6 +74,8 @@ func renderScene() {
 	gl.Color3f(0.0, 0.0, 1.0)               // Blue
 	gl.Vertex3f(-1.0, -1.0, 0.0)            // Bottom Left
 	gl.End()                                // We are done with the polygon
+
+	gl.Flush()
 
 	// Determine time since frame began
 	delta := glClock.Delta()
@@ -123,7 +123,7 @@ func main() {
 	configs := window.GLConfigs()
 
 	// See documentation for this function and vars to see how it determines the 'best' format
-	bestConfig := chippy.GLChooseConfig(configs, chippy.GLWorstConfig, chippy.GLBestConfig)
+	bestConfig := chippy.GLChooseConfig(configs, chippy.GLWorstHWConfig, chippy.GLBestConfig)
 	window.GLSetConfig(bestConfig)
 
 	// Print out all the formats, and which one we determined to be the 'best'.
@@ -135,7 +135,7 @@ func main() {
 	defer runtime.UnlockOSThread()
 
 	// Create an OpenGL context with the OpenGL version we wish
-	context, err := window.GLCreateContext(1, 5, 0)
+	context, err := window.GLCreateContext(1, 5)
 	if err != nil {
 		log.Fatal(err)
 	}

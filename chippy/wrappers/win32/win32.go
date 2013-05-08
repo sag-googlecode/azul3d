@@ -480,6 +480,18 @@ func IntToHBRUSH(v Int) HBRUSH {
 	return (HBRUSH)(unsafe.Pointer(&v))
 }
 
+type COLORREF C.COLORREF
+func CreateSolidBrush(crColor COLORREF) HBRUSH {
+	return HBRUSH(C.CreateSolidBrush(C.COLORREF(crColor)))
+}
+
+type HRGN C.HRGN
+
+func CreateRectRgn(nLeftRect, nTopRect, nRightRect, nBottomRect int) HRGN {
+	return HRGN(C.CreateRectRgn(C.int(nLeftRect), C.int(nTopRect), C.int(nRightRect), C.int(nBottomRect)))
+}
+
+
 type WNDCLASSEX C.WNDCLASSEX
 
 func NewWNDCLASSEX() *WNDCLASSEX {
@@ -576,6 +588,10 @@ func (w *WNDCLASSEX) SetLpszClassName(v string) {
 const (
 	// We don't actually, use, we just hog the DC always.
 	CS_OWNDC = C.CS_OWNDC
+
+	CS_NOCLOSE = C.CS_NOCLOSE
+
+	CS_PARENTDC = C.CS_PARENTDC
 
 	// The window has a thin-line border.
 	WS_BORDER = C.WS_BORDER
@@ -1050,6 +1066,14 @@ func SetWindowPos(hwnd, hwndInsertAfter HWND, X, Y, cx, cy Int, uFlags UINT) (re
 	return
 }
 
+func MoveWindow(hwnd HWND, x, y, width, height Int, repaint bool) bool {
+	cbool := C.WINBOOL(0)
+	if repaint {
+		cbool = 1
+	}
+	return C.MoveWindow(C.HWND(hwnd), C.int(x), C.int(y), C.int(width), C.int(height), cbool) != 0
+}
+
 func EnableWindow(hwnd HWND, bEnable bool) (ret bool) {
 	var enable C.WINBOOL
 	if bEnable {
@@ -1158,6 +1182,8 @@ const (
 	PFD_DOUBLEBUFFER        = C.PFD_DOUBLEBUFFER
 	PFD_STEREO              = C.PFD_STEREO
 	PFD_SWAP_LAYER_BUFFERS  = C.PFD_SWAP_LAYER_BUFFERS
+
+	PFD_SUPPORT_COMPOSITION = 0x00008000
 )
 
 func (c *PIXELFORMATDESCRIPTOR) DwFlags() DWORD {

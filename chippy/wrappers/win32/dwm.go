@@ -10,12 +10,14 @@ import (
 var (
 	dwmapi                     = syscall.NewLazyDLL("dwmapi.dll")
 	pDwmEnableBlurBehindWindow = dwmapi.NewProc("DwmEnableBlurBehindWindow")
+	pDwmExtendFrameIntoClientArea = dwmapi.NewProc("DwmExtendFrameIntoClientArea")
 )
+
 
 type DWM_BLURBEHIND struct {
 	DwFlags                uint32
 	FEnable                int32
-	HRgbBlur               uintptr
+	HRgbBlur               HRGN
 	FTransitionOnMaximized int32
 }
 
@@ -32,7 +34,7 @@ func DwmEnableBlurBehindWindow(hwnd HWND, pBlurBehind *DWM_BLURBEHIND) error {
 	}
 
 	cRet, _, _ := pDwmEnableBlurBehindWindow.Call(uintptr(unsafe.Pointer(hwnd)), uintptr(unsafe.Pointer(pBlurBehind)))
-	ret := int32(cRet)
+	ret := int64(cRet)
 
 	if ret >= 0 {
 		return nil
@@ -40,3 +42,24 @@ func DwmEnableBlurBehindWindow(hwnd HWND, pBlurBehind *DWM_BLURBEHIND) error {
 		return errors.New(fmt.Sprintf("No window blur support: DwmEnableBlurBehindWindow(): HRESULT = %d", ret))
 	}
 }
+
+type MARGINS struct {
+	CxLeftWidth, CxRightWidth, CyTopHeight, CyBottomHeight int
+}
+
+func DwmExtendFrameIntoClientArea(hwnd HWND, pMarInset *MARGINS) error {
+	err := pDwmExtendFrameIntoClientArea.Find()
+	if err != nil {
+		return errors.New("No dwmExtendFrameIntoClientArea support: " + err.Error())
+	}
+
+	cRet, _, _ := pDwmExtendFrameIntoClientArea.Call(uintptr(unsafe.Pointer(hwnd)), uintptr(unsafe.Pointer(pMarInset)))
+	ret := int64(cRet)
+
+	if ret >= 0 {
+		return nil
+	} else {
+		return errors.New(fmt.Sprintf("No window blur support: DwmExtendFrameIntoClientArea(): HRESULT = %d", ret))
+	}
+}
+
