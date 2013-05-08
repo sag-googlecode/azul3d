@@ -132,7 +132,7 @@ func main() {
 	defer runtime.UnlockOSThread()
 
 	// Create an OpenGL context with the OpenGL version we wish
-	context, err := window.GLCreateContext(2, 1, 0)
+	context, err := window.GLCreateContext(2, 1)
 	if err != nil {
 		log.Fatal(err)
 	}

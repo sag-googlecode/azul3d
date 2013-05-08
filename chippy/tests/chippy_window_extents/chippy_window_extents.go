@@ -2,7 +2,7 @@
 // This source code is subject to the terms and
 // conditions defined in the "License.txt" file.
 
-// Test application - Tells the extents of an window's region and client region
+// Test application - Prints the extents of an window's region
 package main
 
 import (
@@ -24,6 +24,7 @@ func main() {
 	defer chippy.Destroy()
 
 	window := chippy.NewWindow()
+	defer window.Destroy()
 
 	// Actually open the windows
 	screen := chippy.DefaultScreen()
@@ -32,6 +33,6 @@ func main() {
 		log.Fatal(err)
 	}
 
-	// Print out what they currently has property-wise
+	// Print what the window extents are
 	log.Println(window.Extents())
 }

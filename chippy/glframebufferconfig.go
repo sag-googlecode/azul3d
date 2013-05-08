@@ -23,6 +23,9 @@ type GLConfig struct {
 	// Note: Most software implementations are very low OpenGL versions. (I.e. GL 1.1)
 	Accelerated bool
 
+	// Tells weather or not this config will support the window being transparent while using OpenGL rendering
+	Transparent bool
+
 	// Number of anti-aliasing samples this configuration supports
 	Samples uint8
 
@@ -62,7 +65,7 @@ func (c *GLConfig) panicUnlessValid() {
 }
 
 func (c *GLConfig) String() string {
-	return fmt.Sprintf("GLConfig(Accelerated=%t, %dbpp[%d,%d,%d,%d], AccumBits=[%d,%d,%d,%d], AuxBuffers=%d, DepthBits=%d, StencilBits=%d, DoubleBuffered=%t, StereoScopic=%t)", c.Accelerated, c.RedBits+c.GreenBits+c.BlueBits+c.AlphaBits, c.RedBits, c.GreenBits, c.BlueBits, c.AlphaBits, c.AccumRedBits, c.AccumGreenBits, c.AccumBlueBits, c.AccumAlphaBits, c.AuxBuffers, c.DepthBits, c.StencilBits, c.DoubleBuffered, c.StereoScopic)
+	return fmt.Sprintf("GLConfig(Accelerated=%t, %dbpp[%d,%d,%d,%d], AccumBits=[%d,%d,%d,%d], AuxBuffers=%d, DepthBits=%d, StencilBits=%d, DoubleBuffered=%t, Transparent=%t, StereoScopic=%t)", c.Accelerated, c.RedBits+c.GreenBits+c.BlueBits+c.AlphaBits, c.RedBits, c.GreenBits, c.BlueBits, c.AlphaBits, c.AccumRedBits, c.AccumGreenBits, c.AccumBlueBits, c.AccumAlphaBits, c.AuxBuffers, c.DepthBits, c.StencilBits, c.DoubleBuffered, c.Transparent, c.StereoScopic)
 }
 
 // Equals tells weather this GLConfig equals the other GLFrameBufferConfig, by comparing
@@ -70,7 +73,7 @@ func (c *GLConfig) String() string {
 func (c *GLConfig) Equals(other *GLConfig) bool {
 	o := other
 
-	if c.Accelerated != o.Accelerated || c.RedBits != o.RedBits || c.GreenBits != o.GreenBits || c.BlueBits != o.BlueBits || c.AlphaBits != o.AlphaBits || c.AccumRedBits != o.AccumRedBits || c.AccumGreenBits != o.AccumGreenBits || c.AccumBlueBits != o.AccumBlueBits || c.AccumAlphaBits != o.AccumAlphaBits || c.AuxBuffers != o.AuxBuffers || c.DepthBits != o.DepthBits || c.StencilBits != o.StencilBits || c.DoubleBuffered != o.DoubleBuffered || c.StereoScopic != o.StereoScopic {
+	if c.Accelerated != o.Accelerated || c.Transparent != o.Transparent || c.RedBits != o.RedBits || c.GreenBits != o.GreenBits || c.BlueBits != o.BlueBits || c.AlphaBits != o.AlphaBits || c.AccumRedBits != o.AccumRedBits || c.AccumGreenBits != o.AccumGreenBits || c.AccumBlueBits != o.AccumBlueBits || c.AccumAlphaBits != o.AccumAlphaBits || c.AuxBuffers != o.AuxBuffers || c.DepthBits != o.DepthBits || c.StencilBits != o.StencilBits || c.DoubleBuffered != o.DoubleBuffered || c.StereoScopic != o.StereoScopic {
 		return false
 	}
 	return true
@@ -79,6 +82,7 @@ func (c *GLConfig) Equals(other *GLConfig) bool {
 var (
 	GLWorstConfig = &GLConfig{
 		Accelerated:    false,
+		Transparent:    false,
 		RedBits:        0,
 		GreenBits:      0,
 		BlueBits:       0,
@@ -96,6 +100,7 @@ var (
 
 	GLWorstHWConfig = &GLConfig{
 		Accelerated:    true,
+		Transparent:    false,
 		RedBits:        0,
 		GreenBits:      0,
 		BlueBits:       0,
@@ -113,14 +118,15 @@ var (
 
 	GLBestConfig = &GLConfig{
 		Accelerated:    true,
+		Transparent:    true,
 		RedBits:        255,
 		GreenBits:      255,
 		BlueBits:       255,
 		AlphaBits:      255,
-		AccumRedBits:   0,
-		AccumGreenBits: 0,
-		AccumBlueBits:  0,
-		AccumAlphaBits: 0,
+		AccumRedBits:   255,
+		AccumGreenBits: 255,
+		AccumBlueBits:  255,
+		AccumAlphaBits: 255,
 		AuxBuffers:     255,
 		DepthBits:      255,
 		StencilBits:    255,
@@ -184,6 +190,9 @@ func GLChooseConfig(possible []*GLConfig, minConfig, maxConfig *GLConfig) *GLCon
 		if min.Accelerated && !c.Accelerated {
 			continue
 		}
+		if min.Transparent && !c.Transparent {
+			continue
+		}
 		if min.DoubleBuffered && !c.DoubleBuffered {
 			continue
 		}
@@ -236,6 +245,9 @@ func GLChooseConfig(possible []*GLConfig, minConfig, maxConfig *GLConfig) *GLCon
 		if c.Accelerated && !max.Accelerated {
 			continue
 		}
+		if c.Transparent && !max.Transparent {
+			continue
+		}
 		if c.DoubleBuffered && !max.DoubleBuffered {
 			continue
 		}
@@ -253,6 +265,7 @@ func GLChooseConfig(possible []*GLConfig, minConfig, maxConfig *GLConfig) *GLCon
 	// DoubleBuffered
 	// DepthBits
 	// StencilBits
+	// Transparent
 	// StereoScopic
 	// AccumRedBits, AccumGreenBits, AccumBlueBits, AccumAlphaBits
 	// AuxBuffers
@@ -280,6 +293,10 @@ func GLChooseConfig(possible []*GLConfig, minConfig, maxConfig *GLConfig) *GLCon
 		}
 
 		if t.StencilBits < bc.StencilBits {
+			continue
+		}
+
+		if !t.Transparent && bc.Transparent {
 			continue
 		}
 

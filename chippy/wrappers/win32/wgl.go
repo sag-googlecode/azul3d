@@ -29,7 +29,6 @@ char* chippy_wglGetExtensionsStringARB(void* p, HDC hdc) {
 import "C"
 
 import (
-	"fmt"
 	"unsafe"
 )
 
@@ -83,13 +82,12 @@ const (
 	ERROR_INVALID_PROFILE_ARB = 0x2096
 )
 
-func WglCreateContextAttribsARB(hdc HDC, hglrc HGLRC, attribs []int) (HGLRC, bool) {
+func WglCreateContextAttribsARB(hdc HDC, hglrc HGLRC, attribs []Int) (HGLRC, bool) {
 	ptr := WglGetProcAddress("wglCreateContextAttribsARB")
 	if ptr == 0 {
 		return nil, false
 	}
 	ret := C.chippy_wglCreateContextAttribsARB(unsafe.Pointer(ptr), C.HDC(hdc), C.HGLRC(hglrc), (*C.int)(unsafe.Pointer(&attribs[0])))
-	fmt.Println(ret)
 	return HGLRC(ret), true
 }
 

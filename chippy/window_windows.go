@@ -48,6 +48,7 @@ type W32Window struct {
 
 	// OpenGL things here
 	glConfig *GLConfig
+	glPixelFormatSet bool
 }
 
 func (w *W32Window) Open(screen Screen) (err error) {
@@ -75,96 +76,88 @@ func (w *W32Window) Open(screen Screen) (err error) {
 		w.extentBottom = uint(borderHeight)
 		w.extentTop = uint(borderHeight + titleHeight)
 
-		// Make our window class
-		w.windowClass = fmt.Sprintf("ChippyWindow%d", nextCounter())
-		windowClass := win32.NewWNDCLASSEX()
-		windowClass.SetLpfnWndProc()
-		windowClass.SetHbrBackground(win32.CreateSolidBrush(0x00000000))
-		//windowClass.SetHIcon(win32.LoadIcon(hInstance, szAppName))
-		//windowClass.SetHCursor(win32.LoadCursor(nil, win32.IDC_ARROW))
-		//windowClass.SetHbrBackground(win32.IntToHBRUSH(win32.COLOR_WINDOW+2)) // Black background
-		//windowClass.SetLpszMenuName(szAppName)
-
-		windowClass.SetHInstance(hInstance)
-		windowClass.SetLpszClassName(w.windowClass)
-
-		classAtom := win32.RegisterClassEx(windowClass)
-		if classAtom == 0 {
-			err = errors.New(fmt.Sprintf("Unable to open window; RegisterClassEx(): %s", win32.GetLastErrorString()))
-			return
-		}
-
-		// w.styleFlags will be updated to reflect current settings, that are passed into
-		// CreateWindowEx to avoid some flicker
-		w.doUpdateStyle()
-
-		// SetPixelFormat() may only be called once -- so if we want to change any pixel format
-		// values then our only option is to destroy the window and create it again.
-		//
-		// Since that would provide an largely noticable flicker to the user, we instead have an
-		// 'rendering' window parented to our 'user managed' window, and we create the 'rendering'
-		// window whenever we want to, thus bypassing the SetPixelFormat() issue noted above.
-		//
-		w.hwnd = win32.CreateWindowEx(0, w.windowClass, w.title, w.styleFlags, 0, 0, 0, 0, nil, nil, hInstance, nil)
-		if w.hwnd == nil {
-			err = errors.New(fmt.Sprintf("Unable to open window; CreateWindowEx(): %s", win32.GetLastErrorString()))
-			return
-		}
-		w.dc = win32.GetDC(w.hwnd)
-		if w.dc == nil {
-			err = errors.New(fmt.Sprintf("Unable to get window DC; GetDC(): %s", win32.GetLastErrorString()))
-			return
-		}
-
-		childWindowClassName := w.windowClass + "-child"
-		childWindowClass := win32.NewWNDCLASSEX()
-		//childWindowClass.SetStyle(win32.CS_PARENTDC)
-		childWindowClass.SetLpfnWndProc()
-		childWindowClass.SetHbrBackground(win32.CreateSolidBrush(0x00000000))
-		//windowClass.SetHIcon(win32.LoadIcon(hInstance, szAppName))
-		//windowClass.SetHCursor(win32.LoadCursor(nil, win32.IDC_ARROW))
-		//windowClass.SetHbrBackground(win32.IntToHBRUSH(win32.COLOR_WINDOW+2)) // Black background
-		//windowClass.SetLpszMenuName(szAppName)
-
-		childWindowClass.SetHInstance(hInstance)
-		childWindowClass.SetLpszClassName(childWindowClassName)
-
-		childClassAtom := win32.RegisterClassEx(childWindowClass)
-		if childClassAtom == 0 {
-			err = errors.New(fmt.Sprintf("Unable to open child window; RegisterClassEx(): %s", win32.GetLastErrorString()))
-			return
-		}
-
-		w.hwndRender = win32.CreateWindowEx(0, childWindowClassName, "", win32.WS_VISIBLE|win32.WS_OVERLAPPED|win32.WS_POPUP, 0, 0, 640, 480, nil, nil, hInstance, nil)
-		if w.hwndRender == nil {
-			err = errors.New(fmt.Sprintf("Unable to open render window; CreateWindowEx(): %s", win32.GetLastErrorString()))
-			return
-		}
-		w.dcRender = win32.GetDC(w.hwndRender)
-		if w.dcRender == nil {
-			err = errors.New(fmt.Sprintf("Unable to get render window DC; GetDC(): %s", win32.GetLastErrorString()))
-			return
-		}
-
-		w.doUpdateTransparency()
-		w.doSetWindowPos()
-
-		// Make sure to enable opened now so that doUpdateStyle sets the new style properly
-		w.opened = true
-		w.doUpdateStyle()
-
-		if w.visible {
-			win32.ShowWindow(w.hwnd, win32.SW_SHOWDEFAULT)
-			if w.minimized {
-				win32.ShowWindow(w.hwnd, win32.SW_MINIMIZE)
-			} else if w.maximized {
-				win32.ShowWindow(w.hwnd, win32.SW_MAXIMIZE)
-			}
-		}
+		err = w.doRebuildWindow()
 	})
+	return
+}
+
+func (w *W32Window) doRebuildWindow() (err error) {
+	if w.opened {
+		win32.UnregisterWndProc(w.hwnd)
+		delete(windowsByHwnd, w.hwnd)
+
+		if !win32.DestroyWindow(w.hwnd) {
+			logger.Println("Unable to destroy window; DestroyWindow():", win32.GetLastErrorString())
+		}
+
+		if !win32.UnregisterClass(w.windowClass, hInstance) {
+			logger.Println("Failed to unregister window class; UnregisterClass():", win32.GetLastErrorString())
+		}
+		w.hwnd = nil
+	}
+
+	w.glPixelFormatSet = false
+
+	// Make our window class
+	w.windowClass = fmt.Sprintf("ChippyWindow%d", nextCounter())
+	windowClass := win32.NewWNDCLASSEX()
+	windowClass.SetLpfnWndProc()
+	windowClass.SetHbrBackground(win32.CreateSolidBrush(0x00000000))
+	//windowClass.SetHIcon(win32.LoadIcon(hInstance, szAppName))
+	//windowClass.SetHCursor(win32.LoadCursor(nil, win32.IDC_ARROW))
+	//windowClass.SetHbrBackground(win32.IntToHBRUSH(win32.COLOR_WINDOW+2)) // Black background
+	//windowClass.SetLpszMenuName(szAppName)
+
+	windowClass.SetHInstance(hInstance)
+	windowClass.SetLpszClassName(w.windowClass)
+
+	classAtom := win32.RegisterClassEx(windowClass)
+	if classAtom == 0 {
+		err = errors.New(fmt.Sprintf("Unable to open window; RegisterClassEx(): %s", win32.GetLastErrorString()))
+		return
+	}
+
+	// w.styleFlags will be updated to reflect current settings, that are passed into
+	// CreateWindowEx to avoid some flicker
+	w.doUpdateStyle()
+
+	// SetPixelFormat() may only be called once -- so if we want to change any pixel format
+	// values then our only option is to destroy the window and create it again.
+	//
+	// Since that would provide an largely noticable flicker to the user, we instead have an
+	// 'rendering' window parented to our 'user managed' window, and we create the 'rendering'
+	// window whenever we want to, thus bypassing the SetPixelFormat() issue noted above.
+	//
+	w.hwnd = win32.CreateWindowEx(0, w.windowClass, w.title, w.styleFlags, 0, 0, 0, 0, nil, nil, hInstance, nil)
+	if w.hwnd == nil {
+		err = errors.New(fmt.Sprintf("Unable to open window; CreateWindowEx(): %s", win32.GetLastErrorString()))
+		return
+	}
+	w.dc = win32.GetDC(w.hwnd)
+	if w.dc == nil {
+		err = errors.New(fmt.Sprintf("Unable to get window DC; GetDC(): %s", win32.GetLastErrorString()))
+		return
+	}
+
+	w.doUpdateTransparency()
+	w.doSetWindowPos()
+
+	// Make sure to enable opened now so that doUpdateStyle sets the new style properly
+	w.opened = true
+	w.doUpdateStyle()
+
+	if w.visible {
+		win32.ShowWindow(w.hwnd, win32.SW_SHOWDEFAULT)
+		if w.minimized {
+			win32.ShowWindow(w.hwnd, win32.SW_MINIMIZE)
+		} else if w.maximized {
+			win32.ShowWindow(w.hwnd, win32.SW_MAXIMIZE)
+		}
+	}
 
 	windowsByHwnd[w.hwnd] = w
 	win32.RegisterWndProc(w.hwnd, mainWindowProc)
+
 	return
 }
 
@@ -821,8 +814,15 @@ func (w *W32Window) doSetWindowPos() {
 		x = 0
 		y = 0
 		sm := w.screen.ScreenMode()
-		w, h := sm.Resolution()
-		width, height = float64(w), float64(h)
+		screenWidth, screenHeight := sm.Resolution()
+		width, height = float64(screenWidth), float64(screenHeight)
+	}
+
+	if w.width != uint(width) || w.height != uint(height) {
+		w.width = uint(width)
+		w.height = uint(height)
+
+		w.addSizeEvent([]uint{w.width, w.height})
 	}
 
 	// |win32.SWP_NOZORDER|win32.SWP_NOOWNERZORDER
@@ -836,8 +836,13 @@ func mainWindowProc(hwnd win32.HWND, msg win32.UINT, wParam win32.WPARAM, lParam
 	w, ok := windowsByHwnd[hwnd]
 	if ok {
 		switch msg {
-		//case win32.WM_PAINT:
-		//	logger.Println("WM_PAINT")
+		case win32.WM_PAINT:
+			//logger.Println("WM_PAINT")
+			if win32.GetUpdateRect(w.hwnd, nil, false) {
+			//	logger.Println("dirty")
+				win32.ValidateRect(w.hwnd, nil)
+			}
+			return 0
 
 		case win32.WM_GETMINMAXINFO:
 			minWidth, minHeight := w.MinimumSize()
@@ -968,9 +973,6 @@ func mainWindowProc(hwnd win32.HWND, msg win32.UINT, wParam win32.WPARAM, lParam
 					w.addSizeEvent([]uint{w.width, w.height})
 				}
 
-				if !win32.MoveWindow(w.hwndRender, win32.Int(w.x), win32.Int(w.y), win32.Int(w.width), win32.Int(w.height), false) {
-					logger.Println("Unable to resize child window; MoveWindow():", win32.GetLastErrorString())
-				}
 			}
 			return 0
 
@@ -986,9 +988,6 @@ func mainWindowProc(hwnd win32.HWND, msg win32.UINT, wParam win32.WPARAM, lParam
 				}
 			}
 
-			if !win32.MoveWindow(w.hwndRender, win32.Int(w.x), win32.Int(w.y), win32.Int(w.width), win32.Int(w.height), false) {
-				logger.Println("Unable to resize child window; MoveWindow():", win32.GetLastErrorString())
-			}
 			return 0
 
 		case win32.WM_ACTIVATE:
@@ -1113,8 +1112,7 @@ func mainWindowProc(hwnd win32.HWND, msg win32.UINT, wParam win32.WPARAM, lParam
 	// This will pass feedback to the render loop without blocking when the messages are spammed.
 	runtime.Gosched()
 
-	ret = win32.DefWindowProc(hwnd, msg, wParam, lParam)
-	return
+	return win32.DefWindowProc(hwnd, msg, wParam, lParam)
 }
 
 func (w *W32Window) panicIfDestroyed() {

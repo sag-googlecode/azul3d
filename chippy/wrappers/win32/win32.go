@@ -699,6 +699,10 @@ const (
 
 	// The window has a vertical scroll bar.
 	WS_VSCROLL = C.WS_VSCROLL
+
+	WS_EX_OVERLAPPEDWINDOW = C.WS_EX_OVERLAPPEDWINDOW
+
+	WS_EX_COMPOSITED = C.WS_EX_COMPOSITED
 )
 
 const (
@@ -958,6 +962,10 @@ const (
 	WM_KEYUP   = C.WM_KEYUP
 
 	WM_MOVE = C.WM_MOVE
+
+	HTNOWHERE = C.HTNOWHERE
+	HTTRANSPARENT = C.HTTRANSPARENT
+	WM_NCHITTEST = C.WM_NCHITTEST
 )
 
 func IsIconic(hwnd HWND) bool {
@@ -1004,6 +1012,24 @@ func (c *RECT) SetRight(v LONG) {
 }
 func (c *RECT) SetBottom(v LONG) {
 	c.bottom = C.LONG(v)
+}
+
+func GetUpdateRect(hwnd HWND, lpRect *RECT, bErase bool) bool {
+	cbool := C.WINBOOL(0)
+	if bErase {
+		cbool = 1
+	}
+	if lpRect != nil {
+		return C.GetUpdateRect(C.HWND(hwnd), (C.LPRECT)(unsafe.Pointer(&lpRect)), cbool) != 0
+	}
+		return C.GetUpdateRect(C.HWND(hwnd), nil, cbool) != 0
+}
+
+func ValidateRect(hwnd HWND, rect *RECT) bool {
+	if rect != nil {
+		return C.ValidateRect(C.HWND(hwnd), (*C.RECT)(unsafe.Pointer(&rect))) != 0
+	}
+	return C.ValidateRect(C.HWND(hwnd), nil) != 0
 }
 
 func GetWindowRect(hwnd HWND) (status bool, r *RECT) {
