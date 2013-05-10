@@ -6,50 +6,28 @@ package chippy
 
 import (
 	"code.google.com/p/azul3d/chippy/wrappers/win32"
+	"time"
 	"errors"
 	"fmt"
 	"sync"
 )
 
 func eventLoop() {
-	timerId := 1
-
-	// Be careful! calling GetMessageSync is ran on the same dispatching thread as all other win32 api calls!
-	// so other API calls in our case will never complete untill after this times out!
-	//
-	// This is here merely to throttle down hogging all the CPU when we really shouldn't be.
-	//
-	// Wish windows let you poll this as an file descriptor.. sigh..
-	timeoutMs := 5
-
-	ret := true
-	for ret {
-		var (
-			timer win32.UINT_PTR
-			msg   *win32.MSG
-		)
-
+	for{
+		// Small sleep just to stop hogging CPU
+		time.Sleep(1 * time.Millisecond)
 		dispatch(func() {
-			//ret, msg = win32.PeekMessage(nil, 0, 0, win32.PM_REMOVE|win32.PM_NOYIELD)
+			var msg *win32.MSG
+			hasMessage := true
 
-			timer = win32.SetTimer(nil, win32.UINT_PTR(timerId), win32.UINT(timeoutMs), nil)
-			ret, msg = win32.GetMessage(nil, 0, 0)
-
-			if !win32.KillTimer(nil, timer) {
-				panic(fmt.Sprintf("Unable to KillTimer():", win32.GetLastErrorString()))
+			for hasMessage {
+				hasMessage, msg = win32.PeekMessage(nil, 0, 0, win32.PM_REMOVE|win32.PM_NOYIELD)
+				if hasMessage {
+					win32.TranslateMessage(msg)
+					win32.DispatchMessage(msg)
+				}
 			}
 		})
-
-		if ret {
-			if msg.Message() == win32.WM_TIMER && msg.Hwnd() == nil {
-				continue
-			}
-
-			dispatch(func() {
-				win32.TranslateMessage(msg)
-				win32.DispatchMessage(msg)
-			})
-		}
 	}
 }
 

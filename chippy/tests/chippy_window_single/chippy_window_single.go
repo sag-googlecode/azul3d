@@ -39,6 +39,7 @@ func main() {
 	// Print out what it currently has property-wise
 	log.Println(window)
 
+	paintEvents := window.PaintEvents()
 	closeEvents := window.CloseEvents()
 	cursorPositionEvents := window.CursorPositionEvents()
 	keyboardEvents := window.KeyboardEvents()
@@ -51,8 +52,11 @@ func main() {
 
 	for {
 		select {
-		case v := <-closeEvents.Read:
-			log.Println("close", v)
+		case <-paintEvents.Read:
+			log.Println("paint")
+
+		case <-closeEvents.Read:
+			log.Println("close")
 
 		case v := <-cursorPositionEvents.Read:
 			log.Println("cursorPosition", v)
@@ -78,6 +82,6 @@ func main() {
 		case v := <-sizeEvents.Read:
 			log.Println("size", v)
 		}
-		log.Println(window)
+		//log.Println(window)
 	}
 }

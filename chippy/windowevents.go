@@ -4,6 +4,7 @@ import (
 	"code.google.com/p/azul3d/chippy/keyboard"
 	"code.google.com/p/azul3d/chippy/mouse"
 	"reflect"
+	"sync"
 )
 
 // One-way channel with unlimited buffering
@@ -91,6 +92,15 @@ func elasticBuffer(write, read interface{}) (lengthQuery chan int) {
 		}
 	}()
 	return
+}
+
+type PaintEventBuffer struct {
+	Read, write chan bool
+	lengthQuery chan int
+}
+
+func (b *PaintEventBuffer) Length() int {
+	return <-b.lengthQuery
 }
 
 type CloseEventBuffer struct {
@@ -193,6 +203,8 @@ func (b *SizeEventBuffer) Length() int {
 }
 
 type eventDispatcher struct {
+	eventsAccess sync.RWMutex
+	paintEvents          []*PaintEventBuffer
 	closeEvents          []*CloseEventBuffer
 	cursorPositionEvents []*CursorPositionEventBuffer
 	cursorWithinEvents   []*CursorWithinEventBuffer
@@ -205,7 +217,35 @@ type eventDispatcher struct {
 	sizeEvents           []*SizeEventBuffer
 }
 
+func (e *eventDispatcher) PaintEvents() *PaintEventBuffer {
+	e.eventsAccess.Lock()
+	defer e.eventsAccess.Unlock()
+
+	buf := new(PaintEventBuffer)
+	buf.Read = make(chan bool)
+	buf.write = make(chan bool)
+	buf.lengthQuery = elasticBuffer(buf.write, buf.Read)
+	e.paintEvents = append(e.paintEvents, buf)
+	return buf
+}
+func (e *eventDispatcher) addPaintEvent() bool {
+	e.eventsAccess.RLock()
+	defer e.eventsAccess.RUnlock()
+
+	if len(e.paintEvents) == 0 {
+		return false
+	}
+
+	for _, buf := range e.paintEvents {
+		buf.write <- true
+	}
+	return true
+}
+
 func (e *eventDispatcher) CloseEvents() *CloseEventBuffer {
+	e.eventsAccess.Lock()
+	defer e.eventsAccess.Unlock()
+
 	buf := new(CloseEventBuffer)
 	buf.Read = make(chan bool)
 	buf.write = make(chan bool)
@@ -214,6 +254,9 @@ func (e *eventDispatcher) CloseEvents() *CloseEventBuffer {
 	return buf
 }
 func (e *eventDispatcher) addCloseEvent() bool {
+	e.eventsAccess.RLock()
+	defer e.eventsAccess.RUnlock()
+
 	if len(e.closeEvents) == 0 {
 		return false
 	}
@@ -225,6 +268,9 @@ func (e *eventDispatcher) addCloseEvent() bool {
 }
 
 func (e *eventDispatcher) CursorPositionEvents() *CursorPositionEventBuffer {
+	e.eventsAccess.Lock()
+	defer e.eventsAccess.Unlock()
+
 	buf := new(CursorPositionEventBuffer)
 	buf.Read = make(chan []int)
 	buf.write = make(chan []int)
@@ -233,12 +279,18 @@ func (e *eventDispatcher) CursorPositionEvents() *CursorPositionEventBuffer {
 	return buf
 }
 func (e *eventDispatcher) addCursorPositionEvent(v []int) {
+	e.eventsAccess.RLock()
+	defer e.eventsAccess.RUnlock()
+
 	for _, buf := range e.cursorPositionEvents {
 		buf.write <- v
 	}
 }
 
 func (e *eventDispatcher) CursorWithinEvents() *CursorWithinEventBuffer {
+	e.eventsAccess.Lock()
+	defer e.eventsAccess.Unlock()
+
 	buf := new(CursorWithinEventBuffer)
 	buf.Read = make(chan bool)
 	buf.write = make(chan bool)
@@ -247,12 +299,18 @@ func (e *eventDispatcher) CursorWithinEvents() *CursorWithinEventBuffer {
 	return buf
 }
 func (e *eventDispatcher) addCursorWithinEvent(v bool) {
+	e.eventsAccess.RLock()
+	defer e.eventsAccess.RUnlock()
+
 	for _, buf := range e.cursorWithinEvents {
 		buf.write <- v
 	}
 }
 
 func (e *eventDispatcher) KeyboardEvents() *KeyboardEventBuffer {
+	e.eventsAccess.Lock()
+	defer e.eventsAccess.Unlock()
+
 	buf := new(KeyboardEventBuffer)
 	buf.Read = make(chan *keyboard.Event)
 	buf.write = make(chan *keyboard.Event)
@@ -261,12 +319,18 @@ func (e *eventDispatcher) KeyboardEvents() *KeyboardEventBuffer {
 	return buf
 }
 func (e *eventDispatcher) addKeyboardEvent(v *keyboard.Event) {
+	e.eventsAccess.RLock()
+	defer e.eventsAccess.RUnlock()
+
 	for _, buf := range e.keyboardEvents {
 		buf.write <- v
 	}
 }
 
 func (e *eventDispatcher) MaximizedEvents() *MaximizedEventBuffer {
+	e.eventsAccess.Lock()
+	defer e.eventsAccess.Unlock()
+
 	buf := new(MaximizedEventBuffer)
 	buf.Read = make(chan bool)
 	buf.write = make(chan bool)
@@ -275,12 +339,18 @@ func (e *eventDispatcher) MaximizedEvents() *MaximizedEventBuffer {
 	return buf
 }
 func (e *eventDispatcher) addMaximizedEvent(v bool) {
+	e.eventsAccess.RLock()
+	defer e.eventsAccess.RUnlock()
+
 	for _, buf := range e.maximizedEvents {
 		buf.write <- v
 	}
 }
 
 func (e *eventDispatcher) MinimizedEvents() *MinimizedEventBuffer {
+	e.eventsAccess.Lock()
+	defer e.eventsAccess.Unlock()
+
 	buf := new(MinimizedEventBuffer)
 	buf.Read = make(chan bool)
 	buf.write = make(chan bool)
@@ -289,12 +359,18 @@ func (e *eventDispatcher) MinimizedEvents() *MinimizedEventBuffer {
 	return buf
 }
 func (e *eventDispatcher) addMinimizedEvent(v bool) {
+	e.eventsAccess.RLock()
+	defer e.eventsAccess.RUnlock()
+
 	for _, buf := range e.minimizedEvents {
 		buf.write <- v
 	}
 }
 
 func (e *eventDispatcher) MouseEvents() *MouseEventBuffer {
+	e.eventsAccess.Lock()
+	defer e.eventsAccess.Unlock()
+
 	buf := new(MouseEventBuffer)
 	buf.Read = make(chan *mouse.Event)
 	buf.write = make(chan *mouse.Event)
@@ -303,12 +379,18 @@ func (e *eventDispatcher) MouseEvents() *MouseEventBuffer {
 	return buf
 }
 func (e *eventDispatcher) addMouseEvent(v *mouse.Event) {
+	e.eventsAccess.RLock()
+	defer e.eventsAccess.RUnlock()
+
 	for _, buf := range e.mouseEvents {
 		buf.write <- v
 	}
 }
 
 func (e *eventDispatcher) FocusedEvents() *FocusedEventBuffer {
+	e.eventsAccess.Lock()
+	defer e.eventsAccess.Unlock()
+
 	buf := new(FocusedEventBuffer)
 	buf.Read = make(chan bool)
 	buf.write = make(chan bool)
@@ -317,12 +399,18 @@ func (e *eventDispatcher) FocusedEvents() *FocusedEventBuffer {
 	return buf
 }
 func (e *eventDispatcher) addFocusedEvent(v bool) {
+	e.eventsAccess.RLock()
+	defer e.eventsAccess.RUnlock()
+
 	for _, buf := range e.focusedEvents {
 		buf.write <- v
 	}
 }
 
 func (e *eventDispatcher) PositionEvents() *PositionEventBuffer {
+	e.eventsAccess.Lock()
+	defer e.eventsAccess.Unlock()
+
 	buf := new(PositionEventBuffer)
 	buf.Read = make(chan []int)
 	buf.write = make(chan []int)
@@ -331,12 +419,18 @@ func (e *eventDispatcher) PositionEvents() *PositionEventBuffer {
 	return buf
 }
 func (e *eventDispatcher) addPositionEvent(v []int) {
+	e.eventsAccess.RLock()
+	defer e.eventsAccess.RUnlock()
+
 	for _, buf := range e.positionEvents {
 		buf.write <- v
 	}
 }
 
 func (e *eventDispatcher) SizeEvents() *SizeEventBuffer {
+	e.eventsAccess.Lock()
+	defer e.eventsAccess.Unlock()
+
 	buf := new(SizeEventBuffer)
 	buf.Read = make(chan []uint)
 	buf.write = make(chan []uint)
@@ -345,6 +439,9 @@ func (e *eventDispatcher) SizeEvents() *SizeEventBuffer {
 	return buf
 }
 func (e *eventDispatcher) addSizeEvent(v []uint) {
+	e.eventsAccess.RLock()
+	defer e.eventsAccess.RUnlock()
+
 	for _, buf := range e.sizeEvents {
 		buf.write <- v
 	}

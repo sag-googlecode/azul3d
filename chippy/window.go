@@ -8,6 +8,12 @@ import (
 	"image"
 )
 
+type Cursor struct {
+	Image image.Image
+	X uint
+	Y uint
+}
+
 // This is quite an large interface... I know.
 
 // Window represents an single window, it will be non-visible untill the Open function is called.
@@ -242,19 +248,35 @@ type Window interface {
 	// window unless you call SetIcon again.
 	Icon() image.Image
 
-	// SetCursor specifies the cursor image that should be displayed in place of the default cursor
-	// while the mouse cursor is inside of this window's region or client region.
+	// PrepareCursor prepares the specified cursor to be displayed, but does not display it. This
+	// is useful when you wish to load each frame for an cursor animation, but not cause the cursor
+	// to flicker while loading them into the cache.
+	PrepareCursor(cursor *Cursor)
+
+	// FreeCursor removes the specified cursor from the internal cache. Cursors are cached because
+	// it allows for SetCursor() operations to perform more quickly without performing multiple
+	// copy operations underneath.
 	//
-	// FIXME: What about cursor sizes?
+	// This allows you to simply use SetCursor() as often as you wish, for instance creating cursor
+	// animations and such.
+	FreeCursor(cursor *Cursor)
+
+	// SetCursor specifies the cursor to become the default cursor while the mouse is inside this
+	// window's client region.
+	//
+	// If the cursor does not exist within the internal cache already -- it will be cached using
+	// PrepareCursor() automatically. Once you are done using the cursor, you should use the
+	// FreeCursor() function to remove the cursor from the internal cache (the cursor can still be
+	// displayed again using FreeCursor(), it just will have to be loaded into the cache again).
 	//
 	// If Destroyed returns true, this function will panic.
-	SetCursor(cursor image.Image)
+	SetCursor(cursor *Cursor)
 
 	// Cursor returns the currently in use cursor image, as previously set via an call to SetCursor.
 	//
 	// Changes made to this Image *after* an initial call to SetCursor will not be reflected by the
 	// window unless you call SetCursor again.
-	Cursor() image.Image
+	Cursor() *Cursor
 
 	// SetCursorPosition sets the mouse cursor to the new position x and y, specified in pixels
 	// relative to the client region of this window.
@@ -293,6 +315,16 @@ type Window interface {
 	// CursorGrabbed tells weather the mouse cursor is currently grabbed, as previously set via an
 	// call to the SetCursorGrabbed function.
 	CursorGrabbed() bool
+
+	// PaintEvents returns an new *PaintEventBuffer on which this Window's paint events will be
+	// sent.
+	//
+	// An paint event is sent when some portion of this windows client region has been damaged and
+	// needs to be rendered again or else it will not be displayed to the user.
+	//
+	// For example, when the window is resized, or minimized and then restored, and paint event is
+	// sent.
+	PaintEvents() *PaintEventBuffer
 
 	// CloseEvents returns an new *CloseEventBuffer on which this Window's close events will be
 	// sent.

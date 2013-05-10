@@ -8,23 +8,31 @@ import (
 	"code.google.com/p/azul3d/chippy/wrappers/win32"
 	//"code.google.com/p/azul3d/chippy/keyboard"
 	"code.google.com/p/azul3d/chippy/mouse"
-	"runtime"
+	"code.google.com/p/azul3d/chippy/thirdparty/resize"
 	"errors"
-	"fmt"
+	"unsafe"
 	"image"
 	"math"
 	"sync"
 	"time"
+	"fmt"
 )
 
 var windowsByHwnd = make(map[win32.HWND]*W32Window)
+
+type loadedCursor struct {
+	hCursor                             win32.HICON
+	cursorColorBitmap, cursorMaskBitmap win32.HBITMAP
+	cursorColorBits, cursorMaskBits     []uint32
+}
 
 type W32Window struct {
 	eventDispatcher
 
 	access sync.RWMutex
 
-	icon, cursor image.Image
+	icon image.Image
+	cursor *Cursor
 
 	opened, isDestroyed, focused, visible, decorated, minimized, maximized, fullscreen,
 	alwaysOnTop, cursorGrabbed, cursorWithin, transparent bool
@@ -40,6 +48,11 @@ type W32Window struct {
 
 	title string
 
+	cursors                                                                  map[*Cursor]*loadedCursor
+	loadedCursor                                                             *loadedCursor
+	hIcon, hSmIcon                                                           win32.HICON
+	iconColorBitmap, iconMaskBitmap, smIconColorBitmap, smIconMaskBitmap     win32.HBITMAP
+	iconColorBits, iconMaskBits, smIconColorBits, smIconMaskBits             []uint32
 	dc, dcRender                                                             win32.HDC
 	hwnd, hwndRender                                                         win32.HWND
 	windowClass                                                              string
@@ -58,9 +71,17 @@ func (w *W32Window) Open(screen Screen) (err error) {
 		return nil
 	}
 
-	w.access.Lock()
-	defer w.access.Unlock()
+	unlock := w.newAttemptUnlocker()
+	defer unlock()
 
+	if w.icon == nil {
+		w.icon = defaultIcon
+	}
+
+	w.cursors = make(map[*Cursor]*loadedCursor)
+	if w.cursor == nil {
+		w.cursor = defaultCursor
+	}
 	w.focused = true
 	w.addFocusedEvent(w.focused)
 	w.screen = screen
@@ -77,7 +98,11 @@ func (w *W32Window) Open(screen Screen) (err error) {
 		w.extentTop = uint(borderHeight + titleHeight)
 
 		err = w.doRebuildWindow()
+		w.doSetIcon()
 	})
+
+	unlock()
+	w.SetCursor(w.cursor)
 	return
 }
 
@@ -486,14 +511,164 @@ func (w *W32Window) SetIcon(icon image.Image) {
 	unlock := w.newAttemptUnlocker()
 	defer unlock()
 
+	if w.opened {
+		unlock()
+		dispatch(func() {
+			w.doSetIcon()
+		})
+	}
+
 	w.icon = icon
 }
 
-func (w *W32Window) SetCursor(cursor image.Image) {
+func (w *W32Window) PrepareCursor(cursor *Cursor) {
 	w.panicIfDestroyed()
 
 	unlock := w.newAttemptUnlocker()
 	defer unlock()
+
+	if w.opened {
+		_, ok := w.cursors[cursor]
+		if ok {
+			// It's already loaded!
+			return
+		}
+
+		unlock()
+		dispatch(func() {
+			lc := new(loadedCursor)
+
+			cursorWidth := win32.GetSystemMetrics(win32.SM_CXCURSOR)
+			cursorHeight := win32.GetSystemMetrics(win32.SM_CYCURSOR)
+
+			cursorImage := resize.Resize(cursor.Image, cursor.Image.Bounds(), int(cursorWidth), int(cursorHeight))
+
+			cursorBitmapInfo := win32.BITMAPINFO{
+				BmiHeader: win32.BITMAPINFOHEADER{
+					Size: win32.DWORD(unsafe.Sizeof(win32.BITMAPINFOHEADER{})),
+					Width: win32.LONG(cursorWidth),
+					Height: win32.LONG(cursorHeight),
+					Planes: 1,
+					BitCount: 32,
+					Compression: win32.BI_RGB,
+					SizeImage: 0,
+					XPelsPerMeter: 0,
+					YPelsPerMeter: 0,
+					ClrUsed: 0,
+					ClrImportant: 0,
+				},
+			}
+
+			lc.cursorColorBitmap = win32.CreateCompatibleBitmap(w.dc, cursorWidth, cursorHeight)
+			lc.cursorColorBits = make([]uint32, cursorWidth * cursorHeight)
+			for y := 0; y < int(cursorHeight); y++ {
+				for x := 0; x < int(cursorWidth); x++ {
+					r, g, b, _ := cursorImage.At(x, y).RGBA()
+					c := (uint32(r >> 8) << 16) | (uint32(g >> 8) << 8) | (uint32(b >> 8) << 0)
+
+					index := (int(cursorHeight)-1 - y) * int(cursorWidth)
+					index += x
+					lc.cursorColorBits[index] = c //0xFF0000
+				}
+			}
+			if win32.SetDIBits(w.dc, lc.cursorColorBitmap, 0, win32.UINT(cursorHeight), unsafe.Pointer(&lc.cursorColorBits[0]), &cursorBitmapInfo, win32.DIB_RGB_COLORS) == 0 {
+				logger.Println("Unable to set cursor; SetDiBits():", win32.GetLastErrorString())
+				return
+			}
+
+			lc.cursorMaskBitmap = win32.CreateCompatibleBitmap(w.dc, cursorWidth, cursorHeight)
+			lc.cursorMaskBits = make([]uint32, cursorWidth * cursorHeight)
+			for y := 0; y < int(cursorHeight); y++ {
+				for x := 0; x < int(cursorWidth); x++ {
+					_, _, _, a := cursorImage.At(x, y).RGBA()
+					c := uint32(0xFFFFFF)
+					if a > 0 {
+						c = 0
+					}
+
+					index := (int(cursorHeight)-1 - y) * int(cursorWidth)
+					index += x
+					lc.cursorMaskBits[index] = c
+				}
+			}
+			if win32.SetDIBits(w.dc, lc.cursorMaskBitmap, 0, win32.UINT(cursorHeight), unsafe.Pointer(&lc.cursorMaskBits[0]), &cursorBitmapInfo, win32.DIB_RGB_COLORS) == 0 {
+				logger.Println("Unable to set cursor; SetDiBits():", win32.GetLastErrorString())
+				return
+			}
+
+			cursorInfo := win32.ICONINFO{
+				FIcon: 0,
+				XHotspot: win32.DWORD(w.cursor.X),
+				YHotspot: win32.DWORD(w.cursor.Y),
+				HbmMask: lc.cursorMaskBitmap,
+				HbmColor: lc.cursorColorBitmap,
+			}
+
+			lc.hCursor = win32.CreateIconIndirect(&cursorInfo)
+			if lc.hCursor == nil {
+				logger.Println("Unable to set cursor; CreateIconIndirect():", win32.GetLastErrorString())
+				return
+			}
+
+			w.cursors[cursor] = lc
+		})
+	}
+}
+
+func (w *W32Window) FreeCursor(cursor *Cursor) {
+	w.panicIfDestroyed()
+
+	unlock := w.newAttemptUnlocker()
+	defer unlock()
+
+	lc, ok := w.cursors[cursor]
+	if ok {
+		delete(w.cursors, cursor)
+
+		unlock()
+		dispatch(func() {
+			// Special case: We're using this cursor
+			if cursor == w.cursor {
+				// Restore the default cursor first
+				win32.SetCursor(win32.LoadCursor(nil, "IDC_ARROW"))
+			}
+
+			if !win32.DestroyCursor(win32.HCURSOR(lc.hCursor)) {
+				logger.Println("Failed to destroy cursor; DestroyCursor():", win32.GetLastErrorString())
+			}
+
+			if !win32.DeleteObject(win32.HGDIOBJ(lc.cursorColorBitmap)) {
+				logger.Println("Failed to destroy cursor; DeleteObject(cursorColorBitmap) failed!")
+			}
+
+			if !win32.DeleteObject(win32.HGDIOBJ(lc.cursorMaskBitmap)) {
+				logger.Println("Failed to destroy cursor; DeleteObject(cursorMaskBitmap) failed!")
+			}
+		})
+	}
+}
+
+func (w *W32Window) SetCursor(cursor *Cursor) {
+	w.panicIfDestroyed()
+
+	if cursor == nil {
+		cursor = defaultCursor
+	}
+	w.PrepareCursor(cursor)
+
+	unlock := w.newAttemptUnlocker()
+	defer unlock()
+
+	if w.opened {
+		lc, ok := w.cursors[cursor]
+		if ok {
+			w.loadedCursor = lc
+			unlock()
+			dispatch(func() {
+				w.doSetCursor()
+			})
+		}
+	}
 
 	w.cursor = cursor
 }
@@ -652,7 +827,7 @@ func (w *W32Window) Icon() image.Image {
 	return w.icon
 }
 
-func (w *W32Window) Cursor() image.Image {
+func (w *W32Window) Cursor() *Cursor {
 	w.access.RLock()
 	defer w.access.RUnlock()
 	return w.cursor
@@ -700,24 +875,196 @@ func (w *W32Window) newAttemptUnlocker() (unlock func()) {
 	}
 }
 
-func (w *W32Window) doUpdateVisibility() {
-	/*
-		    flag := win32.Int(win32.SW_HIDE)
-			if w.visible {
-		        if w.minimized {
-		            flag = win32.SW_MINIMIZE
-		        } else if w.maximized {
-		            flag = win32.SW_MAXIMIZE
-		        } else if !w.minimized || !w.maximized {
-		            flag = win32.SW_RESTORE
-		        } else {
-		            flag = win32.SW_SHOW
-		        }
-			}
-			win32.ShowWindow(w.hwnd, flag)
-			win32.EnableWindow(w.hwnd, true)
-	*/
+func (w *W32Window) doSetIcon() {
+	///////////////////
+	// Standard icon //
+	///////////////////
+	if w.hIcon != nil {
+		if !win32.DestroyIcon(w.hIcon) {
+			logger.Println("Failed to destroy icon; DestroyIcon():", win32.GetLastErrorString())
+		}
 
+		if !win32.DeleteObject(win32.HGDIOBJ(w.iconColorBitmap)) {
+			logger.Println("Failed to destroy icon; DeleteObject(iconColorBitmap) failed!")
+		}
+
+		if !win32.DeleteObject(win32.HGDIOBJ(w.iconMaskBitmap)) {
+			logger.Println("Failed to destroy icon; DeleteObject(iconMaskBitmap) failed!")
+		}
+	}
+
+	iconWidth := win32.GetSystemMetrics(win32.SM_CXICON)
+	iconHeight := win32.GetSystemMetrics(win32.SM_CYICON)
+
+	iconImage := resize.Resize(w.icon, w.icon.Bounds(), int(iconWidth), int(iconHeight))
+
+	iconBitmapInfo := win32.BITMAPINFO{
+		BmiHeader: win32.BITMAPINFOHEADER{
+			Size: win32.DWORD(unsafe.Sizeof(win32.BITMAPINFOHEADER{})),
+			Width: win32.LONG(iconWidth),
+			Height: win32.LONG(iconHeight),
+			Planes: 1,
+			BitCount: 32,
+			Compression: win32.BI_RGB,
+			SizeImage: 0,
+			XPelsPerMeter: 0,
+			YPelsPerMeter: 0,
+			ClrUsed: 0,
+			ClrImportant: 0,
+		},
+	}
+
+	w.iconColorBitmap = win32.CreateCompatibleBitmap(w.dc, iconWidth, iconHeight)
+	w.iconColorBits = make([]uint32, iconWidth * iconHeight)
+	for y := 0; y < int(iconHeight); y++ {
+		for x := 0; x < int(iconWidth); x++ {
+			r, g, b, _ := iconImage.At(x, y).RGBA()
+			c := (uint32(r >> 8) << 16) | (uint32(g >> 8) << 8) | (uint32(b >> 8) << 0)
+
+			index := (int(iconHeight)-1 - y) * int(iconWidth)
+			index += x
+			w.iconColorBits[index] = c //0xFF0000
+		}
+	}
+	if win32.SetDIBits(w.dc, w.iconColorBitmap, 0, win32.UINT(iconHeight), unsafe.Pointer(&w.iconColorBits[0]), &iconBitmapInfo, win32.DIB_RGB_COLORS) == 0 {
+		logger.Println("Unable to set icon; SetDiBits():", win32.GetLastErrorString())
+		return
+	}
+
+	w.iconMaskBitmap = win32.CreateCompatibleBitmap(w.dc, iconWidth, iconHeight)
+	w.iconMaskBits = make([]uint32, iconWidth * iconHeight)
+	for y := 0; y < int(iconHeight); y++ {
+		for x := 0; x < int(iconWidth); x++ {
+			_, _, _, a := iconImage.At(x, y).RGBA()
+			c := uint32(0xFFFFFF)
+			if a > 0 {
+				c = 0
+			}
+
+			index := (int(iconHeight)-1 - y) * int(iconWidth)
+			index += x
+			w.iconMaskBits[index] = c
+		}
+	}
+	if win32.SetDIBits(w.dc, w.iconMaskBitmap, 0, win32.UINT(iconHeight), unsafe.Pointer(&w.iconMaskBits[0]), &iconBitmapInfo, win32.DIB_RGB_COLORS) == 0 {
+		logger.Println("Unable to set icon; SetDiBits():", win32.GetLastErrorString())
+		return
+	}
+
+	iconInfo := win32.ICONINFO{
+		FIcon: 1,
+		XHotspot: 0,
+		YHotspot: 0,
+		HbmMask: w.iconMaskBitmap,
+		HbmColor: w.iconColorBitmap,
+	}
+
+	w.hIcon = win32.CreateIconIndirect(&iconInfo)
+	if w.hIcon == nil {
+		logger.Println("Unable to set icon; CreateIconIndirect():", win32.GetLastErrorString())
+		return
+	}
+
+	win32.SendMessage(w.hwnd, win32.WM_SETICON, win32.ICON_BIG, win32.LPARAM(uintptr(unsafe.Pointer(w.hIcon))))
+
+	////////////////
+	// Small icon //
+	////////////////
+	if w.hSmIcon != nil {
+		if !win32.DestroyIcon(w.hSmIcon) {
+			logger.Println("Failed to destroy icon; DestroyIcon():", win32.GetLastErrorString())
+		}
+
+		if !win32.DeleteObject(win32.HGDIOBJ(w.smIconColorBitmap)) {
+			logger.Println("Failed to destroy icon; DeleteObject(smIconColorBitmap) failed!")
+		}
+
+		if !win32.DeleteObject(win32.HGDIOBJ(w.smIconMaskBitmap)) {
+			logger.Println("Failed to destroy icon; DeleteObject(smIconMaskBitmap) failed!")
+		}
+	}
+
+	iconWidth = win32.GetSystemMetrics(win32.SM_CXSMICON)
+	iconHeight = win32.GetSystemMetrics(win32.SM_CYSMICON)
+
+	iconImage = resize.Resize(w.icon, w.icon.Bounds(), int(iconWidth), int(iconHeight))
+
+	iconBitmapInfo = win32.BITMAPINFO{
+		BmiHeader: win32.BITMAPINFOHEADER{
+			Size: win32.DWORD(unsafe.Sizeof(win32.BITMAPINFOHEADER{})),
+			Width: win32.LONG(iconWidth),
+			Height: win32.LONG(iconHeight),
+			Planes: 1,
+			BitCount: 32,
+			Compression: win32.BI_RGB,
+			SizeImage: 0,
+			XPelsPerMeter: 0,
+			YPelsPerMeter: 0,
+			ClrUsed: 0,
+			ClrImportant: 0,
+		},
+	}
+
+	w.smIconColorBitmap = win32.CreateCompatibleBitmap(w.dc, iconWidth, iconHeight)
+	w.smIconColorBits = make([]uint32, iconWidth * iconHeight)
+	for y := 0; y < int(iconHeight); y++ {
+		for x := 0; x < int(iconWidth); x++ {
+			r, g, b, _ := iconImage.At(x, y).RGBA()
+			c := (uint32(r >> 8) << 16) | (uint32(g >> 8) << 8) | (uint32(b >> 8) << 0)
+
+			index := (int(iconHeight)-1 - y) * int(iconWidth)
+			index += x
+			w.smIconColorBits[index] = c //0xFF0000
+		}
+	}
+	if win32.SetDIBits(w.dc, w.smIconColorBitmap, 0, win32.UINT(iconHeight), unsafe.Pointer(&w.smIconColorBits[0]), &iconBitmapInfo, win32.DIB_RGB_COLORS) == 0 {
+		logger.Println("Unable to set icon; SetDiBits():", win32.GetLastErrorString())
+		return
+	}
+
+	w.smIconMaskBitmap = win32.CreateCompatibleBitmap(w.dc, iconWidth, iconHeight)
+	w.smIconMaskBits = make([]uint32, iconWidth * iconHeight)
+	for y := 0; y < int(iconHeight); y++ {
+		for x := 0; x < int(iconWidth); x++ {
+			_, _, _, a := iconImage.At(x, y).RGBA()
+			c := uint32(0xFFFFFF)
+			if a > 0 {
+				c = 0
+			}
+
+			index := (int(iconHeight)-1 - y) * int(iconWidth)
+			index += x
+			w.smIconMaskBits[index] = c
+		}
+	}
+	if win32.SetDIBits(w.dc, w.smIconMaskBitmap, 0, win32.UINT(iconHeight), unsafe.Pointer(&w.smIconMaskBits[0]), &iconBitmapInfo, win32.DIB_RGB_COLORS) == 0 {
+		logger.Println("Unable to set icon; SetDiBits():", win32.GetLastErrorString())
+		return
+	}
+
+	iconInfo = win32.ICONINFO{
+		FIcon: 1,
+		XHotspot: 0,
+		YHotspot: 0,
+		HbmMask: w.smIconMaskBitmap,
+		HbmColor: w.smIconColorBitmap,
+	}
+
+	w.hSmIcon = win32.CreateIconIndirect(&iconInfo)
+	if w.hSmIcon == nil {
+		logger.Println("Unable to set icon; CreateIconIndirect():", win32.GetLastErrorString())
+		return
+	}
+
+	win32.SendMessage(w.hwnd, win32.WM_SETICON, win32.ICON_SMALL, win32.LPARAM(uintptr(unsafe.Pointer(w.hSmIcon))))
+}
+
+func (w *W32Window) doSetCursor() {
+	if w.cursorWithin {
+		if w.loadedCursor != nil {
+			win32.SetCursor(win32.HCURSOR(w.loadedCursor.hCursor))
+		}
+	}
 }
 
 func (w *W32Window) doUpdateTransparency() {
@@ -816,13 +1163,13 @@ func (w *W32Window) doSetWindowPos() {
 		sm := w.screen.ScreenMode()
 		screenWidth, screenHeight := sm.Resolution()
 		width, height = float64(screenWidth), float64(screenHeight)
-	}
 
-	if w.width != uint(width) || w.height != uint(height) {
-		w.width = uint(width)
-		w.height = uint(height)
+		if w.width != uint(screenWidth) || w.height != uint(screenHeight) {
+			w.width = uint(screenWidth)
+			w.height = uint(screenHeight)
 
-		w.addSizeEvent([]uint{w.width, w.height})
+			w.addSizeEvent([]uint{w.width, w.height})
+		}
 	}
 
 	// |win32.SWP_NOZORDER|win32.SWP_NOOWNERZORDER
@@ -837,10 +1184,9 @@ func mainWindowProc(hwnd win32.HWND, msg win32.UINT, wParam win32.WPARAM, lParam
 	if ok {
 		switch msg {
 		case win32.WM_PAINT:
-			//logger.Println("WM_PAINT")
 			if win32.GetUpdateRect(w.hwnd, nil, false) {
-			//	logger.Println("dirty")
 				win32.ValidateRect(w.hwnd, nil)
+				w.addPaintEvent()
 			}
 			return 0
 
@@ -1005,8 +1351,22 @@ func mainWindowProc(hwnd win32.HWND, msg win32.UINT, wParam win32.WPARAM, lParam
 			return 0
 
 		case win32.WM_GETICON:
-			logger.Println("WM_GETICON")
-			return 0
+			switch(wParam) {
+				case win32.ICON_BIG:
+					if w.hIcon != nil {
+						return win32.LRESULT(uintptr(unsafe.Pointer(w.hIcon)))
+					}
+
+				case win32.ICON_SMALL:
+					if w.hSmIcon != nil {
+						return win32.LRESULT(uintptr(unsafe.Pointer(w.hSmIcon)))
+					}
+
+				case win32.ICON_SMALL2:
+					if w.hSmIcon != nil {
+						return win32.LRESULT(uintptr(unsafe.Pointer(w.hSmIcon)))
+					}
+			}
 
 		case win32.WM_KEYDOWN:
 			//fmt.Println(lParam, lParam.LOWORD(), lParam.HIWORD(), string(lParam.HIWORD()))
@@ -1023,7 +1383,30 @@ func mainWindowProc(hwnd win32.HWND, msg win32.UINT, wParam win32.WPARAM, lParam
 
 				w.addCursorPositionEvent([]int{w.cursorX, w.cursorY})
 			}
+
+			if w.cursorX > int(w.width) || w.cursorY > int(w.height) || w.cursorX < 0 || w.cursorY < 0 || !w.focused {
+				// Better than WM_MOUSELEAVE
+				if w.cursorWithin {
+					win32.ReleaseCapture()
+
+					w.cursorWithin = false
+					w.addCursorWithinEvent(w.cursorWithin)
+				}
+			} else {
+				// Closest we'll get to WM_MOUSEENTER
+				if !w.cursorWithin {
+					win32.SetCapture(w.hwnd)
+
+					w.cursorWithin = true
+					w.addCursorWithinEvent(w.cursorWithin)
+				}
+			}
+			w.doSetCursor()
 			return 0
+
+		case win32.WM_MOUSELEAVE:
+		// Unreliable! Check against client area in WM_MOUSEMOVE instead
+			logger.Println("WM_MOUSELEAVE")
 
 		// Mouse Buttons
 		case win32.WM_LBUTTONDOWN:
@@ -1110,7 +1493,7 @@ func mainWindowProc(hwnd win32.HWND, msg win32.UINT, wParam win32.WPARAM, lParam
 	// /_Causing the render loop to pause while the user moves their mouse_/
 	//
 	// This will pass feedback to the render loop without blocking when the messages are spammed.
-	runtime.Gosched()
+	//runtime.Gosched()
 
 	return win32.DefWindowProc(hwnd, msg, wParam, lParam)
 }

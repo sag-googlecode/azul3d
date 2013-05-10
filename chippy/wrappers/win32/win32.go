@@ -879,6 +879,22 @@ func DispatchMessage(msg *MSG) (ret LRESULT) {
 	return
 }
 
+func SendMessage(hwnd HWND, msg UINT, wParam WPARAM, lParam LPARAM) LRESULT {
+	return LRESULT(C.SendMessage(C.HWND(hwnd), C.UINT(msg), C.WPARAM(wParam), C.LPARAM(lParam)))
+}
+
+func SetCursor(cursor HCURSOR) HCURSOR {
+	return HCURSOR(C.SetCursor(C.HCURSOR(cursor)))
+}
+
+func SetCapture(hwnd HWND) HWND {
+	return HWND(C.SetCapture(C.HWND(hwnd)))
+}
+
+func ReleaseCapture() bool {
+	return C.ReleaseCapture() != 0
+}
+
 const (
 	PM_NOREMOVE       = C.PM_NOREMOVE
 	PM_REMOVE         = C.PM_REMOVE
@@ -927,7 +943,12 @@ const (
 	WM_PAINT = C.WM_PAINT
 
 	WM_SETCURSOR = C.WM_SETCURSOR
+
+	ICON_BIG     = C.ICON_BIG
+	ICON_SMALL   = C.ICON_SMALL
+	ICON_SMALL2  = C.ICON_SMALL2
 	WM_GETICON   = C.WM_GETICON
+	WM_SETICON   = C.WM_SETICON
 
 	WM_SIZE        = C.WM_SIZE
 	SIZE_MAXIMIZED = C.SIZE_MAXIMIZED
@@ -957,6 +978,9 @@ const (
 	WM_XBUTTONDBLCLK = C.WM_XBUTTONDBLCLK
 	WM_MOUSELAST     = C.WM_MOUSELAST
 	WM_MOUSEHWHEEL   = 0x020E
+
+	// WM_MOUSEMOVE is WM_MOUSEENTER
+	WM_MOUSELEAVE = C.WM_MOUSELEAVE
 
 	WM_KEYDOWN = C.WM_KEYDOWN
 	WM_KEYUP   = C.WM_KEYUP
@@ -1050,6 +1074,12 @@ const (
 	SM_CYCAPTION   = C.SM_CYCAPTION // Title bar width
 	SM_CXSIZEFRAME = C.SM_CXSIZEFRAME
 	SM_CYSIZEFRAME = C.SM_CYSIZEFRAME
+	SM_CXCURSOR = C.SM_CXCURSOR
+	SM_CYCURSOR = C.SM_CYCURSOR
+	SM_CXICON = C.SM_CXICON
+	SM_CYICON = C.SM_CYICON
+	SM_CXSMICON = C.SM_CXSMICON
+	SM_CYSMICON = C.SM_CYSMICON
 )
 
 func GetSystemMetrics(nIndex Int) (ret Int) {
@@ -1123,6 +1153,78 @@ func SetWindowText(hwnd HWND, lpString string) bool {
 	cstr := StringToLPTSTR(lpString)
 	defer C.free(unsafe.Pointer(cstr))
 	return C.SetWindowText(C.HWND(hwnd), cstr) != 0
+}
+
+type HBITMAP unsafe.Pointer
+
+type ICONINFO struct {
+	FIcon Int
+	XHotspot DWORD
+	YHotspot DWORD
+	HbmMask HBITMAP
+	HbmColor HBITMAP
+}
+
+type BITMAPINFOHEADER struct {
+	Size DWORD
+	Width,
+	Height LONG
+	Planes,
+	BitCount WORD
+	Compression,
+	SizeImage DWORD
+	XPelsPerMeter,
+	YPelsPerMeter LONG
+	ClrUsed,
+	ClrImportant DWORD
+}
+
+type RGBQUAD struct {
+	RgbBlue,
+	RgbGreen,
+	RgbRed,
+	RgbReserved uint8
+}
+
+type BITMAPINFO struct {
+	BmiHeader BITMAPINFOHEADER
+	BmiColors [1]RGBQUAD
+}
+
+const(
+	DIB_RGB_COLORS = C.DIB_RGB_COLORS
+	BI_RGB = C.BI_RGB
+)
+
+type HGDIOBJ C.HGDIOBJ
+func DeleteObject(object HGDIOBJ) bool {
+	return C.DeleteObject(C.HGDIOBJ(object)) != 0
+}
+
+func LoadCursor(hinstance HINSTANCE, lpCursorName string) HCURSOR {
+	cstr := StringToLPTSTR(lpCursorName)
+	defer C.free(unsafe.Pointer(cstr))
+	return HCURSOR(C.LoadCursor(C.HINSTANCE(hinstance), cstr))
+}
+
+func DestroyCursor(cursor HCURSOR) bool {
+	return C.DestroyCursor(C.HCURSOR(cursor)) != 0
+}
+
+func DestroyIcon(icon HICON) bool {
+	return C.DestroyIcon(C.HICON(icon)) != 0
+}
+
+func CreateIconIndirect(piconinfo *ICONINFO) HICON {
+	return HICON(C.CreateIconIndirect((C.PICONINFO)(unsafe.Pointer(piconinfo))))
+}
+
+func CreateCompatibleBitmap(hdc HDC, nWidth, nHeight Int) HBITMAP {
+	return HBITMAP(C.CreateCompatibleBitmap(C.HDC(hdc), C.int(nWidth), C.int(nHeight)))
+}
+
+func SetDIBits(hdc HDC, hbmp HBITMAP, uStartScan, cScanLines UINT, lpvBits unsafe.Pointer, lpbmi *BITMAPINFO, fuColorUse UINT) Int {
+	return Int(C.SetDIBits(C.HDC(hdc), C.HBITMAP(hbmp), C.UINT(uStartScan), C.UINT(cScanLines), lpvBits, (*C.BITMAPINFO)(unsafe.Pointer(lpbmi)), C.UINT(fuColorUse)))
 }
 
 // See: http://msdn.microsoft.com/en-us/library/ms724833(v=vs.85).aspx
@@ -1271,3 +1373,4 @@ func SetPixelFormat(hdc HDC, iPixelFormat Int, ppfd *PIXELFORMATDESCRIPTOR) bool
 func SwapBuffers(hdc HDC) bool {
 	return C.SwapBuffers(C.HDC(hdc)) != 0
 }
+
