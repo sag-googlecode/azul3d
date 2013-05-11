@@ -28,6 +28,9 @@ LRESULT CALLBACK win32_WndProcWrapper(HWND hwnd, UINT msg, WPARAM wParam, LPARAM
 WNDPROC win32_WndProcWrapperHandle;
 
 DWORD win32_DEVMODE_dmDisplayFixedOutput(DEVMODE* dm);
+POINTL win32_DEVMODE_dmPosition(DEVMODE* dm);
+
+MONITORENUMPROC win32_MonitorEnumProcCallbackHandle;
 */
 import "C"
 
@@ -181,6 +184,19 @@ const (
 
 func (m *DEVMODE) DmDisplayFixedOutput() DWORD {
 	return DWORD(C.win32_DEVMODE_dmDisplayFixedOutput((*C.DEVMODE)(m)))
+}
+
+type POINTL C.POINTL
+
+func (c POINTL) X() LONG {
+	return LONG(c.x)
+}
+func (c POINTL) Y() LONG {
+	return LONG(c.y)
+}
+
+func (m *DEVMODE) DmPosition() POINTL {
+	return POINTL(C.win32_DEVMODE_dmPosition((*C.DEVMODE)(m)))
 }
 
 const (
@@ -423,11 +439,29 @@ func (c WPARAM) LOWORD() uint16 {
 
 type POINT C.POINT
 
-func (c *POINT) SetX(x int32) {
+func (c *POINT) SetX(x LONG) {
 	c.x = C.LONG(x)
 }
-func (c *POINT) SetY(y int32) {
+func (c *POINT) SetY(y LONG) {
 	c.y = C.LONG(y)
+}
+func (c *POINT) X() LONG {
+	return LONG(c.x)
+}
+func (c *POINT) Y() LONG {
+	return LONG(c.y)
+}
+
+func ScreenToClient(hwnd HWND, point *POINT) bool {
+	return C.ScreenToClient(C.HWND(hwnd), (C.LPPOINT)(unsafe.Pointer(point))) != 0
+}
+
+func ClientToScreen(hwnd HWND, point *POINT) bool {
+	return C.ClientToScreen(C.HWND(hwnd), (C.LPPOINT)(unsafe.Pointer(point))) != 0
+}
+
+func WindowFromDC(hdc HDC) HWND {
+	return HWND(C.WindowFromDC(C.HDC(hdc)))
 }
 
 type MINMAXINFO C.MINMAXINFO
@@ -492,6 +526,75 @@ func CreateRectRgn(nLeftRect, nTopRect, nRightRect, nBottomRect int) HRGN {
 }
 
 
+type HMONITOR C.HMONITOR
+
+func MonitorFromWindow(hwnd HWND, dwFlags DWORD) HMONITOR {
+	return HMONITOR(C.MonitorFromWindow(C.HWND(hwnd), C.DWORD(dwFlags)))
+}
+
+type MONITORINFOEX struct{
+	CbSize DWORD
+	RcMonitor RECT
+	RcWork RECT
+	DwFlags DWORD
+	szDevice [C.CCHDEVICENAME]uint16
+}
+
+func (m *MONITORINFOEX) SetSize() {
+	m.CbSize = DWORD(unsafe.Sizeof(MONITORINFOEX{}))
+}
+
+func (m *MONITORINFOEX) Device() string {
+	ar := make([]uint16, len(m.szDevice) + 1)
+	for i, c := range m.szDevice {
+		ar[i] = c
+	}
+	return LPTSTRToString((C.LPTSTR)(unsafe.Pointer(&ar[0])))
+}
+
+func GetMonitorInfo(hMonitor HMONITOR, lpmi *MONITORINFOEX) bool {
+	return C.GetMonitorInfo(C.HMONITOR(hMonitor), (C.LPMONITORINFO)(unsafe.Pointer(lpmi))) != 0
+}
+
+type MonitorEnumProc func(hMonitor HMONITOR, hdcMonitor HDC, lprcMonitor *RECT, dwData LPARAM) bool
+
+var monitorEnumProcCallback MonitorEnumProc
+/*
+BOOL CALLBACK MonitorEnumProc(
+  _In_  HMONITOR hMonitor,
+  _In_  HDC hdcMonitor,
+  _In_  LPRECT lprcMonitor,
+  _In_  LPARAM dwData
+);
+*/
+
+//export MonitorEnumProcCallback
+func MonitorEnumProcCallback(hMonitor HMONITOR, hdcMonitor HDC, lprcMonitor *RECT, dwData LPARAM) C.WINBOOL {
+	if monitorEnumProcCallback(hMonitor, hdcMonitor, lprcMonitor, dwData) {
+		return C.WINBOOL(1)
+	}
+	return C.WINBOOL(0)
+}
+
+func EnumDisplayMonitors(hdc HDC, lprcClip *RECT, fn MonitorEnumProc, dwData LPARAM) bool {
+	monitorEnumProcCallback = fn
+	return C.EnumDisplayMonitors(C.HDC(hdc), (C.LPCRECT)(unsafe.Pointer(lprcClip)), C.win32_MonitorEnumProcCallbackHandle, C.LPARAM(dwData)) != 0
+}
+/*
+BOOL EnumDisplayMonitors(
+  _In_  HDC hdc,
+  _In_  LPCRECT lprcClip,
+  _In_  MONITORENUMPROC lpfnEnum,
+  _In_  LPARAM dwData
+);
+*/
+
+
+
+
+
+
+
 type WNDCLASSEX C.WNDCLASSEX
 
 func NewWNDCLASSEX() *WNDCLASSEX {
@@ -536,6 +639,7 @@ func UnregisterWndProc(hwnd HWND) {
 	callbacksAccess.Lock()
 	defer callbacksAccess.Unlock()
 	delete(callbacks, hwnd)
+
 }
 
 func (w *WNDCLASSEX) SetCbClsExtra(v Int) {
@@ -986,6 +1090,9 @@ const (
 	WM_KEYUP   = C.WM_KEYUP
 
 	WM_MOVE = C.WM_MOVE
+
+	MONITOR_DEFAULTTONEAREST = C.MONITOR_DEFAULTTONEAREST
+	WM_EXITSIZEMOVE = C.WM_EXITSIZEMOVE
 
 	HTNOWHERE = C.HTNOWHERE
 	HTTRANSPARENT = C.HTTRANSPARENT

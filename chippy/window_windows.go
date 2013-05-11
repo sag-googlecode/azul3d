@@ -37,14 +37,14 @@ type W32Window struct {
 	opened, isDestroyed, focused, visible, decorated, minimized, maximized, fullscreen,
 	alwaysOnTop, cursorGrabbed, cursorWithin, transparent bool
 
-	extentLeft, extentRight, extentBottom, extentTop, width, height, minWidth, minHeight,
-	maxWidth, maxHeight uint
+	extentLeft, extentRight, extentBottom, extentTop, width, height, preFullscreenWidth,
+	preFullscreenHeight, minWidth, minHeight, maxWidth, maxHeight uint
 
-	x, y, cursorX, cursorY int
+	x, y, preFullscreenX, preFullscreenY, cursorX, cursorY int
 
 	aspectRatio float32
 
-	screen Screen
+	originalScreen, screen Screen
 
 	title string
 
@@ -84,6 +84,7 @@ func (w *W32Window) Open(screen Screen) (err error) {
 	}
 	w.focused = true
 	w.addFocusedEvent(w.focused)
+	w.originalScreen = screen
 	w.screen = screen
 
 	dispatch(func() {
@@ -478,6 +479,21 @@ func (w *W32Window) SetFullscreen(fullscreen bool) {
 
 	if w.fullscreen != fullscreen {
 		w.fullscreen = fullscreen
+
+		if w.fullscreen {
+			// Entering fullscreen: Save window size
+			w.preFullscreenX = w.x
+			w.preFullscreenY = w.y
+			w.preFullscreenWidth = w.width
+			w.preFullscreenHeight = w.height
+		} else {
+			// Leaving fullscreen: Restore original size
+			w.x = w.preFullscreenX
+			w.y = w.preFullscreenY
+			w.width = w.preFullscreenWidth
+			w.height = w.preFullscreenHeight
+		}
+
 		if w.opened {
 			unlock()
 			dispatch(func() {
@@ -729,6 +745,12 @@ func (w *W32Window) Transparent() bool {
 	w.access.RLock()
 	defer w.access.RUnlock()
 	return w.transparent
+}
+
+func (w *W32Window) OriginalScreen() Screen {
+	w.access.RLock()
+	defer w.access.RUnlock()
+	return w.originalScreen
 }
 
 func (w *W32Window) Screen() Screen {
@@ -1120,6 +1142,11 @@ func (w *W32Window) doSetWindowPos() {
 	x := win32.Int(w.x - int(w.extentLeft))
 	y := win32.Int(w.y - int(w.extentTop))
 
+	// Need to make the position relative to the original screen
+	r := w.originalScreen.(*w32Screen).w32Position
+	x = win32.Int(r.Left()) + x
+	y = win32.Int(r.Top()) + y
+
 	// Clip to maxWidth/maxHeight and minWidth/minHeight, append extents so that width/height is
 	// the client region specifically.
 	width := float64(w.width)
@@ -1158,8 +1185,9 @@ func (w *W32Window) doSetWindowPos() {
 	//		win32.SetWindowPos(w.hwnd, flag, 0, 0, 0, 0, win32.SWP_NOMOVE|win32.SWP_NOSIZE)
 
 	if w.fullscreen {
-		x = 0
-		y = 0
+		r := w.screen.(*w32Screen).w32Position
+		x = win32.Int(r.Left())
+		y = win32.Int(r.Top())
 		sm := w.screen.ScreenMode()
 		screenWidth, screenHeight := sm.Resolution()
 		width, height = float64(screenWidth), float64(screenHeight)
@@ -1218,17 +1246,17 @@ func mainWindowProc(hwnd win32.HWND, msg win32.UINT, wParam win32.WPARAM, lParam
 			minMaxInfo := lParam.MINMAXINFO()
 
 			if minWidth > 0 {
-				minMaxInfo.PtMinTrackSize().SetX(int32(newMinWidth))
+				minMaxInfo.PtMinTrackSize().SetX(win32.LONG(newMinWidth))
 			}
 			if minHeight > 0 {
-				minMaxInfo.PtMinTrackSize().SetY(int32(newMinHeight))
+				minMaxInfo.PtMinTrackSize().SetY(win32.LONG(newMinHeight))
 			}
 
 			if maxWidth > 0 {
-				minMaxInfo.PtMaxTrackSize().SetX(int32(newMaxWidth))
+				minMaxInfo.PtMaxTrackSize().SetX(win32.LONG(newMaxWidth))
 			}
 			if maxHeight > 0 {
-				minMaxInfo.PtMaxTrackSize().SetY(int32(newMaxHeight))
+				minMaxInfo.PtMaxTrackSize().SetY(win32.LONG(newMaxHeight))
 			}
 			return 0
 
@@ -1323,14 +1351,39 @@ func mainWindowProc(hwnd win32.HWND, msg win32.UINT, wParam win32.WPARAM, lParam
 			return 0
 
 		case win32.WM_MOVE:
-			xPos := int(lParam.LOWORD())
-			yPos := int(lParam.HIWORD())
+			xPos := int(int16(lParam))
+			yPos := int(int16((uint32(lParam) >> 16) & 0xFFFF))
 
 			if !win32.IsIconic(w.hwnd) {
+				// Clamp when it goes onto an monitor to the left.. very unsure how to handle
+				// window/screen interaction -- it's never very cross platform..
+
 				if w.x != xPos || w.y != yPos {
 					w.x = xPos
 					w.y = yPos
 					w.addPositionEvent([]int{w.x, w.y})
+				}
+			}
+
+			return 0
+
+		case win32.WM_EXITSIZEMOVE:
+			hMonitor := win32.MonitorFromWindow(w.hwnd, win32.MONITOR_DEFAULTTONEAREST)
+
+			mi := new(win32.MONITORINFOEX)
+			mi.SetSize()
+			if !win32.GetMonitorInfo(hMonitor, mi) {
+				logger.Println("Unable to detect monitor position; GetMonitorInfo():", win32.GetLastErrorString())
+			} else {
+				screens := backend_doScreens()
+				for _, screen := range screens {
+					if screen.(*w32Screen).w32GraphicsDeviceName == mi.Device() {
+						screen.(*w32Screen).w32Position = mi.RcMonitor
+
+						w.screen = screen
+						// FIXME: addScreenChangedEvent()
+						return 0
+					}
 				}
 			}
 
@@ -1374,17 +1427,23 @@ func mainWindowProc(hwnd win32.HWND, msg win32.UINT, wParam win32.WPARAM, lParam
 			return 0
 
 		case win32.WM_MOUSEMOVE:
-			xPos := int(lParam.LOWORD())
-			yPos := int(lParam.HIWORD())
+			xPos := int(int16(lParam))
+			yPos := int(int16((uint32(lParam) >> 16) & 0xFFFF))
 
 			if w.cursorX != xPos || w.cursorY != yPos {
+				if xPos < 0 {
+					xPos = 0
+				}
+				if yPos < 0 {
+					yPos = 0
+				}
 				w.cursorX = xPos
 				w.cursorY = yPos
 
 				w.addCursorPositionEvent([]int{w.cursorX, w.cursorY})
 			}
 
-			if w.cursorX > int(w.width) || w.cursorY > int(w.height) || w.cursorX < 0 || w.cursorY < 0 || !w.focused {
+			if w.cursorX >= int(w.width) || w.cursorY >= int(w.height) || w.cursorX <= 0 || w.cursorY <= 0 || !w.focused {
 				// Better than WM_MOUSELEAVE
 				if w.cursorWithin {
 					win32.ReleaseCapture()

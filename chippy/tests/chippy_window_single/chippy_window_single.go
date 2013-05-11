@@ -12,6 +12,7 @@ package main
 import (
 	"code.google.com/p/azul3d/chippy"
 	"log"
+	"fmt"
 	"os"
 )
 
@@ -30,8 +31,27 @@ func main() {
 	window := chippy.NewWindow()
 
 	// Actually open the window
-	screen := chippy.DefaultScreen()
-	err = window.Open(screen)
+	screens := chippy.Screens()
+	log.Printf("There are %d screens.\n", len(screens))
+	log.Println("Default screen:", chippy.DefaultScreen())
+
+	for i, screen := range screens {
+		log.Printf("\nScreen %d - %s", i, screen)
+	}
+
+	fmt.Printf("Open window on screen: #")
+	var screen int
+	_, err = fmt.Scanln(&screen)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	if screen < 0 || screen > len(screens)-1 {
+		log.Fatal("Incorrect screen number.")
+	}
+	chosenScreen := screens[screen]
+
+	err = window.Open(chosenScreen)
 	if err != nil {
 		log.Fatal(err)
 	}

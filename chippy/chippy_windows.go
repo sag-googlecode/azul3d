@@ -15,7 +15,7 @@ import (
 func eventLoop() {
 	for{
 		// Small sleep just to stop hogging CPU
-		time.Sleep(1 * time.Millisecond)
+		time.Sleep(2 * time.Millisecond)
 		dispatch(func() {
 			var msg *win32.MSG
 			hasMessage := true

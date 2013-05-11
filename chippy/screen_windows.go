@@ -88,6 +88,7 @@ type w32Screen struct {
 	isDefaultScreen                             bool
 	w32MonitorDeviceName, w32GraphicsDeviceName string
 	dc                                          win32.HDC
+	w32Position                                 win32.RECT
 }
 
 func newScreen() *w32Screen {
@@ -425,78 +426,104 @@ func (s *w32Screen) setScreenModes() {
 	s.originalScreenMode = currentScreenMode
 }
 
-func backend_Screens() (screens []Screen) {
-	dispatch(func() {
-		win2kOrBelow := (w32VersionMajor <= 5) || (w32VersionMinor <= 0)
+func backend_doScreens() (screens []Screen) {
+	win2kOrBelow := (w32VersionMajor <= 5) || (w32VersionMinor <= 0)
 
-		monitorNum := 0
-		hasNext := true
-		i := 0
-		for hasNext {
-			var dd *win32.DISPLAY_DEVICE
-			hasNext, dd = win32.EnumDisplayDevices("", win32.DWORD(i), 0)
-			i++
-			if hasNext {
-				// We're only interested in active devices (graphics cards)
-				graphicsCardName := dd.GetDeviceName()
-				graphicsCardString := dd.GetDeviceString()
+	monitorNum := 0
+	hasNext := true
+	i := 0
+	for hasNext {
+		var dd *win32.DISPLAY_DEVICE
+		hasNext, dd = win32.EnumDisplayDevices("", win32.DWORD(i), 0)
+		i++
+		if hasNext {
+			// We're only interested in active devices (graphics cards)
+			graphicsCardName := dd.GetDeviceName()
+			graphicsCardString := dd.GetDeviceString()
 
-				gflags := dd.GetStateFlags()
-				if (gflags & win32.DISPLAY_DEVICE_ACTIVE) > 0 {
-					hasMoreMonitors := true
-					j := 0
-					for hasMoreMonitors {
-						hasMoreMonitors, dd = win32.EnumDisplayDevices(dd.GetDeviceName(), 0, 0)
-						j++
+			gflags := dd.GetStateFlags()
+			if (gflags & win32.DISPLAY_DEVICE_ACTIVE) > 0 {
+				hasMoreMonitors := true
+				j := 0
+				for hasMoreMonitors {
+					hasMoreMonitors, dd = win32.EnumDisplayDevices(dd.GetDeviceName(), 0, 0)
+					j++
 
-						// We're only interested in active monitors, but windows 2000 and below
-						// never sets the DISPLAY_DEVICE_ACTIVE flag.
+					// We're only interested in active monitors, but windows 2000 and below
+					// never sets the DISPLAY_DEVICE_ACTIVE flag.
+					//
+					flags := dd.GetStateFlags()
+
+					active := (flags & win32.DISPLAY_DEVICE_ACTIVE) > 0
+					attached := (flags & win32.DISPLAY_DEVICE_ATTACHED) > 0
+					if active || attached || win2kOrBelow {
+						screen := newScreen()
+
+						if (gflags&win32.DISPLAY_DEVICE_PRIMARY_DEVICE) > 0 && j == 1 {
+							screen.isDefaultScreen = true
+						}
+
+						screen.w32MonitorDeviceName = dd.GetDeviceName()
+						screen.w32GraphicsDeviceName = graphicsCardName
+
+						// It's difficult to get monitor name or model, and it's only available on Windows 7+
+						// eventually, we should try to fix this, but it seems mingw is missing the proper headers
+						// with these definitions.
 						//
-						flags := dd.GetStateFlags()
+						// See: http://msdn.microsoft.com/en-us/library/windows/hardware/ff553903(v=vs.85).aspx
+						//
+						monitorNum++
+						screen.name = fmt.Sprintf("Monitor %d - %s", monitorNum, graphicsCardString)
 
-						active := (flags & win32.DISPLAY_DEVICE_ACTIVE) > 0
-						attached := (flags & win32.DISPLAY_DEVICE_ATTACHED) > 0
-						if active || attached || win2kOrBelow {
-							screen := newScreen()
+						screen.dc = win32.CreateDC(screen.w32GraphicsDeviceName, "", nil)
+						if screen.dc != nil {
+							screen.physicalWidth = float32(win32.GetDeviceCaps(screen.dc, win32.HORZSIZE))
+							screen.physicalHeight = float32(win32.GetDeviceCaps(screen.dc, win32.VERTSIZE))
 
-							if (gflags&win32.DISPLAY_DEVICE_PRIMARY_DEVICE) > 0 && j == 1 {
-								screen.isDefaultScreen = true
-							}
+							screen.setGammaRampSize()
+							screen.setCurrentGammaRamp()
+							screen.setScreenModes()
 
-							screen.w32MonitorDeviceName = dd.GetDeviceName()
-							screen.w32GraphicsDeviceName = graphicsCardName
-
-							// It's difficult to get monitor name or model, and it's only available on Windows 7+
-							// eventually, we should try to fix this, but it seems mingw is missing the proper headers
-							// with these defines..
-							//
-							// See: http://msdn.microsoft.com/en-us/library/windows/hardware/ff553903(v=vs.85).aspx
-							//
-							monitorNum++
-							screen.name = fmt.Sprintf("Monitor %d - %s", monitorNum, graphicsCardString)
-
-							screen.dc = win32.CreateDC(screen.w32GraphicsDeviceName, "", nil)
-							if screen.dc != nil {
-								screen.physicalWidth = float32(win32.GetDeviceCaps(screen.dc, win32.HORZSIZE))
-								screen.physicalHeight = float32(win32.GetDeviceCaps(screen.dc, win32.VERTSIZE))
-
-								screen.setGammaRampSize()
-								screen.setCurrentGammaRamp()
-								screen.setScreenModes()
-
-								screens = append(screens, screen)
-							} else {
-								// This hopefully never happens, but if it does that means
-								// there is something wrong with this screen most likely or
-								// an graphics driver bug or something else, who knows?
-								logger.Println("CreateDC() on screen failed! Unable to create device context!")
-								logger.Println("^ Screen will be ignored!")
-							}
+							screens = append(screens, screen)
+						} else {
+							// This hopefully never happens, but if it does that means
+							// there is something wrong with this screen most likely or
+							// an graphics driver bug or something else, who knows?
+							logger.Println("CreateDC() on screen failed! Unable to create device context!")
+							logger.Println("^ Screen will be ignored!")
 						}
 					}
 				}
 			}
 		}
+	}
+
+	// Find the correct MONITORINFO struct for each screen and assign their w32Position properties
+	proc := func(hMonitor win32.HMONITOR, hdcMonitor win32.HDC, lprcMonitor *win32.RECT, dwData win32.LPARAM) bool {
+		mi := new(win32.MONITORINFOEX)
+		mi.SetSize()
+		if !win32.GetMonitorInfo(hMonitor, mi) {
+			logger.Println("Unable to detect monitor position; GetMonitorInfo():", win32.GetLastErrorString())
+		} else {
+			for _, screen := range screens {
+				if screen.(*w32Screen).w32GraphicsDeviceName == mi.Device() {
+					screen.(*w32Screen).w32Position = mi.RcMonitor
+				}
+			}
+		}
+
+		return true
+	}
+
+	if !win32.EnumDisplayMonitors(nil, nil, proc, 0) {
+		logger.Println("Unable to detect monitor positions; EnumDisplayMonitors():", win32.GetLastErrorString())
+	}
+	return
+}
+
+func backend_Screens() (screens []Screen) {
+	dispatch(func() {
+		screens = backend_doScreens()
 	})
 	return
 }

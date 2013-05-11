@@ -35,7 +35,10 @@ type Window interface {
 	// Opened tells weather there was an previous call to the Open function or not.
 	Opened() bool
 
-	// Screen returns the screen that this window was created on, via Open()
+	// OriginalScreen returns the screen that this window was created on, via Open()
+	OriginalScreen() Screen
+
+	// Screen returns the current screen that this window is on
 	Screen() Screen
 
 	// Destroy closes the window perminantly, after calling this function it is disallowed to call

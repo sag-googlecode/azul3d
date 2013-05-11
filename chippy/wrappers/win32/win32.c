@@ -26,3 +26,10 @@ DWORD win32_DEVMODE_dmDisplayFixedOutput(DEVMODE* dm) {
 	return dm->dmDisplayFixedOutput;
 }
 
+POINTL win32_DEVMODE_dmPosition(DEVMODE* dm) {
+	return dm->dmPosition;
+}
+
+
+MONITORENUMPROC win32_MonitorEnumProcCallbackHandle = MonitorEnumProcCallback;
+
