@@ -13,5 +13,7 @@ type DWORD uint32
 type UINT uint32
 
 type WORD uint16
+type USHORT uint16
 
 type LRESULT LONG_PTR
+

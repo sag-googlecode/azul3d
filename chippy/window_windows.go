@@ -40,7 +40,8 @@ type W32Window struct {
 	extentLeft, extentRight, extentBottom, extentTop, width, height, preFullscreenWidth,
 	preFullscreenHeight, minWidth, minHeight, maxWidth, maxHeight uint
 
-	x, y, preFullscreenX, preFullscreenY, cursorX, cursorY int
+	x, y, preFullscreenX, preFullscreenY, cursorX, cursorY, lastCursorX, lastCursorY,
+	preGrabCursorX, preGrabCursorY int
 
 	aspectRatio float32
 
@@ -79,9 +80,6 @@ func (w *W32Window) Open(screen Screen) (err error) {
 	}
 
 	w.cursors = make(map[*Cursor]*loadedCursor)
-	if w.cursor == nil {
-		w.cursor = defaultCursor
-	}
 	w.focused = true
 	w.addFocusedEvent(w.focused)
 	w.originalScreen = screen
@@ -99,11 +97,27 @@ func (w *W32Window) Open(screen Screen) (err error) {
 		w.extentTop = uint(borderHeight + titleHeight)
 
 		err = w.doRebuildWindow()
-		w.doSetIcon()
+		if err != nil {
+			return
+		}
+		w.doMakeIcon()
+
+		supportRawInput := w32VersionMajor >= 5 && w32VersionMinor >= 1
+		if supportRawInput {
+			rid := win32.RAWINPUTDEVICE{}
+			rid.UsagePage = win32.HID_USAGE_PAGE_GENERIC
+			rid.Usage = win32.HID_USAGE_GENERIC_MOUSE
+			rid.Flags = win32.RIDEV_INPUTSINK
+			rid.Target = w.hwnd
+			win32.RegisterRawInputDevices(&rid, 1, win32.UINT(unsafe.Sizeof(rid)))
+		}
 	})
 
 	unlock()
-	w.SetCursor(w.cursor)
+
+	if err == nil {
+		w.SetCursor(nil)
+	}
 	return
 }
 
@@ -530,15 +544,97 @@ func (w *W32Window) SetIcon(icon image.Image) {
 	if w.opened {
 		unlock()
 		dispatch(func() {
-			w.doSetIcon()
+			w.doMakeIcon()
 		})
 	}
 
 	w.icon = icon
 }
 
+func (w *W32Window) doPrepareCursor(cursor *Cursor) {
+	lc := new(loadedCursor)
+
+	cursorWidth := win32.GetSystemMetrics(win32.SM_CXCURSOR)
+	cursorHeight := win32.GetSystemMetrics(win32.SM_CYCURSOR)
+
+	cursorImage := resize.Resize(cursor.Image, cursor.Image.Bounds(), int(cursorWidth), int(cursorHeight))
+
+	cursorBitmapInfo := win32.BITMAPINFO{
+		BmiHeader: win32.BITMAPINFOHEADER{
+			Size: win32.DWORD(unsafe.Sizeof(win32.BITMAPINFOHEADER{})),
+			Width: win32.LONG(cursorWidth),
+			Height: win32.LONG(cursorHeight),
+			Planes: 1,
+			BitCount: 32,
+			Compression: win32.BI_RGB,
+			SizeImage: 0,
+			XPelsPerMeter: 0,
+			YPelsPerMeter: 0,
+			ClrUsed: 0,
+			ClrImportant: 0,
+		},
+	}
+
+	lc.cursorColorBitmap = win32.CreateCompatibleBitmap(w.dc, cursorWidth, cursorHeight)
+	lc.cursorColorBits = make([]uint32, cursorWidth * cursorHeight)
+	for y := 0; y < int(cursorHeight); y++ {
+		for x := 0; x < int(cursorWidth); x++ {
+			r, g, b, _ := cursorImage.At(x, y).RGBA()
+			c := (uint32(r >> 8) << 16) | (uint32(g >> 8) << 8) | (uint32(b >> 8) << 0)
+
+			index := (int(cursorHeight)-1 - y) * int(cursorWidth)
+			index += x
+			lc.cursorColorBits[index] = c //0xFF0000
+		}
+	}
+	if win32.SetDIBits(w.dc, lc.cursorColorBitmap, 0, win32.UINT(cursorHeight), unsafe.Pointer(&lc.cursorColorBits[0]), &cursorBitmapInfo, win32.DIB_RGB_COLORS) == 0 {
+		logger.Println("Unable to set cursor; SetDiBits():", win32.GetLastErrorString())
+		return
+	}
+
+	lc.cursorMaskBitmap = win32.CreateCompatibleBitmap(w.dc, cursorWidth, cursorHeight)
+	lc.cursorMaskBits = make([]uint32, cursorWidth * cursorHeight)
+	for y := 0; y < int(cursorHeight); y++ {
+		for x := 0; x < int(cursorWidth); x++ {
+			_, _, _, a := cursorImage.At(x, y).RGBA()
+			c := uint32(0xFFFFFF)
+			if a > 0 {
+				c = 0
+			}
+
+			index := (int(cursorHeight)-1 - y) * int(cursorWidth)
+			index += x
+			lc.cursorMaskBits[index] = c
+		}
+	}
+	if win32.SetDIBits(w.dc, lc.cursorMaskBitmap, 0, win32.UINT(cursorHeight), unsafe.Pointer(&lc.cursorMaskBits[0]), &cursorBitmapInfo, win32.DIB_RGB_COLORS) == 0 {
+		logger.Println("Unable to set cursor; SetDiBits():", win32.GetLastErrorString())
+		return
+	}
+
+	cursorInfo := win32.ICONINFO{
+		FIcon: 0,
+		XHotspot: win32.DWORD(cursor.X),
+		YHotspot: win32.DWORD(cursor.Y),
+		HbmMask: lc.cursorMaskBitmap,
+		HbmColor: lc.cursorColorBitmap,
+	}
+
+	lc.hCursor = win32.CreateIconIndirect(&cursorInfo)
+	if lc.hCursor == nil {
+		logger.Println("Unable to set cursor; CreateIconIndirect():", win32.GetLastErrorString())
+		return
+	}
+
+	w.cursors[cursor] = lc
+}
+
 func (w *W32Window) PrepareCursor(cursor *Cursor) {
 	w.panicIfDestroyed()
+
+	if cursor == nil {
+		panic("PrepareCursor(): Cannot prepare nil cursor!")
+	}
 
 	unlock := w.newAttemptUnlocker()
 	defer unlock()
@@ -552,87 +648,28 @@ func (w *W32Window) PrepareCursor(cursor *Cursor) {
 
 		unlock()
 		dispatch(func() {
-			lc := new(loadedCursor)
-
-			cursorWidth := win32.GetSystemMetrics(win32.SM_CXCURSOR)
-			cursorHeight := win32.GetSystemMetrics(win32.SM_CYCURSOR)
-
-			cursorImage := resize.Resize(cursor.Image, cursor.Image.Bounds(), int(cursorWidth), int(cursorHeight))
-
-			cursorBitmapInfo := win32.BITMAPINFO{
-				BmiHeader: win32.BITMAPINFOHEADER{
-					Size: win32.DWORD(unsafe.Sizeof(win32.BITMAPINFOHEADER{})),
-					Width: win32.LONG(cursorWidth),
-					Height: win32.LONG(cursorHeight),
-					Planes: 1,
-					BitCount: 32,
-					Compression: win32.BI_RGB,
-					SizeImage: 0,
-					XPelsPerMeter: 0,
-					YPelsPerMeter: 0,
-					ClrUsed: 0,
-					ClrImportant: 0,
-				},
-			}
-
-			lc.cursorColorBitmap = win32.CreateCompatibleBitmap(w.dc, cursorWidth, cursorHeight)
-			lc.cursorColorBits = make([]uint32, cursorWidth * cursorHeight)
-			for y := 0; y < int(cursorHeight); y++ {
-				for x := 0; x < int(cursorWidth); x++ {
-					r, g, b, _ := cursorImage.At(x, y).RGBA()
-					c := (uint32(r >> 8) << 16) | (uint32(g >> 8) << 8) | (uint32(b >> 8) << 0)
-
-					index := (int(cursorHeight)-1 - y) * int(cursorWidth)
-					index += x
-					lc.cursorColorBits[index] = c //0xFF0000
-				}
-			}
-			if win32.SetDIBits(w.dc, lc.cursorColorBitmap, 0, win32.UINT(cursorHeight), unsafe.Pointer(&lc.cursorColorBits[0]), &cursorBitmapInfo, win32.DIB_RGB_COLORS) == 0 {
-				logger.Println("Unable to set cursor; SetDiBits():", win32.GetLastErrorString())
-				return
-			}
-
-			lc.cursorMaskBitmap = win32.CreateCompatibleBitmap(w.dc, cursorWidth, cursorHeight)
-			lc.cursorMaskBits = make([]uint32, cursorWidth * cursorHeight)
-			for y := 0; y < int(cursorHeight); y++ {
-				for x := 0; x < int(cursorWidth); x++ {
-					_, _, _, a := cursorImage.At(x, y).RGBA()
-					c := uint32(0xFFFFFF)
-					if a > 0 {
-						c = 0
-					}
-
-					index := (int(cursorHeight)-1 - y) * int(cursorWidth)
-					index += x
-					lc.cursorMaskBits[index] = c
-				}
-			}
-			if win32.SetDIBits(w.dc, lc.cursorMaskBitmap, 0, win32.UINT(cursorHeight), unsafe.Pointer(&lc.cursorMaskBits[0]), &cursorBitmapInfo, win32.DIB_RGB_COLORS) == 0 {
-				logger.Println("Unable to set cursor; SetDiBits():", win32.GetLastErrorString())
-				return
-			}
-
-			cursorInfo := win32.ICONINFO{
-				FIcon: 0,
-				XHotspot: win32.DWORD(w.cursor.X),
-				YHotspot: win32.DWORD(w.cursor.Y),
-				HbmMask: lc.cursorMaskBitmap,
-				HbmColor: lc.cursorColorBitmap,
-			}
-
-			lc.hCursor = win32.CreateIconIndirect(&cursorInfo)
-			if lc.hCursor == nil {
-				logger.Println("Unable to set cursor; CreateIconIndirect():", win32.GetLastErrorString())
-				return
-			}
-
-			w.cursors[cursor] = lc
+			w.doPrepareCursor(cursor)
 		})
 	}
 }
 
 func (w *W32Window) FreeCursor(cursor *Cursor) {
 	w.panicIfDestroyed()
+
+	if cursor == nil {
+		panic("FreeCursor(): Cannot free nil cursor!")
+	}
+
+	// Special case: We're using this cursor right now
+	if cursor == w.Cursor() {
+		// Restore the default cursor first
+		w.SetCursor(defaultCursor)
+	}
+
+	// Special case: You cannot free the default cursor
+	if cursor == defaultCursor {
+		return
+	}
 
 	unlock := w.newAttemptUnlocker()
 	defer unlock()
@@ -643,12 +680,6 @@ func (w *W32Window) FreeCursor(cursor *Cursor) {
 
 		unlock()
 		dispatch(func() {
-			// Special case: We're using this cursor
-			if cursor == w.cursor {
-				// Restore the default cursor first
-				win32.SetCursor(win32.LoadCursor(nil, "IDC_ARROW"))
-			}
-
 			if !win32.DestroyCursor(win32.HCURSOR(lc.hCursor)) {
 				logger.Println("Failed to destroy cursor; DestroyCursor():", win32.GetLastErrorString())
 			}
@@ -675,18 +706,20 @@ func (w *W32Window) SetCursor(cursor *Cursor) {
 	unlock := w.newAttemptUnlocker()
 	defer unlock()
 
-	if w.opened {
-		lc, ok := w.cursors[cursor]
-		if ok {
-			w.loadedCursor = lc
-			unlock()
-			dispatch(func() {
-				w.doSetCursor()
-			})
+	if w.cursor != cursor {
+		w.cursor = cursor
+
+		if w.opened {
+			lc, ok := w.cursors[cursor]
+			if ok {
+				w.loadedCursor = lc
+				unlock()
+				dispatch(func() {
+					w.doSetCursor()
+				})
+			}
 		}
 	}
-
-	w.cursor = cursor
 }
 
 func (w *W32Window) SetCursorPosition(x, y int) {
@@ -703,9 +736,7 @@ func (w *W32Window) SetCursorPosition(x, y int) {
 		if w.opened {
 			unlock()
 			dispatch(func() {
-				if !win32.SetCursorPos(int32(w.x+w.cursorX), int32(w.y+w.cursorY)) {
-					logger.Println("Unable to set cursor position: SetCursorPos():", win32.GetLastErrorString())
-				}
+				w.doSetCursorPos()
 			})
 		}
 	}
@@ -714,19 +745,32 @@ func (w *W32Window) SetCursorPosition(x, y int) {
 func (w *W32Window) SetCursorGrabbed(grabbed bool) {
 	w.panicIfDestroyed()
 
-	// FIXME
 	unlock := w.newAttemptUnlocker()
 	defer unlock()
 
 	if w.cursorGrabbed != grabbed {
 		w.cursorGrabbed = grabbed
+		if w.cursorGrabbed {
+			w.preGrabCursorX = w.cursorX
+			w.preGrabCursorY = w.cursorY
+		} else {
+			w.cursorX = w.preGrabCursorX
+			w.cursorY = w.preGrabCursorY
+		}
+		if w.opened {
+			unlock()
+			dispatch(func() {
+				w.doSetCursor()
+				w.doSetCursorPos()
+			})
+		}
 	}
 }
 
 func (w *W32Window) String() string {
 	w.access.RLock()
 	defer w.access.RUnlock()
-	return fmt.Sprintf("Window(title=\"%s\", focused=%t, visible=%t, decorated=%t, transparent=%t, minimized=%t, maximized=%t, fullscreen=%t, alwaysOnTop=%t, cursorGrabbed=%t, extents=[%d, %d, %d, %d], size=%dx%dpx, minimumSize=%dx%dpx, maximumSize=%dx%dpx, position=%dx%d, cursorPosition=%dx%d)", w.title, w.focused, w.visible, w.decorated, w.transparent, w.minimized, w.maximized, w.fullscreen, w.alwaysOnTop, w.cursorGrabbed, w.extentLeft, w.extentRight, w.extentBottom, w.extentTop, w.width, w.height, w.minWidth, w.minHeight, w.maxWidth, w.maxHeight, w.x, w.y, w.cursorX, w.cursorY)
+	return fmt.Sprintf("Window(title=%q, focused=%t, visible=%t, decorated=%t, transparent=%t, minimized=%t, maximized=%t, fullscreen=%t, alwaysOnTop=%t, cursorGrabbed=%t, extents=[%d, %d, %d, %d], size=%dx%dpx, minimumSize=%dx%dpx, maximumSize=%dx%dpx, position=%dx%d, cursorPosition=%dx%d)", w.title, w.focused, w.visible, w.decorated, w.transparent, w.minimized, w.maximized, w.fullscreen, w.alwaysOnTop, w.cursorGrabbed, w.extentLeft, w.extentRight, w.extentBottom, w.extentTop, w.width, w.height, w.minWidth, w.minHeight, w.maxWidth, w.maxHeight, w.x, w.y, w.cursorX, w.cursorY)
 }
 
 func (w *W32Window) Opened() bool {
@@ -897,7 +941,7 @@ func (w *W32Window) newAttemptUnlocker() (unlock func()) {
 	}
 }
 
-func (w *W32Window) doSetIcon() {
+func (w *W32Window) doMakeIcon() {
 	///////////////////
 	// Standard icon //
 	///////////////////
@@ -987,8 +1031,6 @@ func (w *W32Window) doSetIcon() {
 		return
 	}
 
-	win32.SendMessage(w.hwnd, win32.WM_SETICON, win32.ICON_BIG, win32.LPARAM(uintptr(unsafe.Pointer(w.hIcon))))
-
 	////////////////
 	// Small icon //
 	////////////////
@@ -1077,15 +1119,46 @@ func (w *W32Window) doSetIcon() {
 		logger.Println("Unable to set icon; CreateIconIndirect():", win32.GetLastErrorString())
 		return
 	}
+	w.doSetIcon()
+}
 
+func (w *W32Window) doSetIcon() {
+	win32.SendMessage(w.hwnd, win32.WM_SETICON, win32.ICON_BIG, win32.LPARAM(uintptr(unsafe.Pointer(w.hIcon))))
 	win32.SendMessage(w.hwnd, win32.WM_SETICON, win32.ICON_SMALL, win32.LPARAM(uintptr(unsafe.Pointer(w.hSmIcon))))
 }
 
 func (w *W32Window) doSetCursor() {
 	if w.cursorWithin {
+		if w.cursorGrabbed {
+			win32.SetCursor(nil)
+			return
+		}
+
+		if w.loadedCursor == nil && w.cursor != nil {
+			w.doPrepareCursor(w.cursor)
+			lc, ok := w.cursors[w.cursor]
+			if ok {
+				w.loadedCursor = lc
+			}
+		}
+
 		if w.loadedCursor != nil {
 			win32.SetCursor(win32.HCURSOR(w.loadedCursor.hCursor))
 		}
+	}
+}
+
+func (w *W32Window) doSetCursorPos() {
+	if w.cursorGrabbed {
+		if !w.cursorWithin {
+			return
+		}
+		w.cursorX = int(w.width / 2)
+		w.cursorY = int(w.height / 2)
+	}
+
+	if !win32.SetCursorPos(int32(w.x+w.cursorX), int32(w.y+w.cursorY)) {
+		logger.Println("Unable to set cursor position: SetCursorPos():", win32.GetLastErrorString())
 	}
 }
 
@@ -1113,10 +1186,9 @@ func (w *W32Window) doUpdateStyle() {
 	originalStyle := win32.GetWindowLongPtr(w.hwnd, win32.GWL_STYLE)
 
 	if w.decorated && !w.fullscreen {
-		w.styleFlags |= win32.WS_OVERLAPPEDWINDOW
-		w.styleFlags |= win32.WS_BORDER
+		w.styleFlags = win32.WS_OVERLAPPEDWINDOW
 	} else {
-		w.styleFlags ^= win32.WS_OVERLAPPEDWINDOW
+		w.styleFlags = win32.WS_SYSMENU | win32.WS_POPUP | win32.WS_CLIPCHILDREN | win32.WS_CLIPSIBLINGS
 	}
 
 	if w.visible {
@@ -1147,6 +1219,11 @@ func (w *W32Window) doSetWindowPos() {
 	x = win32.Int(r.Left()) + x
 	y = win32.Int(r.Top()) + y
 
+	if !w.decorated {
+		x += win32.Int(w.extentLeft)
+		y += win32.Int(w.extentTop)
+	}
+
 	// Clip to maxWidth/maxHeight and minWidth/minHeight, append extents so that width/height is
 	// the client region specifically.
 	width := float64(w.width)
@@ -1154,16 +1231,19 @@ func (w *W32Window) doSetWindowPos() {
 		width = math.Min(float64(w.width), float64(w.maxWidth))
 	}
 	width = math.Max(width, float64(w.minWidth))
-	width += float64(w.extentLeft)
-	width += float64(w.extentRight)
 
 	height := float64(w.height)
 	if w.maxHeight > 0 {
 		height = math.Min(height, float64(w.maxHeight))
 	}
 	height = math.Max(height, float64(w.minHeight))
-	height += float64(w.extentBottom)
-	height += float64(w.extentTop)
+
+	if w.decorated {
+		width += float64(w.extentLeft)
+		width += float64(w.extentRight)
+		height += float64(w.extentBottom)
+		height += float64(w.extentTop)
+	}
 
 	ratio := w.aspectRatio
 	if ratio != 0.0 {
@@ -1381,7 +1461,7 @@ func mainWindowProc(hwnd win32.HWND, msg win32.UINT, wParam win32.WPARAM, lParam
 						screen.(*w32Screen).w32Position = mi.RcMonitor
 
 						w.screen = screen
-						// FIXME: addScreenChangedEvent()
+						w.addScreenChangedEvent(w.screen)
 						return 0
 					}
 				}
@@ -1427,26 +1507,30 @@ func mainWindowProc(hwnd win32.HWND, msg win32.UINT, wParam win32.WPARAM, lParam
 			return 0
 
 		case win32.WM_MOUSEMOVE:
-			xPos := int(int16(lParam))
-			yPos := int(int16((uint32(lParam) >> 16) & 0xFFFF))
+			xPos := float64(int16(lParam))
+			yPos := float64(int16((uint32(lParam) >> 16) & 0xFFFF))
 
-			if w.cursorX != xPos || w.cursorY != yPos {
+			if float64(w.cursorX) != xPos || float64(w.cursorY) != yPos {
 				if xPos < 0 {
 					xPos = 0
 				}
 				if yPos < 0 {
 					yPos = 0
 				}
-				w.cursorX = xPos
-				w.cursorY = yPos
+				w.cursorX = int(xPos)
+				w.cursorY = int(yPos)
 
-				w.addCursorPositionEvent([]int{w.cursorX, w.cursorY})
+				if !w.cursorGrabbed {
+					w.addCursorPositionEvent([]float64{float64(w.cursorX), float64(w.cursorY)})
+				}
 			}
 
 			if w.cursorX >= int(w.width) || w.cursorY >= int(w.height) || w.cursorX <= 0 || w.cursorY <= 0 || !w.focused {
 				// Better than WM_MOUSELEAVE
 				if w.cursorWithin {
-					win32.ReleaseCapture()
+					if !w.cursorGrabbed {
+						win32.ReleaseCapture()
+					}
 
 					w.cursorWithin = false
 					w.addCursorWithinEvent(w.cursorWithin)
@@ -1460,12 +1544,44 @@ func mainWindowProc(hwnd win32.HWND, msg win32.UINT, wParam win32.WPARAM, lParam
 					w.addCursorWithinEvent(w.cursorWithin)
 				}
 			}
+
+			if w.cursorGrabbed {
+				supportRawInput := w32VersionMajor >= 5 && w32VersionMinor >= 1
+				halfWidth := int(w.width / 2)
+				halfHeight := int(w.height / 2)
+
+				if w.cursorX != halfWidth || w.cursorY != halfHeight {
+					if !supportRawInput {
+						// If we have no support for raw mouse input, then we need to fall back to finding
+						// the mouse movement on our own.
+						diffX := w.cursorX - halfWidth
+						diffY := w.cursorY - halfHeight
+						if diffX != 0 || diffY != 0 {
+							w.addCursorPositionEvent([]float64{float64(diffX), float64(diffY)})
+						}
+					}
+					w.doSetCursorPos()
+				}
+			}
 			w.doSetCursor()
 			return 0
 
-		case win32.WM_MOUSELEAVE:
-		// Unreliable! Check against client area in WM_MOUSEMOVE instead
-			logger.Println("WM_MOUSELEAVE")
+		case win32.WM_INPUT:
+			if w.cursorWithin && w.cursorGrabbed {
+				var raw win32.RAWINPUT
+				cbSize := win32.UINT(unsafe.Sizeof(raw))
+
+				win32.GetRawInputData((win32.HRAWINPUT)(unsafe.Pointer(uintptr(lParam))), win32.RID_INPUT, unsafe.Pointer(&raw), &cbSize, win32.UINT(unsafe.Sizeof(win32.RAWINPUTHEADER{})))
+
+				if raw.Header().Type == win32.RIM_TYPEMOUSE {
+					diffX := raw.Mouse().LastX()
+					diffY := raw.Mouse().LastY()
+					if diffX != 0 || diffY != 0 {
+						w.addCursorPositionEvent([]float64{float64(diffX), float64(diffY)})
+					}
+				}
+			}
+			return 0
 
 		// Mouse Buttons
 		case win32.WM_LBUTTONDOWN:
@@ -1572,3 +1688,4 @@ func (w *W32Window) panicUnlessOpen() {
 func backend_NewWindow() Window {
 	return new(W32Window)
 }
+

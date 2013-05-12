@@ -35,9 +35,9 @@ MONITORENUMPROC win32_MonitorEnumProcCallbackHandle;
 import "C"
 
 import (
-	"sync"
 	"unicode/utf16"
 	"unsafe"
+	"sync"
 )
 
 // UTF16ToString returns the UTF-8 encoding of the UTF-16 sequence s,
@@ -626,6 +626,7 @@ func WndProcCallback(hwnd C.HWND, msg C.UINT, wParam C.WPARAM, lParam C.LPARAM) 
 }
 
 func (w *WNDCLASSEX) SetLpfnWndProc() {
+
 	w.lpfnWndProc = C.win32_WndProcWrapperHandle
 }
 
@@ -1091,6 +1092,12 @@ const (
 
 	WM_MOVE = C.WM_MOVE
 
+	WM_INPUT = C.WM_INPUT
+
+	GIDC_ARRIVAL = 1
+	GIDC_REMOVAL = 2
+	WM_INPUT_DEVICE_CHANGE = 0x00FE
+
 	MONITOR_DEFAULTTONEAREST = C.MONITOR_DEFAULTTONEAREST
 	WM_EXITSIZEMOVE = C.WM_EXITSIZEMOVE
 
@@ -1479,5 +1486,88 @@ func SetPixelFormat(hdc HDC, iPixelFormat Int, ppfd *PIXELFORMATDESCRIPTOR) bool
 
 func SwapBuffers(hdc HDC) bool {
 	return C.SwapBuffers(C.HDC(hdc)) != 0
+}
+
+
+const(
+	HID_USAGE_PAGE_GENERIC USHORT = 0x01
+	HID_USAGE_GENERIC_MOUSE USHORT = 0x02
+	RIDEV_INPUTSINK = C.RIDEV_INPUTSINK
+
+	RID_INPUT = C.RID_INPUT
+	RIM_TYPEMOUSE = C.RIM_TYPEMOUSE
+)
+
+type RAWINPUTHEADER struct {
+	Type DWORD
+	Size DWORD
+	Device unsafe.Pointer
+	Param WPARAM
+}
+
+type RAWMOUSE C.RAWMOUSE
+/*
+typedef struct tagRAWMOUSE {
+  USHORT usFlags;
+  union {
+    ULONG  ulButtons;
+    struct {
+      USHORT usButtonFlags;
+      USHORT usButtonData;
+    };
+  };
+  ULONG  ulRawButtons;
+  LONG   lLastX;
+  LONG   lLastY;
+  ULONG  ulExtraInformation;
+} RAWMOUSE, *PRAWMOUSE, *LPRAWMOUSE;
+*/
+func (c *RAWMOUSE) LastX() LONG {
+	return LONG(c.lLastX)
+}
+func (c *RAWMOUSE) LastY() LONG {
+	return LONG(c.lLastY)
+}
+
+type RAWINPUT C.RAWINPUT
+/*
+typedef struct tagRAWINPUT {
+  RAWINPUTHEADER header;
+  union {
+    RAWMOUSE    mouse;
+    RAWKEYBOARD keyboard;
+    RAWHID      hid;
+  } data;
+} RAWINPUT, *PRAWINPUT, *LPRAWINPUT;
+*/
+
+func (c *RAWINPUT) Header() *RAWINPUTHEADER {
+	return (*RAWINPUTHEADER)(unsafe.Pointer(&c.header))
+}
+
+func (c *RAWINPUT) Mouse() *RAWMOUSE {
+	x := (*RAWMOUSE)(unsafe.Pointer(&c.data[0]))
+	return x
+}
+
+type RAWINPUTDEVICE struct {
+	UsagePage USHORT
+	Usage USHORT
+	Flags DWORD
+	Target HWND
+}
+
+func RegisterRawInputDevices(pRawInputDevices *RAWINPUTDEVICE, uiNumDevices UINT, cbSize UINT) bool {
+	return C.RegisterRawInputDevices((C.PCRAWINPUTDEVICE)(unsafe.Pointer(pRawInputDevices)), C.UINT(uiNumDevices), C.UINT(cbSize)) != 0
+}
+
+func GetRegisteredRawInputDevices(pRawInputDevices *RAWINPUTDEVICE, puiNumDevices *UINT, cbSize UINT) UINT {
+	return UINT(C.GetRegisteredRawInputDevices((C.PRAWINPUTDEVICE)(unsafe.Pointer(pRawInputDevices)), (C.PUINT)(unsafe.Pointer(puiNumDevices)), C.UINT(cbSize)))
+}
+
+type HRAWINPUT C.HRAWINPUT
+
+func GetRawInputData(hRawInput HRAWINPUT, uiCommand UINT, pData unsafe.Pointer, pcbSize *UINT, cbSizeHeader UINT) UINT {
+	return UINT(C.GetRawInputData(C.HRAWINPUT(hRawInput), C.UINT(uiCommand), (C.LPVOID)(pData), (C.PUINT)(unsafe.Pointer(pcbSize)), C.UINT(cbSizeHeader)))
 }
 
