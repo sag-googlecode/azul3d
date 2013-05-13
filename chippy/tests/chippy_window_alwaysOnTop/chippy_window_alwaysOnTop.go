@@ -57,6 +57,13 @@ func main() {
 	window1.SetAlwaysOnTop(false)
 	window2.SetAlwaysOnTop(false)
 
+	// Just wait an while
+	log.Println("Waiting 5 seconds...")
+	<-time.After(5 * time.Second)
+
+	window1.SetAlwaysOnTop(true)
+	window2.SetAlwaysOnTop(true)
+
 	// Just wait an while so they can enjoy the window
 	log.Println("Waiting 15 seconds...")
 	<-time.After(15 * time.Second)

@@ -30,6 +30,9 @@ POINTL win32_DEVMODE_dmPosition(DEVMODE* dm) {
 	return dm->dmPosition;
 }
 
+LPTSTR macro_MAKEINTRESOURCE(WORD wInteger) {
+	return MAKEINTRESOURCE(wInteger);
+}
 
 MONITORENUMPROC win32_MonitorEnumProcCallbackHandle = MonitorEnumProcCallback;
 

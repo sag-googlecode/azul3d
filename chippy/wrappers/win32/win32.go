@@ -17,7 +17,7 @@ package win32
 #define UNICODE
 #include <windows.h>
 
-#cgo LDFLAGS: -luser32 -lgdi32 -lkernel32
+#cgo LDFLAGS: -luser32 -lgdi32 -lkernel32 -lmsimg32
 
 WORD win32_MAKELANGID(USHORT usPrimaryLanguage, USHORT usSubLanguage);
 void win32_SetLPTSTRAtIndex(LPTSTR array, int index, WORD v);
@@ -31,6 +31,9 @@ DWORD win32_DEVMODE_dmDisplayFixedOutput(DEVMODE* dm);
 POINTL win32_DEVMODE_dmPosition(DEVMODE* dm);
 
 MONITORENUMPROC win32_MonitorEnumProcCallbackHandle;
+
+LPTSTR macro_MAKEINTRESOURCE(WORD wInteger);
+
 */
 import "C"
 
@@ -51,6 +54,8 @@ func UTF16ToString(s []uint16) string {
 	}
 	return string(utf16.Decode(s))
 }
+
+type LPTSTR C.LPTSTR
 
 func LPTSTRToString(cstr C.LPTSTR) string {
 	if cstr == nil {
@@ -1315,10 +1320,50 @@ func DeleteObject(object HGDIOBJ) bool {
 	return C.DeleteObject(C.HGDIOBJ(object)) != 0
 }
 
-func LoadCursor(hinstance HINSTANCE, lpCursorName string) HCURSOR {
-	cstr := StringToLPTSTR(lpCursorName)
-	defer C.free(unsafe.Pointer(cstr))
-	return HCURSOR(C.LoadCursor(C.HINSTANCE(hinstance), cstr))
+func SelectObject(hdc HDC, hgdiobj HGDIOBJ) HGDIOBJ {
+	return HGDIOBJ(C.SelectObject(C.HDC(hdc), C.HGDIOBJ(hgdiobj)))
+}
+
+func CreateCompatibleDC(hdc HDC) HDC {
+	return HDC(C.CreateCompatibleDC(C.HDC(hdc)))
+}
+
+const(
+	NULL_BRUSH = C.NULL_BRUSH
+	BLACK_BRUSH = C.BLACK_BRUSH
+)
+
+func GetStockObject(fnObject Int) HGDIOBJ {
+	return HGDIOBJ(C.GetStockObject(C.int(fnObject)))
+}
+
+func FillRect(hdc HDC, rect *RECT, hbr HBRUSH) bool {
+	return C.FillRect(C.HDC(hdc), (*C.RECT)(unsafe.Pointer(rect)), C.HBRUSH(hbr)) != 0
+}
+
+type BLENDFUNCTION struct {
+	BlendOp BYTE
+	BlendFlags BYTE
+	SourceConstantAlpha BYTE
+	AlphaFormat BYTE
+}
+
+const(
+	AC_SRC_OVER = C.AC_SRC_OVER
+	AC_SRC_ALPHA = C.AC_SRC_ALPHA
+)
+
+func AlphaBlend(hdcDest HDC, xoriginDest, yoriginDest, wDest, hDest Int, hdcSrc HDC, xoriginSrc, yoriginSrc, wSrc, hSrc Int, ftn *BLENDFUNCTION) bool {
+	return C.AlphaBlend(C.HDC(hdcDest), C.int(xoriginDest), C.int(yoriginDest), C.int(wDest), C.int(hDest), C.HDC(hdcSrc), C.int(xoriginSrc), C.int(yoriginSrc), C.int(wSrc), C.int(hSrc), *(*C.BLENDFUNCTION)(unsafe.Pointer(ftn))) != 0
+}
+
+
+var(
+	IDC_ARROW = LPTSTR(C.macro_MAKEINTRESOURCE(32512))
+)
+
+func LoadCursor(hinstance HINSTANCE, lpCursorName LPTSTR) HCURSOR {
+	return HCURSOR(C.LoadCursor(C.HINSTANCE(hinstance), C.LPTSTR(lpCursorName)))
 }
 
 func DestroyCursor(cursor HCURSOR) bool {

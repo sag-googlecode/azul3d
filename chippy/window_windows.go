@@ -60,6 +60,11 @@ type W32Window struct {
 	styleFlags                                                               win32.DWORD
 	lastWmSizingLeft, lastWmSizingRight, lastWmSizingBottom, lastWmSizingTop win32.LONG
 
+	// Blit things here
+	blitBitmap win32.HBITMAP
+	blitBitmapDc win32.HDC
+	blitBits []uint32
+
 	// OpenGL things here
 	glConfig *GLConfig
 	glPixelFormatSet bool
@@ -251,6 +256,95 @@ func (w *W32Window) Notify() {
 			<-time.After(blinkDelay)
 		}
 	}()
+}
+
+func (w *W32Window) PixelClear(x, y, width, height uint) {
+	if !w.opened {
+		return
+	}
+
+	dispatch(func() {
+		r := &win32.RECT{}
+		r.SetLeft(win32.LONG(x))
+		r.SetTop(win32.LONG(y))
+		r.SetBottom(win32.LONG(y + height))
+		r.SetRight(win32.LONG(x + width))
+		win32.FillRect(w.dc, r, win32.HBRUSH(win32.GetStockObject(win32.BLACK_BRUSH)))
+	})
+}
+
+func (w *W32Window) PixelBlit(x, y uint, image image.Image) {
+	if !w.opened {
+		return
+	}
+
+	dispatch(func() {
+		if w.blitBitmap != nil{
+			if !win32.DeleteDC(w.blitBitmapDc) {
+				logger.Println("Unable to delete blit bitmap; DeleteDC():", win32.GetLastErrorString())
+			}
+
+			if !win32.DeleteObject(win32.HGDIOBJ(w.blitBitmap)) {
+				logger.Println("Unable to delete blit bitmap; DeleteObject():", win32.GetLastErrorString())
+			}
+		}
+
+		bounds := image.Bounds()
+		width := uint(bounds.Max.X)
+		height := uint(bounds.Max.Y)
+
+		w.blitBitmapDc = win32.CreateCompatibleDC(w.dc)
+		w.blitBitmap = win32.CreateCompatibleBitmap(w.dc, win32.Int(width), win32.Int(height))
+		if win32.SelectObject(w.blitBitmapDc, win32.HGDIOBJ(w.blitBitmap)) == nil {
+			logger.Println("Unable to blit; SelectObject():", win32.GetLastErrorString())
+			return
+		}
+
+		w.blitBits = make([]uint32, width * height)
+
+		for y := 0; y < int(height); y++ {
+			for x := 0; x < int(width); x++ {
+				r, g, b, a := image.At(x, y).RGBA()
+				c := (uint32(a >> 8) << 24) | (uint32(r >> 8) << 16) | (uint32(g >> 8) << 8) | (uint32(b >> 8) << 0)
+
+				index := (int(height)-1 - y) * int(width)
+				index += x
+				w.blitBits[index] = c
+			}
+		}
+
+		bitmapInfo := win32.BITMAPINFO{
+			BmiHeader: win32.BITMAPINFOHEADER{
+				Size: win32.DWORD(unsafe.Sizeof(win32.BITMAPINFOHEADER{})),
+				Width: win32.LONG(width),
+				Height: win32.LONG(height),
+				Planes: 1,
+				BitCount: 32,
+				Compression: win32.BI_RGB,
+				SizeImage: 0,
+				XPelsPerMeter: 0,
+				YPelsPerMeter: 0,
+				ClrUsed: 0,
+				ClrImportant: 0,
+			},
+		}
+		if win32.SetDIBits(w.dc, w.blitBitmap, 0, win32.UINT(height), unsafe.Pointer(&w.blitBits[0]), &bitmapInfo, win32.DIB_RGB_COLORS) == 0 {
+			logger.Println("Unable to blit; SetDiBits():", win32.GetLastErrorString())
+			return
+		}
+
+		blend := win32.BLENDFUNCTION{
+			BlendOp: win32.AC_SRC_OVER,
+			BlendFlags: 0,
+			SourceConstantAlpha: 255,
+			AlphaFormat: win32.AC_SRC_ALPHA,
+		}
+
+		if !win32.AlphaBlend(w.dc, win32.Int(x), win32.Int(y), win32.Int(width), win32.Int(height), w.blitBitmapDc, 0, 0, win32.Int(width), win32.Int(height), &blend) {
+			logger.Println("Unable to blit: TransparentBlt():", win32.GetLastErrorString())
+			return
+		}
+	})
 }
 
 func (w *W32Window) SetTransparent(transparent bool) {
@@ -663,12 +757,7 @@ func (w *W32Window) FreeCursor(cursor *Cursor) {
 	// Special case: We're using this cursor right now
 	if cursor == w.Cursor() {
 		// Restore the default cursor first
-		w.SetCursor(defaultCursor)
-	}
-
-	// Special case: You cannot free the default cursor
-	if cursor == defaultCursor {
-		return
+		w.SetCursor(nil)
 	}
 
 	unlock := w.newAttemptUnlocker()
@@ -681,15 +770,15 @@ func (w *W32Window) FreeCursor(cursor *Cursor) {
 		unlock()
 		dispatch(func() {
 			if !win32.DestroyCursor(win32.HCURSOR(lc.hCursor)) {
-				logger.Println("Failed to destroy cursor; DestroyCursor():", win32.GetLastErrorString())
+				logger.Println("Failed to free cursor; DestroyCursor():", win32.GetLastErrorString())
 			}
 
 			if !win32.DeleteObject(win32.HGDIOBJ(lc.cursorColorBitmap)) {
-				logger.Println("Failed to destroy cursor; DeleteObject(cursorColorBitmap) failed!")
+				logger.Println("Failed to free cursor; DeleteObject(cursorColorBitmap) failed!")
 			}
 
 			if !win32.DeleteObject(win32.HGDIOBJ(lc.cursorMaskBitmap)) {
-				logger.Println("Failed to destroy cursor; DeleteObject(cursorMaskBitmap) failed!")
+				logger.Println("Failed to free cursor; DeleteObject(cursorMaskBitmap) failed!")
 			}
 		})
 	}
@@ -698,26 +787,22 @@ func (w *W32Window) FreeCursor(cursor *Cursor) {
 func (w *W32Window) SetCursor(cursor *Cursor) {
 	w.panicIfDestroyed()
 
-	if cursor == nil {
-		cursor = defaultCursor
+	if cursor != nil {
+		w.PrepareCursor(cursor)
 	}
-	w.PrepareCursor(cursor)
 
 	unlock := w.newAttemptUnlocker()
 	defer unlock()
 
 	if w.cursor != cursor {
 		w.cursor = cursor
+		w.loadedCursor = nil
 
 		if w.opened {
-			lc, ok := w.cursors[cursor]
-			if ok {
-				w.loadedCursor = lc
-				unlock()
-				dispatch(func() {
-					w.doSetCursor()
-				})
-			}
+			unlock()
+			dispatch(func() {
+				w.doSetCursor()
+			})
 		}
 	}
 }
@@ -1134,11 +1219,25 @@ func (w *W32Window) doSetCursor() {
 			return
 		}
 
-		if w.loadedCursor == nil && w.cursor != nil {
-			w.doPrepareCursor(w.cursor)
-			lc, ok := w.cursors[w.cursor]
-			if ok {
-				w.loadedCursor = lc
+		if w.loadedCursor == nil {
+			if w.cursor != nil {
+				// Cursor is just not prepared yet.
+				w.doPrepareCursor(w.cursor)
+
+				lc, ok := w.cursors[w.cursor]
+				if ok {
+					w.loadedCursor = lc
+				}
+
+			} else {
+				// There is no cursor.
+				lc := new(loadedCursor)
+				lc.hCursor = win32.HICON(win32.LoadCursor(nil, win32.IDC_ARROW))
+				if lc.hCursor == nil {
+					logger.Println("Unable to load default (IDC_ARROW) cursor! LoadCursor():", win32.GetLastErrorString())
+				} else {
+					w.loadedCursor = lc
+				}
 			}
 		}
 

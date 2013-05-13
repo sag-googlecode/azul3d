@@ -18,6 +18,7 @@ type Cursor struct {
 
 // Window represents an single window, it will be non-visible untill the Open function is called.
 type Window interface {
+	BlitRenderable
 	GLRenderable
 
 	// String returns an string representation of this Window
