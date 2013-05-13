@@ -50,6 +50,15 @@ func versionSupported(ver string, wantedMajor, wantedMinor int) bool {
 	return false
 }
 
+type GLContextFlags uint8
+
+const(
+	GLDebug GLContextFlags = iota
+	GLForwardCompatible
+	GLCoreProfile
+	GLCompatibilityProfile
+)
+
 type GLContext interface {
 	// Like wglShareLists(thisContext, c)
 	Share(c GLContext)
@@ -60,29 +69,60 @@ type GLRenderable interface {
 	// may be used in an call to GLSetConfig.
 	GLConfigs() []*GLConfig
 
-	// GLSetConfig sets the OpenGL configuration, this action may only be performed once, if you
-	// attempt to call this function twice, it will become no-op.
+	// GLSetConfig sets the OpenGL framebuffer configuration, unlike other window management
+	// libraries, this action may be performed multiple times.
 	//
 	// The config parameter must be an *GLConfig that originally came from the GLConfigs() function
-	// due to the fact that it must be initialized internally.
+	// mainly do to the fact that it must be initialized internally.
 	GLSetConfig(config *GLConfig)
 
-	// GLConfig returns the *GLConfig or nil, as it was previously set via GLSetConfig
+	// GLConfig returns the currently in use *GLConfig or nil, as it was previously set via an call
+	// to GLSetConfig()
 	GLConfig() *GLConfig
 
 	// GLCreateContext creates an OpenGL context for the specified OpenGL version, or returns
 	// an error in the event that we cannot create an context for that version.
-	GLCreateContext(major, minor uint) (GLContext, error)
+	//
+	// The flags parameter may be any combination of the predifined flags, as follows:
+	//
+	// GLDebug, you will receive an OpenGL debug context. *
+	//
+	// GLForwardCompatible, you will receive an OpenGL forward compatible context. *
+	//
+	// GLCoreProfile, you will receive an OpenGL core context.
+	//
+	// GLCompatibilityProfile, you will receive an OpenGL compatibility context.
+	//
+	// Only one of GLCoreProfile or GLCompatibilityProfile should be present.
+	//
+	// GLCompatabilityProfile will be used if neither GLCoreProfile or GLCompatibilityProfile are
+	// present, or if both are present.
+	//
+	// * = It is not advised to use this flag in production.
+	// 
+	// You must call GLSetConfig() before calling this function.
+	GLCreateContext(major, minor uint, flags GLContextFlags) (GLContext, error)
 
 	// GLDestroyContext destroys the specified OpenGL context.
+	//
+	// The context to destroy must not be active in any thread, period.
 	GLDestroyContext(c GLContext)
 
-	// GLMakeCurrent makes the specified context the current rendering context for this Renderable
-	// in the current OS thread.
+	// GLMakeCurrent makes the specified context the current, active OpenGL context in the current
+	// operating system thread.
+	//
+	// To make the OpenGL context inactive, you may call this function using nil as the context,
+	// which will release the context.
+	//
+	// This function may be called from any thread, but an OpenGL context may only be active inside
+	// one thread at an time.
 	GLMakeCurrent(c GLContext)
 
-	// GLSwapBuffers swaps the front and back buffers of this Renderable, if the GLConfig set
-	// previously via GLSetConfig is not DoubleBuffered, then this function is no-op and is safe to
-	// call.
+	// GLSwapBuffers swaps the front and back buffers of this Renderable.
+	//
+	// This function may only be called in the presence of an active OpenGL context.
+	//
+	// If the GLConfig set previously via GLSetConfig() is not DoubleBuffered, then this function
+	// is no-op.
 	GLSwapBuffers()
 }

@@ -135,7 +135,7 @@ func (w *W32Window) GLConfig() *GLConfig {
 	return w.glConfig
 }
 
-func (w *W32Window) GLCreateContext(glVersionMajor, glVersionMinor uint) (GLContext, error) {
+func (w *W32Window) GLCreateContext(glVersionMajor, glVersionMinor uint, flags GLContextFlags) (GLContext, error) {
 	if w.glConfig == nil {
 		panic("Must call GLSetConfig() before GLCreateContext()!")
 	}
@@ -155,20 +155,47 @@ func (w *W32Window) GLCreateContext(glVersionMajor, glVersionMinor uint) (GLCont
 			return
 		}
 
-		attribs := []win32.Int{
-			win32.WGL_CONTEXT_MAJOR_VERSION_ARB, win32.Int(glVersionMajor),
-			win32.WGL_CONTEXT_MINOR_VERSION_ARB, win32.Int(glVersionMinor),
-			//win32.WGL_CONTEXT_FLAGS_ARB, win32.WGL_CONTEXT_FORWARD_COMPATIBLE_BIT_ARB,
-			//win32.WGL_CONTEXT_PROFILE_MASK_ARB, win32.WGL_CONTEXT_COMPATIBILITY_PROFILE_BIT_ARB,
-			0, 0,
-		}
-
-		//win32.WGL_CONTEXT_FLAGS_ARB, 0,
-		//win32.WGL_CONTEXT_PROFILE_MASK_ARB, win32.WGL_CONTEXT_COMPATIBILITY_PROFILE_BIT_ARB,
-
 		extensions, ok := win32.WglGetExtensionsStringARB(w.dc)
 
 		if extSupported(extensions, "WGL_ARB_create_context") {
+			attribs := []win32.Int{}
+
+			// Major version
+			attribs = append(attribs, win32.WGL_CONTEXT_MAJOR_VERSION_ARB)
+			attribs = append(attribs, win32.Int(glVersionMajor))
+
+			// Minor version
+			attribs = append(attribs, win32.WGL_CONTEXT_MINOR_VERSION_ARB)
+			attribs = append(attribs, win32.Int(glVersionMinor))
+
+			// Forward compat & debug
+			wglFlags := win32.Int(0)
+			if (flags & GLForwardCompatible) > 0 {
+				wglFlags |= win32.WGL_CONTEXT_FORWARD_COMPATIBLE_BIT_ARB
+			}
+			if (flags & GLDebug) > 0 {
+				wglFlags |= win32.WGL_CONTEXT_DEBUG_BIT_ARB
+			}
+			if wglFlags != 0 {
+				attribs = append(attribs, win32.WGL_CONTEXT_FLAGS_ARB)
+				attribs = append(attribs, wglFlags)
+			}
+
+			// Profile selection
+			//
+			// "GLCompatabilityProfile will be used if neither GLCoreProfile or GLCompatibilityProfile
+			// are present, or if both are present."
+			profileMask := win32.Int(win32.WGL_CONTEXT_COMPATIBILITY_PROFILE_BIT_ARB)
+
+			wantCoreProfile := (flags & GLCoreProfile) > 0
+			wantCompatProfile := (flags & GLCompatibilityProfile) > 0
+			if wantCoreProfile && !wantCompatProfile {
+				profileMask = win32.WGL_CONTEXT_CORE_PROFILE_BIT_ARB
+			}
+
+			attribs = append(attribs, win32.WGL_CONTEXT_PROFILE_MASK_ARB)
+			attribs = append(attribs, profileMask)
+
 			c.hglrc, ok = win32.WglCreateContextAttribsARB(w.dc, nil, attribs)
 			if !ok {
 				// The wglCreateContextAttribsARB entry point is missing

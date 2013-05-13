@@ -132,7 +132,7 @@ func main() {
 	defer runtime.UnlockOSThread()
 
 	// Create an OpenGL context with the OpenGL version we wish
-	context, err := window.GLCreateContext(2, 1)
+	context, err := window.GLCreateContext(2, 1, chippy.GLCoreProfile)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -146,7 +146,7 @@ func main() {
 	// We only make one here (as we are only using one context).
 	gl = opengl.New()
 	if gl == nil {
-		log.Fatal("You have no support for OpenGL 1.5!")
+		log.Fatal("You have no support for OpenGL 2.1!")
 	}
 	log.Println(gl.GetError())
 
