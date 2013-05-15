@@ -36,3 +36,5 @@ LPTSTR macro_MAKEINTRESOURCE(WORD wInteger) {
 
 MONITORENUMPROC win32_MonitorEnumProcCallbackHandle = MonitorEnumProcCallback;
 
+HOOKPROC win32_LowLevelKeyboardHookCallbackHandle = LowLevelKeyboardHookCallback;
+

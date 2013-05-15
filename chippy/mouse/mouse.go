@@ -10,8 +10,8 @@ const (
 	InvalidState State = iota
 	Down
 	Up
-	ScrollDown
-	ScrollUp
+	ScrollForward
+	ScrollBack
 	ScrollLeft
 	ScrollRight
 )
@@ -24,10 +24,10 @@ func (s State) String() string {
 		return "Down"
 	case Up:
 		return "Up"
-	case ScrollDown:
-		return "ScrollDown"
-	case ScrollUp:
-		return "ScrollUp"
+	case ScrollForward:
+		return "ScrollForward"
+	case ScrollBack:
+		return "ScrollBack"
 	case ScrollLeft:
 		return "ScrollLeft"
 	case ScrollRight:

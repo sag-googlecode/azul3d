@@ -6,7 +6,7 @@ package chippy
 
 import (
 	"code.google.com/p/azul3d/chippy/wrappers/win32"
-	//"code.google.com/p/azul3d/chippy/keyboard"
+	"code.google.com/p/azul3d/chippy/keyboard"
 	"code.google.com/p/azul3d/chippy/mouse"
 	"code.google.com/p/azul3d/chippy/thirdparty/resize"
 	"errors"
@@ -59,6 +59,8 @@ type W32Window struct {
 	windowClass                                                              string
 	styleFlags                                                               win32.DWORD
 	lastWmSizingLeft, lastWmSizingRight, lastWmSizingBottom, lastWmSizingTop win32.LONG
+	leftShiftDown, leftAltDown, leftCtrlDown bool
+	leftWindowsState, rightWindowsState keyboard.State
 
 	// Blit things here
 	blitBitmap win32.HBITMAP
@@ -116,6 +118,54 @@ func (w *W32Window) Open(screen Screen) (err error) {
 			rid.Target = w.hwnd
 			win32.RegisterRawInputDevices(&rid, 1, win32.UINT(unsafe.Sizeof(rid)))
 		}
+
+		// To let the application know of current toggle key states, we need to send them right now
+		// otherwise they might already be on or off -- something the application might want to
+		// know.
+		var state keyboard.State
+
+		if (win32.GetKeyState(win32.VK_CAPITAL) & 0x0001) != 0 {
+			state = keyboard.On
+		} else {
+			state = keyboard.Off
+		}
+		w.addKeyboardEvent(&keyboard.Event{
+			Key: keyboard.CapsLock,
+			OSKey: keyboard.OSKey(win32.VK_CAPITAL),
+			Unicode: "",
+			State: state,
+		})
+
+		if (win32.GetKeyState(win32.VK_NUMLOCK) & 0x0001) != 0 {
+			state = keyboard.On
+		} else {
+			state = keyboard.Off
+		}
+		w.addKeyboardEvent(&keyboard.Event{
+			Key: keyboard.NumLock,
+			OSKey: keyboard.OSKey(win32.VK_NUMLOCK),
+			Unicode: "",
+			State: state,
+		})
+
+		if (win32.GetKeyState(win32.VK_SCROLL) & 0x0001) != 0 {
+			state = keyboard.On
+		} else {
+			state = keyboard.Off
+		}
+		w.addKeyboardEvent(&keyboard.Event{
+			Key: keyboard.ScrollLock,
+			OSKey: keyboard.OSKey(win32.VK_SCROLL),
+			Unicode: "",
+			State: state,
+		})
+
+		// Store the Shift, Alt, and Ctrl key states
+		w.leftShiftDown = (uint16(win32.GetAsyncKeyState(win32.VK_LSHIFT)) & 0x8000) != 0
+		w.leftAltDown = (uint16(win32.GetAsyncKeyState(win32.VK_LMENU)) & 0x8000) != 0
+		w.leftCtrlDown = (uint16(win32.GetAsyncKeyState(win32.VK_LCONTROL)) & 0x8000) != 0
+
+
 	})
 
 	unlock()
@@ -217,10 +267,10 @@ func (w *W32Window) Destroy() {
 	defer w.access.Unlock()
 	w.isDestroyed = true
 
-	win32.UnregisterWndProc(w.hwnd)
-	delete(windowsByHwnd, w.hwnd)
-
 	dispatch(func() {
+		win32.UnregisterWndProc(w.hwnd)
+		delete(windowsByHwnd, w.hwnd)
+
 		if !win32.DestroyWindow(w.hwnd) {
 			logger.Println("Unable to destroy window; DestroyWindow():", win32.GetLastErrorString())
 		}
@@ -1385,19 +1435,227 @@ func (w *W32Window) doSetWindowPos() {
 	}
 }
 
+
+func (w *W32Window) translateKey(wParam win32.WPARAM) (key keyboard.Key) {
+	switch(wParam) {
+		// ? "Control-break processing" doesn't seem useful
+		//case win32.VK_CANCEL:
+
+		case win32.VK_BACK: key = keyboard.Backspace
+		case win32.VK_TAB: key = keyboard.Tab
+		case win32.VK_CLEAR: key = keyboard.Clear
+		case win32.VK_RETURN: key = keyboard.Enter
+		case win32.VK_PAUSE: key = keyboard.Pause
+		case win32.VK_KANA: key = keyboard.Kana
+		case win32.VK_JUNJA: key = keyboard.Junja
+		case win32.VK_KANJI: key = keyboard.Kanji
+		case win32.VK_ESCAPE: key = keyboard.Escape
+		case win32.VK_SPACE: key = keyboard.Space
+		case win32.VK_PRIOR: key = keyboard.PageUp
+		case win32.VK_NEXT: key = keyboard.PageDown
+		case win32.VK_END: key = keyboard.End
+		case win32.VK_HOME: key = keyboard.Home
+		case win32.VK_LEFT: key = keyboard.ArrowLeft
+		case win32.VK_UP: key = keyboard.ArrowUp
+		case win32.VK_RIGHT: key = keyboard.ArrowRight
+		case win32.VK_DOWN: key = keyboard.ArrowDown
+		case win32.VK_SELECT: key = keyboard.Select
+		case win32.VK_PRINT: key = keyboard.Print
+		case win32.VK_EXECUTE: key = keyboard.Execute
+		case win32.VK_SNAPSHOT: key = keyboard.PrintScreen
+		case win32.VK_INSERT: key = keyboard.Insert
+		case win32.VK_DELETE: key = keyboard.Delete
+		case win32.VK_HELP: key = keyboard.Help
+		case win32.VK_UNDEF_0: key = keyboard.Zero
+		case win32.VK_UNDEF_1: key = keyboard.One
+		case win32.VK_UNDEF_2: key = keyboard.Two
+		case win32.VK_UNDEF_3: key = keyboard.Three
+		case win32.VK_UNDEF_4: key = keyboard.Four
+		case win32.VK_UNDEF_5: key = keyboard.Five
+		case win32.VK_UNDEF_6: key = keyboard.Six
+		case win32.VK_UNDEF_7: key = keyboard.Seven
+		case win32.VK_UNDEF_8: key = keyboard.Eight
+		case win32.VK_UNDEF_9: key = keyboard.Nine
+		case win32.VK_UNDEF_A: key = keyboard.A
+		case win32.VK_UNDEF_B: key = keyboard.B
+		case win32.VK_UNDEF_C: key = keyboard.C
+		case win32.VK_UNDEF_D: key = keyboard.D
+		case win32.VK_UNDEF_E: key = keyboard.E
+		case win32.VK_UNDEF_F: key = keyboard.F
+		case win32.VK_UNDEF_G: key = keyboard.G
+		case win32.VK_UNDEF_H: key = keyboard.H
+		case win32.VK_UNDEF_I: key = keyboard.I
+		case win32.VK_UNDEF_J: key = keyboard.J
+		case win32.VK_UNDEF_K: key = keyboard.K
+		case win32.VK_UNDEF_L: key = keyboard.L
+		case win32.VK_UNDEF_M: key = keyboard.M
+		case win32.VK_UNDEF_N: key = keyboard.N
+		case win32.VK_UNDEF_O: key = keyboard.O
+		case win32.VK_UNDEF_P: key = keyboard.P
+		case win32.VK_UNDEF_Q: key = keyboard.Q
+		case win32.VK_UNDEF_R: key = keyboard.R
+		case win32.VK_UNDEF_S: key = keyboard.S
+		case win32.VK_UNDEF_T: key = keyboard.T
+		case win32.VK_UNDEF_U: key = keyboard.U
+		case win32.VK_UNDEF_V: key = keyboard.V
+		case win32.VK_UNDEF_W: key = keyboard.W
+		case win32.VK_UNDEF_X: key = keyboard.X
+		case win32.VK_UNDEF_Y: key = keyboard.Y
+		case win32.VK_UNDEF_Z: key = keyboard.Z
+
+		//case win32.VK_CONVERT: key = keyboard.IMEConvert
+		//case win32.VK_NONCONVERT: key = keyboard.IMENonConvert
+		//case win32.VK_ACCEPT: key = keyboard.IMEAccept
+		//case win32.VK_MODECHANGE: key = keyboard.IMEModeChange
+		//case win32.VK_PROCESSKEY: key = keyboard.IMEProcess
+
+		case win32.VK_LWIN: key = keyboard.LeftSuper
+		case win32.VK_RWIN: key = keyboard.RightSuper
+		case win32.VK_APPS: key = keyboard.Applications
+		case win32.VK_SLEEP: key = keyboard.Sleep
+
+		case win32.VK_NUMPAD0: key = keyboard.NumZero
+		case win32.VK_NUMPAD1: key = keyboard.NumOne
+		case win32.VK_NUMPAD2: key = keyboard.NumTwo
+		case win32.VK_NUMPAD3: key = keyboard.NumThree
+		case win32.VK_NUMPAD4: key = keyboard.NumFour
+		case win32.VK_NUMPAD5: key = keyboard.NumFive
+		case win32.VK_NUMPAD6: key = keyboard.NumSix
+		case win32.VK_NUMPAD7: key = keyboard.NumSeven
+		case win32.VK_NUMPAD8: key = keyboard.NumEight
+		case win32.VK_NUMPAD9: key = keyboard.NumNine
+		case win32.VK_MULTIPLY: key = keyboard.NumMultiply
+		case win32.VK_ADD: key = keyboard.NumAdd
+		case win32.VK_SEPARATOR: key = keyboard.NumComma
+		case win32.VK_SUBTRACT: key = keyboard.NumSubtract
+		case win32.VK_DECIMAL: key = keyboard.NumDecimal
+		case win32.VK_DIVIDE: key = keyboard.NumDivide
+
+		case win32.VK_F1: key = keyboard.F1
+		case win32.VK_F2: key = keyboard.F2
+		case win32.VK_F3: key = keyboard.F3
+		case win32.VK_F4: key = keyboard.F4
+		case win32.VK_F5: key = keyboard.F5
+		case win32.VK_F6: key = keyboard.F6
+		case win32.VK_F7: key = keyboard.F7
+		case win32.VK_F8: key = keyboard.F8
+		case win32.VK_F9: key = keyboard.F9
+		case win32.VK_F10: key = keyboard.F10
+		case win32.VK_F11: key = keyboard.F11
+		case win32.VK_F12: key = keyboard.F12
+		case win32.VK_F13: key = keyboard.F13
+		case win32.VK_F14: key = keyboard.F14
+		case win32.VK_F15: key = keyboard.F15
+		case win32.VK_F16: key = keyboard.F16
+		case win32.VK_F17: key = keyboard.F17
+		case win32.VK_F18: key = keyboard.F18
+		case win32.VK_F19: key = keyboard.F19
+		case win32.VK_F20: key = keyboard.F20
+		case win32.VK_F21: key = keyboard.F21
+		case win32.VK_F22: key = keyboard.F22
+		case win32.VK_F23: key = keyboard.F23
+		case win32.VK_F24: key = keyboard.F24
+
+		case win32.VK_BROWSER_BACK: key = keyboard.BrowserBack
+		case win32.VK_BROWSER_FORWARD: key = keyboard.BrowserForward
+		case win32.VK_BROWSER_REFRESH: key = keyboard.BrowserRefresh
+		case win32.VK_BROWSER_STOP: key = keyboard.BrowserStop
+		case win32.VK_BROWSER_SEARCH: key = keyboard.BrowserSearch
+		case win32.VK_BROWSER_FAVORITES: key = keyboard.BrowserFavorites
+		case win32.VK_BROWSER_HOME: key = keyboard.BrowserHome
+
+		// User expects these to control windows volume -- I don't thing we should allow
+		// intercepting these..
+		//VK_VOLUME_MUTE
+		//VK_VOLUME_DOWN
+		//VK_VOLUME_UP
+
+		case win32.VK_MEDIA_NEXT_TRACK: key = keyboard.MediaNext
+		case win32.VK_MEDIA_PREV_TRACK: key = keyboard.MediaPrevious
+		case win32.VK_MEDIA_STOP: key = keyboard.MediaStop
+		case win32.VK_MEDIA_PLAY_PAUSE: key = keyboard.MediaPlayPause
+
+		case win32.VK_LAUNCH_MAIL: key = keyboard.LaunchMail
+		case win32.VK_LAUNCH_MEDIA_SELECT: key = keyboard.LaunchMedia
+		case win32.VK_LAUNCH_APP1: key = keyboard.LaunchAppOne
+		case win32.VK_LAUNCH_APP2: key = keyboard.LaunchAppTwo
+
+		case win32.VK_OEM_PLUS: key = keyboard.Equals
+		case win32.VK_OEM_COMMA: key = keyboard.Comma
+		case win32.VK_OEM_MINUS: key = keyboard.Dash
+		case win32.VK_OEM_PERIOD: key = keyboard.Period
+		case win32.VK_OEM_1: key = keyboard.Semicolon
+		case win32.VK_OEM_2: key = keyboard.ForwardSlash
+		case win32.VK_OEM_3: key = keyboard.Tilde
+		case win32.VK_OEM_4: key = keyboard.LeftBracket
+		case win32.VK_OEM_5: key = keyboard.BackSlash
+		case win32.VK_OEM_6: key = keyboard.RightBracket
+		case win32.VK_OEM_7: key = keyboard.Apostrophe
+		//case win32.VK_OEM_8:
+		case win32.VK_OEM_102: key = keyboard.RightBracket
+
+		case win32.VK_ATTN: key = keyboard.Attn
+		case win32.VK_CRSEL: key = keyboard.CrSel
+		case win32.VK_EXSEL: key = keyboard.ExSel
+		case win32.VK_EREOF: key = keyboard.EraseEOF
+		case win32.VK_PLAY: key = keyboard.Play
+		case win32.VK_ZOOM: key = keyboard.Zoom
+		//case win32.VK_PA1: key = keyboard.PA1
+		case win32.VK_OEM_CLEAR: key = keyboard.Clear
+
+		case win32.VK_SHIFT:
+			leftShiftDown := (uint16(win32.GetAsyncKeyState(win32.VK_LSHIFT)) & 0x8000) != 0
+
+			if leftShiftDown != w.leftShiftDown {
+				key = keyboard.LeftShift
+			} else {
+				key = keyboard.RightShift
+			}
+
+			w.leftShiftDown = leftShiftDown
+
+		case win32.VK_MENU:
+			leftAltDown := (uint16(win32.GetAsyncKeyState(win32.VK_LMENU)) & 0x8000) != 0
+
+			if leftAltDown != w.leftAltDown {
+				key = keyboard.LeftAlt
+			} else {
+				key = keyboard.RightAlt
+			}
+
+			w.leftAltDown = leftAltDown
+
+		case win32.VK_CONTROL:
+			leftCtrlDown := (uint16(win32.GetAsyncKeyState(win32.VK_LCONTROL)) & 0x8000) != 0
+
+			if leftCtrlDown != w.leftCtrlDown {
+				key = keyboard.LeftCtrl
+			} else {
+				key = keyboard.RightCtrl
+			}
+
+			w.leftCtrlDown = leftCtrlDown
+
+		case win32.VK_CAPITAL: key = keyboard.CapsLock
+		case win32.VK_NUMLOCK: key = keyboard.NumLock
+		case win32.VK_SCROLL: key = keyboard.ScrollLock
+	}
+	return key
+}
+
 // Our MS windows event handler
 func mainWindowProc(hwnd win32.HWND, msg win32.UINT, wParam win32.WPARAM, lParam win32.LPARAM) (ret win32.LRESULT) {
 	w, ok := windowsByHwnd[hwnd]
 	if ok {
-		switch msg {
-		case win32.WM_PAINT:
+		switch {
+		case msg == win32.WM_PAINT:
 			if win32.GetUpdateRect(w.hwnd, nil, false) {
 				win32.ValidateRect(w.hwnd, nil)
 				w.addPaintEvent()
 			}
 			return 0
 
-		case win32.WM_GETMINMAXINFO:
+		case msg == win32.WM_GETMINMAXINFO:
 			minWidth, minHeight := w.MinimumSize()
 			maxWidth, maxHeight := w.MaximumSize()
 			extentLeft, extentRight, extentBottom, extentTop := w.Extents()
@@ -1439,7 +1697,7 @@ func mainWindowProc(hwnd win32.HWND, msg win32.UINT, wParam win32.WPARAM, lParam
 			}
 			return 0
 
-		case win32.WM_SIZING:
+		case msg == win32.WM_SIZING:
 			ratio := w.AspectRatio()
 			r := lParam.RECT()
 
@@ -1485,7 +1743,7 @@ func mainWindowProc(hwnd win32.HWND, msg win32.UINT, wParam win32.WPARAM, lParam
 			}
 			return 0
 
-		case win32.WM_SIZE:
+		case msg == win32.WM_SIZE:
 			if wParam == win32.SIZE_MAXIMIZED {
 				if w.minimized != false {
 					w.minimized = false
@@ -1529,7 +1787,7 @@ func mainWindowProc(hwnd win32.HWND, msg win32.UINT, wParam win32.WPARAM, lParam
 			}
 			return 0
 
-		case win32.WM_MOVE:
+		case msg == win32.WM_MOVE:
 			xPos := int(int16(lParam))
 			yPos := int(int16((uint32(lParam) >> 16) & 0xFFFF))
 
@@ -1546,7 +1804,7 @@ func mainWindowProc(hwnd win32.HWND, msg win32.UINT, wParam win32.WPARAM, lParam
 
 			return 0
 
-		case win32.WM_EXITSIZEMOVE:
+		case msg == win32.WM_EXITSIZEMOVE:
 			hMonitor := win32.MonitorFromWindow(w.hwnd, win32.MONITOR_DEFAULTTONEAREST)
 
 			mi := new(win32.MONITORINFOEX)
@@ -1568,7 +1826,7 @@ func mainWindowProc(hwnd win32.HWND, msg win32.UINT, wParam win32.WPARAM, lParam
 
 			return 0
 
-		case win32.WM_ACTIVATE:
+		case msg == win32.WM_ACTIVATE:
 			if wParam.LOWORD() == win32.WA_INACTIVE || wParam.HIWORD() != 0 {
 				if w.focused {
 					w.focused = false
@@ -1582,7 +1840,7 @@ func mainWindowProc(hwnd win32.HWND, msg win32.UINT, wParam win32.WPARAM, lParam
 			}
 			return 0
 
-		case win32.WM_GETICON:
+		case msg == win32.WM_GETICON:
 			switch(wParam) {
 				case win32.ICON_BIG:
 					if w.hIcon != nil {
@@ -1600,12 +1858,71 @@ func mainWindowProc(hwnd win32.HWND, msg win32.UINT, wParam win32.WPARAM, lParam
 					}
 			}
 
-		case win32.WM_KEYDOWN:
-			//fmt.Println(lParam, lParam.LOWORD(), lParam.HIWORD(), string(lParam.HIWORD()))
-			//fmt.Println(0x09)
+		case msg == win32.WM_KEYDOWN || msg == win32.WM_SYSKEYDOWN || msg == win32.WM_KEYUP || msg == win32.WM_SYSKEYUP:
+			if msg == win32.WM_KEYDOWN || msg == win32.WM_SYSKEYDOWN {
+				keyRepeat := (lParam & 0x40000000) > 0
+				if keyRepeat {
+					return 0
+				}
+			}
+
+			if (msg == win32.WM_SYSKEYDOWN || msg == win32.WM_SYSKEYUP) && wParam == win32.VK_F4 {
+				altDown := (uint16(win32.GetAsyncKeyState(win32.VK_MENU)) & 0x8000) != 0
+				if altDown {
+					if msg == win32.WM_SYSKEYDOWN {
+						// Trick: Consider this to be WM_CLOSE
+						if !w.addCloseEvent() {
+							go w.Destroy()
+						}
+					}
+					return 0
+				}
+			}
+
+			k := w.translateKey(wParam)
+			if k == keyboard.Invalid {
+				logger.Printf("Unknown key wParam=%d hex=0x%X)\n", wParam, wParam)
+			}
+
+			var state keyboard.State
+			if msg == win32.WM_KEYDOWN || msg == win32.WM_SYSKEYDOWN {
+				state = keyboard.Down
+			} else {
+				state = keyboard.Up
+			}
+
+			switch(k) {
+				case keyboard.CapsLock:
+					if (win32.GetKeyState(win32.VK_CAPITAL) & 0x0001) != 0 {
+						state = keyboard.On
+					} else {
+						state = keyboard.Off
+					}
+
+				case keyboard.NumLock:
+					if (win32.GetKeyState(win32.VK_NUMLOCK) & 0x0001) != 0 {
+						state = keyboard.On
+					} else {
+						state = keyboard.Off
+					}
+
+				case keyboard.ScrollLock:
+					if (win32.GetKeyState(win32.VK_SCROLL) & 0x0001) != 0 {
+						state = keyboard.On
+					} else {
+						state = keyboard.Off
+					}
+			}
+
+			w.addKeyboardEvent(&keyboard.Event{
+				Key: k,
+				OSKey: keyboard.OSKey(lParam),
+				Unicode: "",
+				State: state,
+			})
 			return 0
 
-		case win32.WM_MOUSEMOVE:
+		case msg == win32.WM_MOUSEMOVE:
 			xPos := float64(int16(lParam))
 			yPos := float64(int16((uint32(lParam) >> 16) & 0xFFFF))
 
@@ -1665,7 +1982,7 @@ func mainWindowProc(hwnd win32.HWND, msg win32.UINT, wParam win32.WPARAM, lParam
 			w.doSetCursor()
 			return 0
 
-		case win32.WM_INPUT:
+		case msg == win32.WM_INPUT:
 			if w.cursorWithin && w.cursorGrabbed {
 				var raw win32.RAWINPUT
 				cbSize := win32.UINT(unsafe.Sizeof(raw))
@@ -1683,91 +2000,113 @@ func mainWindowProc(hwnd win32.HWND, msg win32.UINT, wParam win32.WPARAM, lParam
 			return 0
 
 		// Mouse Buttons
-		case win32.WM_LBUTTONDOWN:
+		case msg == win32.WM_LBUTTONDOWN:
 			w.addMouseEvent(&mouse.Event{
 				Button: mouse.Left,
 				State:  mouse.Down,
 			})
 			return 0
 
-		case win32.WM_LBUTTONUP:
+		case msg == win32.WM_LBUTTONUP:
 			w.addMouseEvent(&mouse.Event{
 				Button: mouse.Left,
 				State:  mouse.Up,
 			})
 			return 0
 
-		case win32.WM_RBUTTONDOWN:
+		case msg == win32.WM_RBUTTONDOWN:
 			w.addMouseEvent(&mouse.Event{
 				Button: mouse.Right,
 				State:  mouse.Down,
 			})
 			return 0
 
-		case win32.WM_RBUTTONUP:
+		case msg == win32.WM_RBUTTONUP:
 			w.addMouseEvent(&mouse.Event{
 				Button: mouse.Right,
 				State:  mouse.Up,
 			})
 			return 0
 
-		case win32.WM_MBUTTONDOWN:
+		case msg == win32.WM_MBUTTONDOWN:
 			w.addMouseEvent(&mouse.Event{
 				Button: mouse.Wheel,
 				State:  mouse.Down,
 			})
 			return 0
 
-		case win32.WM_MBUTTONUP:
+		case msg == win32.WM_MBUTTONUP:
 			w.addMouseEvent(&mouse.Event{
 				Button: mouse.Wheel,
 				State:  mouse.Up,
 			})
 			return 0
 
-		case win32.WM_XBUTTONDOWN:
-			fmt.Println(lParam, lParam.LOWORD(), lParam.HIWORD())
+		case msg == win32.WM_XBUTTONDOWN:
+			var button mouse.Button
+
+			switch(int16(wParam)) {
+				case win32.MK_XBUTTON1:
+					button = mouse.Four
+
+				case win32.MK_XBUTTON2:
+					button = mouse.Five
+			}
+
+			w.addMouseEvent(&mouse.Event{
+				Button: button,
+				State:  mouse.Down,
+			})
 			return 0
 
-		case win32.WM_XBUTTONUP:
-			fmt.Println(lParam, lParam.LOWORD(), lParam.HIWORD())
+		case msg == win32.WM_XBUTTONUP:
+			var button mouse.Button
+
+			switch(int16(wParam)) {
+				case win32.MK_XBUTTON1:
+					button = mouse.Four
+
+				case win32.MK_XBUTTON2:
+					button = mouse.Five
+			}
+
+			w.addMouseEvent(&mouse.Event{
+				Button: button,
+				State:  mouse.Up,
+			})
 			return 0
 
-		case win32.WM_MOUSEWHEEL:
-			fmt.Println(lParam, lParam.LOWORD(), lParam.HIWORD())
-			return 0
+		case msg == win32.WM_MOUSEWHEEL:
+			delta := float64(int16((uint32(wParam) >> 16) & 0xFFFF))
+			ticks := int(math.Abs(delta / 120))
 
-		case win32.WM_MOUSEHWHEEL:
-			fmt.Println(lParam, lParam.LOWORD(), lParam.HIWORD())
+			if delta > 0 {
+				for i := 0; i < ticks; i++ {
+					w.addMouseEvent(&mouse.Event{
+						Button: mouse.Wheel,
+						State:  mouse.ScrollForward,
+					})
+				}
+			} else {
+				for i := 0; i < ticks; i++ {
+					w.addMouseEvent(&mouse.Event{
+						Button: mouse.Wheel,
+						State:  mouse.ScrollBack,
+					})
+				}
+			}
 			return 0
 
 		//default:
 		//	fmt.Printf("0x%x\n", msg)
 
-		case win32.WM_CLOSE:
+		case msg == win32.WM_CLOSE:
 			if !w.addCloseEvent() {
 				go w.Destroy()
 			}
 			return 0
 		}
 	}
-
-	// Note: This line is EXTREAMELY important when GOMAXPROCS=1!
-	//
-	// Many win32 API calls simply perform an callback into mainWindowProc and provide little to
-	// no information as to which ones do and when they do.
-	//
-	// Input devices (mice) that generate an lot of WM_MOUSEMOVE events will cause an temporary
-	// block when these input devices send too many messages, the temporary block stops once the
-	// devices stop sending the messages.
-	//
-	// The effect this has is, an call to SwapBuffers() for instance, will block as long as the
-	// user is moving their mouse inside the window constantly:
-	//
-	// /_Causing the render loop to pause while the user moves their mouse_/
-	//
-	// This will pass feedback to the render loop without blocking when the messages are spammed.
-	//runtime.Gosched()
 
 	return win32.DefWindowProc(hwnd, msg, wParam, lParam)
 }
