@@ -338,9 +338,13 @@ type Window interface {
 	// sent.
 	MouseEvents() *MouseEventBuffer
 
-	// KeyboardEvents returns an new *KeyboardEventBuffer on which this Window's keyboard events
-	// will be sent.
-	KeyboardEvents() *KeyboardEventBuffer
+	// KeyboardStateEvents returns an new *KeyboardStateEventBuffer on which this Window's keyboard
+	// state events will be sent.
+	KeyboardStateEvents() *KeyboardStateEventBuffer
+
+	// KeyboardTypedEvents returns an new *KeyboardTypedEventBuffer on which this Window's keyboard
+	// typed events will be sent.
+	KeyboardTypedEvents() *KeyboardTypedEventBuffer
 }
 
 func NewWindow() Window {

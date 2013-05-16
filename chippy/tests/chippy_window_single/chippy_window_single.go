@@ -62,7 +62,8 @@ func main() {
 	paintEvents := window.PaintEvents()
 	closeEvents := window.CloseEvents()
 	cursorPositionEvents := window.CursorPositionEvents()
-	keyboardEvents := window.KeyboardEvents()
+	keyboardStateEvents := window.KeyboardStateEvents()
+	keyboardTypedEvents := window.KeyboardTypedEvents()
 	maximizedEvents := window.MaximizedEvents()
 	minimizedEvents := window.MinimizedEvents()
 	mouseEvents := window.MouseEvents()
@@ -81,7 +82,10 @@ func main() {
 		case v := <-cursorPositionEvents.Read:
 			log.Println("cursorPosition", v)
 
-		case v := <-keyboardEvents.Read:
+		case v := <-keyboardStateEvents.Read:
+			log.Println("keyboard", v)
+
+		case v := <-keyboardTypedEvents.Read:
 			log.Println("keyboard", v)
 
 		case v := <-maximizedEvents.Read:

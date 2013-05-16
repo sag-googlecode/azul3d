@@ -97,26 +97,16 @@ func keyboardHook(nCode win32.Int, wParam win32.WPARAM, lParam win32.LPARAM) win
 
 						switch(p.VkCode) {
 							case win32.VK_LWIN:
-								if state != window.leftWindowsState {
-									window.leftWindowsState = state
-
-									window.addKeyboardEvent(&keyboard.Event{
-										State: state,
-										Key: keyboard.LeftSuper,
-										OSKey: keyboard.OSKey(p.ScanCode),
-									})
-								}
+								window.tryAddKeyboardStateEvent(&keyboard.StateEvent{
+									State: state,
+									Key: keyboard.LeftSuper,
+								})
 
 							case win32.VK_RWIN:
-								if state != window.rightWindowsState {
-									window.rightWindowsState = state
-
-									window.addKeyboardEvent(&keyboard.Event{
-										State: state,
-										Key: keyboard.RightSuper,
-										OSKey: keyboard.OSKey(p.ScanCode),
-									})
-								}
+								window.tryAddKeyboardStateEvent(&keyboard.StateEvent{
+									State: state,
+									Key: keyboard.RightSuper,
+								})
 						}
 					}
 				}

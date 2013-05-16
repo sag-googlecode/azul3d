@@ -134,12 +134,22 @@ func (b *CursorWithinEventBuffer) Length() int {
 }
 
 
-type KeyboardEventBuffer struct {
-	Read, write chan *keyboard.Event
+type KeyboardStateEventBuffer struct {
+	Read, write chan *keyboard.StateEvent
 	lengthQuery chan int
 }
 
-func (b *KeyboardEventBuffer) Length() int {
+func (b *KeyboardStateEventBuffer) Length() int {
+	return <-b.lengthQuery
+}
+
+
+type KeyboardTypedEventBuffer struct {
+	Read, write chan *keyboard.TypedEvent
+	lengthQuery chan int
+}
+
+func (b *KeyboardTypedEventBuffer) Length() int {
 	return <-b.lengthQuery
 }
 
@@ -229,7 +239,8 @@ type eventDispatcher struct {
 	closeEvents          []*CloseEventBuffer
 	cursorPositionEvents []*CursorPositionEventBuffer
 	cursorWithinEvents   []*CursorWithinEventBuffer
-	keyboardEvents       []*KeyboardEventBuffer
+	keyboardStateEvents  []*KeyboardStateEventBuffer
+	keyboardTypedEvents  []*KeyboardTypedEventBuffer
 	maximizedEvents      []*MaximizedEventBuffer
 	minimizedEvents      []*MinimizedEventBuffer
 	mouseEvents          []*MouseEventBuffer
@@ -329,22 +340,42 @@ func (e *eventDispatcher) addCursorWithinEvent(v bool) {
 	}
 }
 
-func (e *eventDispatcher) KeyboardEvents() *KeyboardEventBuffer {
+func (e *eventDispatcher) KeyboardStateEvents() *KeyboardStateEventBuffer {
 	e.eventsAccess.Lock()
 	defer e.eventsAccess.Unlock()
 
-	buf := new(KeyboardEventBuffer)
-	buf.Read = make(chan *keyboard.Event)
-	buf.write = make(chan *keyboard.Event)
+	buf := new(KeyboardStateEventBuffer)
+	buf.Read = make(chan *keyboard.StateEvent)
+	buf.write = make(chan *keyboard.StateEvent)
 	buf.lengthQuery = elasticBuffer(buf.write, buf.Read)
-	e.keyboardEvents = append(e.keyboardEvents, buf)
+	e.keyboardStateEvents = append(e.keyboardStateEvents, buf)
 	return buf
 }
-func (e *eventDispatcher) addKeyboardEvent(v *keyboard.Event) {
+func (e *eventDispatcher) addKeyboardStateEvent(v *keyboard.StateEvent) {
 	e.eventsAccess.RLock()
 	defer e.eventsAccess.RUnlock()
 
-	for _, buf := range e.keyboardEvents {
+	for _, buf := range e.keyboardStateEvents {
+		buf.write <- v
+	}
+}
+
+func (e *eventDispatcher) KeyboardTypedEvents() *KeyboardTypedEventBuffer {
+	e.eventsAccess.Lock()
+	defer e.eventsAccess.Unlock()
+
+	buf := new(KeyboardTypedEventBuffer)
+	buf.Read = make(chan *keyboard.TypedEvent)
+	buf.write = make(chan *keyboard.TypedEvent)
+	buf.lengthQuery = elasticBuffer(buf.write, buf.Read)
+	e.keyboardTypedEvents = append(e.keyboardTypedEvents, buf)
+	return buf
+}
+func (e *eventDispatcher) addKeyboardTypedEvent(v *keyboard.TypedEvent) {
+	e.eventsAccess.RLock()
+	defer e.eventsAccess.RUnlock()
+
+	for _, buf := range e.keyboardTypedEvents {
 		buf.write <- v
 	}
 }

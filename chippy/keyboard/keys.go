@@ -4,9 +4,17 @@ import(
 	"fmt"
 )
 
-// Note: constants defined here should be spelled out in plain english.
-//
-// If the key would generate specific symbols, then include those symbols in an comment after the line
+type Key uint32
+
+// TypedEvent represents an event where some sort of user input has generated an input character
+// which should be considered input.
+type TypedEvent struct {
+	Rune rune
+}
+
+func (e *TypedEvent) String() string {
+	return fmt.Sprintf("TypedEvent(Rune=%U %q)", e.Rune, string(e.Rune))
+}
 
 const (
 	Invalid Key = iota
