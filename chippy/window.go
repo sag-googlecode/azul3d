@@ -345,6 +345,10 @@ type Window interface {
 	// KeyboardTypedEvents returns an new *KeyboardTypedEventBuffer on which this Window's keyboard
 	// typed events will be sent.
 	KeyboardTypedEvents() *KeyboardTypedEventBuffer
+
+	// ScreenChangedEvents returns an new *ScreenChangedEventBuffer on which this Window's screen
+	// change events will be sent.
+	ScreenChangedEvents() *ScreenChangedEventBuffer
 }
 
 func NewWindow() Window {

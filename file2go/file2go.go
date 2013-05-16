@@ -29,7 +29,7 @@ func main() {
 	if len(output) == 0 || len(input) == 0 || len(pkg) == 0 || len(v) == 0 {
 		log.Println("Must specify input and output files.\n")
 		flag.PrintDefaults()
-		return
+		os.Exit(1)
 	}
 
 	_, err := os.Stat(output)
@@ -37,7 +37,7 @@ func main() {
 		log.Println(err)
 		log.Println("")
 		log.Fatal("Output file already exists. (Use -f to overwrite).")
-		return
+		os.Exit(1)
 	}
 
 

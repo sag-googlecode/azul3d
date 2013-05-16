@@ -70,6 +70,7 @@ func main() {
 	focusedEvents := window.FocusedEvents()
 	positionEvents := window.PositionEvents()
 	sizeEvents := window.SizeEvents()
+	screenChangedEvents := window.ScreenChangedEvents()
 
 	for {
 		select {
@@ -105,6 +106,9 @@ func main() {
 
 		case v := <-sizeEvents.Read:
 			log.Println("size", v)
+
+		case v := <-screenChangedEvents.Read:
+			log.Println("screen changed", v)
 		}
 		//log.Println(window)
 	}

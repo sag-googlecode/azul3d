@@ -135,6 +135,20 @@ func (s *w32Screen) String() string {
 	return fmt.Sprintf("Screen(\"%s\", %.0f by %.0fmm)", s.Name(), w, h)
 }
 
+func (w *w32Screen) Equals(s Screen) bool {
+	if w.String() == s.String() {
+		otherModes := s.ScreenModes()
+		for i, mode := range w.ScreenModes() {
+			if !mode.Equals(otherModes[i]) {
+				return false
+			}
+		}
+		return true
+	}
+
+	return false
+}
+
 func (s *w32Screen) Name() string {
 	s.access.RLock()
 	defer s.access.RUnlock()
@@ -546,4 +560,6 @@ func backend_DefaultScreen() Screen {
 	}
 	logger.Println("No screens available!")
 	return nil
+
+
 }

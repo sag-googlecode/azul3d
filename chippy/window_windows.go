@@ -1850,10 +1850,12 @@ func mainWindowProc(hwnd win32.HWND, msg win32.UINT, wParam win32.WPARAM, lParam
 				screens := backend_doScreens()
 				for _, screen := range screens {
 					if screen.(*w32Screen).w32GraphicsDeviceName == mi.Device() {
-						screen.(*w32Screen).w32Position = mi.RcMonitor
+						if !w.screen.Equals(screen) {
+							w.screen = screen
 
-						w.screen = screen
-						w.addScreenChangedEvent(w.screen)
+							screen.(*w32Screen).w32Position = mi.RcMonitor
+							w.addScreenChangedEvent(w.screen)
+						}
 						return 0
 					}
 				}

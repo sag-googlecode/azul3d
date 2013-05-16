@@ -15,6 +15,10 @@ type Screen interface {
 	// String returns an nice string representation of this Screen
 	String() string
 
+	// Equals compares this screen with the other screen, determining weather or not they are the
+	// same physical screen.
+	Equals(s Screen) bool
+
 	// Name returns an formatted string of the screens name, this is something that the user
 	// should be able to relate on their own to the actual physical screen device, this typically
 	// includes device brand name or model etc..
