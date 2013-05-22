@@ -235,6 +235,7 @@ func (b *ScreenChangedEventBuffer) Length() int {
 
 type eventDispatcher struct {
 	eventsAccess sync.RWMutex
+	destroyedEvents      []chan bool
 	paintEvents          []*PaintEventBuffer
 	closeEvents          []*CloseEventBuffer
 	cursorPositionEvents []*CursorPositionEventBuffer
@@ -248,6 +249,25 @@ type eventDispatcher struct {
 	positionEvents       []*PositionEventBuffer
 	sizeEvents           []*SizeEventBuffer
 	screenChangedEvents  []*ScreenChangedEventBuffer
+}
+
+func (e *eventDispatcher) DestroyedEvent() chan bool {
+	e.eventsAccess.Lock()
+	defer e.eventsAccess.Unlock()
+
+	ch := make(chan bool, 1)
+	e.destroyedEvents = append(e.destroyedEvents, ch)
+	return ch
+}
+
+func (e *eventDispatcher) sendDestroyedEvent() {
+	e.eventsAccess.RLock()
+	defer e.eventsAccess.RUnlock()
+
+	for _, ch := range e.destroyedEvents {
+		ch <- true
+		close(ch)
+	}
 }
 
 func (e *eventDispatcher) PaintEvents() *PaintEventBuffer {

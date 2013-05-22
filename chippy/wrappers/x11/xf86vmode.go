@@ -2,7 +2,7 @@
 // This source code is subject to the terms and
 // conditions defined in the "License.txt" file.
 
-// +build !no_xf86vm
+// +build linux,!no_xf86vm
 
 package x11
 

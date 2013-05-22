@@ -2,6 +2,8 @@
 // This source code is subject to the terms and
 // conditions defined in the "License.txt" file.
 
+// +build windows
+
 package win32
 
 type BYTE uint8

@@ -51,6 +51,9 @@ type Window interface {
 	// If Destroyed returns true, this function is no-op.
 	Destroy()
 
+	// DestroyedEvent is an special event that is sent after Destroy() is called.
+	DestroyedEvent() chan bool
+
 	// Destroyed tells weather there was an previous call to the Destroy function.
 	Destroyed() bool
 
@@ -113,6 +116,10 @@ type Window interface {
 	// Decorations tells weather this window has window decorations on, as previously set by the
 	// SetDecorations function, or the default value true (on)
 	Decorated() bool
+
+	// SetPositionCenter sets the window position such that it is perfectly in the center of the
+	// specified screen.
+	SetPositionCenter(screen Screen)
 
 	// SetPosition specifies the new x and y position of this window's client region, relative to
 	// the top-left corner of the screen, in pixels.
@@ -241,8 +248,6 @@ type Window interface {
 	// SetIcon specifies the window icon which should be displayed anywhere that an window icon is
 	// needed, this typically includes in the title bar decoration, or in the icon tray.
 	//
-	// FIXME: What about icon sizes?
-	//
 	// If Destroyed returns true, this function will panic.
 	SetIcon(icon image.Image)
 
@@ -351,6 +356,16 @@ type Window interface {
 	ScreenChangedEvents() *ScreenChangedEventBuffer
 }
 
+func genericSetPositionCenter(window Window, screen Screen) {
+	screenWidth, screenHeight := screen.ScreenMode().Resolution()
+	windowWidth, windowHeight := window.Size()
+	halfScreenWidth := int(screenWidth / 2)
+	halfScreenHeight := int(screenHeight / 2)
+	halfWindowWidth := int(windowWidth / 2)
+	halfWindowHeight := int(windowHeight / 2)
+	window.SetPosition(halfScreenWidth - halfWindowWidth, halfScreenHeight - halfWindowHeight)
+}
+
 func NewWindow() Window {
 	w := backend_NewWindow()
 	w.SetTitle("Chippy Window")
@@ -368,108 +383,3 @@ func NewWindow() Window {
 	return w
 }
 
-/*
-import(
-    "image"
-    "sync"
-    "fmt"
-)
-
-type Window struct {
-    backend_Window
-
-    parent *Window
-    isOpen, visible, decorated, minimized, maximized, fullscreen, alwaysOnTop bool
-    title string
-    x, y int
-    width, height, minWidth, minHeight, maxWidth, maxHeight uint
-    extentLeft, extentRight, extentBottom, extentTop uint
-    icon, cursor image.Image
-
-    destroyCallback *callback
-
-    valid bool
-    access sync.RWMutex
-}
-
-func (w *Window) String() string {
-    w.panicUnlessValid()
-    panicUnlessInit()
-    w.access.Lock()
-    defer w.access.Unlock()
-
-    if w.isOpen {
-        w.handleSetGetEvent(opGetAll)
-    }
-
-    return fmt.Sprintf("Window(open=%t, visible=%t, decorated=%t, minimized=%t, maximized=%t, fullscreen=%t, alwaysOnTop=%t, title=\"%s\", position=%dx%d, size=%dx%d, minSize=%dx%d, maxSize=%dx%d, extents=[%d,%d,%d,%d])", w.isOpen, w.visible, w.decorated, w.minimized, w.maximized, w.fullscreen, w.alwaysOnTop, w.title, w.x, w.y, w.width, w.height, w.minWidth, w.minHeight, w.maxWidth, w.maxHeight, w.extentLeft, w.extentRight, w.extentBottom, w.extentTop)
-}
-
-func NewWindow() *Window {
-    w := &Window{}
-    w.valid = true
-
-    // Window defaults
-    w.visible = true
-    w.decorated = true
-    w.title = "Chippy Window 世界"
-    w.x = 50
-    w.y = 50
-    w.width = 640
-    w.height = 480
-    w.minWidth = 100
-    w.minHeight = 100
-    w.maxWidth = 0
-    w.maxHeight = 0
-
-    w.destroyCallback = &callback{func() {
-        w.Close()
-    }}
-    addDestroyCallback(w.destroyCallback)
-
-    return w
-}
-
-func (w *Window) panicUnlessValid() {
-    if w.valid != true {
-        panic("Window is invalid; must create window using chippy.NewWindow()")
-    }
-}
-
-// Open opens the window, with whatever it's current properties are.
-//
-// An error is returned in the event that we are unable to open an window, for some reason.
-func (w *Window) Open() error {
-    w.panicUnlessValid()
-    panicUnlessInit()
-    w.access.Lock()
-    defer w.access.Unlock()
-    if !w.isOpen {
-        err := w.open()
-        if err != nil {
-            return err
-        }
-        w.isOpen = true
-        return nil
-    }
-    return nil
-}
-
-func (w *Window) IsOpen() bool {
-    w.access.RLock()
-    defer w.access.RUnlock()
-    w.handleSetGetEvent(opIsOpen)
-    return w.isOpen
-}
-
-func (w *Window) Close() {
-    w.panicUnlessValid()
-    panicUnlessInit()
-    w.access.Lock()
-    defer w.access.Unlock()
-    if w.isOpen {
-        w.close()
-        w.isOpen = false
-    }
-}
-*/

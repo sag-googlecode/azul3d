@@ -48,14 +48,8 @@ func main() {
 	// Actually open the windows
 	screen := chippy.DefaultScreen()
 
-	// Center the window
-	screenWidth, screenHeight := screen.ScreenMode().Resolution()
-	windowWidth, windowHeight := window.Size()
-	halfScreenWidth := screenWidth / 2
-	halfScreenHeight := screenHeight / 2
-	halfWindowWidth := windowWidth / 2
-	halfWindowHeight := windowHeight / 2
-	window.SetPosition(int(halfScreenWidth - halfWindowWidth), int(halfScreenHeight - halfWindowHeight))
+	// Center the window on the screen
+	window.SetPositionCenter(screen)
 
 	err = window.Open(screen)
 	if err != nil {

@@ -2,7 +2,7 @@
 // This source code is subject to the terms and
 // conditions defined in the "License.txt" file.
 
-// +build !no_xrandr
+// +build linux,!no_xrandr
 
 package x11
 

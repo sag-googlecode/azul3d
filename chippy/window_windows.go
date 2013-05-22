@@ -336,6 +336,8 @@ func (w *W32Window) Destroy() {
 			logger.Println("Failed to unregister window class; UnregisterClass():", win32.GetLastErrorString())
 		}
 	})
+
+	w.sendDestroyedEvent()
 }
 
 func (w *W32Window) Notify() {
@@ -480,6 +482,7 @@ func (w *W32Window) SetTitle(title string) {
 	if w.title != title {
 		w.title = title
 		if w.opened {
+			unlock()
 			dispatch(func() {
 				if !win32.SetWindowText(w.hwnd, w.title) {
 					logger.Println("Unable to set window title; SetWindowText():", win32.GetLastErrorString())
@@ -525,6 +528,10 @@ func (w *W32Window) SetDecorated(decorated bool) {
 			})
 		}
 	}
+}
+
+func (w *W32Window) SetPositionCenter(screen Screen) {
+	genericSetPositionCenter(w, screen)
 }
 
 func (w *W32Window) SetPosition(x, y int) {
@@ -1549,6 +1556,7 @@ func (w *W32Window) translateKey(wParam win32.WPARAM) (key keyboard.Key) {
 		case win32.VK_UNDEF_N: key = keyboard.N
 		case win32.VK_UNDEF_O: key = keyboard.O
 		case win32.VK_UNDEF_P: key = keyboard.P
+
 		case win32.VK_UNDEF_Q: key = keyboard.Q
 		case win32.VK_UNDEF_R: key = keyboard.R
 		case win32.VK_UNDEF_S: key = keyboard.S
