@@ -950,12 +950,17 @@ func (w *W32Window) SetCursorGrabbed(grabbed bool) {
 
 	if w.cursorGrabbed != grabbed {
 		w.cursorGrabbed = grabbed
+
 		if w.cursorGrabbed {
-			w.preGrabCursorX = w.cursorX
-			w.preGrabCursorY = w.cursorY
+			if w.cursorWithin {
+				w.preGrabCursorX = w.cursorX
+				w.preGrabCursorY = w.cursorY
+			}
 		} else {
 			w.cursorX = w.preGrabCursorX
 			w.cursorY = w.preGrabCursorY
+			w.preGrabCursorX = 0
+			w.preGrabCursorY = 0
 		}
 		if w.opened {
 			unlock()
@@ -2074,12 +2079,10 @@ func mainWindowProc(hwnd win32.HWND, msg win32.UINT, wParam win32.WPARAM, lParam
 				}
 			}
 
-			if (w.cursorX >= int(w.width) || w.cursorY >= int(w.height) || w.cursorX <= 0 || w.cursorY <= 0 || !w.focused) && !w.cursorGrabbed {
+			if (w.cursorX >= int(w.width) || w.cursorY >= int(w.height) || w.cursorX <= 0 || w.cursorY <= 0 || !w.focused) {
 				// Better than WM_MOUSELEAVE
-				if w.cursorWithin {
-					if !w.cursorGrabbed {
-						win32.ReleaseCapture()
-					}
+				if w.cursorWithin && !w.cursorGrabbed {
+					win32.ReleaseCapture()
 
 					w.cursorWithin = false
 					w.addCursorWithinEvent(w.cursorWithin)
@@ -2098,6 +2101,11 @@ func mainWindowProc(hwnd win32.HWND, msg win32.UINT, wParam win32.WPARAM, lParam
 				supportRawInput := w32VersionMajor >= 5 && w32VersionMinor >= 1
 				halfWidth := int(w.width / 2)
 				halfHeight := int(w.height / 2)
+
+				if w.preGrabCursorX == 0 && w.preGrabCursorY == 0 {
+					w.preGrabCursorX = w.cursorX
+					w.preGrabCursorY = w.cursorY
+				}
 
 				if w.cursorX != halfWidth || w.cursorY != halfHeight {
 					if !supportRawInput {
