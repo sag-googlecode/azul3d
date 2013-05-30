@@ -9,6 +9,7 @@ import (
 	"code.google.com/p/azul3d/chippy/keyboard"
 	"code.google.com/p/azul3d/chippy/mouse"
 	"code.google.com/p/azul3d/chippy/thirdparty/resize"
+	"runtime"
 	"errors"
 	"unsafe"
 	"image"
@@ -1688,6 +1689,13 @@ func (w *W32Window) tryAddKeyboardStateEvent(ev *keyboard.StateEvent) {
 
 // Our MS windows event handler
 func mainWindowProc(hwnd win32.HWND, msg win32.UINT, wParam win32.WPARAM, lParam win32.LPARAM) (ret win32.LRESULT) {
+	// Q: Why is this line here?
+	// A: Windows API calls invoke this mainWindowProc, for instance an call to FooEx() might
+	// invoke mainWindowProc(), and when it does the function, FooEx(), will block until each and
+	// every message has been handled by mainWindowProc(). This line stops the message pump from
+	// pausing other goroutines.
+	defer runtime.Gosched()
+
 	w, ok := windowsByHwnd[hwnd]
 	if ok {
 		switch {
@@ -1697,6 +1705,10 @@ func mainWindowProc(hwnd win32.HWND, msg win32.UINT, wParam win32.WPARAM, lParam
 				w.addPaintEvent()
 			}
 			return 0
+
+		case msg == win32.WM_ERASEBKGND:
+			//w.addPaintEvent()
+			return 1
 
 		case msg == win32.WM_GETMINMAXINFO:
 			minWidth, minHeight := w.MinimumSize()
@@ -2062,7 +2074,7 @@ func mainWindowProc(hwnd win32.HWND, msg win32.UINT, wParam win32.WPARAM, lParam
 				}
 			}
 
-			if w.cursorX >= int(w.width) || w.cursorY >= int(w.height) || w.cursorX <= 0 || w.cursorY <= 0 || !w.focused {
+			if (w.cursorX >= int(w.width) || w.cursorY >= int(w.height) || w.cursorX <= 0 || w.cursorY <= 0 || !w.focused) && !w.cursorGrabbed {
 				// Better than WM_MOUSELEAVE
 				if w.cursorWithin {
 					if !w.cursorGrabbed {
@@ -2247,6 +2259,7 @@ func (w *W32Window) panicUnlessOpen() {
 func backend_NewWindow() Window {
 	w := new(W32Window)
 	w.StateWatcher = *keyboard.NewStateWatcher()
+	w.initEventDispatcher()
 	return w
 }
 

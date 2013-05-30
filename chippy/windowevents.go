@@ -8,7 +8,7 @@ import (
 )
 
 // One-way channel with unlimited buffering
-func elasticBuffer(write, read interface{}) (lengthQuery chan int) {
+func elasticBuffer(write, read interface{}, onClose func()) (lengthQuery chan int) {
 	buffer := []reflect.Value{}
 
 	lengthQuery = make(chan int)
@@ -16,9 +16,16 @@ func elasticBuffer(write, read interface{}) (lengthQuery chan int) {
 	valueIn := reflect.ValueOf(write)
 	valueOut := reflect.ValueOf(read)
 	go func() {
+		defer func() {
+			onClose()
+		}()
+
 		for {
 			if len(buffer) > 0 {
 				// select{
+				//     case <-valueCloseBuffer:
+				//         return
+				//
 				//     case v := <-valueIn:
 				//         buffer = append(buffer, v)
 				//
@@ -54,14 +61,19 @@ func elasticBuffer(write, read interface{}) (lengthQuery chan int) {
 						return
 					}
 					buffer = append(buffer, recv)
+
 				} else if chosen == 1 {
 					buffer = buffer[1:len(buffer)]
-				}
+				}	
 
 			} else {
 				// select{
+				//     case <-valueCloseBuffer:
+				//         return
+				//
 				//     case v := <- valueIn:
 				//         buffer = append(buffer, v)
+				//
 				//     case valueLengthQuery <- len(buffer):
 				//         continue
 				// }
@@ -85,6 +97,7 @@ func elasticBuffer(write, read interface{}) (lengthQuery chan int) {
 						return
 					}
 					buffer = append(buffer, recv)
+
 				} else if chosen == 1 {
 					continue
 				}
@@ -94,181 +107,264 @@ func elasticBuffer(write, read interface{}) (lengthQuery chan int) {
 	return
 }
 
-type PaintEventBuffer struct {
+
+type DestroyedEventBuffer struct {
 	Read, write chan bool
+	closeBuffer chan bool
 	lengthQuery chan int
 }
+func (b *DestroyedEventBuffer) Length() int {
+	return <-b.lengthQuery
+}
+func (b *DestroyedEventBuffer) Close() {
+	close(b.write)
+}
 
+
+type PaintEventBuffer struct {
+	Read, write chan bool
+	closeBuffer chan bool
+	lengthQuery chan int
+}
 func (b *PaintEventBuffer) Length() int {
 	return <-b.lengthQuery
+}
+func (b *PaintEventBuffer) Close() {
+	close(b.write)
 }
 
 
 type CloseEventBuffer struct {
 	Read, write chan bool
+	closeBuffer chan bool
 	lengthQuery chan int
 }
-
 func (b *CloseEventBuffer) Length() int {
 	return <-b.lengthQuery
+}
+func (b *CloseEventBuffer) Close() {
+	close(b.write)
 }
 
 
 type CursorPositionEventBuffer struct {
 	Read, write chan []float64
+	closeBuffer chan bool
 	lengthQuery chan int
 }
-
 func (b *CursorPositionEventBuffer) Length() int {
 	return <-b.lengthQuery
+}
+func (b *CursorPositionEventBuffer) Close() {
+	close(b.write)
 }
 
 
 type CursorWithinEventBuffer struct {
 	Read, write chan bool
+	closeBuffer chan bool
 	lengthQuery chan int
 }
-
 func (b *CursorWithinEventBuffer) Length() int {
 	return <-b.lengthQuery
+}
+func (b *CursorWithinEventBuffer) Close() {
+	close(b.write)
 }
 
 
 type KeyboardStateEventBuffer struct {
 	Read, write chan *keyboard.StateEvent
+	closeBuffer chan bool
 	lengthQuery chan int
 }
-
 func (b *KeyboardStateEventBuffer) Length() int {
 	return <-b.lengthQuery
+}
+func (b *KeyboardStateEventBuffer) Close() {
+	close(b.write)
 }
 
 
 type KeyboardTypedEventBuffer struct {
 	Read, write chan *keyboard.TypedEvent
+	closeBuffer chan bool
 	lengthQuery chan int
 }
-
 func (b *KeyboardTypedEventBuffer) Length() int {
 	return <-b.lengthQuery
+}
+func (b *KeyboardTypedEventBuffer) Close() {
+	close(b.write)
 }
 
 
 type ResizeEventBuffer struct {
 	Read, write chan []uint
+	closeBuffer chan bool
 	lengthQuery chan int
 }
-
 func (b *ResizeEventBuffer) Length() int {
 	return <-b.lengthQuery
+}
+func (b *ResizeEventBuffer) Close() {
+	close(b.write)
 }
 
 
 type MaximizedEventBuffer struct {
 	Read, write chan bool
+	closeBuffer chan bool
 	lengthQuery chan int
 }
-
 func (b *MaximizedEventBuffer) Length() int {
 	return <-b.lengthQuery
+}
+func (b *MaximizedEventBuffer) Close() {
+	close(b.write)
 }
 
 
 type MinimizedEventBuffer struct {
 	Read, write chan bool
+	closeBuffer chan bool
 	lengthQuery chan int
 }
-
 func (b *MinimizedEventBuffer) Length() int {
 	return <-b.lengthQuery
+}
+func (b *MinimizedEventBuffer) Close() {
+	close(b.write)
 }
 
 
 type MouseEventBuffer struct {
 	Read, write chan *mouse.Event
+	closeBuffer chan bool
 	lengthQuery chan int
 }
-
 func (b *MouseEventBuffer) Length() int {
 	return <-b.lengthQuery
+}
+func (b *MouseEventBuffer) Close() {
+	close(b.write)
 }
 
 
 type FocusedEventBuffer struct {
 	Read, write chan bool
+	closeBuffer chan bool
 	lengthQuery chan int
 }
-
 func (b *FocusedEventBuffer) Length() int {
 	return <-b.lengthQuery
+}
+func (b *FocusedEventBuffer) Close() {
+	close(b.write)
 }
 
 
 type PositionEventBuffer struct {
 	Read, write chan []int
+	closeBuffer chan bool
 	lengthQuery chan int
 }
-
 func (b *PositionEventBuffer) Length() int {
 	return <-b.lengthQuery
+}
+func (b *PositionEventBuffer) Close() {
+	close(b.write)
 }
 
 
 type SizeEventBuffer struct {
 	Read, write chan []uint
+	closeBuffer chan bool
 	lengthQuery chan int
 }
-
 func (b *SizeEventBuffer) Length() int {
 	return <-b.lengthQuery
+}
+func (b *SizeEventBuffer) Close() {
+	close(b.write)
 }
 
 
 type ScreenChangedEventBuffer struct {
 	Read, write chan Screen
+	closeBuffer chan bool
 	lengthQuery chan int
 }
-
 func (b *ScreenChangedEventBuffer) Length() int {
 	return <-b.lengthQuery
+}
+func (b *ScreenChangedEventBuffer) Close() {
+	close(b.write)
 }
 
 type eventDispatcher struct {
 	eventsAccess sync.RWMutex
-	destroyedEvents      []chan bool
-	paintEvents          []*PaintEventBuffer
-	closeEvents          []*CloseEventBuffer
-	cursorPositionEvents []*CursorPositionEventBuffer
-	cursorWithinEvents   []*CursorWithinEventBuffer
-	keyboardStateEvents  []*KeyboardStateEventBuffer
-	keyboardTypedEvents  []*KeyboardTypedEventBuffer
-	maximizedEvents      []*MaximizedEventBuffer
-	minimizedEvents      []*MinimizedEventBuffer
-	mouseEvents          []*MouseEventBuffer
-	focusedEvents        []*FocusedEventBuffer
-	positionEvents       []*PositionEventBuffer
-	sizeEvents           []*SizeEventBuffer
-	screenChangedEvents  []*ScreenChangedEventBuffer
+	destroyedEvents      map[*DestroyedEventBuffer]bool
+	paintEvents          map[*PaintEventBuffer]bool
+	closeEvents          map[*CloseEventBuffer]bool
+	cursorPositionEvents map[*CursorPositionEventBuffer]bool
+	cursorWithinEvents   map[*CursorWithinEventBuffer]bool
+	keyboardStateEvents  map[*KeyboardStateEventBuffer]bool
+	keyboardTypedEvents  map[*KeyboardTypedEventBuffer]bool
+	maximizedEvents      map[*MaximizedEventBuffer]bool
+	minimizedEvents      map[*MinimizedEventBuffer]bool
+	mouseEvents          map[*MouseEventBuffer]bool
+	focusedEvents        map[*FocusedEventBuffer]bool
+	positionEvents       map[*PositionEventBuffer]bool
+	sizeEvents           map[*SizeEventBuffer]bool
+	screenChangedEvents  map[*ScreenChangedEventBuffer]bool
 }
 
-func (e *eventDispatcher) DestroyedEvent() chan bool {
+func (e *eventDispatcher) initEventDispatcher() {
+	e.destroyedEvents      = make(map[*DestroyedEventBuffer]bool)
+	e.paintEvents          = make(map[*PaintEventBuffer]bool)
+	e.closeEvents          = make(map[*CloseEventBuffer]bool)
+	e.cursorPositionEvents = make(map[*CursorPositionEventBuffer]bool)
+	e.cursorWithinEvents   = make(map[*CursorWithinEventBuffer]bool)
+	e.keyboardStateEvents  = make(map[*KeyboardStateEventBuffer]bool)
+	e.keyboardTypedEvents  = make(map[*KeyboardTypedEventBuffer]bool)
+	e.maximizedEvents      = make(map[*MaximizedEventBuffer]bool)
+	e.minimizedEvents      = make(map[*MinimizedEventBuffer]bool)
+	e.mouseEvents          = make(map[*MouseEventBuffer]bool)
+	e.focusedEvents        = make(map[*FocusedEventBuffer]bool)
+	e.positionEvents       = make(map[*PositionEventBuffer]bool)
+	e.sizeEvents           = make(map[*SizeEventBuffer]bool)
+	e.screenChangedEvents  = make(map[*ScreenChangedEventBuffer]bool)
+}
+
+
+func (e *eventDispatcher) DestroyedEvents() *DestroyedEventBuffer {
 	e.eventsAccess.Lock()
 	defer e.eventsAccess.Unlock()
 
-	ch := make(chan bool, 1)
-	e.destroyedEvents = append(e.destroyedEvents, ch)
-	return ch
-}
+	buf := new(DestroyedEventBuffer)
+	buf.Read = make(chan bool)
+	buf.write = make(chan bool)
 
+	buf.lengthQuery = elasticBuffer(buf.write, buf.Read, func() {
+		e.eventsAccess.Lock()
+		defer e.eventsAccess.Unlock()
+
+		delete(e.destroyedEvents, buf)
+	})
+
+	e.destroyedEvents[buf] = true
+	return buf
+}
 func (e *eventDispatcher) sendDestroyedEvent() {
 	e.eventsAccess.RLock()
 	defer e.eventsAccess.RUnlock()
 
-	for _, ch := range e.destroyedEvents {
-		ch <- true
-		close(ch)
+	for buf, _ := range e.destroyedEvents {
+		buf.write <- true
 	}
 }
+
 
 func (e *eventDispatcher) PaintEvents() *PaintEventBuffer {
 	e.eventsAccess.Lock()
@@ -277,8 +373,13 @@ func (e *eventDispatcher) PaintEvents() *PaintEventBuffer {
 	buf := new(PaintEventBuffer)
 	buf.Read = make(chan bool)
 	buf.write = make(chan bool)
-	buf.lengthQuery = elasticBuffer(buf.write, buf.Read)
-	e.paintEvents = append(e.paintEvents, buf)
+	buf.lengthQuery = elasticBuffer(buf.write, buf.Read, func() {
+		e.eventsAccess.Lock()
+		defer e.eventsAccess.Unlock()
+
+		delete(e.paintEvents, buf)
+	})
+	e.paintEvents[buf] = true
 	return buf
 }
 func (e *eventDispatcher) addPaintEvent() bool {
@@ -289,11 +390,12 @@ func (e *eventDispatcher) addPaintEvent() bool {
 		return false
 	}
 
-	for _, buf := range e.paintEvents {
+	for buf, _ := range e.paintEvents {
 		buf.write <- true
 	}
 	return true
 }
+
 
 func (e *eventDispatcher) CloseEvents() *CloseEventBuffer {
 	e.eventsAccess.Lock()
@@ -302,8 +404,13 @@ func (e *eventDispatcher) CloseEvents() *CloseEventBuffer {
 	buf := new(CloseEventBuffer)
 	buf.Read = make(chan bool)
 	buf.write = make(chan bool)
-	buf.lengthQuery = elasticBuffer(buf.write, buf.Read)
-	e.closeEvents = append(e.closeEvents, buf)
+	buf.lengthQuery = elasticBuffer(buf.write, buf.Read, func() {
+		e.eventsAccess.Lock()
+		defer e.eventsAccess.Unlock()
+
+		delete(e.closeEvents, buf)
+	})
+	e.closeEvents[buf] = true
 	return buf
 }
 func (e *eventDispatcher) addCloseEvent() bool {
@@ -314,11 +421,12 @@ func (e *eventDispatcher) addCloseEvent() bool {
 		return false
 	}
 
-	for _, buf := range e.closeEvents {
+	for buf, _ := range e.closeEvents {
 		buf.write <- true
 	}
 	return true
 }
+
 
 func (e *eventDispatcher) CursorPositionEvents() *CursorPositionEventBuffer {
 	e.eventsAccess.Lock()
@@ -327,18 +435,24 @@ func (e *eventDispatcher) CursorPositionEvents() *CursorPositionEventBuffer {
 	buf := new(CursorPositionEventBuffer)
 	buf.Read = make(chan []float64)
 	buf.write = make(chan []float64)
-	buf.lengthQuery = elasticBuffer(buf.write, buf.Read)
-	e.cursorPositionEvents = append(e.cursorPositionEvents, buf)
+	buf.lengthQuery = elasticBuffer(buf.write, buf.Read, func() {
+		e.eventsAccess.Lock()
+		defer e.eventsAccess.Unlock()
+
+		delete(e.cursorPositionEvents, buf)
+	})
+	e.cursorPositionEvents[buf] = true
 	return buf
 }
 func (e *eventDispatcher) addCursorPositionEvent(v []float64) {
 	e.eventsAccess.RLock()
 	defer e.eventsAccess.RUnlock()
 
-	for _, buf := range e.cursorPositionEvents {
+	for buf, _ := range e.cursorPositionEvents {
 		buf.write <- v
 	}
 }
+
 
 func (e *eventDispatcher) CursorWithinEvents() *CursorWithinEventBuffer {
 	e.eventsAccess.Lock()
@@ -347,18 +461,24 @@ func (e *eventDispatcher) CursorWithinEvents() *CursorWithinEventBuffer {
 	buf := new(CursorWithinEventBuffer)
 	buf.Read = make(chan bool)
 	buf.write = make(chan bool)
-	buf.lengthQuery = elasticBuffer(buf.write, buf.Read)
-	e.cursorWithinEvents = append(e.cursorWithinEvents, buf)
+	buf.lengthQuery = elasticBuffer(buf.write, buf.Read, func() {
+		e.eventsAccess.Lock()
+		defer e.eventsAccess.Unlock()
+
+		delete(e.cursorWithinEvents, buf)
+	})
+	e.cursorWithinEvents[buf] = true
 	return buf
 }
 func (e *eventDispatcher) addCursorWithinEvent(v bool) {
 	e.eventsAccess.RLock()
 	defer e.eventsAccess.RUnlock()
 
-	for _, buf := range e.cursorWithinEvents {
+	for buf, _ := range e.cursorWithinEvents {
 		buf.write <- v
 	}
 }
+
 
 func (e *eventDispatcher) KeyboardStateEvents() *KeyboardStateEventBuffer {
 	e.eventsAccess.Lock()
@@ -367,18 +487,24 @@ func (e *eventDispatcher) KeyboardStateEvents() *KeyboardStateEventBuffer {
 	buf := new(KeyboardStateEventBuffer)
 	buf.Read = make(chan *keyboard.StateEvent)
 	buf.write = make(chan *keyboard.StateEvent)
-	buf.lengthQuery = elasticBuffer(buf.write, buf.Read)
-	e.keyboardStateEvents = append(e.keyboardStateEvents, buf)
+	buf.lengthQuery = elasticBuffer(buf.write, buf.Read, func() {
+		e.eventsAccess.Lock()
+		defer e.eventsAccess.Unlock()
+
+		delete(e.keyboardStateEvents, buf)
+	})
+	e.keyboardStateEvents[buf] = true
 	return buf
 }
 func (e *eventDispatcher) addKeyboardStateEvent(v *keyboard.StateEvent) {
 	e.eventsAccess.RLock()
 	defer e.eventsAccess.RUnlock()
 
-	for _, buf := range e.keyboardStateEvents {
+	for buf, _ := range e.keyboardStateEvents {
 		buf.write <- v
 	}
 }
+
 
 func (e *eventDispatcher) KeyboardTypedEvents() *KeyboardTypedEventBuffer {
 	e.eventsAccess.Lock()
@@ -387,18 +513,24 @@ func (e *eventDispatcher) KeyboardTypedEvents() *KeyboardTypedEventBuffer {
 	buf := new(KeyboardTypedEventBuffer)
 	buf.Read = make(chan *keyboard.TypedEvent)
 	buf.write = make(chan *keyboard.TypedEvent)
-	buf.lengthQuery = elasticBuffer(buf.write, buf.Read)
-	e.keyboardTypedEvents = append(e.keyboardTypedEvents, buf)
+	buf.lengthQuery = elasticBuffer(buf.write, buf.Read, func() {
+		e.eventsAccess.Lock()
+		defer e.eventsAccess.Unlock()
+
+		delete(e.keyboardTypedEvents, buf)
+	})
+	e.keyboardTypedEvents[buf] = true
 	return buf
 }
 func (e *eventDispatcher) addKeyboardTypedEvent(v *keyboard.TypedEvent) {
 	e.eventsAccess.RLock()
 	defer e.eventsAccess.RUnlock()
 
-	for _, buf := range e.keyboardTypedEvents {
+	for buf, _ := range e.keyboardTypedEvents {
 		buf.write <- v
 	}
 }
+
 
 func (e *eventDispatcher) MaximizedEvents() *MaximizedEventBuffer {
 	e.eventsAccess.Lock()
@@ -407,18 +539,24 @@ func (e *eventDispatcher) MaximizedEvents() *MaximizedEventBuffer {
 	buf := new(MaximizedEventBuffer)
 	buf.Read = make(chan bool)
 	buf.write = make(chan bool)
-	buf.lengthQuery = elasticBuffer(buf.write, buf.Read)
-	e.maximizedEvents = append(e.maximizedEvents, buf)
+	buf.lengthQuery = elasticBuffer(buf.write, buf.Read, func() {
+		e.eventsAccess.Lock()
+		defer e.eventsAccess.Unlock()
+
+		delete(e.maximizedEvents, buf)
+	})
+	e.maximizedEvents[buf] = true
 	return buf
 }
 func (e *eventDispatcher) addMaximizedEvent(v bool) {
 	e.eventsAccess.RLock()
 	defer e.eventsAccess.RUnlock()
 
-	for _, buf := range e.maximizedEvents {
+	for buf, _ := range e.maximizedEvents {
 		buf.write <- v
 	}
 }
+
 
 func (e *eventDispatcher) MinimizedEvents() *MinimizedEventBuffer {
 	e.eventsAccess.Lock()
@@ -427,18 +565,24 @@ func (e *eventDispatcher) MinimizedEvents() *MinimizedEventBuffer {
 	buf := new(MinimizedEventBuffer)
 	buf.Read = make(chan bool)
 	buf.write = make(chan bool)
-	buf.lengthQuery = elasticBuffer(buf.write, buf.Read)
-	e.minimizedEvents = append(e.minimizedEvents, buf)
+	buf.lengthQuery = elasticBuffer(buf.write, buf.Read, func() {
+		e.eventsAccess.Lock()
+		defer e.eventsAccess.Unlock()
+
+		delete(e.minimizedEvents, buf)
+	})
+	e.minimizedEvents[buf] = true
 	return buf
 }
 func (e *eventDispatcher) addMinimizedEvent(v bool) {
 	e.eventsAccess.RLock()
 	defer e.eventsAccess.RUnlock()
 
-	for _, buf := range e.minimizedEvents {
+	for buf, _ := range e.minimizedEvents {
 		buf.write <- v
 	}
 }
+
 
 func (e *eventDispatcher) MouseEvents() *MouseEventBuffer {
 	e.eventsAccess.Lock()
@@ -447,18 +591,24 @@ func (e *eventDispatcher) MouseEvents() *MouseEventBuffer {
 	buf := new(MouseEventBuffer)
 	buf.Read = make(chan *mouse.Event)
 	buf.write = make(chan *mouse.Event)
-	buf.lengthQuery = elasticBuffer(buf.write, buf.Read)
-	e.mouseEvents = append(e.mouseEvents, buf)
+	buf.lengthQuery = elasticBuffer(buf.write, buf.Read, func() {
+		e.eventsAccess.Lock()
+		defer e.eventsAccess.Unlock()
+
+		delete(e.mouseEvents, buf)
+	})
+	e.mouseEvents[buf] = true
 	return buf
 }
 func (e *eventDispatcher) addMouseEvent(v *mouse.Event) {
 	e.eventsAccess.RLock()
 	defer e.eventsAccess.RUnlock()
 
-	for _, buf := range e.mouseEvents {
+	for buf, _ := range e.mouseEvents {
 		buf.write <- v
 	}
 }
+
 
 func (e *eventDispatcher) FocusedEvents() *FocusedEventBuffer {
 	e.eventsAccess.Lock()
@@ -467,18 +617,24 @@ func (e *eventDispatcher) FocusedEvents() *FocusedEventBuffer {
 	buf := new(FocusedEventBuffer)
 	buf.Read = make(chan bool)
 	buf.write = make(chan bool)
-	buf.lengthQuery = elasticBuffer(buf.write, buf.Read)
-	e.focusedEvents = append(e.focusedEvents, buf)
+	buf.lengthQuery = elasticBuffer(buf.write, buf.Read, func() {
+		e.eventsAccess.Lock()
+		defer e.eventsAccess.Unlock()
+
+		delete(e.focusedEvents, buf)
+	})
+	e.focusedEvents[buf] = true
 	return buf
 }
 func (e *eventDispatcher) addFocusedEvent(v bool) {
 	e.eventsAccess.RLock()
 	defer e.eventsAccess.RUnlock()
 
-	for _, buf := range e.focusedEvents {
+	for buf, _ := range e.focusedEvents {
 		buf.write <- v
 	}
 }
+
 
 func (e *eventDispatcher) PositionEvents() *PositionEventBuffer {
 	e.eventsAccess.Lock()
@@ -487,18 +643,24 @@ func (e *eventDispatcher) PositionEvents() *PositionEventBuffer {
 	buf := new(PositionEventBuffer)
 	buf.Read = make(chan []int)
 	buf.write = make(chan []int)
-	buf.lengthQuery = elasticBuffer(buf.write, buf.Read)
-	e.positionEvents = append(e.positionEvents, buf)
+	buf.lengthQuery = elasticBuffer(buf.write, buf.Read, func() {
+		e.eventsAccess.Lock()
+		defer e.eventsAccess.Unlock()
+
+		delete(e.positionEvents, buf)
+	})
+	e.positionEvents[buf] = true
 	return buf
 }
 func (e *eventDispatcher) addPositionEvent(v []int) {
 	e.eventsAccess.RLock()
 	defer e.eventsAccess.RUnlock()
 
-	for _, buf := range e.positionEvents {
+	for buf, _ := range e.positionEvents {
 		buf.write <- v
 	}
 }
+
 
 func (e *eventDispatcher) SizeEvents() *SizeEventBuffer {
 	e.eventsAccess.Lock()
@@ -507,18 +669,24 @@ func (e *eventDispatcher) SizeEvents() *SizeEventBuffer {
 	buf := new(SizeEventBuffer)
 	buf.Read = make(chan []uint)
 	buf.write = make(chan []uint)
-	buf.lengthQuery = elasticBuffer(buf.write, buf.Read)
-	e.sizeEvents = append(e.sizeEvents, buf)
+	buf.lengthQuery = elasticBuffer(buf.write, buf.Read, func() {
+		e.eventsAccess.Lock()
+		defer e.eventsAccess.Unlock()
+
+		delete(e.sizeEvents, buf)
+	})
+	e.sizeEvents[buf] = true
 	return buf
 }
 func (e *eventDispatcher) addSizeEvent(v []uint) {
 	e.eventsAccess.RLock()
 	defer e.eventsAccess.RUnlock()
 
-	for _, buf := range e.sizeEvents {
+	for buf, _ := range e.sizeEvents {
 		buf.write <- v
 	}
 }
+
 
 func (e *eventDispatcher) ScreenChangedEvents() *ScreenChangedEventBuffer {
 	e.eventsAccess.Lock()
@@ -527,15 +695,20 @@ func (e *eventDispatcher) ScreenChangedEvents() *ScreenChangedEventBuffer {
 	buf := new(ScreenChangedEventBuffer)
 	buf.Read = make(chan Screen)
 	buf.write = make(chan Screen)
-	buf.lengthQuery = elasticBuffer(buf.write, buf.Read)
-	e.screenChangedEvents = append(e.screenChangedEvents, buf)
+	buf.lengthQuery = elasticBuffer(buf.write, buf.Read, func() {
+		e.eventsAccess.Lock()
+		defer e.eventsAccess.Unlock()
+
+		delete(e.screenChangedEvents, buf)
+	})
+	e.screenChangedEvents[buf] = true
 	return buf
 }
 func (e *eventDispatcher) addScreenChangedEvent(v Screen) {
 	e.eventsAccess.RLock()
 	defer e.eventsAccess.RUnlock()
 
-	for _, buf := range e.screenChangedEvents {
+	for buf, _ := range e.screenChangedEvents {
 		buf.write <- v
 	}
 }

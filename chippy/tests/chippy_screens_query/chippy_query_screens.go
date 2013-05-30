@@ -61,6 +61,9 @@ func main() {
 	}
 	chosenMode := chosenScreen.ScreenModes()[mode]
 
+	// Ensure that we restore the screen to it's original state before exiting
+	defer chosenScreen.Restore()
+
 	// Change screen mode
 	chosenScreen.SetScreenMode(chosenMode)
 

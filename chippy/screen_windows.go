@@ -6,6 +6,7 @@ package chippy
 
 import (
 	"code.google.com/p/azul3d/chippy/wrappers/win32"
+	"runtime"
 	"fmt"
 	"math"
 	"sort"
@@ -17,7 +18,6 @@ type w32ScreenMode struct {
 	isCurrentMode bool
 	width, height uint
 	refreshRate   float32
-	screen        Screen
 
 	w32Bpp  win32.DWORD
 	w32Mode *win32.DEVMODE
@@ -25,7 +25,7 @@ type w32ScreenMode struct {
 
 func newScreenMode(screen Screen) *w32ScreenMode {
 	m := &w32ScreenMode{}
-	m.screen = screen
+	//m.screen = screen
 	m.valid = true
 	return m
 }
@@ -65,10 +65,6 @@ func (m *w32ScreenMode) BytesPerPixel() uint {
 	return uint(m.w32Bpp)
 }
 
-func (m *w32ScreenMode) Screen() Screen {
-	return m.screen
-}
-
 type w32Screen struct {
 	access sync.RWMutex
 	valid  bool
@@ -83,7 +79,6 @@ type w32Screen struct {
 	gammaRampError error
 
 	screenModeChanged, gammaRampChanged          bool
-	restoreScreenMode, restoreGammaRamp, cleanup *callback
 
 	isDefaultScreen                             bool
 	w32MonitorDeviceName, w32GraphicsDeviceName string
@@ -95,37 +90,14 @@ func newScreen() *w32Screen {
 	s := &w32Screen{}
 	s.valid = true
 
-	s.restoreScreenMode = &callback{func() {
-		if AutoRestoreOriginalScreenMode() {
-			s.SetScreenMode(s.OriginalScreenMode())
-		}
-	}}
-	addDestroyCallback(s.restoreScreenMode)
-
-	s.restoreGammaRamp = &callback{func() {
-		if AutoRestoreOriginalGammaRamp() {
-			ramp, err := s.OriginalGammaRamp()
-			if err != nil {
-				logger.Println(err.Error())
-				return
-			}
-			err = s.SetGammaRamp(ramp)
-			if err != nil {
-				logger.Println(err.Error())
-				return
-			}
-		}
-	}}
-	addDestroyCallback(s.restoreGammaRamp)
-
-	s.cleanup = &callback{func() {
-		dispatch(func() {
+	runtime.SetFinalizer(s, func(s *w32Screen) {
+		dispatchNoWait(func() {
 			// Do screen related cleanup here..
-
-			win32.DeleteDC(s.dc)
+			if !win32.DeleteDC(s.dc) {
+				logger.Println("Cannot delete DC; DeleteDC():", win32.GetLastErrorString())
+			}
 		})
-	}}
-	addDestroyCallback(s.cleanup)
+	})
 
 	return s
 }
@@ -174,10 +146,6 @@ func (s *w32Screen) ScreenModes() []ScreenMode {
 }
 
 func (s *w32Screen) SetScreenMode(newMode ScreenMode) (err error) {
-	if newMode.Screen() != s {
-		panic("newMode parameter is an invalid screen mode! It did not originate from this screen!")
-	}
-
 	s.access.Lock()
 	defer s.access.Unlock()
 
@@ -329,6 +297,21 @@ func (s *w32Screen) GammaRampSize() uint {
 	return s.gammaRampSize
 }
 
+func (s *w32Screen) Restore() {
+	s.SetScreenMode(s.OriginalScreenMode())
+
+	ramp, err := s.OriginalGammaRamp()
+	if err != nil {
+		logger.Println(err.Error())
+		return
+	}
+	err = s.SetGammaRamp(ramp)
+	if err != nil {
+		logger.Println(err.Error())
+		return
+	}
+}
+
 func (s *w32Screen) setGammaRampSize() {
 	if win32.GetDeviceCaps(s.dc, win32.CM_GAMMA_RAMP) != 0 {
 		s.gammaRampSize = 256
@@ -425,6 +408,7 @@ func (s *w32Screen) setScreenModes() {
 					continue // We already appended this before
 				}
 			}
+
 			s.screenModes = append(s.screenModes, screenMode)
 		}
 	}
@@ -473,7 +457,7 @@ func backend_doScreens() (screens []Screen) {
 					if active || attached || win2kOrBelow {
 						screen := newScreen()
 
-						if (gflags&win32.DISPLAY_DEVICE_PRIMARY_DEVICE) > 0 && j == 1 {
+						if (gflags & win32.DISPLAY_DEVICE_PRIMARY_DEVICE) > 0 && j == 1 {
 							screen.isDefaultScreen = true
 						}
 

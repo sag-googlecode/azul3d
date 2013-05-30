@@ -263,64 +263,12 @@ func removeDestroyCallback(c *callback) {
 var (
 	globalLock sync.RWMutex
 
-	autoRestoreOriginalScreenMode, autoRestoreOriginalGammaRamp bool
-
 	// Tells weather chippy has been previously Init()
 	isInit bool
 
 	// Tells weather a previous call to Init() failed
 	initError error
 )
-
-// SetAutoRestoreOriginalScreenMode specifies weather each Screen should automatically restore it's
-// original ScreenMode.
-//
-// Turning this off leaves ScreenMode changes on each Screen perminantly active after an call to
-// chippy.Destroy.
-//
-// It's advised against to turn this off (on by default) due to the fact that you will most likely
-// anger users if you alter their screen resolution perminantly, forcing them to change it back by
-// themselves.
-func SetAutoRestoreOriginalScreenMode(restore bool) {
-	globalLock.Lock()
-	defer globalLock.Unlock()
-	autoRestoreOriginalScreenMode = restore
-}
-
-// AutoRestoreOriginalScreenMode tells weather each Screen will currently automatically restore
-// it's original ScreenMode.
-//
-// See: SetAutoRestoreOriginalScreenMode
-func AutoRestoreOriginalScreenMode() bool {
-	globalLock.RLock()
-	defer globalLock.RUnlock()
-	return autoRestoreOriginalScreenMode
-}
-
-// SetAutoRestoreOriginalGammaRamp specifies weather each Screen should automatically restore it's
-// original GammaRamp.
-//
-// Turning this off leaves GammaRamp changes on each Screen perminantly active after an call to
-// chippy.Destroy.
-//
-// It's advised against to turn this off (on by default) due to the fact that you will most likely
-// anger users if you alter their screen's gamma ramp, forcing them to restart their computer in
-// order to restore their original one (most likely).
-func SetAutoRestoreOriginalGammaRamp(restore bool) {
-	globalLock.Lock()
-	defer globalLock.Unlock()
-	autoRestoreOriginalGammaRamp = restore
-}
-
-// AutoRestoreOriginalGammaRamp tells weather each Screen will currently automatically restore
-// it's original GammaRamp.
-//
-// See: SetAutoRestoreOriginalGammaRamp
-func AutoRestoreOriginalGammaRamp() bool {
-	globalLock.RLock()
-	defer globalLock.RUnlock()
-	return autoRestoreOriginalGammaRamp
-}
 
 // IsInit returns weather Chippy has been initialized via a previous call to Init().
 //
@@ -362,9 +310,6 @@ func Init() error {
 	defer globalLock.Unlock()
 
 	if isInit == false {
-		autoRestoreOriginalScreenMode = true
-		autoRestoreOriginalGammaRamp = true
-
 		// Now we try and initialize the backend, which may fail due to user configurations
 		// or something of the sort (dumb user tries to run application on Linux box without
 		// any working X11 server or something silly)

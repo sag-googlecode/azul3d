@@ -79,11 +79,16 @@ type Screen interface {
 	// Even though GammaRamp has Red, Green, and Blue defined as slices, they actually must contain
 	// an exact number of elements (that is, the number returned by this function).
 	GammaRampSize() uint
+
+	// Restore restores both the gamma ramp and screen mode of this screen to their original ones,
+	// such that this Screen is restored to it's original state.
+	Restore()
 }
 
 var (
 	screenCacheLock       sync.RWMutex
 	cachedScreens         []Screen
+	cachedDefaultScreen   Screen
 	queriedScreensAlready bool
 )
 
@@ -94,10 +99,12 @@ var (
 // To update the internal screen cache, see the RefreshScreens function.
 func Screens() []Screen {
 	screenCacheLock.RLock()
-	screenCacheLock.RUnlock()
+	defer screenCacheLock.RUnlock()
 
 	if !queriedScreensAlready {
+		screenCacheLock.RUnlock()
 		RefreshScreens()
+		screenCacheLock.RLock()
 	}
 	return cachedScreens
 }
@@ -111,6 +118,7 @@ func RefreshScreens() {
 
 	queriedScreensAlready = true
 	cachedScreens = backend_Screens()
+	cachedDefaultScreen = backend_DefaultScreen()
 }
 
 // DefaultScreen returns the 'default' screen, this is determined by either the window manager
@@ -119,5 +127,15 @@ func RefreshScreens() {
 // It is possible for this function to return nil, in the unlikely event that Screens() returns no
 // screens at all, due to an user having none plugged in or activated.
 func DefaultScreen() Screen {
-	return backend_DefaultScreen()
+	screenCacheLock.RLock()
+	defer screenCacheLock.RUnlock()
+
+	if !queriedScreensAlready {
+		screenCacheLock.RUnlock()
+		RefreshScreens()
+		screenCacheLock.RLock()
+	}
+
+	return cachedDefaultScreen
 }
+

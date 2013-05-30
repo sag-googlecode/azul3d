@@ -49,6 +49,9 @@ func main() {
 		log.Fatal("Chosen screen has no support for gamma ramps (color correction lookup table / LUT)")
 	}
 
+	// Ensure that we restore the screen to it's original state. (restores the gamma ramp)
+	defer chosenScreen.Restore()
+
 	do := func(red, green, blue float32) {
 		log.Printf("r = %.2f, g = %.2f, b = %.2f\n", red, green, blue)
 

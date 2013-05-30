@@ -156,6 +156,10 @@ func main() {
 	// We'll use this glClock for timing things
 	glClock = clock.New()
 
+	// We'll set the max frame rate to zero for this test.. sometimes this can show us (chippy
+	// developers) where an potential lock contengency is.
+	glClock.SetMaxFrameRate(0)
+
 	// Start an goroutine to display statistics
 	go func() {
 		delay := 0 * time.Second

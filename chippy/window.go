@@ -51,8 +51,10 @@ type Window interface {
 	// If Destroyed returns true, this function is no-op.
 	Destroy()
 
-	// DestroyedEvent is an special event that is sent after Destroy() is called.
-	DestroyedEvent() chan bool
+	// DestroyedEvent is an special event that is sent after Destroy() is called, despite the name
+	// of this function, only one destroyed event will ever be sent over DestroyEventBuffer.Read,
+	// after which the channel will be closed.
+	DestroyedEvents() *DestroyedEventBuffer
 
 	// Destroyed tells weather there was an previous call to the Destroy function.
 	Destroyed() bool

@@ -145,14 +145,14 @@ func (c *DISPLAY_DEVICE) GetDeviceKey() string {
 
 // http://msdn.microsoft.com/en-us/library/windows/desktop/dd162609(v=vs.85).aspx
 func EnumDisplayDevices(lpDevice string, iDevNum, dwFlags DWORD) (ret bool, displayDevice *DISPLAY_DEVICE) {
-	var dd C.DISPLAY_DEVICE
-	dd.cb = C.DWORD(unsafe.Sizeof(dd))
+	dd := new(C.DISPLAY_DEVICE)
+	dd.cb = C.DWORD(unsafe.Sizeof(*dd))
 
 	cDevice := StringToLPTSTR(lpDevice)
 	defer C.free(unsafe.Pointer(cDevice))
 
-	ret = C.EnumDisplayDevices(cDevice, C.DWORD(iDevNum), (C.PDISPLAY_DEVICE)(unsafe.Pointer(&dd)), C.DWORD(dwFlags)) != 0
-	displayDevice = (*DISPLAY_DEVICE)(&dd)
+	ret = C.EnumDisplayDevices(cDevice, C.DWORD(iDevNum), (C.PDISPLAY_DEVICE)(unsafe.Pointer(dd)), C.DWORD(dwFlags)) != 0
+	displayDevice = (*DISPLAY_DEVICE)(dd)
 	return
 }
 
@@ -325,6 +325,7 @@ typedef struct _VIDEOPARAMETERS {
   ULONG dwPositionY;
   ULONG dwBrightness;
   ULONG dwContrast;
+
   ULONG dwCPType;
   ULONG dwCPCommand;
   ULONG dwCPStandard;
@@ -386,11 +387,16 @@ func GetDeviceCaps(dc HDC, nIndex Int) (ret Int) {
 }
 
 func CreateDC(lpszDriver, lpszDevice string, lpInitData *DEVMODE) (dc HDC) {
-	cDriver := StringToLPTSTR(lpszDriver)
-	defer C.free(unsafe.Pointer(cDriver))
+	var cDriver, cDevice C.LPTSTR
+	if len(lpszDriver) > 0 {
+		cDriver = StringToLPTSTR(lpszDriver)
+		defer C.free(unsafe.Pointer(cDriver))
+	}
 
-	cDevice := StringToLPTSTR(lpszDevice)
-	defer C.free(unsafe.Pointer(cDevice))
+	if len(lpszDevice) > 0 {
+		cDevice = StringToLPTSTR(lpszDevice)
+		defer C.free(unsafe.Pointer(cDevice))
+	}
 
 	dc = HDC(C.CreateDC(cDriver, cDevice, nil, (*C.DEVMODEW)(lpInitData)))
 	return
@@ -586,7 +592,9 @@ func MonitorEnumProcCallback(hMonitor HMONITOR, hdcMonitor HDC, lprcMonitor *REC
 
 func EnumDisplayMonitors(hdc HDC, lprcClip *RECT, fn MonitorEnumProc, dwData LPARAM) bool {
 	monitorEnumProcCallback = fn
-	return C.EnumDisplayMonitors(C.HDC(hdc), (C.LPCRECT)(unsafe.Pointer(lprcClip)), C.win32_MonitorEnumProcCallbackHandle, C.LPARAM(dwData)) != 0
+	ret := C.EnumDisplayMonitors(C.HDC(hdc), (C.LPCRECT)(unsafe.Pointer(lprcClip)), C.win32_MonitorEnumProcCallbackHandle, C.LPARAM(dwData)) != 0
+	monitorEnumProcCallback = nil
+	return ret
 }
 /*
 BOOL EnumDisplayMonitors(
@@ -1095,6 +1103,7 @@ const (
 	WM_SIZING        = C.WM_SIZING
 
 	WM_PAINT = C.WM_PAINT
+	WM_ERASEBKGND = C.WM_ERASEBKGND
 
 	WM_SETCURSOR = C.WM_SETCURSOR
 
@@ -1820,6 +1829,8 @@ const(
 	VK_LCONTROL = 0xA2
 	VK_RCONTROL = 0xA3
 	VK_LMENU = 0xA4
+
+
 	VK_RMENU = 0xA5
 	VK_BROWSER_BACK = 0xA6
 	VK_BROWSER_FORWARD = 0xA7
