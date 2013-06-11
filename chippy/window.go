@@ -5,19 +5,21 @@
 package chippy
 
 import (
+	"code.google.com/p/azul3d/chippy/keyboard"
 	"image"
 )
 
 type Cursor struct {
 	Image image.Image
-	X uint
-	Y uint
+	X     uint
+	Y     uint
 }
 
 // This is quite an large interface... I know.
 
 // Window represents an single window, it will be non-visible untill the Open function is called.
 type Window interface {
+	keyboard.StateWatcherInterface
 	BlitRenderable
 	GLRenderable
 
@@ -365,7 +367,7 @@ func genericSetPositionCenter(window Window, screen Screen) {
 	halfScreenHeight := int(screenHeight / 2)
 	halfWindowWidth := int(windowWidth / 2)
 	halfWindowHeight := int(windowHeight / 2)
-	window.SetPosition(halfScreenWidth - halfWindowWidth, halfScreenHeight - halfWindowHeight)
+	window.SetPosition(halfScreenWidth-halfWindowWidth, halfScreenHeight-halfWindowHeight)
 }
 
 func NewWindow() Window {
@@ -384,4 +386,3 @@ func NewWindow() Window {
 	//w.SetAlwaysOnTop(false)
 	return w
 }
-

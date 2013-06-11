@@ -1,10 +1,10 @@
 package chippy
 
-import(
-	_ "image/png"
-	"image"
+import (
 	"bytes"
 	"fmt"
+	"image"
+	_ "image/png"
 )
 
 var defaultIcon image.Image
@@ -18,4 +18,3 @@ func init() {
 		panic(fmt.Sprintf("Unable to decode default icon", err))
 	}
 }
-

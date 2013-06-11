@@ -5,19 +5,20 @@
 package chippy
 
 import (
-	"code.google.com/p/azul3d/chippy/wrappers/win32"
 	"code.google.com/p/azul3d/chippy/keyboard"
-	"unsafe"
+	"code.google.com/p/azul3d/chippy/wrappers/win32"
 	"errors"
-	"time"
-	"sync"
 	"fmt"
+	"sync"
+	"time"
+	"unsafe"
 )
 
 func eventLoop() {
-	for{
+	for {
 		// Small sleep just to stop hogging CPU
 		time.Sleep(2 * time.Millisecond)
+
 		dispatch(func() {
 			var msg *win32.MSG
 			hasMessage := true
@@ -44,6 +45,7 @@ func nextCounter() int {
 }
 
 var windowsKeyDisabled bool
+
 func SetWindowsKeyDisabled(disabled bool) {
 	globalLock.Lock()
 	defer globalLock.Unlock()
@@ -75,7 +77,6 @@ func keyboardHook(nCode win32.Int, wParam win32.WPARAM, lParam win32.LPARAM) win
 				win32.VK_RWIN,
 			}
 
-
 			anyKeysToEat := false
 			for _, k := range keysToEat {
 				if k == p.VkCode {
@@ -95,18 +96,18 @@ func keyboardHook(nCode win32.Int, wParam win32.WPARAM, lParam win32.LPARAM) win
 							state = keyboard.Up
 						}
 
-						switch(p.VkCode) {
-							case win32.VK_LWIN:
-								window.tryAddKeyboardStateEvent(&keyboard.StateEvent{
-									State: state,
-									Key: keyboard.LeftSuper,
-								})
+						switch p.VkCode {
+						case win32.VK_LWIN:
+							window.tryAddKeyboardStateEvent(&keyboard.StateEvent{
+								State: state,
+								Key:   keyboard.LeftSuper,
+							})
 
-							case win32.VK_RWIN:
-								window.tryAddKeyboardStateEvent(&keyboard.StateEvent{
-									State: state,
-									Key: keyboard.RightSuper,
-								})
+						case win32.VK_RWIN:
+							window.tryAddKeyboardStateEvent(&keyboard.StateEvent{
+								State: state,
+								Key:   keyboard.RightSuper,
+							})
 						}
 					}
 				}

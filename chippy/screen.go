@@ -138,4 +138,3 @@ func DefaultScreen() Screen {
 
 	return cachedDefaultScreen
 }
-

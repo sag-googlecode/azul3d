@@ -5,18 +5,18 @@
 package chippy
 
 import (
-	"code.google.com/p/azul3d/chippy/wrappers/win32"
 	"code.google.com/p/azul3d/chippy/keyboard"
 	"code.google.com/p/azul3d/chippy/mouse"
 	"code.google.com/p/azul3d/chippy/thirdparty/resize"
-	"runtime"
+	"code.google.com/p/azul3d/chippy/wrappers/win32"
 	"errors"
-	"unsafe"
+	"fmt"
 	"image"
 	"math"
+	"runtime"
 	"sync"
 	"time"
-	"fmt"
+	"unsafe"
 )
 
 var windowsByHwnd = make(map[win32.HWND]*W32Window)
@@ -33,7 +33,7 @@ type W32Window struct {
 
 	access sync.RWMutex
 
-	icon image.Image
+	icon   image.Image
 	cursor *Cursor
 
 	opened, isDestroyed, focused, visible, decorated, minimized, maximized, fullscreen,
@@ -57,18 +57,18 @@ type W32Window struct {
 	iconColorBitmap, iconMaskBitmap, smIconColorBitmap, smIconMaskBitmap     win32.HBITMAP
 	iconColorBits, iconMaskBits, smIconColorBits, smIconMaskBits             []uint32
 	dc, dcRender                                                             win32.HDC
-	hwnd, hwndRender                                                         win32.HWND
+	hwnd                                                                     win32.HWND
 	windowClass                                                              string
 	styleFlags                                                               win32.DWORD
 	lastWmSizingLeft, lastWmSizingRight, lastWmSizingBottom, lastWmSizingTop win32.LONG
 
 	// Blit things here
-	blitBitmap win32.HBITMAP
+	blitBitmap   win32.HBITMAP
 	blitBitmapDc win32.HDC
-	blitBits []uint32
+	blitBits     []uint32
 
 	// OpenGL things here
-	glConfig *GLConfig
+	glConfig         *GLConfig
 	glPixelFormatSet bool
 }
 
@@ -92,6 +92,8 @@ func (w *W32Window) Open(screen Screen) (err error) {
 	w.originalScreen = screen
 	w.screen = screen
 
+	debug("Open()")
+	unlock()
 	dispatch(func() {
 		// Get window extents
 		titleHeight := win32.GetSystemMetrics(win32.SM_CYCAPTION)
@@ -129,7 +131,7 @@ func (w *W32Window) Open(screen Screen) (err error) {
 			state = keyboard.Off
 		}
 		w.tryAddKeyboardStateEvent(&keyboard.StateEvent{
-			Key: keyboard.CapsLock,
+			Key:   keyboard.CapsLock,
 			State: state,
 		})
 
@@ -138,7 +140,7 @@ func (w *W32Window) Open(screen Screen) (err error) {
 			state = keyboard.Off
 		}
 		w.tryAddKeyboardStateEvent(&keyboard.StateEvent{
-			Key: keyboard.NumLock,
+			Key:   keyboard.NumLock,
 			State: state,
 		})
 
@@ -147,7 +149,7 @@ func (w *W32Window) Open(screen Screen) (err error) {
 			state = keyboard.Off
 		}
 		w.tryAddKeyboardStateEvent(&keyboard.StateEvent{
-			Key: keyboard.ScrollLock,
+			Key:   keyboard.ScrollLock,
 			State: state,
 		})
 
@@ -157,7 +159,7 @@ func (w *W32Window) Open(screen Screen) (err error) {
 			state = keyboard.Up
 		}
 		w.tryAddKeyboardStateEvent(&keyboard.StateEvent{
-			Key: keyboard.LeftAlt,
+			Key:   keyboard.LeftAlt,
 			State: state,
 		})
 
@@ -166,7 +168,7 @@ func (w *W32Window) Open(screen Screen) (err error) {
 			state = keyboard.Up
 		}
 		w.tryAddKeyboardStateEvent(&keyboard.StateEvent{
-			Key: keyboard.RightAlt,
+			Key:   keyboard.RightAlt,
 			State: state,
 		})
 
@@ -175,7 +177,7 @@ func (w *W32Window) Open(screen Screen) (err error) {
 			state = keyboard.Up
 		}
 		w.tryAddKeyboardStateEvent(&keyboard.StateEvent{
-			Key: keyboard.LeftCtrl,
+			Key:   keyboard.LeftCtrl,
 			State: state,
 		})
 
@@ -184,7 +186,7 @@ func (w *W32Window) Open(screen Screen) (err error) {
 			state = keyboard.Up
 		}
 		w.tryAddKeyboardStateEvent(&keyboard.StateEvent{
-			Key: keyboard.RightCtrl,
+			Key:   keyboard.RightCtrl,
 			State: state,
 		})
 
@@ -193,7 +195,7 @@ func (w *W32Window) Open(screen Screen) (err error) {
 			state = keyboard.Up
 		}
 		w.tryAddKeyboardStateEvent(&keyboard.StateEvent{
-			Key: keyboard.LeftShift,
+			Key:   keyboard.LeftShift,
 			State: state,
 		})
 
@@ -202,7 +204,7 @@ func (w *W32Window) Open(screen Screen) (err error) {
 			state = keyboard.Up
 		}
 		w.tryAddKeyboardStateEvent(&keyboard.StateEvent{
-			Key: keyboard.RightShift,
+			Key:   keyboard.RightShift,
 			State: state,
 		})
 
@@ -211,7 +213,7 @@ func (w *W32Window) Open(screen Screen) (err error) {
 			state = keyboard.Up
 		}
 		w.tryAddKeyboardStateEvent(&keyboard.StateEvent{
-			Key: keyboard.LeftSuper,
+			Key:   keyboard.LeftSuper,
 			State: state,
 		})
 
@@ -220,13 +222,11 @@ func (w *W32Window) Open(screen Screen) (err error) {
 			state = keyboard.Up
 		}
 		w.tryAddKeyboardStateEvent(&keyboard.StateEvent{
-			Key: keyboard.RightSuper,
+			Key:   keyboard.RightSuper,
 			State: state,
 		})
 
 	})
-
-	unlock()
 
 	if err == nil {
 		w.SetCursor(nil)
@@ -321,10 +321,14 @@ func (w *W32Window) Destroy() {
 		return
 	}
 
-	w.access.Lock()
-	defer w.access.Unlock()
+	unlock := w.newAttemptUnlocker()
+	defer unlock()
+
 	w.isDestroyed = true
 
+	w.sendDestroyedEvent()
+
+	unlock()
 	dispatch(func() {
 		win32.UnregisterWndProc(w.hwnd)
 		delete(windowsByHwnd, w.hwnd)
@@ -337,8 +341,6 @@ func (w *W32Window) Destroy() {
 			logger.Println("Failed to unregister window class; UnregisterClass():", win32.GetLastErrorString())
 		}
 	})
-
-	w.sendDestroyedEvent()
 }
 
 func (w *W32Window) Notify() {
@@ -369,10 +371,14 @@ func (w *W32Window) Notify() {
 }
 
 func (w *W32Window) PixelClear(x, y, width, height uint) {
+	unlock := w.newAttemptUnlocker()
+	defer unlock()
+
 	if !w.opened {
 		return
 	}
 
+	unlock()
 	dispatch(func() {
 		r := &win32.RECT{}
 		r.SetLeft(win32.LONG(x))
@@ -384,12 +390,16 @@ func (w *W32Window) PixelClear(x, y, width, height uint) {
 }
 
 func (w *W32Window) PixelBlit(x, y uint, image image.Image) {
+	unlock := w.newAttemptUnlocker()
+	defer unlock()
+
 	if !w.opened {
 		return
 	}
 
+	unlock()
 	dispatch(func() {
-		if w.blitBitmap != nil{
+		if w.blitBitmap != nil {
 			if !win32.DeleteDC(w.blitBitmapDc) {
 				logger.Println("Unable to delete blit bitmap; DeleteDC():", win32.GetLastErrorString())
 			}
@@ -410,14 +420,14 @@ func (w *W32Window) PixelBlit(x, y uint, image image.Image) {
 			return
 		}
 
-		w.blitBits = make([]uint32, width * height)
+		w.blitBits = make([]uint32, width*height)
 
 		for y := 0; y < int(height); y++ {
 			for x := 0; x < int(width); x++ {
 				r, g, b, a := image.At(x, y).RGBA()
-				c := (uint32(a >> 8) << 24) | (uint32(r >> 8) << 16) | (uint32(g >> 8) << 8) | (uint32(b >> 8) << 0)
+				c := (uint32(a>>8) << 24) | (uint32(r>>8) << 16) | (uint32(g>>8) << 8) | (uint32(b>>8) << 0)
 
-				index := (int(height)-1 - y) * int(width)
+				index := (int(height) - 1 - y) * int(width)
 				index += x
 				w.blitBits[index] = c
 			}
@@ -425,17 +435,17 @@ func (w *W32Window) PixelBlit(x, y uint, image image.Image) {
 
 		bitmapInfo := win32.BITMAPINFO{
 			BmiHeader: win32.BITMAPINFOHEADER{
-				Size: win32.DWORD(unsafe.Sizeof(win32.BITMAPINFOHEADER{})),
-				Width: win32.LONG(width),
-				Height: win32.LONG(height),
-				Planes: 1,
-				BitCount: 32,
-				Compression: win32.BI_RGB,
-				SizeImage: 0,
+				Size:          win32.DWORD(unsafe.Sizeof(win32.BITMAPINFOHEADER{})),
+				Width:         win32.LONG(width),
+				Height:        win32.LONG(height),
+				Planes:        1,
+				BitCount:      32,
+				Compression:   win32.BI_RGB,
+				SizeImage:     0,
 				XPelsPerMeter: 0,
 				YPelsPerMeter: 0,
-				ClrUsed: 0,
-				ClrImportant: 0,
+				ClrUsed:       0,
+				ClrImportant:  0,
 			},
 		}
 		if win32.SetDIBits(w.dc, w.blitBitmap, 0, win32.UINT(height), unsafe.Pointer(&w.blitBits[0]), &bitmapInfo, win32.DIB_RGB_COLORS) == 0 {
@@ -444,10 +454,10 @@ func (w *W32Window) PixelBlit(x, y uint, image image.Image) {
 		}
 
 		blend := win32.BLENDFUNCTION{
-			BlendOp: win32.AC_SRC_OVER,
-			BlendFlags: 0,
+			BlendOp:             win32.AC_SRC_OVER,
+			BlendFlags:          0,
 			SourceConstantAlpha: 255,
-			AlphaFormat: win32.AC_SRC_ALPHA,
+			AlphaFormat:         win32.AC_SRC_ALPHA,
 		}
 
 		if !win32.AlphaBlend(w.dc, win32.Int(x), win32.Int(y), win32.Int(width), win32.Int(height), w.blitBitmapDc, 0, 0, win32.Int(width), win32.Int(height), &blend) {
@@ -750,14 +760,14 @@ func (w *W32Window) SetIcon(icon image.Image) {
 	unlock := w.newAttemptUnlocker()
 	defer unlock()
 
+	w.icon = icon
+
 	if w.opened {
 		unlock()
 		dispatch(func() {
 			w.doMakeIcon()
 		})
 	}
-
-	w.icon = icon
 }
 
 func (w *W32Window) doPrepareCursor(cursor *Cursor) {
@@ -770,28 +780,28 @@ func (w *W32Window) doPrepareCursor(cursor *Cursor) {
 
 	cursorBitmapInfo := win32.BITMAPINFO{
 		BmiHeader: win32.BITMAPINFOHEADER{
-			Size: win32.DWORD(unsafe.Sizeof(win32.BITMAPINFOHEADER{})),
-			Width: win32.LONG(cursorWidth),
-			Height: win32.LONG(cursorHeight),
-			Planes: 1,
-			BitCount: 32,
-			Compression: win32.BI_RGB,
-			SizeImage: 0,
+			Size:          win32.DWORD(unsafe.Sizeof(win32.BITMAPINFOHEADER{})),
+			Width:         win32.LONG(cursorWidth),
+			Height:        win32.LONG(cursorHeight),
+			Planes:        1,
+			BitCount:      32,
+			Compression:   win32.BI_RGB,
+			SizeImage:     0,
 			XPelsPerMeter: 0,
 			YPelsPerMeter: 0,
-			ClrUsed: 0,
-			ClrImportant: 0,
+			ClrUsed:       0,
+			ClrImportant:  0,
 		},
 	}
 
 	lc.cursorColorBitmap = win32.CreateCompatibleBitmap(w.dc, cursorWidth, cursorHeight)
-	lc.cursorColorBits = make([]uint32, cursorWidth * cursorHeight)
+	lc.cursorColorBits = make([]uint32, cursorWidth*cursorHeight)
 	for y := 0; y < int(cursorHeight); y++ {
 		for x := 0; x < int(cursorWidth); x++ {
 			r, g, b, _ := cursorImage.At(x, y).RGBA()
-			c := (uint32(r >> 8) << 16) | (uint32(g >> 8) << 8) | (uint32(b >> 8) << 0)
+			c := (uint32(r>>8) << 16) | (uint32(g>>8) << 8) | (uint32(b>>8) << 0)
 
-			index := (int(cursorHeight)-1 - y) * int(cursorWidth)
+			index := (int(cursorHeight) - 1 - y) * int(cursorWidth)
 			index += x
 			lc.cursorColorBits[index] = c //0xFF0000
 		}
@@ -802,7 +812,7 @@ func (w *W32Window) doPrepareCursor(cursor *Cursor) {
 	}
 
 	lc.cursorMaskBitmap = win32.CreateCompatibleBitmap(w.dc, cursorWidth, cursorHeight)
-	lc.cursorMaskBits = make([]uint32, cursorWidth * cursorHeight)
+	lc.cursorMaskBits = make([]uint32, cursorWidth*cursorHeight)
 	for y := 0; y < int(cursorHeight); y++ {
 		for x := 0; x < int(cursorWidth); x++ {
 			_, _, _, a := cursorImage.At(x, y).RGBA()
@@ -811,7 +821,7 @@ func (w *W32Window) doPrepareCursor(cursor *Cursor) {
 				c = 0
 			}
 
-			index := (int(cursorHeight)-1 - y) * int(cursorWidth)
+			index := (int(cursorHeight) - 1 - y) * int(cursorWidth)
 			index += x
 			lc.cursorMaskBits[index] = c
 		}
@@ -822,10 +832,10 @@ func (w *W32Window) doPrepareCursor(cursor *Cursor) {
 	}
 
 	cursorInfo := win32.ICONINFO{
-		FIcon: 0,
+		FIcon:    0,
 		XHotspot: win32.DWORD(cursor.X),
 		YHotspot: win32.DWORD(cursor.Y),
-		HbmMask: lc.cursorMaskBitmap,
+		HbmMask:  lc.cursorMaskBitmap,
 		HbmColor: lc.cursorColorBitmap,
 	}
 
@@ -1125,13 +1135,17 @@ func (w *W32Window) CursorGrabbed() bool {
 // HWND returns the win32 handle to this Window, and it's child render window HWND.
 //
 // This is only useful when doing an few very select hack-ish things.
-func (w *W32Window) HWND() (managed, render win32.HWND) {
-	return w.hwnd, w.hwndRender
+func (w *W32Window) HWND() win32.HWND {
+	w.access.RLock()
+	defer w.access.RUnlock()
+	return w.hwnd
 }
 
 // Class returns the window class string of this Window (lpClassName), this is of course, Windows
 // specific, and is only useful doing an small, select amount of things.
 func (w *W32Window) Class() string {
+	w.access.RLock()
+	defer w.access.RUnlock()
 	return w.windowClass
 }
 
@@ -1171,28 +1185,28 @@ func (w *W32Window) doMakeIcon() {
 
 	iconBitmapInfo := win32.BITMAPINFO{
 		BmiHeader: win32.BITMAPINFOHEADER{
-			Size: win32.DWORD(unsafe.Sizeof(win32.BITMAPINFOHEADER{})),
-			Width: win32.LONG(iconWidth),
-			Height: win32.LONG(iconHeight),
-			Planes: 1,
-			BitCount: 32,
-			Compression: win32.BI_RGB,
-			SizeImage: 0,
+			Size:          win32.DWORD(unsafe.Sizeof(win32.BITMAPINFOHEADER{})),
+			Width:         win32.LONG(iconWidth),
+			Height:        win32.LONG(iconHeight),
+			Planes:        1,
+			BitCount:      32,
+			Compression:   win32.BI_RGB,
+			SizeImage:     0,
 			XPelsPerMeter: 0,
 			YPelsPerMeter: 0,
-			ClrUsed: 0,
-			ClrImportant: 0,
+			ClrUsed:       0,
+			ClrImportant:  0,
 		},
 	}
 
 	w.iconColorBitmap = win32.CreateCompatibleBitmap(w.dc, iconWidth, iconHeight)
-	w.iconColorBits = make([]uint32, iconWidth * iconHeight)
+	w.iconColorBits = make([]uint32, iconWidth*iconHeight)
 	for y := 0; y < int(iconHeight); y++ {
 		for x := 0; x < int(iconWidth); x++ {
 			r, g, b, _ := iconImage.At(x, y).RGBA()
-			c := (uint32(r >> 8) << 16) | (uint32(g >> 8) << 8) | (uint32(b >> 8) << 0)
+			c := (uint32(r>>8) << 16) | (uint32(g>>8) << 8) | (uint32(b>>8) << 0)
 
-			index := (int(iconHeight)-1 - y) * int(iconWidth)
+			index := (int(iconHeight) - 1 - y) * int(iconWidth)
 			index += x
 			w.iconColorBits[index] = c //0xFF0000
 		}
@@ -1203,7 +1217,7 @@ func (w *W32Window) doMakeIcon() {
 	}
 
 	w.iconMaskBitmap = win32.CreateCompatibleBitmap(w.dc, iconWidth, iconHeight)
-	w.iconMaskBits = make([]uint32, iconWidth * iconHeight)
+	w.iconMaskBits = make([]uint32, iconWidth*iconHeight)
 	for y := 0; y < int(iconHeight); y++ {
 		for x := 0; x < int(iconWidth); x++ {
 			_, _, _, a := iconImage.At(x, y).RGBA()
@@ -1212,7 +1226,7 @@ func (w *W32Window) doMakeIcon() {
 				c = 0
 			}
 
-			index := (int(iconHeight)-1 - y) * int(iconWidth)
+			index := (int(iconHeight) - 1 - y) * int(iconWidth)
 			index += x
 			w.iconMaskBits[index] = c
 		}
@@ -1223,10 +1237,10 @@ func (w *W32Window) doMakeIcon() {
 	}
 
 	iconInfo := win32.ICONINFO{
-		FIcon: 1,
+		FIcon:    1,
 		XHotspot: 0,
 		YHotspot: 0,
-		HbmMask: w.iconMaskBitmap,
+		HbmMask:  w.iconMaskBitmap,
 		HbmColor: w.iconColorBitmap,
 	}
 
@@ -1260,28 +1274,28 @@ func (w *W32Window) doMakeIcon() {
 
 	iconBitmapInfo = win32.BITMAPINFO{
 		BmiHeader: win32.BITMAPINFOHEADER{
-			Size: win32.DWORD(unsafe.Sizeof(win32.BITMAPINFOHEADER{})),
-			Width: win32.LONG(iconWidth),
-			Height: win32.LONG(iconHeight),
-			Planes: 1,
-			BitCount: 32,
-			Compression: win32.BI_RGB,
-			SizeImage: 0,
+			Size:          win32.DWORD(unsafe.Sizeof(win32.BITMAPINFOHEADER{})),
+			Width:         win32.LONG(iconWidth),
+			Height:        win32.LONG(iconHeight),
+			Planes:        1,
+			BitCount:      32,
+			Compression:   win32.BI_RGB,
+			SizeImage:     0,
 			XPelsPerMeter: 0,
 			YPelsPerMeter: 0,
-			ClrUsed: 0,
-			ClrImportant: 0,
+			ClrUsed:       0,
+			ClrImportant:  0,
 		},
 	}
 
 	w.smIconColorBitmap = win32.CreateCompatibleBitmap(w.dc, iconWidth, iconHeight)
-	w.smIconColorBits = make([]uint32, iconWidth * iconHeight)
+	w.smIconColorBits = make([]uint32, iconWidth*iconHeight)
 	for y := 0; y < int(iconHeight); y++ {
 		for x := 0; x < int(iconWidth); x++ {
 			r, g, b, _ := iconImage.At(x, y).RGBA()
-			c := (uint32(r >> 8) << 16) | (uint32(g >> 8) << 8) | (uint32(b >> 8) << 0)
+			c := (uint32(r>>8) << 16) | (uint32(g>>8) << 8) | (uint32(b>>8) << 0)
 
-			index := (int(iconHeight)-1 - y) * int(iconWidth)
+			index := (int(iconHeight) - 1 - y) * int(iconWidth)
 			index += x
 			w.smIconColorBits[index] = c //0xFF0000
 		}
@@ -1292,7 +1306,7 @@ func (w *W32Window) doMakeIcon() {
 	}
 
 	w.smIconMaskBitmap = win32.CreateCompatibleBitmap(w.dc, iconWidth, iconHeight)
-	w.smIconMaskBits = make([]uint32, iconWidth * iconHeight)
+	w.smIconMaskBits = make([]uint32, iconWidth*iconHeight)
 	for y := 0; y < int(iconHeight); y++ {
 		for x := 0; x < int(iconWidth); x++ {
 			_, _, _, a := iconImage.At(x, y).RGBA()
@@ -1301,7 +1315,7 @@ func (w *W32Window) doMakeIcon() {
 				c = 0
 			}
 
-			index := (int(iconHeight)-1 - y) * int(iconWidth)
+			index := (int(iconHeight) - 1 - y) * int(iconWidth)
 			index += x
 			w.smIconMaskBits[index] = c
 		}
@@ -1312,10 +1326,10 @@ func (w *W32Window) doMakeIcon() {
 	}
 
 	iconInfo = win32.ICONINFO{
-		FIcon: 1,
+		FIcon:    1,
 		XHotspot: 0,
 		YHotspot: 0,
-		HbmMask: w.smIconMaskBitmap,
+		HbmMask:  w.smIconMaskBitmap,
 		HbmColor: w.smIconColorBitmap,
 	}
 
@@ -1383,7 +1397,7 @@ func (w *W32Window) doSetCursorPos() {
 
 func (w *W32Window) doUpdateTransparency() {
 	bb := win32.DWM_BLURBEHIND{}
-	bb.DwFlags = win32.DWM_BB_ENABLE|win32.DWM_BB_BLURREGION
+	bb.DwFlags = win32.DWM_BB_ENABLE | win32.DWM_BB_BLURREGION
 	if w.transparent {
 		bb.FEnable = 1
 	} else {
@@ -1392,10 +1406,6 @@ func (w *W32Window) doUpdateTransparency() {
 	rgn := win32.CreateRectRgn(0, 0, -1, -1)
 	bb.HRgbBlur = rgn
 	err := win32.DwmEnableBlurBehindWindow(w.hwnd, &bb)
-	if err != nil {
-		logger.Println(err)
-	}
-	err = win32.DwmEnableBlurBehindWindow(w.hwndRender, &bb)
 	if err != nil {
 		logger.Println(err)
 	}
@@ -1505,182 +1515,326 @@ func (w *W32Window) doSetWindowPos() {
 	}
 }
 
-
 func (w *W32Window) translateKey(wParam win32.WPARAM) (key keyboard.Key) {
-	switch(wParam) {
-		// ? "Control-break processing" doesn't seem useful
-		//case win32.VK_CANCEL:
+	switch wParam {
+	// ? "Control-break processing" doesn't seem useful
+	//case win32.VK_CANCEL:
 
-		case win32.VK_BACK: key = keyboard.Backspace
-		case win32.VK_TAB: key = keyboard.Tab
-		case win32.VK_CLEAR: key = keyboard.Clear
-		case win32.VK_RETURN: key = keyboard.Enter
-		case win32.VK_PAUSE: key = keyboard.Pause
-		case win32.VK_KANA: key = keyboard.Kana
-		case win32.VK_JUNJA: key = keyboard.Junja
-		case win32.VK_KANJI: key = keyboard.Kanji
-		case win32.VK_ESCAPE: key = keyboard.Escape
-		case win32.VK_SPACE: key = keyboard.Space
-		case win32.VK_PRIOR: key = keyboard.PageUp
-		case win32.VK_NEXT: key = keyboard.PageDown
-		case win32.VK_END: key = keyboard.End
-		case win32.VK_HOME: key = keyboard.Home
-		case win32.VK_LEFT: key = keyboard.ArrowLeft
-		case win32.VK_UP: key = keyboard.ArrowUp
-		case win32.VK_RIGHT: key = keyboard.ArrowRight
-		case win32.VK_DOWN: key = keyboard.ArrowDown
-		case win32.VK_SELECT: key = keyboard.Select
-		case win32.VK_PRINT: key = keyboard.Print
-		case win32.VK_EXECUTE: key = keyboard.Execute
-		case win32.VK_SNAPSHOT: key = keyboard.PrintScreen
-		case win32.VK_INSERT: key = keyboard.Insert
-		case win32.VK_DELETE: key = keyboard.Delete
-		case win32.VK_HELP: key = keyboard.Help
-		case win32.VK_UNDEF_0: key = keyboard.Zero
-		case win32.VK_UNDEF_1: key = keyboard.One
-		case win32.VK_UNDEF_2: key = keyboard.Two
-		case win32.VK_UNDEF_3: key = keyboard.Three
-		case win32.VK_UNDEF_4: key = keyboard.Four
-		case win32.VK_UNDEF_5: key = keyboard.Five
-		case win32.VK_UNDEF_6: key = keyboard.Six
-		case win32.VK_UNDEF_7: key = keyboard.Seven
-		case win32.VK_UNDEF_8: key = keyboard.Eight
-		case win32.VK_UNDEF_9: key = keyboard.Nine
-		case win32.VK_UNDEF_A: key = keyboard.A
-		case win32.VK_UNDEF_B: key = keyboard.B
-		case win32.VK_UNDEF_C: key = keyboard.C
-		case win32.VK_UNDEF_D: key = keyboard.D
-		case win32.VK_UNDEF_E: key = keyboard.E
-		case win32.VK_UNDEF_F: key = keyboard.F
-		case win32.VK_UNDEF_G: key = keyboard.G
-		case win32.VK_UNDEF_H: key = keyboard.H
-		case win32.VK_UNDEF_I: key = keyboard.I
-		case win32.VK_UNDEF_J: key = keyboard.J
-		case win32.VK_UNDEF_K: key = keyboard.K
-		case win32.VK_UNDEF_L: key = keyboard.L
-		case win32.VK_UNDEF_M: key = keyboard.M
-		case win32.VK_UNDEF_N: key = keyboard.N
-		case win32.VK_UNDEF_O: key = keyboard.O
-		case win32.VK_UNDEF_P: key = keyboard.P
+	case win32.VK_BACK:
+		key = keyboard.Backspace
+	case win32.VK_TAB:
+		key = keyboard.Tab
+	case win32.VK_CLEAR:
+		key = keyboard.Clear
+	case win32.VK_RETURN:
+		key = keyboard.Enter
+	case win32.VK_PAUSE:
+		key = keyboard.Pause
+	case win32.VK_KANA:
+		key = keyboard.Kana
+	case win32.VK_JUNJA:
+		key = keyboard.Junja
+	case win32.VK_KANJI:
+		key = keyboard.Kanji
+	case win32.VK_ESCAPE:
+		key = keyboard.Escape
+	case win32.VK_SPACE:
+		key = keyboard.Space
+	case win32.VK_PRIOR:
+		key = keyboard.PageUp
+	case win32.VK_NEXT:
+		key = keyboard.PageDown
+	case win32.VK_END:
+		key = keyboard.End
+	case win32.VK_HOME:
+		key = keyboard.Home
+	case win32.VK_LEFT:
+		key = keyboard.ArrowLeft
+	case win32.VK_UP:
+		key = keyboard.ArrowUp
+	case win32.VK_RIGHT:
+		key = keyboard.ArrowRight
+	case win32.VK_DOWN:
+		key = keyboard.ArrowDown
+	case win32.VK_SELECT:
+		key = keyboard.Select
+	case win32.VK_PRINT:
+		key = keyboard.Print
+	case win32.VK_EXECUTE:
+		key = keyboard.Execute
+	case win32.VK_SNAPSHOT:
+		key = keyboard.PrintScreen
+	case win32.VK_INSERT:
+		key = keyboard.Insert
+	case win32.VK_DELETE:
+		key = keyboard.Delete
+	case win32.VK_HELP:
+		key = keyboard.Help
+	case win32.VK_UNDEF_0:
+		key = keyboard.Zero
+	case win32.VK_UNDEF_1:
+		key = keyboard.One
+	case win32.VK_UNDEF_2:
+		key = keyboard.Two
+	case win32.VK_UNDEF_3:
+		key = keyboard.Three
+	case win32.VK_UNDEF_4:
+		key = keyboard.Four
+	case win32.VK_UNDEF_5:
+		key = keyboard.Five
+	case win32.VK_UNDEF_6:
+		key = keyboard.Six
+	case win32.VK_UNDEF_7:
+		key = keyboard.Seven
+	case win32.VK_UNDEF_8:
+		key = keyboard.Eight
+	case win32.VK_UNDEF_9:
+		key = keyboard.Nine
+	case win32.VK_UNDEF_A:
+		key = keyboard.A
+	case win32.VK_UNDEF_B:
+		key = keyboard.B
+	case win32.VK_UNDEF_C:
+		key = keyboard.C
+	case win32.VK_UNDEF_D:
+		key = keyboard.D
+	case win32.VK_UNDEF_E:
+		key = keyboard.E
+	case win32.VK_UNDEF_F:
+		key = keyboard.F
+	case win32.VK_UNDEF_G:
+		key = keyboard.G
+	case win32.VK_UNDEF_H:
+		key = keyboard.H
+	case win32.VK_UNDEF_I:
+		key = keyboard.I
+	case win32.VK_UNDEF_J:
+		key = keyboard.J
+	case win32.VK_UNDEF_K:
+		key = keyboard.K
+	case win32.VK_UNDEF_L:
+		key = keyboard.L
+	case win32.VK_UNDEF_M:
+		key = keyboard.M
+	case win32.VK_UNDEF_N:
+		key = keyboard.N
+	case win32.VK_UNDEF_O:
+		key = keyboard.O
+	case win32.VK_UNDEF_P:
+		key = keyboard.P
 
-		case win32.VK_UNDEF_Q: key = keyboard.Q
-		case win32.VK_UNDEF_R: key = keyboard.R
-		case win32.VK_UNDEF_S: key = keyboard.S
-		case win32.VK_UNDEF_T: key = keyboard.T
-		case win32.VK_UNDEF_U: key = keyboard.U
-		case win32.VK_UNDEF_V: key = keyboard.V
-		case win32.VK_UNDEF_W: key = keyboard.W
-		case win32.VK_UNDEF_X: key = keyboard.X
-		case win32.VK_UNDEF_Y: key = keyboard.Y
-		case win32.VK_UNDEF_Z: key = keyboard.Z
+	case win32.VK_UNDEF_Q:
+		key = keyboard.Q
+	case win32.VK_UNDEF_R:
+		key = keyboard.R
+	case win32.VK_UNDEF_S:
+		key = keyboard.S
+	case win32.VK_UNDEF_T:
+		key = keyboard.T
+	case win32.VK_UNDEF_U:
+		key = keyboard.U
+	case win32.VK_UNDEF_V:
+		key = keyboard.V
+	case win32.VK_UNDEF_W:
+		key = keyboard.W
+	case win32.VK_UNDEF_X:
+		key = keyboard.X
+	case win32.VK_UNDEF_Y:
+		key = keyboard.Y
+	case win32.VK_UNDEF_Z:
+		key = keyboard.Z
 
-		//case win32.VK_CONVERT: key = keyboard.IMEConvert
-		//case win32.VK_NONCONVERT: key = keyboard.IMENonConvert
-		//case win32.VK_ACCEPT: key = keyboard.IMEAccept
-		//case win32.VK_MODECHANGE: key = keyboard.IMEModeChange
-		//case win32.VK_PROCESSKEY: key = keyboard.IMEProcess
+	//case win32.VK_CONVERT: key = keyboard.IMEConvert
+	//case win32.VK_NONCONVERT: key = keyboard.IMENonConvert
+	//case win32.VK_ACCEPT: key = keyboard.IMEAccept
+	//case win32.VK_MODECHANGE: key = keyboard.IMEModeChange
+	//case win32.VK_PROCESSKEY: key = keyboard.IMEProcess
 
-		case win32.VK_LWIN: key = keyboard.LeftSuper
-		case win32.VK_RWIN: key = keyboard.RightSuper
-		case win32.VK_APPS: key = keyboard.Applications
-		case win32.VK_SLEEP: key = keyboard.Sleep
+	case win32.VK_LWIN:
+		key = keyboard.LeftSuper
+	case win32.VK_RWIN:
+		key = keyboard.RightSuper
+	case win32.VK_APPS:
+		key = keyboard.Applications
+	case win32.VK_SLEEP:
+		key = keyboard.Sleep
 
-		case win32.VK_NUMPAD0: key = keyboard.NumZero
-		case win32.VK_NUMPAD1: key = keyboard.NumOne
-		case win32.VK_NUMPAD2: key = keyboard.NumTwo
-		case win32.VK_NUMPAD3: key = keyboard.NumThree
-		case win32.VK_NUMPAD4: key = keyboard.NumFour
-		case win32.VK_NUMPAD5: key = keyboard.NumFive
-		case win32.VK_NUMPAD6: key = keyboard.NumSix
-		case win32.VK_NUMPAD7: key = keyboard.NumSeven
-		case win32.VK_NUMPAD8: key = keyboard.NumEight
-		case win32.VK_NUMPAD9: key = keyboard.NumNine
-		case win32.VK_MULTIPLY: key = keyboard.NumMultiply
-		case win32.VK_ADD: key = keyboard.NumAdd
-		case win32.VK_SEPARATOR: key = keyboard.NumComma
-		case win32.VK_SUBTRACT: key = keyboard.NumSubtract
-		case win32.VK_DECIMAL: key = keyboard.NumDecimal
-		case win32.VK_DIVIDE: key = keyboard.NumDivide
+	case win32.VK_NUMPAD0:
+		key = keyboard.NumZero
+	case win32.VK_NUMPAD1:
+		key = keyboard.NumOne
+	case win32.VK_NUMPAD2:
+		key = keyboard.NumTwo
+	case win32.VK_NUMPAD3:
+		key = keyboard.NumThree
+	case win32.VK_NUMPAD4:
+		key = keyboard.NumFour
+	case win32.VK_NUMPAD5:
+		key = keyboard.NumFive
+	case win32.VK_NUMPAD6:
+		key = keyboard.NumSix
+	case win32.VK_NUMPAD7:
+		key = keyboard.NumSeven
+	case win32.VK_NUMPAD8:
+		key = keyboard.NumEight
+	case win32.VK_NUMPAD9:
+		key = keyboard.NumNine
+	case win32.VK_MULTIPLY:
+		key = keyboard.NumMultiply
+	case win32.VK_ADD:
+		key = keyboard.NumAdd
+	case win32.VK_SEPARATOR:
+		key = keyboard.NumComma
+	case win32.VK_SUBTRACT:
+		key = keyboard.NumSubtract
+	case win32.VK_DECIMAL:
+		key = keyboard.NumDecimal
+	case win32.VK_DIVIDE:
+		key = keyboard.NumDivide
 
-		case win32.VK_F1: key = keyboard.F1
-		case win32.VK_F2: key = keyboard.F2
-		case win32.VK_F3: key = keyboard.F3
-		case win32.VK_F4: key = keyboard.F4
-		case win32.VK_F5: key = keyboard.F5
-		case win32.VK_F6: key = keyboard.F6
-		case win32.VK_F7: key = keyboard.F7
-		case win32.VK_F8: key = keyboard.F8
-		case win32.VK_F9: key = keyboard.F9
-		case win32.VK_F10: key = keyboard.F10
-		case win32.VK_F11: key = keyboard.F11
-		case win32.VK_F12: key = keyboard.F12
-		case win32.VK_F13: key = keyboard.F13
-		case win32.VK_F14: key = keyboard.F14
-		case win32.VK_F15: key = keyboard.F15
-		case win32.VK_F16: key = keyboard.F16
-		case win32.VK_F17: key = keyboard.F17
-		case win32.VK_F18: key = keyboard.F18
-		case win32.VK_F19: key = keyboard.F19
-		case win32.VK_F20: key = keyboard.F20
-		case win32.VK_F21: key = keyboard.F21
-		case win32.VK_F22: key = keyboard.F22
-		case win32.VK_F23: key = keyboard.F23
-		case win32.VK_F24: key = keyboard.F24
+	case win32.VK_F1:
+		key = keyboard.F1
+	case win32.VK_F2:
+		key = keyboard.F2
+	case win32.VK_F3:
+		key = keyboard.F3
+	case win32.VK_F4:
+		key = keyboard.F4
+	case win32.VK_F5:
+		key = keyboard.F5
+	case win32.VK_F6:
+		key = keyboard.F6
+	case win32.VK_F7:
+		key = keyboard.F7
+	case win32.VK_F8:
+		key = keyboard.F8
+	case win32.VK_F9:
+		key = keyboard.F9
+	case win32.VK_F10:
+		key = keyboard.F10
+	case win32.VK_F11:
+		key = keyboard.F11
+	case win32.VK_F12:
+		key = keyboard.F12
+	case win32.VK_F13:
+		key = keyboard.F13
+	case win32.VK_F14:
+		key = keyboard.F14
+	case win32.VK_F15:
+		key = keyboard.F15
+	case win32.VK_F16:
+		key = keyboard.F16
+	case win32.VK_F17:
+		key = keyboard.F17
+	case win32.VK_F18:
+		key = keyboard.F18
+	case win32.VK_F19:
+		key = keyboard.F19
+	case win32.VK_F20:
+		key = keyboard.F20
+	case win32.VK_F21:
+		key = keyboard.F21
+	case win32.VK_F22:
+		key = keyboard.F22
+	case win32.VK_F23:
+		key = keyboard.F23
+	case win32.VK_F24:
+		key = keyboard.F24
 
-		case win32.VK_BROWSER_BACK: key = keyboard.BrowserBack
-		case win32.VK_BROWSER_FORWARD: key = keyboard.BrowserForward
-		case win32.VK_BROWSER_REFRESH: key = keyboard.BrowserRefresh
-		case win32.VK_BROWSER_STOP: key = keyboard.BrowserStop
-		case win32.VK_BROWSER_SEARCH: key = keyboard.BrowserSearch
-		case win32.VK_BROWSER_FAVORITES: key = keyboard.BrowserFavorites
-		case win32.VK_BROWSER_HOME: key = keyboard.BrowserHome
+	case win32.VK_BROWSER_BACK:
+		key = keyboard.BrowserBack
+	case win32.VK_BROWSER_FORWARD:
+		key = keyboard.BrowserForward
+	case win32.VK_BROWSER_REFRESH:
+		key = keyboard.BrowserRefresh
+	case win32.VK_BROWSER_STOP:
+		key = keyboard.BrowserStop
+	case win32.VK_BROWSER_SEARCH:
+		key = keyboard.BrowserSearch
+	case win32.VK_BROWSER_FAVORITES:
+		key = keyboard.BrowserFavorites
+	case win32.VK_BROWSER_HOME:
+		key = keyboard.BrowserHome
 
-		// User expects these to control windows volume -- I don't thing we should allow
-		// intercepting these..
-		//VK_VOLUME_MUTE
-		//VK_VOLUME_DOWN
-		//VK_VOLUME_UP
+	// User expects these to control windows volume -- I don't thing we should allow
+	// intercepting these..
+	//VK_VOLUME_MUTE
+	//VK_VOLUME_DOWN
+	//VK_VOLUME_UP
 
-		case win32.VK_MEDIA_NEXT_TRACK: key = keyboard.MediaNext
-		case win32.VK_MEDIA_PREV_TRACK: key = keyboard.MediaPrevious
-		case win32.VK_MEDIA_STOP: key = keyboard.MediaStop
-		case win32.VK_MEDIA_PLAY_PAUSE: key = keyboard.MediaPlayPause
+	case win32.VK_MEDIA_NEXT_TRACK:
+		key = keyboard.MediaNext
+	case win32.VK_MEDIA_PREV_TRACK:
+		key = keyboard.MediaPrevious
+	case win32.VK_MEDIA_STOP:
+		key = keyboard.MediaStop
+	case win32.VK_MEDIA_PLAY_PAUSE:
+		key = keyboard.MediaPlayPause
 
-		case win32.VK_LAUNCH_MAIL: key = keyboard.LaunchMail
-		case win32.VK_LAUNCH_MEDIA_SELECT: key = keyboard.LaunchMedia
-		case win32.VK_LAUNCH_APP1: key = keyboard.LaunchAppOne
-		case win32.VK_LAUNCH_APP2: key = keyboard.LaunchAppTwo
+	case win32.VK_LAUNCH_MAIL:
+		key = keyboard.LaunchMail
+	case win32.VK_LAUNCH_MEDIA_SELECT:
+		key = keyboard.LaunchMedia
+	case win32.VK_LAUNCH_APP1:
+		key = keyboard.LaunchAppOne
+	case win32.VK_LAUNCH_APP2:
+		key = keyboard.LaunchAppTwo
 
-		case win32.VK_OEM_PLUS: key = keyboard.Equals
-		case win32.VK_OEM_COMMA: key = keyboard.Comma
-		case win32.VK_OEM_MINUS: key = keyboard.Dash
-		case win32.VK_OEM_PERIOD: key = keyboard.Period
-		case win32.VK_OEM_1: key = keyboard.Semicolon
-		case win32.VK_OEM_2: key = keyboard.ForwardSlash
-		case win32.VK_OEM_3: key = keyboard.Tilde
-		case win32.VK_OEM_4: key = keyboard.LeftBracket
-		case win32.VK_OEM_5: key = keyboard.BackSlash
-		case win32.VK_OEM_6: key = keyboard.RightBracket
-		case win32.VK_OEM_7: key = keyboard.Apostrophe
-		//case win32.VK_OEM_8:
-		case win32.VK_OEM_102: key = keyboard.RightBracket
+	case win32.VK_OEM_PLUS:
+		key = keyboard.Equals
+	case win32.VK_OEM_COMMA:
+		key = keyboard.Comma
+	case win32.VK_OEM_MINUS:
+		key = keyboard.Dash
+	case win32.VK_OEM_PERIOD:
+		key = keyboard.Period
+	case win32.VK_OEM_1:
+		key = keyboard.Semicolon
+	case win32.VK_OEM_2:
+		key = keyboard.ForwardSlash
+	case win32.VK_OEM_3:
+		key = keyboard.Tilde
+	case win32.VK_OEM_4:
+		key = keyboard.LeftBracket
+	case win32.VK_OEM_5:
+		key = keyboard.BackSlash
+	case win32.VK_OEM_6:
+		key = keyboard.RightBracket
+	case win32.VK_OEM_7:
+		key = keyboard.Apostrophe
+	//case win32.VK_OEM_8:
+	case win32.VK_OEM_102:
+		key = keyboard.RightBracket
 
-		case win32.VK_ATTN: key = keyboard.Attn
-		case win32.VK_CRSEL: key = keyboard.CrSel
-		case win32.VK_EXSEL: key = keyboard.ExSel
-		case win32.VK_EREOF: key = keyboard.EraseEOF
-		case win32.VK_PLAY: key = keyboard.Play
-		case win32.VK_ZOOM: key = keyboard.Zoom
-		//case win32.VK_PA1: key = keyboard.PA1
-		case win32.VK_OEM_CLEAR: key = keyboard.Clear
+	case win32.VK_ATTN:
+		key = keyboard.Attn
+	case win32.VK_CRSEL:
+		key = keyboard.CrSel
+	case win32.VK_EXSEL:
+		key = keyboard.ExSel
+	case win32.VK_EREOF:
+		key = keyboard.EraseEOF
+	case win32.VK_PLAY:
+		key = keyboard.Play
+	case win32.VK_ZOOM:
+		key = keyboard.Zoom
+	//case win32.VK_PA1: key = keyboard.PA1
+	case win32.VK_OEM_CLEAR:
+		key = keyboard.Clear
 
-		case win32.VK_SHIFT: key = keyboard.LeftShift
-		case win32.VK_MENU: key = keyboard.LeftAlt
-		case win32.VK_CONTROL: key = keyboard.LeftCtrl
+	case win32.VK_SHIFT:
+		key = keyboard.LeftShift
+	case win32.VK_MENU:
+		key = keyboard.LeftAlt
+	case win32.VK_CONTROL:
+		key = keyboard.LeftCtrl
 
-		case win32.VK_CAPITAL: key = keyboard.CapsLock
-		case win32.VK_NUMLOCK: key = keyboard.NumLock
-		case win32.VK_SCROLL: key = keyboard.ScrollLock
+	case win32.VK_CAPITAL:
+		key = keyboard.CapsLock
+	case win32.VK_NUMLOCK:
+		key = keyboard.NumLock
+	case win32.VK_SCROLL:
+		key = keyboard.ScrollLock
 	}
 	return key
 }
@@ -1693,6 +1847,8 @@ func (w *W32Window) tryAddKeyboardStateEvent(ev *keyboard.StateEvent) {
 }
 
 // Our MS windows event handler
+//
+// This is never executed under the pretence of an window's respective lock.
 func mainWindowProc(hwnd win32.HWND, msg win32.UINT, wParam win32.WPARAM, lParam win32.LPARAM) (ret win32.LRESULT) {
 	// Q: Why is this line here?
 	// A: Windows API calls invoke this mainWindowProc, for instance an call to FooEx() might
@@ -1703,8 +1859,15 @@ func mainWindowProc(hwnd win32.HWND, msg win32.UINT, wParam win32.WPARAM, lParam
 
 	w, ok := windowsByHwnd[hwnd]
 	if ok {
+		debug(fmt.Sprintf("begin mainWindowProc 0x%x", msg))
+		defer debug("finish mainWindowProc")
+
+		unlock := w.newAttemptUnlocker()
+		defer unlock()
+
 		switch {
 		case msg == win32.WM_PAINT:
+			debug("WM_PAINT")
 			if win32.GetUpdateRect(w.hwnd, nil, false) {
 				win32.ValidateRect(w.hwnd, nil)
 				w.addPaintEvent()
@@ -1712,20 +1875,19 @@ func mainWindowProc(hwnd win32.HWND, msg win32.UINT, wParam win32.WPARAM, lParam
 			return 0
 
 		case msg == win32.WM_ERASEBKGND:
+			debug("WM_ERASEBKGND")
 			//w.addPaintEvent()
 			return 1
 
 		case msg == win32.WM_GETMINMAXINFO:
-			minWidth, minHeight := w.MinimumSize()
-			maxWidth, maxHeight := w.MaximumSize()
-			extentLeft, extentRight, extentBottom, extentTop := w.Extents()
-			ratio := w.AspectRatio()
+			debug("WM_GETMINMAXINFO")
+			ratio := w.aspectRatio
 
 			// Add extents, so we operate on client region space only
-			newMinWidth := minWidth + extentLeft + extentRight
-			newMaxWidth := maxWidth + extentLeft + extentRight
-			newMinHeight := minHeight + extentBottom + extentTop
-			newMaxHeight := maxHeight + extentBottom + extentTop
+			newMinWidth := w.minWidth + w.extentLeft + w.extentRight
+			newMaxWidth := w.maxWidth + w.extentLeft + w.extentRight
+			newMinHeight := w.minHeight + w.extentBottom + w.extentTop
+			newMaxHeight := w.maxHeight + w.extentBottom + w.extentTop
 
 			if ratio != 0.0 {
 				if ratio > 1.0 {
@@ -1742,23 +1904,24 @@ func mainWindowProc(hwnd win32.HWND, msg win32.UINT, wParam win32.WPARAM, lParam
 			// Set maximum and minimum window sizes, 0 means unlimited
 			minMaxInfo := lParam.MINMAXINFO()
 
-			if minWidth > 0 {
+			if w.minWidth > 0 {
 				minMaxInfo.PtMinTrackSize().SetX(win32.LONG(newMinWidth))
 			}
-			if minHeight > 0 {
+			if w.minHeight > 0 {
 				minMaxInfo.PtMinTrackSize().SetY(win32.LONG(newMinHeight))
 			}
 
-			if maxWidth > 0 {
+			if w.maxWidth > 0 {
 				minMaxInfo.PtMaxTrackSize().SetX(win32.LONG(newMaxWidth))
 			}
-			if maxHeight > 0 {
+			if w.maxHeight > 0 {
 				minMaxInfo.PtMaxTrackSize().SetY(win32.LONG(newMaxHeight))
 			}
 			return 0
 
 		case msg == win32.WM_SIZING:
-			ratio := w.AspectRatio()
+			debug("WM_SIZING")
+			ratio := w.aspectRatio
 			r := lParam.RECT()
 
 			if ratio != 0 {
@@ -1804,6 +1967,7 @@ func mainWindowProc(hwnd win32.HWND, msg win32.UINT, wParam win32.WPARAM, lParam
 			return 0
 
 		case msg == win32.WM_SIZE:
+			debug("WM_SIZE")
 			if wParam == win32.SIZE_MAXIMIZED {
 				if w.minimized != false {
 					w.minimized = false
@@ -1848,6 +2012,7 @@ func mainWindowProc(hwnd win32.HWND, msg win32.UINT, wParam win32.WPARAM, lParam
 			return 0
 
 		case msg == win32.WM_MOVE:
+			debug("WM_MOVE")
 			xPos := int(int16(lParam))
 			yPos := int(int16((uint32(lParam) >> 16) & 0xFFFF))
 
@@ -1865,6 +2030,7 @@ func mainWindowProc(hwnd win32.HWND, msg win32.UINT, wParam win32.WPARAM, lParam
 			return 0
 
 		case msg == win32.WM_EXITSIZEMOVE:
+			debug("WM_EXITSIZEMOVE")
 			hMonitor := win32.MonitorFromWindow(w.hwnd, win32.MONITOR_DEFAULTTONEAREST)
 
 			mi := new(win32.MONITORINFOEX)
@@ -1889,6 +2055,7 @@ func mainWindowProc(hwnd win32.HWND, msg win32.UINT, wParam win32.WPARAM, lParam
 			return 0
 
 		case msg == win32.WM_ACTIVATE:
+			debug("WM_ACTIVATE")
 			if wParam.LOWORD() == win32.WA_INACTIVE || wParam.HIWORD() != 0 {
 				if w.focused {
 					w.focused = false
@@ -1903,24 +2070,26 @@ func mainWindowProc(hwnd win32.HWND, msg win32.UINT, wParam win32.WPARAM, lParam
 			return 0
 
 		case msg == win32.WM_GETICON:
-			switch(wParam) {
-				case win32.ICON_BIG:
-					if w.hIcon != nil {
-						return win32.LRESULT(uintptr(unsafe.Pointer(w.hIcon)))
-					}
+			debug("WM_GETICON")
+			switch wParam {
+			case win32.ICON_BIG:
+				if w.hIcon != nil {
+					return win32.LRESULT(uintptr(unsafe.Pointer(w.hIcon)))
+				}
 
-				case win32.ICON_SMALL:
-					if w.hSmIcon != nil {
-						return win32.LRESULT(uintptr(unsafe.Pointer(w.hSmIcon)))
-					}
+			case win32.ICON_SMALL:
+				if w.hSmIcon != nil {
+					return win32.LRESULT(uintptr(unsafe.Pointer(w.hSmIcon)))
+				}
 
-				case win32.ICON_SMALL2:
-					if w.hSmIcon != nil {
-						return win32.LRESULT(uintptr(unsafe.Pointer(w.hSmIcon)))
-					}
+			case win32.ICON_SMALL2:
+				if w.hSmIcon != nil {
+					return win32.LRESULT(uintptr(unsafe.Pointer(w.hSmIcon)))
+				}
 			}
 
 		case msg == win32.WM_CHAR:
+			debug("WM_CHAR")
 			r := rune(wParam)
 
 			// Convert CR to LF for added cross-platform ness...
@@ -1933,6 +2102,7 @@ func mainWindowProc(hwnd win32.HWND, msg win32.UINT, wParam win32.WPARAM, lParam
 			})
 
 		case msg == win32.WM_KEYDOWN || msg == win32.WM_SYSKEYDOWN || msg == win32.WM_KEYUP || msg == win32.WM_SYSKEYUP:
+			debug("WM_KEYDOWN || WM_SYSKEYDOWN || WM_KEYUP || WM_SYSKEYUP")
 			if msg == win32.WM_KEYDOWN || msg == win32.WM_SYSKEYDOWN {
 				keyRepeat := (lParam & 0x40000000) > 0
 				if keyRepeat {
@@ -1946,6 +2116,11 @@ func mainWindowProc(hwnd win32.HWND, msg win32.UINT, wParam win32.WPARAM, lParam
 					if msg == win32.WM_SYSKEYDOWN {
 						// Trick: Consider this to be WM_CLOSE
 						if !w.addCloseEvent() {
+							// Destroy() requires the window lock to run -- we can push it to
+							// another goroutine so it waits untill later to run.
+							//
+							// TODO later: consider building doDestroy() that operates under the
+							// pretence of window lock?
 							go w.Destroy()
 						}
 					}
@@ -1965,102 +2140,103 @@ func mainWindowProc(hwnd win32.HWND, msg win32.UINT, wParam win32.WPARAM, lParam
 				state = keyboard.Up
 			}
 
-			switch(k) {
-				case keyboard.LeftShift:
-					leftShiftDown := (uint16(win32.GetAsyncKeyState(win32.VK_LSHIFT)) & 0x8000) != 0
+			switch k {
+			case keyboard.LeftShift:
+				leftShiftDown := (uint16(win32.GetAsyncKeyState(win32.VK_LSHIFT)) & 0x8000) != 0
+				state = keyboard.Down
+				if !leftShiftDown {
+					state = keyboard.Up
+				}
+				w.tryAddKeyboardStateEvent(&keyboard.StateEvent{
+					Key:   keyboard.LeftShift,
+					State: state,
+				})
+
+				rightShiftDown := (uint16(win32.GetAsyncKeyState(win32.VK_RSHIFT)) & 0x8000) != 0
+				state = keyboard.Down
+				if !rightShiftDown {
+					state = keyboard.Up
+				}
+				w.tryAddKeyboardStateEvent(&keyboard.StateEvent{
+					Key:   keyboard.RightShift,
+					State: state,
+				})
+				return 0
+
+			case keyboard.LeftAlt:
+				leftAltDown := (uint16(win32.GetAsyncKeyState(win32.VK_LMENU)) & 0x8000) != 0
+				state = keyboard.Down
+				if !leftAltDown {
+					state = keyboard.Up
+				}
+				w.tryAddKeyboardStateEvent(&keyboard.StateEvent{
+					Key:   keyboard.LeftAlt,
+					State: state,
+				})
+
+				rightAltDown := (uint16(win32.GetAsyncKeyState(win32.VK_RMENU)) & 0x8000) != 0
+				state = keyboard.Down
+				if !rightAltDown {
+					state = keyboard.Up
+				}
+				w.tryAddKeyboardStateEvent(&keyboard.StateEvent{
+					Key:   keyboard.RightAlt,
+					State: state,
+				})
+				return 0
+
+			case keyboard.LeftCtrl:
+				leftCtrlDown := (uint16(win32.GetAsyncKeyState(win32.VK_LCONTROL)) & 0x8000) != 0
+				state = keyboard.Down
+				if !leftCtrlDown {
+					state = keyboard.Up
+				}
+				w.tryAddKeyboardStateEvent(&keyboard.StateEvent{
+					Key:   keyboard.LeftCtrl,
+					State: state,
+				})
+
+				rightCtrlDown := (uint16(win32.GetAsyncKeyState(win32.VK_RCONTROL)) & 0x8000) != 0
+				state = keyboard.Down
+				if !rightCtrlDown {
+					state = keyboard.Up
+				}
+				w.tryAddKeyboardStateEvent(&keyboard.StateEvent{
+					Key:   keyboard.RightCtrl,
+					State: state,
+				})
+				return 0
+
+			case keyboard.CapsLock:
+				if (win32.GetKeyState(win32.VK_CAPITAL) & 0x0001) != 0 {
 					state = keyboard.Down
-					if !leftShiftDown {
-						state = keyboard.Up
-					}
-					w.tryAddKeyboardStateEvent(&keyboard.StateEvent{
-						Key: keyboard.LeftShift,
-						State: state,
-					})
+				} else {
+					state = keyboard.Up
+				}
 
-					rightShiftDown := (uint16(win32.GetAsyncKeyState(win32.VK_RSHIFT)) & 0x8000) != 0
+			case keyboard.NumLock:
+				if (win32.GetKeyState(win32.VK_NUMLOCK) & 0x0001) != 0 {
 					state = keyboard.Down
-					if !rightShiftDown {
-						state = keyboard.Up
-					}
-					w.tryAddKeyboardStateEvent(&keyboard.StateEvent{
-						Key: keyboard.RightShift,
-						State: state,
-					})
-					return 0
+				} else {
+					state = keyboard.Up
+				}
 
-				case keyboard.LeftAlt:
-					leftAltDown := (uint16(win32.GetAsyncKeyState(win32.VK_LMENU)) & 0x8000) != 0
+			case keyboard.ScrollLock:
+				if (win32.GetKeyState(win32.VK_SCROLL) & 0x0001) != 0 {
 					state = keyboard.Down
-					if !leftAltDown {
-						state = keyboard.Up
-					}
-					w.tryAddKeyboardStateEvent(&keyboard.StateEvent{
-						Key: keyboard.LeftAlt,
-						State: state,
-					})
-
-					rightAltDown := (uint16(win32.GetAsyncKeyState(win32.VK_RMENU)) & 0x8000) != 0
-					state = keyboard.Down
-					if !rightAltDown {
-						state = keyboard.Up
-					}
-					w.tryAddKeyboardStateEvent(&keyboard.StateEvent{
-						Key: keyboard.RightAlt,
-						State: state,
-					})
-					return 0
-
-				case keyboard.LeftCtrl:
-					leftCtrlDown := (uint16(win32.GetAsyncKeyState(win32.VK_LCONTROL)) & 0x8000) != 0
-					state = keyboard.Down
-					if !leftCtrlDown {
-						state = keyboard.Up
-					}
-					w.tryAddKeyboardStateEvent(&keyboard.StateEvent{
-						Key: keyboard.LeftCtrl,
-						State: state,
-					})
-
-					rightCtrlDown := (uint16(win32.GetAsyncKeyState(win32.VK_RCONTROL)) & 0x8000) != 0
-					state = keyboard.Down
-					if !rightCtrlDown {
-						state = keyboard.Up
-					}
-					w.tryAddKeyboardStateEvent(&keyboard.StateEvent{
-						Key: keyboard.RightCtrl,
-						State: state,
-					})
-					return 0
-
-				case keyboard.CapsLock:
-					if (win32.GetKeyState(win32.VK_CAPITAL) & 0x0001) != 0 {
-						state = keyboard.Down
-					} else {
-						state = keyboard.Up
-					}
-
-				case keyboard.NumLock:
-					if (win32.GetKeyState(win32.VK_NUMLOCK) & 0x0001) != 0 {
-						state = keyboard.Down
-					} else {
-						state = keyboard.Up
-					}
-
-				case keyboard.ScrollLock:
-					if (win32.GetKeyState(win32.VK_SCROLL) & 0x0001) != 0 {
-						state = keyboard.Down
-					} else {
-						state = keyboard.Up
-					}
+				} else {
+					state = keyboard.Up
+				}
 			}
 
 			w.tryAddKeyboardStateEvent(&keyboard.StateEvent{
-				Key: k,
+				Key:   k,
 				State: state,
 			})
 			return 0
 
 		case msg == win32.WM_MOUSEMOVE:
+			debug("WM_MOUSEMOVE")
 			xPos := float64(int16(lParam))
 			yPos := float64(int16((uint32(lParam) >> 16) & 0xFFFF))
 
@@ -2079,10 +2255,20 @@ func mainWindowProc(hwnd win32.HWND, msg win32.UINT, wParam win32.WPARAM, lParam
 				}
 			}
 
-			if (w.cursorX >= int(w.width) || w.cursorY >= int(w.height) || w.cursorX <= 0 || w.cursorY <= 0 || !w.focused) {
+			if w.cursorX >= int(w.width) || w.cursorY >= int(w.height) || w.cursorX <= 0 || w.cursorY <= 0 || !w.focused {
 				// Better than WM_MOUSELEAVE
 				if w.cursorWithin && !w.cursorGrabbed {
+
+					// ReleaseCapture() sends an message into the loop.. but the window is already
+					// locked.. so do an unlock and lock here
+					unlock()
+
+					// Run
 					win32.ReleaseCapture()
+
+					// Recreate unlocker
+					unlock = w.newAttemptUnlocker()
+					defer unlock()
 
 					w.cursorWithin = false
 					w.addCursorWithinEvent(w.cursorWithin)
@@ -2124,6 +2310,7 @@ func mainWindowProc(hwnd win32.HWND, msg win32.UINT, wParam win32.WPARAM, lParam
 			return 0
 
 		case msg == win32.WM_INPUT:
+			debug("WM_INPUT")
 			if w.cursorWithin && w.cursorGrabbed {
 				var raw win32.RAWINPUT
 				cbSize := win32.UINT(unsafe.Sizeof(raw))
@@ -2142,6 +2329,7 @@ func mainWindowProc(hwnd win32.HWND, msg win32.UINT, wParam win32.WPARAM, lParam
 
 		// Mouse Buttons
 		case msg == win32.WM_LBUTTONDOWN:
+			debug("WM_LBUTTONDOWN")
 			w.addMouseEvent(&mouse.Event{
 				Button: mouse.Left,
 				State:  mouse.Down,
@@ -2149,6 +2337,7 @@ func mainWindowProc(hwnd win32.HWND, msg win32.UINT, wParam win32.WPARAM, lParam
 			return 0
 
 		case msg == win32.WM_LBUTTONUP:
+			debug("WM_LBUTTONUP")
 			w.addMouseEvent(&mouse.Event{
 				Button: mouse.Left,
 				State:  mouse.Up,
@@ -2156,6 +2345,7 @@ func mainWindowProc(hwnd win32.HWND, msg win32.UINT, wParam win32.WPARAM, lParam
 			return 0
 
 		case msg == win32.WM_RBUTTONDOWN:
+			debug("WM_RBUTTONDOWN")
 			w.addMouseEvent(&mouse.Event{
 				Button: mouse.Right,
 				State:  mouse.Down,
@@ -2163,6 +2353,7 @@ func mainWindowProc(hwnd win32.HWND, msg win32.UINT, wParam win32.WPARAM, lParam
 			return 0
 
 		case msg == win32.WM_RBUTTONUP:
+			debug("WM_RBUTTONUP")
 			w.addMouseEvent(&mouse.Event{
 				Button: mouse.Right,
 				State:  mouse.Up,
@@ -2170,6 +2361,7 @@ func mainWindowProc(hwnd win32.HWND, msg win32.UINT, wParam win32.WPARAM, lParam
 			return 0
 
 		case msg == win32.WM_MBUTTONDOWN:
+			debug("WM_MBUTTONDOWN")
 			w.addMouseEvent(&mouse.Event{
 				Button: mouse.Wheel,
 				State:  mouse.Down,
@@ -2177,6 +2369,7 @@ func mainWindowProc(hwnd win32.HWND, msg win32.UINT, wParam win32.WPARAM, lParam
 			return 0
 
 		case msg == win32.WM_MBUTTONUP:
+			debug("WM_MBUTTONUP")
 			w.addMouseEvent(&mouse.Event{
 				Button: mouse.Wheel,
 				State:  mouse.Up,
@@ -2184,14 +2377,15 @@ func mainWindowProc(hwnd win32.HWND, msg win32.UINT, wParam win32.WPARAM, lParam
 			return 0
 
 		case msg == win32.WM_XBUTTONDOWN:
+			debug("WM_XBUTTONDOWN")
 			var button mouse.Button
 
-			switch(int16(wParam)) {
-				case win32.MK_XBUTTON1:
-					button = mouse.Four
+			switch int16(wParam) {
+			case win32.MK_XBUTTON1:
+				button = mouse.Four
 
-				case win32.MK_XBUTTON2:
-					button = mouse.Five
+			case win32.MK_XBUTTON2:
+				button = mouse.Five
 			}
 
 			w.addMouseEvent(&mouse.Event{
@@ -2201,14 +2395,15 @@ func mainWindowProc(hwnd win32.HWND, msg win32.UINT, wParam win32.WPARAM, lParam
 			return 0
 
 		case msg == win32.WM_XBUTTONUP:
+			debug("WM_XBUTTONUP")
 			var button mouse.Button
 
-			switch(int16(wParam)) {
-				case win32.MK_XBUTTON1:
-					button = mouse.Four
+			switch int16(wParam) {
+			case win32.MK_XBUTTON1:
+				button = mouse.Four
 
-				case win32.MK_XBUTTON2:
-					button = mouse.Five
+			case win32.MK_XBUTTON2:
+				button = mouse.Five
 			}
 
 			w.addMouseEvent(&mouse.Event{
@@ -2218,6 +2413,7 @@ func mainWindowProc(hwnd win32.HWND, msg win32.UINT, wParam win32.WPARAM, lParam
 			return 0
 
 		case msg == win32.WM_MOUSEWHEEL:
+			debug("WM_MOUSEWHEEL")
 			delta := float64(int16((uint32(wParam) >> 16) & 0xFFFF))
 			ticks := int(math.Abs(delta / 120))
 
@@ -2238,17 +2434,22 @@ func mainWindowProc(hwnd win32.HWND, msg win32.UINT, wParam win32.WPARAM, lParam
 			}
 			return 0
 
-		//default:
-		//	fmt.Printf("0x%x\n", msg)
-
 		case msg == win32.WM_CLOSE:
+			debug("WM_CLOSE")
 			if !w.addCloseEvent() {
 				go w.Destroy()
 			}
 			return 0
+
+		default:
+			debug(fmt.Sprintf("WM_UNKNOWN (msg=0x%x)", msg))
+
+			// We continue onto DefWindowProc(), which might call us again, so make sure to unlock.
+			unlock()
 		}
 	}
 
+	debug("DefWindowProc()")
 	return win32.DefWindowProc(hwnd, msg, wParam, lParam)
 }
 
@@ -2270,4 +2471,3 @@ func backend_NewWindow() Window {
 	w.initEventDispatcher()
 	return w
 }
-

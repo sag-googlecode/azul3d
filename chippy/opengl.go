@@ -52,7 +52,7 @@ func versionSupported(ver string, wantedMajor, wantedMinor int) bool {
 
 type GLContextFlags uint8
 
-const(
+const (
 	GLDebug GLContextFlags = iota
 	GLForwardCompatible
 	GLCoreProfile
@@ -99,7 +99,7 @@ type GLRenderable interface {
 	// present, or if both are present.
 	//
 	// * = It is not advised to use this flag in production.
-	// 
+	//
 	// You must call GLSetConfig() before calling this function.
 	GLCreateContext(major, minor uint, flags GLContextFlags) (GLContext, error)
 

@@ -6,9 +6,9 @@ package chippy
 
 import (
 	"code.google.com/p/azul3d/chippy/wrappers/win32"
-	"runtime"
 	"fmt"
 	"math"
+	"runtime"
 	"sort"
 	"sync"
 )
@@ -78,7 +78,7 @@ type w32Screen struct {
 	gammaRampSize  uint
 	gammaRampError error
 
-	screenModeChanged, gammaRampChanged          bool
+	screenModeChanged, gammaRampChanged bool
 
 	isDefaultScreen                             bool
 	w32MonitorDeviceName, w32GraphicsDeviceName string
@@ -457,7 +457,7 @@ func backend_doScreens() (screens []Screen) {
 					if active || attached || win2kOrBelow {
 						screen := newScreen()
 
-						if (gflags & win32.DISPLAY_DEVICE_PRIMARY_DEVICE) > 0 && j == 1 {
+						if (gflags&win32.DISPLAY_DEVICE_PRIMARY_DEVICE) > 0 && j == 1 {
 							screen.isDefaultScreen = true
 						}
 
@@ -544,6 +544,5 @@ func backend_DefaultScreen() Screen {
 	}
 	logger.Println("No screens available!")
 	return nil
-
 
 }

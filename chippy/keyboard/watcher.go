@@ -4,6 +4,13 @@ import(
 	"sync"
 )
 
+type StateWatcherInterface interface {
+	SetState(key Key, state State)
+	State(key Key) State
+	Down(key Key) bool
+	Up(key Key) bool
+}
+
 type StateWatcher struct {
 	access sync.RWMutex
 	states map[Key]State

@@ -4,7 +4,7 @@
 
 package chippy
 
-import(
+import (
 	"image"
 )
 
@@ -17,4 +17,3 @@ type BlitRenderable interface {
 	// and Y, and extends until (x + width, y + height).
 	PixelClear(x, y, width, height uint)
 }
-
