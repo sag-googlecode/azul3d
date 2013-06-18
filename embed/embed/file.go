@@ -1,15 +1,15 @@
 package embed
 
-import(
+import (
 	"encoding/binary"
 	"errors"
 	"io"
 	"os"
 )
 
-var(
+var (
 	InvalidFileErr = errors.New("Invalid or corrupt embedded file.")
-	tag = []byte("-embedded-")
+	tag            = []byte("-embedded-")
 )
 
 func Offset(bin *os.File) (int64, error) {
@@ -20,7 +20,7 @@ func Offset(bin *os.File) (int64, error) {
 		return 0, err
 	}
 	buf := make([]byte, len(tag))
-	n, err = bin.ReadAt(buf, fi.Size() - int64(len(buf)) - 8)
+	n, err = bin.ReadAt(buf, fi.Size()-int64(len(buf))-8)
 	if n < len(buf) {
 		return 0, InvalidFileErr
 	}
@@ -32,7 +32,7 @@ func Offset(bin *os.File) (int64, error) {
 	}
 
 	buf = make([]byte, 8)
-	n, err = bin.ReadAt(buf, fi.Size() - int64(len(buf)))
+	n, err = bin.ReadAt(buf, fi.Size()-int64(len(buf)))
 	if n < len(buf) {
 		return 0, InvalidFileErr
 	}
@@ -69,4 +69,3 @@ func WriteFooter(bin *os.File, dataSize int64) error {
 	}
 	return nil
 }
-

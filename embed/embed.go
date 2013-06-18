@@ -1,16 +1,16 @@
 package main
 
-import(
+import (
 	"code.google.com/p/azul3d/embed/embed"
 	"flag"
-	"log"
 	"io"
+	"log"
 	"os"
 )
 
-var(
+var (
 	input, output, replace string
-	defaultOutputFile = "<input file>"
+	defaultOutputFile      = "<input file>"
 )
 
 func init() {
@@ -80,7 +80,6 @@ func main() {
 			if err != nil {
 				log.Fatal(err)
 			}
-
 
 			err = outputFile.Truncate(bytesWrote)
 			if err != nil {
@@ -165,4 +164,3 @@ func main() {
 		log.Printf("Extracted %v bytes to %s\n", bytesCopied, output)
 	}
 }
-
