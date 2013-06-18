@@ -1,3 +1,7 @@
+// Copyright 2012 Lightpoke. All rights reserved.
+// This source code is subject to the terms and
+// conditions defined in the "License.txt" file.
+
 // Package clock implements an high resolution clock for measuring real-time application stats.
 //
 // An Time() function is provided, which returns the time since the program started, it can be very
