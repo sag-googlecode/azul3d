@@ -3,31 +3,31 @@
 #include <stdlib.h>
 
 #ifdef _WIN32
-	#include <windows.h>
+#include <windows.h>
 #endif
 
 #include "gl30.h"
 
 #ifdef _WIN32
-	HMODULE gl30OpenGL32;
+HMODULE gl30OpenGL32;
 
-	void* gl30LibGetProcAddress(char* name) {
-		if(gl30OpenGL32 == NULL) {
-			gl30OpenGL32 = LoadLibrary(TEXT("opengl32.dll"));
-		}
-		return GetProcAddress(gl30OpenGL32, TEXT(name));
+void* gl30LibGetProcAddress(char* name) {
+	if(gl30OpenGL32 == NULL) {
+		gl30OpenGL32 = LoadLibrary(TEXT("opengl32.dll"));
 	}
+	return GetProcAddress(gl30OpenGL32, TEXT(name));
+}
 
-	void* gl30GLGetProcAddress(char* name) {
-		void* ptr = wglGetProcAddress(name);
+void* gl30GLGetProcAddress(char* name) {
+	void* ptr = wglGetProcAddress(name);
 
-		intptr_t iptr = (intptr_t)ptr;
+	intptr_t iptr = (intptr_t)ptr;
 
-		if(iptr == 0 || iptr == 1 || iptr == 2 || iptr == 3 || iptr == -1) {
-			return NULL;
-		}
-		return ptr;
+	if(iptr == 0 || iptr == 1 || iptr == 2 || iptr == 3 || iptr == -1) {
+		return NULL;
 	}
+	return ptr;
+}
 #endif
 
 
@@ -227,60 +227,12 @@ void gl30ColorMaterial(gl30Context* glc, GLenum face, GLenum mode) {
     return glc->fnColorMaterial(face, mode);
 }
 
-void gl30ColorTable(gl30Context* glc, GLenum target, GLenum internalformat, GLsizei width, GLenum format, GLenum type, GLvoid* data) {
-    return glc->fnColorTable(target, internalformat, width, format, type, data);
-}
-
-void gl30ColorTableParameterfv(gl30Context* glc, GLenum target, GLenum pname, GLfloat* params) {
-    return glc->fnColorTableParameterfv(target, pname, params);
-}
-
-void gl30ColorTableParameteriv(gl30Context* glc, GLenum target, GLenum pname, GLint* params) {
-    return glc->fnColorTableParameteriv(target, pname, params);
-}
-
-void gl30ColorSubTable(gl30Context* glc, GLenum target, GLsizei start, GLsizei count, GLenum format, GLenum type, GLvoid* data) {
-    return glc->fnColorSubTable(target, start, count, format, type, data);
-}
-
 void gl30CopyPixels(gl30Context* glc, GLint x, GLint y, GLsizei width, GLsizei height, GLenum type) {
     return glc->fnCopyPixels(x, y, width, height, type);
 }
 
 void gl30CullFace(gl30Context* glc, GLenum mode) {
     return glc->fnCullFace(mode);
-}
-
-void gl30ConvolutionFilter1D(gl30Context* glc, GLenum target, GLenum internalformat, GLsizei width, GLenum format, GLenum type, GLvoid* data) {
-    return glc->fnConvolutionFilter1D(target, internalformat, width, format, type, data);
-}
-
-void gl30ConvolutionFilter2D(gl30Context* glc, GLenum target, GLenum internalformat, GLsizei width, GLsizei height, GLenum format, GLenum type, GLvoid* data) {
-    return glc->fnConvolutionFilter2D(target, internalformat, width, height, format, type, data);
-}
-
-void gl30ConvolutionParameterf(gl30Context* glc, GLenum target, GLenum pname, GLfloat params) {
-    return glc->fnConvolutionParameterf(target, pname, params);
-}
-
-void gl30ConvolutionParameteri(gl30Context* glc, GLenum target, GLenum pname, GLint params) {
-    return glc->fnConvolutionParameteri(target, pname, params);
-}
-
-void gl30CopyColorTable(gl30Context* glc, GLenum target, GLenum internalformat, GLint x, GLint y, GLsizei width) {
-    return glc->fnCopyColorTable(target, internalformat, x, y, width);
-}
-
-void gl30CopyColorSubTable(gl30Context* glc, GLenum target, GLsizei start, GLint x, GLint y, GLsizei width) {
-    return glc->fnCopyColorSubTable(target, start, x, y, width);
-}
-
-void gl30CopyConvolutionFilter1D(gl30Context* glc, GLenum target, GLenum internalformat, GLint x, GLint y, GLsizei width) {
-    return glc->fnCopyConvolutionFilter1D(target, internalformat, x, y, width);
-}
-
-void gl30CopyConvolutionFilter2D(gl30Context* glc, GLenum target, GLenum internalformat, GLint x, GLint y, GLsizei width, GLsizei height) {
-    return glc->fnCopyConvolutionFilter2D(target, internalformat, x, y, width, height);
 }
 
 void gl30DeleteLists(gl30Context* glc, GLuint list, GLsizei range) {
@@ -1263,6 +1215,174 @@ void gl30Viewport(gl30Context* glc, GLint x, GLint y, GLsizei width, GLsizei hei
     return glc->fnViewport(x, y, width, height);
 }
 
+void gl30GetConvolutionParameterfv(gl30Context* glc, GLenum target, GLenum pname, GLfloat* params) {
+    return glc->fnGetConvolutionParameterfv(target, pname, params);
+}
+
+void gl30GetConvolutionParameteriv(gl30Context* glc, GLenum target, GLenum pname, GLint* params) {
+    return glc->fnGetConvolutionParameteriv(target, pname, params);
+}
+
+GLboolean gl30AreTexturesResident(gl30Context* glc, GLsizei n, GLuint* textures, GLboolean* residences) {
+    return glc->fnAreTexturesResident(n, textures, residences);
+}
+
+void gl30ArrayElement(gl30Context* glc, GLint i) {
+    return glc->fnArrayElement(i);
+}
+
+void gl30DrawArrays(gl30Context* glc, GLenum mode, GLint first, GLsizei count) {
+    return glc->fnDrawArrays(mode, first, count);
+}
+
+void gl30DrawElements(gl30Context* glc, GLenum mode, GLsizei count, GLenum type, GLvoid* indices) {
+    return glc->fnDrawElements(mode, count, type, indices);
+}
+
+void gl30GetPointerv(gl30Context* glc, GLenum pname, GLvoid* params) {
+    return glc->fnGetPointerv(pname, params);
+}
+
+void gl30PolygonOffset(gl30Context* glc, GLfloat factor, GLfloat units) {
+    return glc->fnPolygonOffset(factor, units);
+}
+
+void gl30CopyTexImage1D(gl30Context* glc, GLenum target, GLint level, GLenum internalFormat, GLint x, GLint y, GLsizei width, GLint border) {
+    return glc->fnCopyTexImage1D(target, level, internalFormat, x, y, width, border);
+}
+
+void gl30CopyTexImage2D(gl30Context* glc, GLenum target, GLint level, GLenum internalFormat, GLint x, GLint y, GLsizei width, GLsizei height, GLint border) {
+    return glc->fnCopyTexImage2D(target, level, internalFormat, x, y, width, height, border);
+}
+
+void gl30CopyTexSubImage1D(gl30Context* glc, GLenum target, GLint level, GLint xoffset, GLint x, GLint y, GLsizei width) {
+    return glc->fnCopyTexSubImage1D(target, level, xoffset, x, y, width);
+}
+
+void gl30CopyTexSubImage2D(gl30Context* glc, GLenum target, GLint level, GLint xoffset, GLint yoffset, GLint x, GLint y, GLsizei width, GLsizei height) {
+    return glc->fnCopyTexSubImage2D(target, level, xoffset, yoffset, x, y, width, height);
+}
+
+void gl30BindTexture(gl30Context* glc, GLenum target, GLuint texture) {
+    return glc->fnBindTexture(target, texture);
+}
+
+void gl30DeleteTextures(gl30Context* glc, GLsizei n, GLuint* textures) {
+    return glc->fnDeleteTextures(n, textures);
+}
+
+void gl30GenTextures(gl30Context* glc, GLsizei n, GLuint* textures) {
+    return glc->fnGenTextures(n, textures);
+}
+
+GLboolean gl30IsTexture(gl30Context* glc, GLuint texture) {
+    return glc->fnIsTexture(texture);
+}
+
+void gl30ColorPointer(gl30Context* glc, GLint size, GLenum type, GLsizei stride, GLvoid* pointer) {
+    return glc->fnColorPointer(size, type, stride, pointer);
+}
+
+void gl30EnableClientState(gl30Context* glc, GLenum cap) {
+    return glc->fnEnableClientState(cap);
+}
+
+void gl30DisableClientState(gl30Context* glc, GLenum cap) {
+    return glc->fnDisableClientState(cap);
+}
+
+void gl30Indexub(gl30Context* glc, GLubyte c) {
+    return glc->fnIndexub(c);
+}
+
+void gl30Indexubv(gl30Context* glc, GLubyte* c) {
+    return glc->fnIndexubv(c);
+}
+
+void gl30InterleavedArrays(gl30Context* glc, GLenum format, GLsizei stride, GLvoid* pointer) {
+    return glc->fnInterleavedArrays(format, stride, pointer);
+}
+
+void gl30NormalPointer(gl30Context* glc, GLenum type, GLsizei stride, GLvoid* pointer) {
+    return glc->fnNormalPointer(type, stride, pointer);
+}
+
+void gl30PushClientAttrib(gl30Context* glc, GLbitfield mask) {
+    return glc->fnPushClientAttrib(mask);
+}
+
+void gl30PrioritizeTextures(gl30Context* glc, GLsizei n, GLuint* textures, GLclampf* priorities) {
+    return glc->fnPrioritizeTextures(n, textures, priorities);
+}
+
+void gl30PopClientAttrib(gl30Context* glc) {
+    return glc->fnPopClientAttrib();
+}
+
+void gl30TexCoordPointer(gl30Context* glc, GLint size, GLenum type, GLsizei stride, GLvoid* pointer) {
+    return glc->fnTexCoordPointer(size, type, stride, pointer);
+}
+
+void gl30TexSubImage1D(gl30Context* glc, GLenum target, GLint level, GLint xoffset, GLsizei width, GLenum format, GLenum type, GLvoid* pixels) {
+    return glc->fnTexSubImage1D(target, level, xoffset, width, format, type, pixels);
+}
+
+void gl30TexSubImage2D(gl30Context* glc, GLenum target, GLint level, GLint xoffset, GLint yoffset, GLsizei width, GLsizei height, GLenum format, GLenum type, GLvoid* pixels) {
+    return glc->fnTexSubImage2D(target, level, xoffset, yoffset, width, height, format, type, pixels);
+}
+
+void gl30VertexPointer(gl30Context* glc, GLint size, GLenum type, GLsizei stride, GLvoid* pointer) {
+    return glc->fnVertexPointer(size, type, stride, pointer);
+}
+
+void gl30ColorTable(gl30Context* glc, GLenum target, GLenum internalformat, GLsizei width, GLenum format, GLenum type, GLvoid* data) {
+    return glc->fnColorTable(target, internalformat, width, format, type, data);
+}
+
+void gl30ColorTableParameterfv(gl30Context* glc, GLenum target, GLenum pname, GLfloat* params) {
+    return glc->fnColorTableParameterfv(target, pname, params);
+}
+
+void gl30ColorTableParameteriv(gl30Context* glc, GLenum target, GLenum pname, GLint* params) {
+    return glc->fnColorTableParameteriv(target, pname, params);
+}
+
+void gl30ColorSubTable(gl30Context* glc, GLenum target, GLsizei start, GLsizei count, GLenum format, GLenum type, GLvoid* data) {
+    return glc->fnColorSubTable(target, start, count, format, type, data);
+}
+
+void gl30ConvolutionFilter1D(gl30Context* glc, GLenum target, GLenum internalformat, GLsizei width, GLenum format, GLenum type, GLvoid* data) {
+    return glc->fnConvolutionFilter1D(target, internalformat, width, format, type, data);
+}
+
+void gl30ConvolutionFilter2D(gl30Context* glc, GLenum target, GLenum internalformat, GLsizei width, GLsizei height, GLenum format, GLenum type, GLvoid* data) {
+    return glc->fnConvolutionFilter2D(target, internalformat, width, height, format, type, data);
+}
+
+void gl30ConvolutionParameterf(gl30Context* glc, GLenum target, GLenum pname, GLfloat params) {
+    return glc->fnConvolutionParameterf(target, pname, params);
+}
+
+void gl30ConvolutionParameteri(gl30Context* glc, GLenum target, GLenum pname, GLint params) {
+    return glc->fnConvolutionParameteri(target, pname, params);
+}
+
+void gl30CopyColorTable(gl30Context* glc, GLenum target, GLenum internalformat, GLint x, GLint y, GLsizei width) {
+    return glc->fnCopyColorTable(target, internalformat, x, y, width);
+}
+
+void gl30CopyColorSubTable(gl30Context* glc, GLenum target, GLsizei start, GLint x, GLint y, GLsizei width) {
+    return glc->fnCopyColorSubTable(target, start, x, y, width);
+}
+
+void gl30CopyConvolutionFilter1D(gl30Context* glc, GLenum target, GLenum internalformat, GLint x, GLint y, GLsizei width) {
+    return glc->fnCopyConvolutionFilter1D(target, internalformat, x, y, width);
+}
+
+void gl30CopyConvolutionFilter2D(gl30Context* glc, GLenum target, GLenum internalformat, GLint x, GLint y, GLsizei width, GLsizei height) {
+    return glc->fnCopyConvolutionFilter2D(target, internalformat, x, y, width, height);
+}
+
 void gl30GetColorTable(gl30Context* glc, GLenum target, GLenum format, GLenum type, GLvoid* table) {
     return glc->fnGetColorTable(target, format, type, table);
 }
@@ -1277,14 +1397,6 @@ void gl30GetColorTableParameteriv(gl30Context* glc, GLenum target, GLenum pname,
 
 void gl30GetConvolutionFilter(gl30Context* glc, GLenum target, GLenum format, GLenum type, GLvoid* image) {
     return glc->fnGetConvolutionFilter(target, format, type, image);
-}
-
-void gl30GetConvolutionParameterfv(gl30Context* glc, GLenum target, GLenum pname, GLfloat* params) {
-    return glc->fnGetConvolutionParameterfv(target, pname, params);
-}
-
-void gl30GetConvolutionParameteriv(gl30Context* glc, GLenum target, GLenum pname, GLint* params) {
-    return glc->fnGetConvolutionParameteriv(target, pname, params);
 }
 
 void gl30GetHistogram(gl30Context* glc, GLenum target, GLboolean reset, GLenum format, GLenum type, GLvoid* values) {
@@ -1449,118 +1561,6 @@ void gl30ResetMinmax(gl30Context* glc, GLenum target) {
 
 void gl30SeparableFilter2D(gl30Context* glc, GLenum target, GLenum internalformat, GLsizei width, GLsizei height, GLenum format, GLenum type, GLvoid* row, GLvoid* column) {
     return glc->fnSeparableFilter2D(target, internalformat, width, height, format, type, row, column);
-}
-
-GLboolean gl30AreTexturesResident(gl30Context* glc, GLsizei n, GLuint* textures, GLboolean* residences) {
-    return glc->fnAreTexturesResident(n, textures, residences);
-}
-
-void gl30ArrayElement(gl30Context* glc, GLint i) {
-    return glc->fnArrayElement(i);
-}
-
-void gl30DrawArrays(gl30Context* glc, GLenum mode, GLint first, GLsizei count) {
-    return glc->fnDrawArrays(mode, first, count);
-}
-
-void gl30DrawElements(gl30Context* glc, GLenum mode, GLsizei count, GLenum type, GLvoid* indices) {
-    return glc->fnDrawElements(mode, count, type, indices);
-}
-
-void gl30GetPointerv(gl30Context* glc, GLenum pname, GLvoid* params) {
-    return glc->fnGetPointerv(pname, params);
-}
-
-void gl30PolygonOffset(gl30Context* glc, GLfloat factor, GLfloat units) {
-    return glc->fnPolygonOffset(factor, units);
-}
-
-void gl30CopyTexImage1D(gl30Context* glc, GLenum target, GLint level, GLenum internalFormat, GLint x, GLint y, GLsizei width, GLint border) {
-    return glc->fnCopyTexImage1D(target, level, internalFormat, x, y, width, border);
-}
-
-void gl30CopyTexImage2D(gl30Context* glc, GLenum target, GLint level, GLenum internalFormat, GLint x, GLint y, GLsizei width, GLsizei height, GLint border) {
-    return glc->fnCopyTexImage2D(target, level, internalFormat, x, y, width, height, border);
-}
-
-void gl30CopyTexSubImage1D(gl30Context* glc, GLenum target, GLint level, GLint xoffset, GLint x, GLint y, GLsizei width) {
-    return glc->fnCopyTexSubImage1D(target, level, xoffset, x, y, width);
-}
-
-void gl30CopyTexSubImage2D(gl30Context* glc, GLenum target, GLint level, GLint xoffset, GLint yoffset, GLint x, GLint y, GLsizei width, GLsizei height) {
-    return glc->fnCopyTexSubImage2D(target, level, xoffset, yoffset, x, y, width, height);
-}
-
-void gl30BindTexture(gl30Context* glc, GLenum target, GLuint texture) {
-    return glc->fnBindTexture(target, texture);
-}
-
-void gl30DeleteTextures(gl30Context* glc, GLsizei n, GLuint* textures) {
-    return glc->fnDeleteTextures(n, textures);
-}
-
-void gl30GenTextures(gl30Context* glc, GLsizei n, GLuint* textures) {
-    return glc->fnGenTextures(n, textures);
-}
-
-GLboolean gl30IsTexture(gl30Context* glc, GLuint texture) {
-    return glc->fnIsTexture(texture);
-}
-
-void gl30ColorPointer(gl30Context* glc, GLint size, GLenum type, GLsizei stride, GLvoid* pointer) {
-    return glc->fnColorPointer(size, type, stride, pointer);
-}
-
-void gl30EnableClientState(gl30Context* glc, GLenum cap) {
-    return glc->fnEnableClientState(cap);
-}
-
-void gl30DisableClientState(gl30Context* glc, GLenum cap) {
-    return glc->fnDisableClientState(cap);
-}
-
-void gl30Indexub(gl30Context* glc, GLubyte c) {
-    return glc->fnIndexub(c);
-}
-
-void gl30Indexubv(gl30Context* glc, GLubyte* c) {
-    return glc->fnIndexubv(c);
-}
-
-void gl30InterleavedArrays(gl30Context* glc, GLenum format, GLsizei stride, GLvoid* pointer) {
-    return glc->fnInterleavedArrays(format, stride, pointer);
-}
-
-void gl30NormalPointer(gl30Context* glc, GLenum type, GLsizei stride, GLvoid* pointer) {
-    return glc->fnNormalPointer(type, stride, pointer);
-}
-
-void gl30PushClientAttrib(gl30Context* glc, GLbitfield mask) {
-    return glc->fnPushClientAttrib(mask);
-}
-
-void gl30PrioritizeTextures(gl30Context* glc, GLsizei n, GLuint* textures, GLclampf* priorities) {
-    return glc->fnPrioritizeTextures(n, textures, priorities);
-}
-
-void gl30PopClientAttrib(gl30Context* glc) {
-    return glc->fnPopClientAttrib();
-}
-
-void gl30TexCoordPointer(gl30Context* glc, GLint size, GLenum type, GLsizei stride, GLvoid* pointer) {
-    return glc->fnTexCoordPointer(size, type, stride, pointer);
-}
-
-void gl30TexSubImage1D(gl30Context* glc, GLenum target, GLint level, GLint xoffset, GLsizei width, GLenum format, GLenum type, GLvoid* pixels) {
-    return glc->fnTexSubImage1D(target, level, xoffset, width, format, type, pixels);
-}
-
-void gl30TexSubImage2D(gl30Context* glc, GLenum target, GLint level, GLint xoffset, GLint yoffset, GLsizei width, GLsizei height, GLenum format, GLenum type, GLvoid* pixels) {
-    return glc->fnTexSubImage2D(target, level, xoffset, yoffset, width, height, format, type, pixels);
-}
-
-void gl30VertexPointer(gl30Context* glc, GLint size, GLenum type, GLsizei stride, GLvoid* pointer) {
-    return glc->fnVertexPointer(size, type, stride, pointer);
 }
 
 void gl30BlendColor(gl30Context* glc, GLclampf red, GLclampf green, GLclampf blue, GLclampf alpha) {
@@ -1815,6 +1815,122 @@ void gl30WindowPos3dv(gl30Context* glc, GLdouble* v) {
     return glc->fnWindowPos3dv(v);
 }
 
+void gl30BeginQuery(gl30Context* glc, GLenum target, GLuint id) {
+    return glc->fnBeginQuery(target, id);
+}
+
+void gl30BindBuffer(gl30Context* glc, GLenum target, GLuint buffer) {
+    return glc->fnBindBuffer(target, buffer);
+}
+
+void gl30BufferData(gl30Context* glc, GLenum target, GLsizeiptr size, GLvoid* data, GLenum usage) {
+    return glc->fnBufferData(target, size, data, usage);
+}
+
+void gl30BufferSubData(gl30Context* glc, GLenum target, GLenum offset, GLsizeiptr size, GLvoid* data) {
+    return glc->fnBufferSubData(target, offset, size, data);
+}
+
+void gl30DeleteBuffers(gl30Context* glc, GLsizei n, GLuint* buffers) {
+    return glc->fnDeleteBuffers(n, buffers);
+}
+
+void gl30DeleteQueries(gl30Context* glc, GLsizei n, GLuint* ids) {
+    return glc->fnDeleteQueries(n, ids);
+}
+
+void gl30GenBuffers(gl30Context* glc, GLsizei n, GLuint* buffers) {
+    return glc->fnGenBuffers(n, buffers);
+}
+
+void gl30GenQueries(gl30Context* glc, GLsizei n, GLuint* ids) {
+    return glc->fnGenQueries(n, ids);
+}
+
+void gl30GetBufferParameteriv(gl30Context* glc, GLenum target, GLenum value, GLint* data) {
+    return glc->fnGetBufferParameteriv(target, value, data);
+}
+
+void gl30GetBufferPointerv(gl30Context* glc, GLenum target, GLenum pname, GLvoid* params) {
+    return glc->fnGetBufferPointerv(target, pname, params);
+}
+
+void gl30GetBufferSubData(gl30Context* glc, GLenum target, GLintptr offset, GLsizeiptr size, GLvoid* data) {
+    return glc->fnGetBufferSubData(target, offset, size, data);
+}
+
+void gl30GetQueryObjectiv(gl30Context* glc, GLuint id, GLenum pname, GLint* params) {
+    return glc->fnGetQueryObjectiv(id, pname, params);
+}
+
+void gl30GetQueryObjectuiv(gl30Context* glc, GLuint id, GLenum pname, GLuint* params) {
+    return glc->fnGetQueryObjectuiv(id, pname, params);
+}
+
+void gl30GetQueryiv(gl30Context* glc, GLenum target, GLenum pname, GLint* params) {
+    return glc->fnGetQueryiv(target, pname, params);
+}
+
+GLboolean gl30IsBuffer(gl30Context* glc, GLuint buffer) {
+    return glc->fnIsBuffer(buffer);
+}
+
+GLboolean gl30IsQuery(gl30Context* glc, GLuint id) {
+    return glc->fnIsQuery(id);
+}
+
+GLvoid* gl30MapBuffer(gl30Context* glc, GLenum target, GLenum access) {
+    return glc->fnMapBuffer(target, access);
+}
+
+GLboolean gl30UnmapBuffer(gl30Context* glc, GLenum target) {
+    return glc->fnUnmapBuffer(target);
+}
+
+void gl30AttachShader(gl30Context* glc, GLuint program, GLuint shader) {
+    return glc->fnAttachShader(program, shader);
+}
+
+void gl30BindAttribLocation(gl30Context* glc, GLuint program, GLuint index, GLchar* name) {
+    return glc->fnBindAttribLocation(program, index, name);
+}
+
+void gl30BlendEquationSeperate(gl30Context* glc, GLenum modeRGB, GLenum modeAlpha) {
+    return glc->fnBlendEquationSeperate(modeRGB, modeAlpha);
+}
+
+void gl30CompileShader(gl30Context* glc, GLuint shader) {
+    return glc->fnCompileShader(shader);
+}
+
+GLuint gl30CreateProgram(gl30Context* glc) {
+    return glc->fnCreateProgram();
+}
+
+GLuint gl30CreateShader(gl30Context* glc, GLenum shaderType) {
+    return glc->fnCreateShader(shaderType);
+}
+
+void gl30DeleteProgram(gl30Context* glc, GLuint program) {
+    return glc->fnDeleteProgram(program);
+}
+
+void gl30DeleteShader(gl30Context* glc, GLuint shader) {
+    return glc->fnDeleteShader(shader);
+}
+
+void gl30DetachShader(gl30Context* glc, GLuint program, GLuint shader) {
+    return glc->fnDetachShader(program, shader);
+}
+
+void gl30EnableVertexAttribArray(gl30Context* glc, GLuint index) {
+    return glc->fnEnableVertexAttribArray(index);
+}
+
+void gl30DisableVertexAttribArray(gl30Context* glc, GLuint index) {
+    return glc->fnDisableVertexAttribArray(index);
+}
+
 gl30Context* gl30NewContext() {
     gl30Context* glc = calloc(1, sizeof(gl30Context));
 
@@ -1868,20 +1984,8 @@ gl30Context* gl30NewContext() {
     glc->fnColor4usv = (gl30PColor4usv)gl30LibGetProcAddress("glColor4usv");
     glc->fnColorMask = (gl30PColorMask)gl30LibGetProcAddress("glColorMask");
     glc->fnColorMaterial = (gl30PColorMaterial)gl30LibGetProcAddress("glColorMaterial");
-    glc->fnColorTable = (gl30PColorTable)gl30GLGetProcAddress("glColorTable");
-    glc->fnColorTableParameterfv = (gl30PColorTableParameterfv)gl30GLGetProcAddress("glColorTableParameterfv");
-    glc->fnColorTableParameteriv = (gl30PColorTableParameteriv)gl30GLGetProcAddress("glColorTableParameteriv");
-    glc->fnColorSubTable = (gl30PColorSubTable)gl30GLGetProcAddress("glColorSubTable");
     glc->fnCopyPixels = (gl30PCopyPixels)gl30LibGetProcAddress("glCopyPixels");
     glc->fnCullFace = (gl30PCullFace)gl30LibGetProcAddress("glCullFace");
-    glc->fnConvolutionFilter1D = (gl30PConvolutionFilter1D)gl30GLGetProcAddress("glConvolutionFilter1D");
-    glc->fnConvolutionFilter2D = (gl30PConvolutionFilter2D)gl30GLGetProcAddress("glConvolutionFilter2D");
-    glc->fnConvolutionParameterf = (gl30PConvolutionParameterf)gl30GLGetProcAddress("glConvolutionParameterf");
-    glc->fnConvolutionParameteri = (gl30PConvolutionParameteri)gl30GLGetProcAddress("glConvolutionParameteri");
-    glc->fnCopyColorTable = (gl30PCopyColorTable)gl30GLGetProcAddress("glCopyColorTable");
-    glc->fnCopyColorSubTable = (gl30PCopyColorSubTable)gl30GLGetProcAddress("glCopyColorSubTable");
-    glc->fnCopyConvolutionFilter1D = (gl30PCopyConvolutionFilter1D)gl30GLGetProcAddress("glCopyConvolutionFilter1D");
-    glc->fnCopyConvolutionFilter2D = (gl30PCopyConvolutionFilter2D)gl30GLGetProcAddress("glCopyConvolutionFilter2D");
     glc->fnDeleteLists = (gl30PDeleteLists)gl30LibGetProcAddress("glDeleteLists");
     glc->fnDepthFunc = (gl30PDepthFunc)gl30LibGetProcAddress("glDepthFunc");
     glc->fnDepthMask = (gl30PDepthMask)gl30LibGetProcAddress("glDepthMask");
@@ -2127,12 +2231,52 @@ gl30Context* gl30NewContext() {
     glc->fnVertex4f = (gl30PVertex4f)gl30LibGetProcAddress("glVertex4f");
     glc->fnVertex4d = (gl30PVertex4d)gl30LibGetProcAddress("glVertex4d");
     glc->fnViewport = (gl30PViewport)gl30LibGetProcAddress("glViewport");
+    glc->fnGetConvolutionParameterfv = (gl30PGetConvolutionParameterfv)gl30LibGetProcAddress("glGetConvolutionParameterfv");
+    glc->fnGetConvolutionParameteriv = (gl30PGetConvolutionParameteriv)gl30LibGetProcAddress("glGetConvolutionParameteriv");
+    glc->fnAreTexturesResident = (gl30PAreTexturesResident)gl30LibGetProcAddress("glAreTexturesResident");
+    glc->fnArrayElement = (gl30PArrayElement)gl30LibGetProcAddress("glArrayElement");
+    glc->fnDrawArrays = (gl30PDrawArrays)gl30LibGetProcAddress("glDrawArrays");
+    glc->fnDrawElements = (gl30PDrawElements)gl30LibGetProcAddress("glDrawElements");
+    glc->fnGetPointerv = (gl30PGetPointerv)gl30LibGetProcAddress("glGetPointerv");
+    glc->fnPolygonOffset = (gl30PPolygonOffset)gl30LibGetProcAddress("glPolygonOffset");
+    glc->fnCopyTexImage1D = (gl30PCopyTexImage1D)gl30LibGetProcAddress("glCopyTexImage1D");
+    glc->fnCopyTexImage2D = (gl30PCopyTexImage2D)gl30LibGetProcAddress("glCopyTexImage2D");
+    glc->fnCopyTexSubImage1D = (gl30PCopyTexSubImage1D)gl30LibGetProcAddress("glCopyTexSubImage1D");
+    glc->fnCopyTexSubImage2D = (gl30PCopyTexSubImage2D)gl30LibGetProcAddress("glCopyTexSubImage2D");
+    glc->fnBindTexture = (gl30PBindTexture)gl30LibGetProcAddress("glBindTexture");
+    glc->fnDeleteTextures = (gl30PDeleteTextures)gl30LibGetProcAddress("glDeleteTextures");
+    glc->fnGenTextures = (gl30PGenTextures)gl30LibGetProcAddress("glGenTextures");
+    glc->fnIsTexture = (gl30PIsTexture)gl30LibGetProcAddress("glIsTexture");
+    glc->fnColorPointer = (gl30PColorPointer)gl30LibGetProcAddress("glColorPointer");
+    glc->fnEnableClientState = (gl30PEnableClientState)gl30LibGetProcAddress("glEnableClientState");
+    glc->fnDisableClientState = (gl30PDisableClientState)gl30LibGetProcAddress("glDisableClientState");
+    glc->fnIndexub = (gl30PIndexub)gl30LibGetProcAddress("glIndexub");
+    glc->fnIndexubv = (gl30PIndexubv)gl30LibGetProcAddress("glIndexubv");
+    glc->fnInterleavedArrays = (gl30PInterleavedArrays)gl30LibGetProcAddress("glInterleavedArrays");
+    glc->fnNormalPointer = (gl30PNormalPointer)gl30LibGetProcAddress("glNormalPointer");
+    glc->fnPushClientAttrib = (gl30PPushClientAttrib)gl30LibGetProcAddress("glPushClientAttrib");
+    glc->fnPrioritizeTextures = (gl30PPrioritizeTextures)gl30LibGetProcAddress("glPrioritizeTextures");
+    glc->fnPopClientAttrib = (gl30PPopClientAttrib)gl30LibGetProcAddress("glPopClientAttrib");
+    glc->fnTexCoordPointer = (gl30PTexCoordPointer)gl30LibGetProcAddress("glTexCoordPointer");
+    glc->fnTexSubImage1D = (gl30PTexSubImage1D)gl30LibGetProcAddress("glTexSubImage1D");
+    glc->fnTexSubImage2D = (gl30PTexSubImage2D)gl30LibGetProcAddress("glTexSubImage2D");
+    glc->fnVertexPointer = (gl30PVertexPointer)gl30LibGetProcAddress("glVertexPointer");
+    glc->fnColorTable = (gl30PColorTable)gl30GLGetProcAddress("glColorTable");
+    glc->fnColorTableParameterfv = (gl30PColorTableParameterfv)gl30GLGetProcAddress("glColorTableParameterfv");
+    glc->fnColorTableParameteriv = (gl30PColorTableParameteriv)gl30GLGetProcAddress("glColorTableParameteriv");
+    glc->fnColorSubTable = (gl30PColorSubTable)gl30GLGetProcAddress("glColorSubTable");
+    glc->fnConvolutionFilter1D = (gl30PConvolutionFilter1D)gl30GLGetProcAddress("glConvolutionFilter1D");
+    glc->fnConvolutionFilter2D = (gl30PConvolutionFilter2D)gl30GLGetProcAddress("glConvolutionFilter2D");
+    glc->fnConvolutionParameterf = (gl30PConvolutionParameterf)gl30GLGetProcAddress("glConvolutionParameterf");
+    glc->fnConvolutionParameteri = (gl30PConvolutionParameteri)gl30GLGetProcAddress("glConvolutionParameteri");
+    glc->fnCopyColorTable = (gl30PCopyColorTable)gl30GLGetProcAddress("glCopyColorTable");
+    glc->fnCopyColorSubTable = (gl30PCopyColorSubTable)gl30GLGetProcAddress("glCopyColorSubTable");
+    glc->fnCopyConvolutionFilter1D = (gl30PCopyConvolutionFilter1D)gl30GLGetProcAddress("glCopyConvolutionFilter1D");
+    glc->fnCopyConvolutionFilter2D = (gl30PCopyConvolutionFilter2D)gl30GLGetProcAddress("glCopyConvolutionFilter2D");
     glc->fnGetColorTable = (gl30PGetColorTable)gl30GLGetProcAddress("glGetColorTable");
     glc->fnGetColorTableParameterfv = (gl30PGetColorTableParameterfv)gl30GLGetProcAddress("glGetColorTableParameterfv");
     glc->fnGetColorTableParameteriv = (gl30PGetColorTableParameteriv)gl30GLGetProcAddress("glGetColorTableParameteriv");
     glc->fnGetConvolutionFilter = (gl30PGetConvolutionFilter)gl30GLGetProcAddress("glGetConvolutionFilter");
-    glc->fnGetConvolutionParameterfv = (gl30PGetConvolutionParameterfv)gl30LibGetProcAddress("glGetConvolutionParameterfv");
-    glc->fnGetConvolutionParameteriv = (gl30PGetConvolutionParameteriv)gl30LibGetProcAddress("glGetConvolutionParameteriv");
     glc->fnGetHistogram = (gl30PGetHistogram)gl30GLGetProcAddress("glGetHistogram");
     glc->fnGetHistogramParameterfv = (gl30PGetHistogramParameterfv)gl30GLGetProcAddress("glGetHistogramParameterfv");
     glc->fnGetHistogramParameteriv = (gl30PGetHistogramParameteriv)gl30GLGetProcAddress("glGetHistogramParameteriv");
@@ -2174,34 +2318,6 @@ gl30Context* gl30NewContext() {
     glc->fnResetHistogram = (gl30PResetHistogram)gl30GLGetProcAddress("glResetHistogram");
     glc->fnResetMinmax = (gl30PResetMinmax)gl30GLGetProcAddress("glResetMinmax");
     glc->fnSeparableFilter2D = (gl30PSeparableFilter2D)gl30GLGetProcAddress("glSeparableFilter2D");
-    glc->fnAreTexturesResident = (gl30PAreTexturesResident)gl30LibGetProcAddress("glAreTexturesResident");
-    glc->fnArrayElement = (gl30PArrayElement)gl30LibGetProcAddress("glArrayElement");
-    glc->fnDrawArrays = (gl30PDrawArrays)gl30LibGetProcAddress("glDrawArrays");
-    glc->fnDrawElements = (gl30PDrawElements)gl30LibGetProcAddress("glDrawElements");
-    glc->fnGetPointerv = (gl30PGetPointerv)gl30LibGetProcAddress("glGetPointerv");
-    glc->fnPolygonOffset = (gl30PPolygonOffset)gl30LibGetProcAddress("glPolygonOffset");
-    glc->fnCopyTexImage1D = (gl30PCopyTexImage1D)gl30LibGetProcAddress("glCopyTexImage1D");
-    glc->fnCopyTexImage2D = (gl30PCopyTexImage2D)gl30LibGetProcAddress("glCopyTexImage2D");
-    glc->fnCopyTexSubImage1D = (gl30PCopyTexSubImage1D)gl30LibGetProcAddress("glCopyTexSubImage1D");
-    glc->fnCopyTexSubImage2D = (gl30PCopyTexSubImage2D)gl30LibGetProcAddress("glCopyTexSubImage2D");
-    glc->fnBindTexture = (gl30PBindTexture)gl30LibGetProcAddress("glBindTexture");
-    glc->fnDeleteTextures = (gl30PDeleteTextures)gl30LibGetProcAddress("glDeleteTextures");
-    glc->fnGenTextures = (gl30PGenTextures)gl30LibGetProcAddress("glGenTextures");
-    glc->fnIsTexture = (gl30PIsTexture)gl30LibGetProcAddress("glIsTexture");
-    glc->fnColorPointer = (gl30PColorPointer)gl30LibGetProcAddress("glColorPointer");
-    glc->fnEnableClientState = (gl30PEnableClientState)gl30LibGetProcAddress("glEnableClientState");
-    glc->fnDisableClientState = (gl30PDisableClientState)gl30LibGetProcAddress("glDisableClientState");
-    glc->fnIndexub = (gl30PIndexub)gl30LibGetProcAddress("glIndexub");
-    glc->fnIndexubv = (gl30PIndexubv)gl30LibGetProcAddress("glIndexubv");
-    glc->fnInterleavedArrays = (gl30PInterleavedArrays)gl30LibGetProcAddress("glInterleavedArrays");
-    glc->fnNormalPointer = (gl30PNormalPointer)gl30LibGetProcAddress("glNormalPointer");
-    glc->fnPushClientAttrib = (gl30PPushClientAttrib)gl30LibGetProcAddress("glPushClientAttrib");
-    glc->fnPrioritizeTextures = (gl30PPrioritizeTextures)gl30LibGetProcAddress("glPrioritizeTextures");
-    glc->fnPopClientAttrib = (gl30PPopClientAttrib)gl30LibGetProcAddress("glPopClientAttrib");
-    glc->fnTexCoordPointer = (gl30PTexCoordPointer)gl30LibGetProcAddress("glTexCoordPointer");
-    glc->fnTexSubImage1D = (gl30PTexSubImage1D)gl30LibGetProcAddress("glTexSubImage1D");
-    glc->fnTexSubImage2D = (gl30PTexSubImage2D)gl30LibGetProcAddress("glTexSubImage2D");
-    glc->fnVertexPointer = (gl30PVertexPointer)gl30LibGetProcAddress("glVertexPointer");
     glc->fnBlendColor = (gl30PBlendColor)gl30GLGetProcAddress("glBlendColor");
     glc->fnBlendEquation = (gl30PBlendEquation)gl30GLGetProcAddress("glBlendEquation");
     glc->fnCopyTexSubImage3D = (gl30PCopyTexSubImage3D)gl30GLGetProcAddress("glCopyTexSubImage3D");
@@ -2265,6 +2381,35 @@ gl30Context* gl30NewContext() {
     glc->fnWindowPos3iv = (gl30PWindowPos3iv)gl30GLGetProcAddress("glWindowPos3iv");
     glc->fnWindowPos3fv = (gl30PWindowPos3fv)gl30GLGetProcAddress("glWindowPos3fv");
     glc->fnWindowPos3dv = (gl30PWindowPos3dv)gl30GLGetProcAddress("glWindowPos3dv");
+    glc->fnBeginQuery = (gl30PBeginQuery)gl30GLGetProcAddress("glBeginQuery");
+    glc->fnBindBuffer = (gl30PBindBuffer)gl30GLGetProcAddress("glBindBuffer");
+    glc->fnBufferData = (gl30PBufferData)gl30GLGetProcAddress("glBufferData");
+    glc->fnBufferSubData = (gl30PBufferSubData)gl30GLGetProcAddress("glBufferSubData");
+    glc->fnDeleteBuffers = (gl30PDeleteBuffers)gl30GLGetProcAddress("glDeleteBuffers");
+    glc->fnDeleteQueries = (gl30PDeleteQueries)gl30GLGetProcAddress("glDeleteQueries");
+    glc->fnGenBuffers = (gl30PGenBuffers)gl30GLGetProcAddress("glGenBuffers");
+    glc->fnGenQueries = (gl30PGenQueries)gl30GLGetProcAddress("glGenQueries");
+    glc->fnGetBufferParameteriv = (gl30PGetBufferParameteriv)gl30GLGetProcAddress("glGetBufferParameteriv");
+    glc->fnGetBufferPointerv = (gl30PGetBufferPointerv)gl30GLGetProcAddress("glGetBufferPointerv");
+    glc->fnGetBufferSubData = (gl30PGetBufferSubData)gl30GLGetProcAddress("glGetBufferSubData");
+    glc->fnGetQueryObjectiv = (gl30PGetQueryObjectiv)gl30GLGetProcAddress("glGetQueryObjectiv");
+    glc->fnGetQueryObjectuiv = (gl30PGetQueryObjectuiv)gl30GLGetProcAddress("glGetQueryObjectuiv");
+    glc->fnGetQueryiv = (gl30PGetQueryiv)gl30GLGetProcAddress("glGetQueryiv");
+    glc->fnIsBuffer = (gl30PIsBuffer)gl30GLGetProcAddress("glIsBuffer");
+    glc->fnIsQuery = (gl30PIsQuery)gl30GLGetProcAddress("glIsQuery");
+    glc->fnMapBuffer = (gl30PMapBuffer)gl30GLGetProcAddress("glMapBuffer");
+    glc->fnUnmapBuffer = (gl30PUnmapBuffer)gl30GLGetProcAddress("glUnmapBuffer");
+    glc->fnAttachShader = (gl30PAttachShader)gl30GLGetProcAddress("glAttachShader");
+    glc->fnBindAttribLocation = (gl30PBindAttribLocation)gl30GLGetProcAddress("glBindAttribLocation");
+    glc->fnBlendEquationSeperate = (gl30PBlendEquationSeperate)gl30GLGetProcAddress("glBlendEquationSeperate");
+    glc->fnCompileShader = (gl30PCompileShader)gl30GLGetProcAddress("glCompileShader");
+    glc->fnCreateProgram = (gl30PCreateProgram)gl30GLGetProcAddress("glCreateProgram");
+    glc->fnCreateShader = (gl30PCreateShader)gl30GLGetProcAddress("glCreateShader");
+    glc->fnDeleteProgram = (gl30PDeleteProgram)gl30GLGetProcAddress("glDeleteProgram");
+    glc->fnDeleteShader = (gl30PDeleteShader)gl30GLGetProcAddress("glDeleteShader");
+    glc->fnDetachShader = (gl30PDetachShader)gl30GLGetProcAddress("glDetachShader");
+    glc->fnEnableVertexAttribArray = (gl30PEnableVertexAttribArray)gl30GLGetProcAddress("glEnableVertexAttribArray");
+    glc->fnDisableVertexAttribArray = (gl30PDisableVertexAttribArray)gl30GLGetProcAddress("glDisableVertexAttribArray");
     return glc;
 }
 

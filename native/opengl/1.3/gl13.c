@@ -3,31 +3,31 @@
 #include <stdlib.h>
 
 #ifdef _WIN32
-	#include <windows.h>
+#include <windows.h>
 #endif
 
 #include "gl13.h"
 
 #ifdef _WIN32
-	HMODULE gl13OpenGL32;
+HMODULE gl13OpenGL32;
 
-	void* gl13LibGetProcAddress(char* name) {
-		if(gl13OpenGL32 == NULL) {
-			gl13OpenGL32 = LoadLibrary(TEXT("opengl32.dll"));
-		}
-		return GetProcAddress(gl13OpenGL32, TEXT(name));
+void* gl13LibGetProcAddress(char* name) {
+	if(gl13OpenGL32 == NULL) {
+		gl13OpenGL32 = LoadLibrary(TEXT("opengl32.dll"));
 	}
+	return GetProcAddress(gl13OpenGL32, TEXT(name));
+}
 
-	void* gl13GLGetProcAddress(char* name) {
-		void* ptr = wglGetProcAddress(name);
+void* gl13GLGetProcAddress(char* name) {
+	void* ptr = wglGetProcAddress(name);
 
-		intptr_t iptr = (intptr_t)ptr;
+	intptr_t iptr = (intptr_t)ptr;
 
-		if(iptr == 0 || iptr == 1 || iptr == 2 || iptr == 3 || iptr == -1) {
-			return NULL;
-		}
-		return ptr;
+	if(iptr == 0 || iptr == 1 || iptr == 2 || iptr == 3 || iptr == -1) {
+		return NULL;
 	}
+	return ptr;
+}
 #endif
 
 
@@ -227,60 +227,12 @@ void gl13ColorMaterial(gl13Context* glc, GLenum face, GLenum mode) {
     return glc->fnColorMaterial(face, mode);
 }
 
-void gl13ColorTable(gl13Context* glc, GLenum target, GLenum internalformat, GLsizei width, GLenum format, GLenum type, GLvoid* data) {
-    return glc->fnColorTable(target, internalformat, width, format, type, data);
-}
-
-void gl13ColorTableParameterfv(gl13Context* glc, GLenum target, GLenum pname, GLfloat* params) {
-    return glc->fnColorTableParameterfv(target, pname, params);
-}
-
-void gl13ColorTableParameteriv(gl13Context* glc, GLenum target, GLenum pname, GLint* params) {
-    return glc->fnColorTableParameteriv(target, pname, params);
-}
-
-void gl13ColorSubTable(gl13Context* glc, GLenum target, GLsizei start, GLsizei count, GLenum format, GLenum type, GLvoid* data) {
-    return glc->fnColorSubTable(target, start, count, format, type, data);
-}
-
 void gl13CopyPixels(gl13Context* glc, GLint x, GLint y, GLsizei width, GLsizei height, GLenum type) {
     return glc->fnCopyPixels(x, y, width, height, type);
 }
 
 void gl13CullFace(gl13Context* glc, GLenum mode) {
     return glc->fnCullFace(mode);
-}
-
-void gl13ConvolutionFilter1D(gl13Context* glc, GLenum target, GLenum internalformat, GLsizei width, GLenum format, GLenum type, GLvoid* data) {
-    return glc->fnConvolutionFilter1D(target, internalformat, width, format, type, data);
-}
-
-void gl13ConvolutionFilter2D(gl13Context* glc, GLenum target, GLenum internalformat, GLsizei width, GLsizei height, GLenum format, GLenum type, GLvoid* data) {
-    return glc->fnConvolutionFilter2D(target, internalformat, width, height, format, type, data);
-}
-
-void gl13ConvolutionParameterf(gl13Context* glc, GLenum target, GLenum pname, GLfloat params) {
-    return glc->fnConvolutionParameterf(target, pname, params);
-}
-
-void gl13ConvolutionParameteri(gl13Context* glc, GLenum target, GLenum pname, GLint params) {
-    return glc->fnConvolutionParameteri(target, pname, params);
-}
-
-void gl13CopyColorTable(gl13Context* glc, GLenum target, GLenum internalformat, GLint x, GLint y, GLsizei width) {
-    return glc->fnCopyColorTable(target, internalformat, x, y, width);
-}
-
-void gl13CopyColorSubTable(gl13Context* glc, GLenum target, GLsizei start, GLint x, GLint y, GLsizei width) {
-    return glc->fnCopyColorSubTable(target, start, x, y, width);
-}
-
-void gl13CopyConvolutionFilter1D(gl13Context* glc, GLenum target, GLenum internalformat, GLint x, GLint y, GLsizei width) {
-    return glc->fnCopyConvolutionFilter1D(target, internalformat, x, y, width);
-}
-
-void gl13CopyConvolutionFilter2D(gl13Context* glc, GLenum target, GLenum internalformat, GLint x, GLint y, GLsizei width, GLsizei height) {
-    return glc->fnCopyConvolutionFilter2D(target, internalformat, x, y, width, height);
 }
 
 void gl13DeleteLists(gl13Context* glc, GLuint list, GLsizei range) {
@@ -1263,6 +1215,174 @@ void gl13Viewport(gl13Context* glc, GLint x, GLint y, GLsizei width, GLsizei hei
     return glc->fnViewport(x, y, width, height);
 }
 
+void gl13GetConvolutionParameterfv(gl13Context* glc, GLenum target, GLenum pname, GLfloat* params) {
+    return glc->fnGetConvolutionParameterfv(target, pname, params);
+}
+
+void gl13GetConvolutionParameteriv(gl13Context* glc, GLenum target, GLenum pname, GLint* params) {
+    return glc->fnGetConvolutionParameteriv(target, pname, params);
+}
+
+GLboolean gl13AreTexturesResident(gl13Context* glc, GLsizei n, GLuint* textures, GLboolean* residences) {
+    return glc->fnAreTexturesResident(n, textures, residences);
+}
+
+void gl13ArrayElement(gl13Context* glc, GLint i) {
+    return glc->fnArrayElement(i);
+}
+
+void gl13DrawArrays(gl13Context* glc, GLenum mode, GLint first, GLsizei count) {
+    return glc->fnDrawArrays(mode, first, count);
+}
+
+void gl13DrawElements(gl13Context* glc, GLenum mode, GLsizei count, GLenum type, GLvoid* indices) {
+    return glc->fnDrawElements(mode, count, type, indices);
+}
+
+void gl13GetPointerv(gl13Context* glc, GLenum pname, GLvoid* params) {
+    return glc->fnGetPointerv(pname, params);
+}
+
+void gl13PolygonOffset(gl13Context* glc, GLfloat factor, GLfloat units) {
+    return glc->fnPolygonOffset(factor, units);
+}
+
+void gl13CopyTexImage1D(gl13Context* glc, GLenum target, GLint level, GLenum internalFormat, GLint x, GLint y, GLsizei width, GLint border) {
+    return glc->fnCopyTexImage1D(target, level, internalFormat, x, y, width, border);
+}
+
+void gl13CopyTexImage2D(gl13Context* glc, GLenum target, GLint level, GLenum internalFormat, GLint x, GLint y, GLsizei width, GLsizei height, GLint border) {
+    return glc->fnCopyTexImage2D(target, level, internalFormat, x, y, width, height, border);
+}
+
+void gl13CopyTexSubImage1D(gl13Context* glc, GLenum target, GLint level, GLint xoffset, GLint x, GLint y, GLsizei width) {
+    return glc->fnCopyTexSubImage1D(target, level, xoffset, x, y, width);
+}
+
+void gl13CopyTexSubImage2D(gl13Context* glc, GLenum target, GLint level, GLint xoffset, GLint yoffset, GLint x, GLint y, GLsizei width, GLsizei height) {
+    return glc->fnCopyTexSubImage2D(target, level, xoffset, yoffset, x, y, width, height);
+}
+
+void gl13BindTexture(gl13Context* glc, GLenum target, GLuint texture) {
+    return glc->fnBindTexture(target, texture);
+}
+
+void gl13DeleteTextures(gl13Context* glc, GLsizei n, GLuint* textures) {
+    return glc->fnDeleteTextures(n, textures);
+}
+
+void gl13GenTextures(gl13Context* glc, GLsizei n, GLuint* textures) {
+    return glc->fnGenTextures(n, textures);
+}
+
+GLboolean gl13IsTexture(gl13Context* glc, GLuint texture) {
+    return glc->fnIsTexture(texture);
+}
+
+void gl13ColorPointer(gl13Context* glc, GLint size, GLenum type, GLsizei stride, GLvoid* pointer) {
+    return glc->fnColorPointer(size, type, stride, pointer);
+}
+
+void gl13EnableClientState(gl13Context* glc, GLenum cap) {
+    return glc->fnEnableClientState(cap);
+}
+
+void gl13DisableClientState(gl13Context* glc, GLenum cap) {
+    return glc->fnDisableClientState(cap);
+}
+
+void gl13Indexub(gl13Context* glc, GLubyte c) {
+    return glc->fnIndexub(c);
+}
+
+void gl13Indexubv(gl13Context* glc, GLubyte* c) {
+    return glc->fnIndexubv(c);
+}
+
+void gl13InterleavedArrays(gl13Context* glc, GLenum format, GLsizei stride, GLvoid* pointer) {
+    return glc->fnInterleavedArrays(format, stride, pointer);
+}
+
+void gl13NormalPointer(gl13Context* glc, GLenum type, GLsizei stride, GLvoid* pointer) {
+    return glc->fnNormalPointer(type, stride, pointer);
+}
+
+void gl13PushClientAttrib(gl13Context* glc, GLbitfield mask) {
+    return glc->fnPushClientAttrib(mask);
+}
+
+void gl13PrioritizeTextures(gl13Context* glc, GLsizei n, GLuint* textures, GLclampf* priorities) {
+    return glc->fnPrioritizeTextures(n, textures, priorities);
+}
+
+void gl13PopClientAttrib(gl13Context* glc) {
+    return glc->fnPopClientAttrib();
+}
+
+void gl13TexCoordPointer(gl13Context* glc, GLint size, GLenum type, GLsizei stride, GLvoid* pointer) {
+    return glc->fnTexCoordPointer(size, type, stride, pointer);
+}
+
+void gl13TexSubImage1D(gl13Context* glc, GLenum target, GLint level, GLint xoffset, GLsizei width, GLenum format, GLenum type, GLvoid* pixels) {
+    return glc->fnTexSubImage1D(target, level, xoffset, width, format, type, pixels);
+}
+
+void gl13TexSubImage2D(gl13Context* glc, GLenum target, GLint level, GLint xoffset, GLint yoffset, GLsizei width, GLsizei height, GLenum format, GLenum type, GLvoid* pixels) {
+    return glc->fnTexSubImage2D(target, level, xoffset, yoffset, width, height, format, type, pixels);
+}
+
+void gl13VertexPointer(gl13Context* glc, GLint size, GLenum type, GLsizei stride, GLvoid* pointer) {
+    return glc->fnVertexPointer(size, type, stride, pointer);
+}
+
+void gl13ColorTable(gl13Context* glc, GLenum target, GLenum internalformat, GLsizei width, GLenum format, GLenum type, GLvoid* data) {
+    return glc->fnColorTable(target, internalformat, width, format, type, data);
+}
+
+void gl13ColorTableParameterfv(gl13Context* glc, GLenum target, GLenum pname, GLfloat* params) {
+    return glc->fnColorTableParameterfv(target, pname, params);
+}
+
+void gl13ColorTableParameteriv(gl13Context* glc, GLenum target, GLenum pname, GLint* params) {
+    return glc->fnColorTableParameteriv(target, pname, params);
+}
+
+void gl13ColorSubTable(gl13Context* glc, GLenum target, GLsizei start, GLsizei count, GLenum format, GLenum type, GLvoid* data) {
+    return glc->fnColorSubTable(target, start, count, format, type, data);
+}
+
+void gl13ConvolutionFilter1D(gl13Context* glc, GLenum target, GLenum internalformat, GLsizei width, GLenum format, GLenum type, GLvoid* data) {
+    return glc->fnConvolutionFilter1D(target, internalformat, width, format, type, data);
+}
+
+void gl13ConvolutionFilter2D(gl13Context* glc, GLenum target, GLenum internalformat, GLsizei width, GLsizei height, GLenum format, GLenum type, GLvoid* data) {
+    return glc->fnConvolutionFilter2D(target, internalformat, width, height, format, type, data);
+}
+
+void gl13ConvolutionParameterf(gl13Context* glc, GLenum target, GLenum pname, GLfloat params) {
+    return glc->fnConvolutionParameterf(target, pname, params);
+}
+
+void gl13ConvolutionParameteri(gl13Context* glc, GLenum target, GLenum pname, GLint params) {
+    return glc->fnConvolutionParameteri(target, pname, params);
+}
+
+void gl13CopyColorTable(gl13Context* glc, GLenum target, GLenum internalformat, GLint x, GLint y, GLsizei width) {
+    return glc->fnCopyColorTable(target, internalformat, x, y, width);
+}
+
+void gl13CopyColorSubTable(gl13Context* glc, GLenum target, GLsizei start, GLint x, GLint y, GLsizei width) {
+    return glc->fnCopyColorSubTable(target, start, x, y, width);
+}
+
+void gl13CopyConvolutionFilter1D(gl13Context* glc, GLenum target, GLenum internalformat, GLint x, GLint y, GLsizei width) {
+    return glc->fnCopyConvolutionFilter1D(target, internalformat, x, y, width);
+}
+
+void gl13CopyConvolutionFilter2D(gl13Context* glc, GLenum target, GLenum internalformat, GLint x, GLint y, GLsizei width, GLsizei height) {
+    return glc->fnCopyConvolutionFilter2D(target, internalformat, x, y, width, height);
+}
+
 void gl13GetColorTable(gl13Context* glc, GLenum target, GLenum format, GLenum type, GLvoid* table) {
     return glc->fnGetColorTable(target, format, type, table);
 }
@@ -1277,14 +1397,6 @@ void gl13GetColorTableParameteriv(gl13Context* glc, GLenum target, GLenum pname,
 
 void gl13GetConvolutionFilter(gl13Context* glc, GLenum target, GLenum format, GLenum type, GLvoid* image) {
     return glc->fnGetConvolutionFilter(target, format, type, image);
-}
-
-void gl13GetConvolutionParameterfv(gl13Context* glc, GLenum target, GLenum pname, GLfloat* params) {
-    return glc->fnGetConvolutionParameterfv(target, pname, params);
-}
-
-void gl13GetConvolutionParameteriv(gl13Context* glc, GLenum target, GLenum pname, GLint* params) {
-    return glc->fnGetConvolutionParameteriv(target, pname, params);
 }
 
 void gl13GetHistogram(gl13Context* glc, GLenum target, GLboolean reset, GLenum format, GLenum type, GLvoid* values) {
@@ -1451,118 +1563,6 @@ void gl13SeparableFilter2D(gl13Context* glc, GLenum target, GLenum internalforma
     return glc->fnSeparableFilter2D(target, internalformat, width, height, format, type, row, column);
 }
 
-GLboolean gl13AreTexturesResident(gl13Context* glc, GLsizei n, GLuint* textures, GLboolean* residences) {
-    return glc->fnAreTexturesResident(n, textures, residences);
-}
-
-void gl13ArrayElement(gl13Context* glc, GLint i) {
-    return glc->fnArrayElement(i);
-}
-
-void gl13DrawArrays(gl13Context* glc, GLenum mode, GLint first, GLsizei count) {
-    return glc->fnDrawArrays(mode, first, count);
-}
-
-void gl13DrawElements(gl13Context* glc, GLenum mode, GLsizei count, GLenum type, GLvoid* indices) {
-    return glc->fnDrawElements(mode, count, type, indices);
-}
-
-void gl13GetPointerv(gl13Context* glc, GLenum pname, GLvoid* params) {
-    return glc->fnGetPointerv(pname, params);
-}
-
-void gl13PolygonOffset(gl13Context* glc, GLfloat factor, GLfloat units) {
-    return glc->fnPolygonOffset(factor, units);
-}
-
-void gl13CopyTexImage1D(gl13Context* glc, GLenum target, GLint level, GLenum internalFormat, GLint x, GLint y, GLsizei width, GLint border) {
-    return glc->fnCopyTexImage1D(target, level, internalFormat, x, y, width, border);
-}
-
-void gl13CopyTexImage2D(gl13Context* glc, GLenum target, GLint level, GLenum internalFormat, GLint x, GLint y, GLsizei width, GLsizei height, GLint border) {
-    return glc->fnCopyTexImage2D(target, level, internalFormat, x, y, width, height, border);
-}
-
-void gl13CopyTexSubImage1D(gl13Context* glc, GLenum target, GLint level, GLint xoffset, GLint x, GLint y, GLsizei width) {
-    return glc->fnCopyTexSubImage1D(target, level, xoffset, x, y, width);
-}
-
-void gl13CopyTexSubImage2D(gl13Context* glc, GLenum target, GLint level, GLint xoffset, GLint yoffset, GLint x, GLint y, GLsizei width, GLsizei height) {
-    return glc->fnCopyTexSubImage2D(target, level, xoffset, yoffset, x, y, width, height);
-}
-
-void gl13BindTexture(gl13Context* glc, GLenum target, GLuint texture) {
-    return glc->fnBindTexture(target, texture);
-}
-
-void gl13DeleteTextures(gl13Context* glc, GLsizei n, GLuint* textures) {
-    return glc->fnDeleteTextures(n, textures);
-}
-
-void gl13GenTextures(gl13Context* glc, GLsizei n, GLuint* textures) {
-    return glc->fnGenTextures(n, textures);
-}
-
-GLboolean gl13IsTexture(gl13Context* glc, GLuint texture) {
-    return glc->fnIsTexture(texture);
-}
-
-void gl13ColorPointer(gl13Context* glc, GLint size, GLenum type, GLsizei stride, GLvoid* pointer) {
-    return glc->fnColorPointer(size, type, stride, pointer);
-}
-
-void gl13EnableClientState(gl13Context* glc, GLenum cap) {
-    return glc->fnEnableClientState(cap);
-}
-
-void gl13DisableClientState(gl13Context* glc, GLenum cap) {
-    return glc->fnDisableClientState(cap);
-}
-
-void gl13Indexub(gl13Context* glc, GLubyte c) {
-    return glc->fnIndexub(c);
-}
-
-void gl13Indexubv(gl13Context* glc, GLubyte* c) {
-    return glc->fnIndexubv(c);
-}
-
-void gl13InterleavedArrays(gl13Context* glc, GLenum format, GLsizei stride, GLvoid* pointer) {
-    return glc->fnInterleavedArrays(format, stride, pointer);
-}
-
-void gl13NormalPointer(gl13Context* glc, GLenum type, GLsizei stride, GLvoid* pointer) {
-    return glc->fnNormalPointer(type, stride, pointer);
-}
-
-void gl13PushClientAttrib(gl13Context* glc, GLbitfield mask) {
-    return glc->fnPushClientAttrib(mask);
-}
-
-void gl13PrioritizeTextures(gl13Context* glc, GLsizei n, GLuint* textures, GLclampf* priorities) {
-    return glc->fnPrioritizeTextures(n, textures, priorities);
-}
-
-void gl13PopClientAttrib(gl13Context* glc) {
-    return glc->fnPopClientAttrib();
-}
-
-void gl13TexCoordPointer(gl13Context* glc, GLint size, GLenum type, GLsizei stride, GLvoid* pointer) {
-    return glc->fnTexCoordPointer(size, type, stride, pointer);
-}
-
-void gl13TexSubImage1D(gl13Context* glc, GLenum target, GLint level, GLint xoffset, GLsizei width, GLenum format, GLenum type, GLvoid* pixels) {
-    return glc->fnTexSubImage1D(target, level, xoffset, width, format, type, pixels);
-}
-
-void gl13TexSubImage2D(gl13Context* glc, GLenum target, GLint level, GLint xoffset, GLint yoffset, GLsizei width, GLsizei height, GLenum format, GLenum type, GLvoid* pixels) {
-    return glc->fnTexSubImage2D(target, level, xoffset, yoffset, width, height, format, type, pixels);
-}
-
-void gl13VertexPointer(gl13Context* glc, GLint size, GLenum type, GLsizei stride, GLvoid* pointer) {
-    return glc->fnVertexPointer(size, type, stride, pointer);
-}
-
 void gl13BlendColor(gl13Context* glc, GLclampf red, GLclampf green, GLclampf blue, GLclampf alpha) {
     return glc->fnBlendColor(red, green, blue, alpha);
 }
@@ -1643,6 +1643,646 @@ void gl13SampleCoverage(gl13Context* glc, GLclampf value, GLboolean invert) {
     return glc->fnSampleCoverage(value, invert);
 }
 
+void gl13BlendFuncSeparate(gl13Context* glc, GLenum srcRGB, GLenum dstRGB, GLenum srcAlpha, GLenum dstAlpha) {
+    return glc->fnBlendFuncSeparate(srcRGB, dstRGB, srcAlpha, dstAlpha);
+}
+
+void gl13FogCoordPointer(gl13Context* glc, GLenum type, GLsizei stride, GLvoid* pointer) {
+    return glc->fnFogCoordPointer(type, stride, pointer);
+}
+
+void gl13FogCoordd(gl13Context* glc, GLdouble coord) {
+    return glc->fnFogCoordd(coord);
+}
+
+void gl13FogCoordf(gl13Context* glc, GLfloat coord) {
+    return glc->fnFogCoordf(coord);
+}
+
+void gl13FogCoorddv(gl13Context* glc, GLdouble* coord) {
+    return glc->fnFogCoorddv(coord);
+}
+
+void gl13FogCoordfv(gl13Context* glc, GLfloat* coord) {
+    return glc->fnFogCoordfv(coord);
+}
+
+void gl13MultiDrawArrays(gl13Context* glc, GLenum mode, GLint* first, GLsizei* count, GLsizei primcount) {
+    return glc->fnMultiDrawArrays(mode, first, count, primcount);
+}
+
+void gl13MultiDrawElements(gl13Context* glc, GLenum mode, GLsizei* count, GLenum type, GLvoid* indices, GLsizei primcount) {
+    return glc->fnMultiDrawElements(mode, count, type, indices, primcount);
+}
+
+void gl13PointParameterf(gl13Context* glc, GLenum pname, GLfloat param) {
+    return glc->fnPointParameterf(pname, param);
+}
+
+void gl13PointParameteri(gl13Context* glc, GLenum pname, GLint param) {
+    return glc->fnPointParameteri(pname, param);
+}
+
+void gl13SecondaryColor3b(gl13Context* glc, GLbyte red, GLbyte green, GLbyte blue) {
+    return glc->fnSecondaryColor3b(red, green, blue);
+}
+
+void gl13SecondaryColor3s(gl13Context* glc, GLshort red, GLshort green, GLshort blue) {
+    return glc->fnSecondaryColor3s(red, green, blue);
+}
+
+void gl13SecondaryColor3i(gl13Context* glc, GLint red, GLint green, GLint blue) {
+    return glc->fnSecondaryColor3i(red, green, blue);
+}
+
+void gl13SecondaryColor3f(gl13Context* glc, GLfloat red, GLfloat green, GLfloat blue) {
+    return glc->fnSecondaryColor3f(red, green, blue);
+}
+
+void gl13SecondaryColor3d(gl13Context* glc, GLdouble red, GLdouble green, GLdouble blue) {
+    return glc->fnSecondaryColor3d(red, green, blue);
+}
+
+void gl13SecondaryColor3ub(gl13Context* glc, GLubyte red, GLubyte green, GLubyte blue) {
+    return glc->fnSecondaryColor3ub(red, green, blue);
+}
+
+void gl13SecondaryColor3us(gl13Context* glc, GLushort red, GLushort green, GLushort blue) {
+    return glc->fnSecondaryColor3us(red, green, blue);
+}
+
+void gl13SecondaryColor3ui(gl13Context* glc, GLuint red, GLuint green, GLuint blue) {
+    return glc->fnSecondaryColor3ui(red, green, blue);
+}
+
+void gl13SecondaryColor3bv(gl13Context* glc, GLbyte* v) {
+    return glc->fnSecondaryColor3bv(v);
+}
+
+void gl13SecondaryColor3sv(gl13Context* glc, GLshort* v) {
+    return glc->fnSecondaryColor3sv(v);
+}
+
+void gl13SecondaryColor3iv(gl13Context* glc, GLint* v) {
+    return glc->fnSecondaryColor3iv(v);
+}
+
+void gl13SecondaryColor3fv(gl13Context* glc, GLfloat* v) {
+    return glc->fnSecondaryColor3fv(v);
+}
+
+void gl13SecondaryColor3dv(gl13Context* glc, GLdouble* v) {
+    return glc->fnSecondaryColor3dv(v);
+}
+
+void gl13SecondaryColor3ubv(gl13Context* glc, GLubyte* v) {
+    return glc->fnSecondaryColor3ubv(v);
+}
+
+void gl13SecondaryColor3usv(gl13Context* glc, GLushort* v) {
+    return glc->fnSecondaryColor3usv(v);
+}
+
+void gl13SecondaryColor3uiv(gl13Context* glc, GLuint* v) {
+    return glc->fnSecondaryColor3uiv(v);
+}
+
+void gl13SecondaryColorPointer(gl13Context* glc, GLint size, GLenum type, GLsizei stride, GLvoid* pointer) {
+    return glc->fnSecondaryColorPointer(size, type, stride, pointer);
+}
+
+void gl13WindowPos2s(gl13Context* glc, GLshort x, GLshort y) {
+    return glc->fnWindowPos2s(x, y);
+}
+
+void gl13WindowPos2i(gl13Context* glc, GLint x, GLint y) {
+    return glc->fnWindowPos2i(x, y);
+}
+
+void gl13WindowPos2f(gl13Context* glc, GLfloat x, GLfloat y) {
+    return glc->fnWindowPos2f(x, y);
+}
+
+void gl13WindowPos2d(gl13Context* glc, GLdouble x, GLdouble y) {
+    return glc->fnWindowPos2d(x, y);
+}
+
+void gl13WindowPos3s(gl13Context* glc, GLshort x, GLshort y, GLshort z) {
+    return glc->fnWindowPos3s(x, y, z);
+}
+
+void gl13WindowPos3i(gl13Context* glc, GLint x, GLint y, GLint z) {
+    return glc->fnWindowPos3i(x, y, z);
+}
+
+void gl13WindowPos3f(gl13Context* glc, GLfloat x, GLfloat y, GLfloat z) {
+    return glc->fnWindowPos3f(x, y, z);
+}
+
+void gl13WindowPos3d(gl13Context* glc, GLdouble x, GLdouble y, GLdouble z) {
+    return glc->fnWindowPos3d(x, y, z);
+}
+
+void gl13WindowPos2sv(gl13Context* glc, GLshort* v) {
+    return glc->fnWindowPos2sv(v);
+}
+
+void gl13WindowPos2iv(gl13Context* glc, GLint* v) {
+    return glc->fnWindowPos2iv(v);
+}
+
+void gl13WindowPos2fv(gl13Context* glc, GLfloat* v) {
+    return glc->fnWindowPos2fv(v);
+}
+
+void gl13WindowPos2dv(gl13Context* glc, GLdouble* v) {
+    return glc->fnWindowPos2dv(v);
+}
+
+void gl13WindowPos3sv(gl13Context* glc, GLshort* v) {
+    return glc->fnWindowPos3sv(v);
+}
+
+void gl13WindowPos3iv(gl13Context* glc, GLint* v) {
+    return glc->fnWindowPos3iv(v);
+}
+
+void gl13WindowPos3fv(gl13Context* glc, GLfloat* v) {
+    return glc->fnWindowPos3fv(v);
+}
+
+void gl13WindowPos3dv(gl13Context* glc, GLdouble* v) {
+    return glc->fnWindowPos3dv(v);
+}
+
+void gl13BeginQuery(gl13Context* glc, GLenum target, GLuint id) {
+    return glc->fnBeginQuery(target, id);
+}
+
+void gl13BindBuffer(gl13Context* glc, GLenum target, GLuint buffer) {
+    return glc->fnBindBuffer(target, buffer);
+}
+
+void gl13BufferData(gl13Context* glc, GLenum target, GLsizeiptr size, GLvoid* data, GLenum usage) {
+    return glc->fnBufferData(target, size, data, usage);
+}
+
+void gl13BufferSubData(gl13Context* glc, GLenum target, GLenum offset, GLsizeiptr size, GLvoid* data) {
+    return glc->fnBufferSubData(target, offset, size, data);
+}
+
+void gl13DeleteBuffers(gl13Context* glc, GLsizei n, GLuint* buffers) {
+    return glc->fnDeleteBuffers(n, buffers);
+}
+
+void gl13DeleteQueries(gl13Context* glc, GLsizei n, GLuint* ids) {
+    return glc->fnDeleteQueries(n, ids);
+}
+
+void gl13GenBuffers(gl13Context* glc, GLsizei n, GLuint* buffers) {
+    return glc->fnGenBuffers(n, buffers);
+}
+
+void gl13GenQueries(gl13Context* glc, GLsizei n, GLuint* ids) {
+    return glc->fnGenQueries(n, ids);
+}
+
+void gl13GetBufferParameteriv(gl13Context* glc, GLenum target, GLenum value, GLint* data) {
+    return glc->fnGetBufferParameteriv(target, value, data);
+}
+
+void gl13GetBufferPointerv(gl13Context* glc, GLenum target, GLenum pname, GLvoid* params) {
+    return glc->fnGetBufferPointerv(target, pname, params);
+}
+
+void gl13GetBufferSubData(gl13Context* glc, GLenum target, GLintptr offset, GLsizeiptr size, GLvoid* data) {
+    return glc->fnGetBufferSubData(target, offset, size, data);
+}
+
+void gl13GetQueryObjectiv(gl13Context* glc, GLuint id, GLenum pname, GLint* params) {
+    return glc->fnGetQueryObjectiv(id, pname, params);
+}
+
+void gl13GetQueryObjectuiv(gl13Context* glc, GLuint id, GLenum pname, GLuint* params) {
+    return glc->fnGetQueryObjectuiv(id, pname, params);
+}
+
+void gl13GetQueryiv(gl13Context* glc, GLenum target, GLenum pname, GLint* params) {
+    return glc->fnGetQueryiv(target, pname, params);
+}
+
+GLboolean gl13IsBuffer(gl13Context* glc, GLuint buffer) {
+    return glc->fnIsBuffer(buffer);
+}
+
+GLboolean gl13IsQuery(gl13Context* glc, GLuint id) {
+    return glc->fnIsQuery(id);
+}
+
+GLvoid* gl13MapBuffer(gl13Context* glc, GLenum target, GLenum access) {
+    return glc->fnMapBuffer(target, access);
+}
+
+GLboolean gl13UnmapBuffer(gl13Context* glc, GLenum target) {
+    return glc->fnUnmapBuffer(target);
+}
+
+void gl13AttachShader(gl13Context* glc, GLuint program, GLuint shader) {
+    return glc->fnAttachShader(program, shader);
+}
+
+void gl13BindAttribLocation(gl13Context* glc, GLuint program, GLuint index, GLchar* name) {
+    return glc->fnBindAttribLocation(program, index, name);
+}
+
+void gl13BlendEquationSeperate(gl13Context* glc, GLenum modeRGB, GLenum modeAlpha) {
+    return glc->fnBlendEquationSeperate(modeRGB, modeAlpha);
+}
+
+void gl13CompileShader(gl13Context* glc, GLuint shader) {
+    return glc->fnCompileShader(shader);
+}
+
+GLuint gl13CreateProgram(gl13Context* glc) {
+    return glc->fnCreateProgram();
+}
+
+GLuint gl13CreateShader(gl13Context* glc, GLenum shaderType) {
+    return glc->fnCreateShader(shaderType);
+}
+
+void gl13DeleteProgram(gl13Context* glc, GLuint program) {
+    return glc->fnDeleteProgram(program);
+}
+
+void gl13DeleteShader(gl13Context* glc, GLuint shader) {
+    return glc->fnDeleteShader(shader);
+}
+
+void gl13DetachShader(gl13Context* glc, GLuint program, GLuint shader) {
+    return glc->fnDetachShader(program, shader);
+}
+
+void gl13EnableVertexAttribArray(gl13Context* glc, GLuint index) {
+    return glc->fnEnableVertexAttribArray(index);
+}
+
+void gl13DisableVertexAttribArray(gl13Context* glc, GLuint index) {
+    return glc->fnDisableVertexAttribArray(index);
+}
+
+void gl13DrawBuffers(gl13Context* glc, GLsizei n, GLenum* bufs) {
+    return glc->fnDrawBuffers(n, bufs);
+}
+
+void gl13GetActiveAttrib(gl13Context* glc, GLuint program, GLuint index, GLsizei bufSize, GLsizei* length, GLint* size, GLenum* type, GLchar* name) {
+    return glc->fnGetActiveAttrib(program, index, bufSize, length, size, type, name);
+}
+
+void gl13GetActiveUniform(gl13Context* glc, GLuint program, GLuint index, GLsizei bufSize, GLsizei* length, GLint* size, GLenum* type, GLchar* name) {
+    return glc->fnGetActiveUniform(program, index, bufSize, length, size, type, name);
+}
+
+void gl13GetAttachedShaders(gl13Context* glc, GLuint program, GLsizei maxCount, GLsizei* count, GLuint* shaders) {
+    return glc->fnGetAttachedShaders(program, maxCount, count, shaders);
+}
+
+GLint gl13GetAttribLocation(gl13Context* glc, GLuint program, GLchar* name) {
+    return glc->fnGetAttribLocation(program, name);
+}
+
+void gl13GetProgramiv(gl13Context* glc, GLuint program, GLenum pname, GLint* params) {
+    return glc->fnGetProgramiv(program, pname, params);
+}
+
+void gl13GetProgramInfoLog(gl13Context* glc, GLuint program, GLsizei maxLength, GLsizei* length, GLchar* infoLog) {
+    return glc->fnGetProgramInfoLog(program, maxLength, length, infoLog);
+}
+
+void gl13GetShaderiv(gl13Context* glc, GLuint program, GLenum pname, GLint* params) {
+    return glc->fnGetShaderiv(program, pname, params);
+}
+
+void gl13GetShaderInfoLog(gl13Context* glc, GLuint shader, GLsizei maxLength, GLsizei* length, GLchar* infoLog) {
+    return glc->fnGetShaderInfoLog(shader, maxLength, length, infoLog);
+}
+
+void gl13GetShaderSource(gl13Context* glc, GLuint shader, GLsizei bufSize, GLsizei* length, GLchar* source) {
+    return glc->fnGetShaderSource(shader, bufSize, length, source);
+}
+
+void gl13GetUniformfv(gl13Context* glc, GLuint program, GLint location, GLfloat* params) {
+    return glc->fnGetUniformfv(program, location, params);
+}
+
+void gl13GetUniformiv(gl13Context* glc, GLuint program, GLint location, GLint* params) {
+    return glc->fnGetUniformiv(program, location, params);
+}
+
+GLint gl13GetUniformLocation(gl13Context* glc, GLuint program, GLchar* name) {
+    return glc->fnGetUniformLocation(program, name);
+}
+
+void gl13GetVertexAttribdv(gl13Context* glc, GLuint index, GLenum pname, GLdouble* params) {
+    return glc->fnGetVertexAttribdv(index, pname, params);
+}
+
+void gl13GetVertexAttribfv(gl13Context* glc, GLuint index, GLenum pname, GLfloat* params) {
+    return glc->fnGetVertexAttribfv(index, pname, params);
+}
+
+void gl13GetVertexAttribiv(gl13Context* glc, GLuint index, GLenum pname, GLint* params) {
+    return glc->fnGetVertexAttribiv(index, pname, params);
+}
+
+void gl13GetVertexAttribPointerv(gl13Context* glc, GLuint index, GLenum pname, GLvoid* pointer) {
+    return glc->fnGetVertexAttribPointerv(index, pname, pointer);
+}
+
+GLboolean gl13IsProgram(gl13Context* glc, GLuint program) {
+    return glc->fnIsProgram(program);
+}
+
+GLboolean gl13IsShader(gl13Context* glc, GLuint shader) {
+    return glc->fnIsShader(shader);
+}
+
+void gl13LinkProgram(gl13Context* glc, GLuint program) {
+    return glc->fnLinkProgram(program);
+}
+
+void gl13ShaderSource(gl13Context* glc, GLuint shader, GLsizei count, GLchar** string, GLint* length) {
+    return glc->fnShaderSource(shader, count, string, length);
+}
+
+void gl13StencilFuncSeparate(gl13Context* glc, GLenum face, GLenum func, GLint ref, GLuint mask) {
+    return glc->fnStencilFuncSeparate(face, func, ref, mask);
+}
+
+void gl13StencilMaskSeparate(gl13Context* glc, GLenum face, GLuint mask) {
+    return glc->fnStencilMaskSeparate(face, mask);
+}
+
+void gl13StencilOpSeparate(gl13Context* glc, GLenum face, GLenum sfail, GLenum dpfail, GLenum dppass) {
+    return glc->fnStencilOpSeparate(face, sfail, dpfail, dppass);
+}
+
+void gl13Uniform1f(gl13Context* glc, GLint location, GLfloat v0) {
+    return glc->fnUniform1f(location, v0);
+}
+
+void gl13Uniform2f(gl13Context* glc, GLint location, GLfloat v0, GLfloat v1) {
+    return glc->fnUniform2f(location, v0, v1);
+}
+
+void gl13Uniform3f(gl13Context* glc, GLint location, GLfloat v0, GLfloat v1, GLfloat v2) {
+    return glc->fnUniform3f(location, v0, v1, v2);
+}
+
+void gl13Uniform4f(gl13Context* glc, GLint location, GLfloat v0, GLfloat v1, GLfloat v2, GLfloat v3) {
+    return glc->fnUniform4f(location, v0, v1, v2, v3);
+}
+
+void gl13Uniform1i(gl13Context* glc, GLint location, GLint v0) {
+    return glc->fnUniform1i(location, v0);
+}
+
+void gl13Uniform2i(gl13Context* glc, GLint location, GLint v0, GLint v1) {
+    return glc->fnUniform2i(location, v0, v1);
+}
+
+void gl13Uniform3i(gl13Context* glc, GLint location, GLint v0, GLint v1, GLint v2) {
+    return glc->fnUniform3i(location, v0, v1, v2);
+}
+
+void gl13Uniform4i(gl13Context* glc, GLint location, GLint v0, GLint v1, GLint v2, GLint v3) {
+    return glc->fnUniform4i(location, v0, v1, v2, v3);
+}
+
+void gl13Uniform1fv(gl13Context* glc, GLint location, GLsizei count, GLfloat* value) {
+    return glc->fnUniform1fv(location, count, value);
+}
+
+void gl13Uniform2fv(gl13Context* glc, GLint location, GLsizei count, GLfloat* value) {
+    return glc->fnUniform2fv(location, count, value);
+}
+
+void gl13Uniform3fv(gl13Context* glc, GLint location, GLsizei count, GLfloat* value) {
+    return glc->fnUniform3fv(location, count, value);
+}
+
+void gl13Uniform4fv(gl13Context* glc, GLint location, GLsizei count, GLfloat* value) {
+    return glc->fnUniform4fv(location, count, value);
+}
+
+void gl13Uniform1iv(gl13Context* glc, GLint location, GLsizei count, GLint* value) {
+    return glc->fnUniform1iv(location, count, value);
+}
+
+void gl13Uniform2iv(gl13Context* glc, GLint location, GLsizei count, GLint* value) {
+    return glc->fnUniform2iv(location, count, value);
+}
+
+void gl13Uniform3iv(gl13Context* glc, GLint location, GLsizei count, GLint* value) {
+    return glc->fnUniform3iv(location, count, value);
+}
+
+void gl13Uniform4iv(gl13Context* glc, GLint location, GLsizei count, GLint* value) {
+    return glc->fnUniform4iv(location, count, value);
+}
+
+void gl13UseProgram(gl13Context* glc, GLuint program) {
+    return glc->fnUseProgram(program);
+}
+
+void gl13ValidateProgram(gl13Context* glc, GLuint program) {
+    return glc->fnValidateProgram(program);
+}
+
+void gl13VertexAttribPointer(gl13Context* glc, GLuint index, GLint size, GLenum type, GLboolean normalized, GLsizei stride, GLvoid* pointer) {
+    return glc->fnVertexAttribPointer(index, size, type, normalized, stride, pointer);
+}
+
+void gl13VertexAttrib1f(gl13Context* glc, GLuint index, GLfloat v0) {
+    return glc->fnVertexAttrib1f(index, v0);
+}
+
+void gl13VertexAttrib1s(gl13Context* glc, GLuint index, GLshort v0) {
+    return glc->fnVertexAttrib1s(index, v0);
+}
+
+void gl13VertexAttrib1d(gl13Context* glc, GLuint index, GLdouble v0) {
+    return glc->fnVertexAttrib1d(index, v0);
+}
+
+void gl13VertexAttrib2f(gl13Context* glc, GLuint index, GLfloat v0, GLfloat v1) {
+    return glc->fnVertexAttrib2f(index, v0, v1);
+}
+
+void gl13VertexAttrib2s(gl13Context* glc, GLuint index, GLshort v0, GLshort v1) {
+    return glc->fnVertexAttrib2s(index, v0, v1);
+}
+
+void gl13VertexAttrib2d(gl13Context* glc, GLuint index, GLdouble v0, GLdouble v1) {
+    return glc->fnVertexAttrib2d(index, v0, v1);
+}
+
+void gl13VertexAttrib3f(gl13Context* glc, GLuint index, GLfloat v0, GLfloat v1, GLfloat v2) {
+    return glc->fnVertexAttrib3f(index, v0, v1, v2);
+}
+
+void gl13VertexAttrib3s(gl13Context* glc, GLuint index, GLshort v0, GLshort v1, GLshort v2) {
+    return glc->fnVertexAttrib3s(index, v0, v1, v2);
+}
+
+void gl13VertexAttrib3d(gl13Context* glc, GLuint index, GLdouble v0, GLdouble v1, GLdouble v2) {
+    return glc->fnVertexAttrib3d(index, v0, v1, v2);
+}
+
+void gl13VertexAttrib4f(gl13Context* glc, GLuint index, GLfloat v0, GLfloat v1, GLfloat v2, GLfloat v3) {
+    return glc->fnVertexAttrib4f(index, v0, v1, v2, v3);
+}
+
+void gl13VertexAttrib4s(gl13Context* glc, GLuint index, GLshort v0, GLshort v1, GLshort v2, GLshort v3) {
+    return glc->fnVertexAttrib4s(index, v0, v1, v2, v3);
+}
+
+void gl13VertexAttrib4d(gl13Context* glc, GLuint index, GLdouble v0, GLdouble v1, GLdouble v2, GLdouble v3) {
+    return glc->fnVertexAttrib4d(index, v0, v1, v2, v3);
+}
+
+void gl13VertexAttrib4Nuv(gl13Context* glc, GLuint index, GLubyte v0, GLubyte v1, GLubyte v2, GLubyte v3) {
+    return glc->fnVertexAttrib4Nuv(index, v0, v1, v2, v3);
+}
+
+void gl13VertexAttrib1fv(gl13Context* glc, GLuint index, GLfloat* v) {
+    return glc->fnVertexAttrib1fv(index, v);
+}
+
+void gl13VertexAttrib1sv(gl13Context* glc, GLuint index, GLshort* v) {
+    return glc->fnVertexAttrib1sv(index, v);
+}
+
+void gl13VertexAttrib1dv(gl13Context* glc, GLuint index, GLdouble* v) {
+    return glc->fnVertexAttrib1dv(index, v);
+}
+
+void gl13VertexAttrib2fv(gl13Context* glc, GLuint index, GLfloat* v) {
+    return glc->fnVertexAttrib2fv(index, v);
+}
+
+void gl13VertexAttrib2sv(gl13Context* glc, GLuint index, GLshort* v) {
+    return glc->fnVertexAttrib2sv(index, v);
+}
+
+void gl13VertexAttrib2dv(gl13Context* glc, GLuint index, GLdouble* v) {
+    return glc->fnVertexAttrib2dv(index, v);
+}
+
+void gl13VertexAttrib3fv(gl13Context* glc, GLuint index, GLfloat* v) {
+    return glc->fnVertexAttrib3fv(index, v);
+}
+
+void gl13VertexAttrib3sv(gl13Context* glc, GLuint index, GLshort* v) {
+    return glc->fnVertexAttrib3sv(index, v);
+}
+
+void gl13VertexAttrib3dv(gl13Context* glc, GLuint index, GLdouble* v) {
+    return glc->fnVertexAttrib3dv(index, v);
+}
+
+void gl13VertexAttrib4fv(gl13Context* glc, GLuint index, GLfloat* v) {
+    return glc->fnVertexAttrib4fv(index, v);
+}
+
+void gl13VertexAttrib4sv(gl13Context* glc, GLuint index, GLshort* v) {
+    return glc->fnVertexAttrib4sv(index, v);
+}
+
+void gl13VertexAttrib4dv(gl13Context* glc, GLuint index, GLdouble* v) {
+    return glc->fnVertexAttrib4dv(index, v);
+}
+
+void gl13VertexAttrib4iv(gl13Context* glc, GLuint index, GLint* v) {
+    return glc->fnVertexAttrib4iv(index, v);
+}
+
+void gl13VertexAttrib4bv(gl13Context* glc, GLuint index, GLbyte* v) {
+    return glc->fnVertexAttrib4bv(index, v);
+}
+
+void gl13VertexAttrib4ubv(gl13Context* glc, GLuint index, GLubyte* v) {
+    return glc->fnVertexAttrib4ubv(index, v);
+}
+
+void gl13VertexAttrib4usv(gl13Context* glc, GLuint index, GLushort* v) {
+    return glc->fnVertexAttrib4usv(index, v);
+}
+
+void gl13VertexAttrib4uiv(gl13Context* glc, GLuint index, GLuint* v) {
+    return glc->fnVertexAttrib4uiv(index, v);
+}
+
+void gl13VertexAttrib4Nbv(gl13Context* glc, GLuint index, GLbyte* v) {
+    return glc->fnVertexAttrib4Nbv(index, v);
+}
+
+void gl13VertexAttrib4Nsv(gl13Context* glc, GLuint index, GLshort* v) {
+    return glc->fnVertexAttrib4Nsv(index, v);
+}
+
+void gl13VertexAttrib4Niv(gl13Context* glc, GLuint index, GLint* v) {
+    return glc->fnVertexAttrib4Niv(index, v);
+}
+
+void gl13VertexAttrib4Nubv(gl13Context* glc, GLuint index, GLubyte* v) {
+    return glc->fnVertexAttrib4Nubv(index, v);
+}
+
+void gl13VertexAttrib4Nusv(gl13Context* glc, GLuint index, GLushort* v) {
+    return glc->fnVertexAttrib4Nusv(index, v);
+}
+
+void gl13VertexAttrib4Nuiv(gl13Context* glc, GLuint index, GLuint* v) {
+    return glc->fnVertexAttrib4Nuiv(index, v);
+}
+
+void gl13UniformMatrix2fv(gl13Context* glc, GLint location, GLsizei count, GLboolean transpose, GLfloat* value) {
+    return glc->fnUniformMatrix2fv(location, count, transpose, value);
+}
+
+void gl13UniformMatrix3fv(gl13Context* glc, GLint location, GLsizei count, GLboolean transpose, GLfloat* value) {
+    return glc->fnUniformMatrix3fv(location, count, transpose, value);
+}
+
+void gl13UniformMatrix4fv(gl13Context* glc, GLint location, GLsizei count, GLboolean transpose, GLfloat* value) {
+    return glc->fnUniformMatrix4fv(location, count, transpose, value);
+}
+
+void gl13UniformMatrix2x3fv(gl13Context* glc, GLint location, GLsizei count, GLboolean transpose, GLfloat* value) {
+    return glc->fnUniformMatrix2x3fv(location, count, transpose, value);
+}
+
+void gl13UniformMatrix3x2fv(gl13Context* glc, GLint location, GLsizei count, GLboolean transpose, GLfloat* value) {
+    return glc->fnUniformMatrix3x2fv(location, count, transpose, value);
+}
+
+void gl13UniformMatrix2x4fv(gl13Context* glc, GLint location, GLsizei count, GLboolean transpose, GLfloat* value) {
+    return glc->fnUniformMatrix2x4fv(location, count, transpose, value);
+}
+
+void gl13UniformMatrix4x2fv(gl13Context* glc, GLint location, GLsizei count, GLboolean transpose, GLfloat* value) {
+    return glc->fnUniformMatrix4x2fv(location, count, transpose, value);
+}
+
+void gl13UniformMatrix3x4fv(gl13Context* glc, GLint location, GLsizei count, GLboolean transpose, GLfloat* value) {
+    return glc->fnUniformMatrix3x4fv(location, count, transpose, value);
+}
+
+void gl13UniformMatrix4x3fv(gl13Context* glc, GLint location, GLsizei count, GLboolean transpose, GLfloat* value) {
+    return glc->fnUniformMatrix4x3fv(location, count, transpose, value);
+}
+
 gl13Context* gl13NewContext() {
     gl13Context* glc = calloc(1, sizeof(gl13Context));
 
@@ -1696,20 +2336,8 @@ gl13Context* gl13NewContext() {
     glc->fnColor4usv = (gl13PColor4usv)gl13LibGetProcAddress("glColor4usv");
     glc->fnColorMask = (gl13PColorMask)gl13LibGetProcAddress("glColorMask");
     glc->fnColorMaterial = (gl13PColorMaterial)gl13LibGetProcAddress("glColorMaterial");
-    glc->fnColorTable = (gl13PColorTable)gl13GLGetProcAddress("glColorTable");
-    glc->fnColorTableParameterfv = (gl13PColorTableParameterfv)gl13GLGetProcAddress("glColorTableParameterfv");
-    glc->fnColorTableParameteriv = (gl13PColorTableParameteriv)gl13GLGetProcAddress("glColorTableParameteriv");
-    glc->fnColorSubTable = (gl13PColorSubTable)gl13GLGetProcAddress("glColorSubTable");
     glc->fnCopyPixels = (gl13PCopyPixels)gl13LibGetProcAddress("glCopyPixels");
     glc->fnCullFace = (gl13PCullFace)gl13LibGetProcAddress("glCullFace");
-    glc->fnConvolutionFilter1D = (gl13PConvolutionFilter1D)gl13GLGetProcAddress("glConvolutionFilter1D");
-    glc->fnConvolutionFilter2D = (gl13PConvolutionFilter2D)gl13GLGetProcAddress("glConvolutionFilter2D");
-    glc->fnConvolutionParameterf = (gl13PConvolutionParameterf)gl13GLGetProcAddress("glConvolutionParameterf");
-    glc->fnConvolutionParameteri = (gl13PConvolutionParameteri)gl13GLGetProcAddress("glConvolutionParameteri");
-    glc->fnCopyColorTable = (gl13PCopyColorTable)gl13GLGetProcAddress("glCopyColorTable");
-    glc->fnCopyColorSubTable = (gl13PCopyColorSubTable)gl13GLGetProcAddress("glCopyColorSubTable");
-    glc->fnCopyConvolutionFilter1D = (gl13PCopyConvolutionFilter1D)gl13GLGetProcAddress("glCopyConvolutionFilter1D");
-    glc->fnCopyConvolutionFilter2D = (gl13PCopyConvolutionFilter2D)gl13GLGetProcAddress("glCopyConvolutionFilter2D");
     glc->fnDeleteLists = (gl13PDeleteLists)gl13LibGetProcAddress("glDeleteLists");
     glc->fnDepthFunc = (gl13PDepthFunc)gl13LibGetProcAddress("glDepthFunc");
     glc->fnDepthMask = (gl13PDepthMask)gl13LibGetProcAddress("glDepthMask");
@@ -1955,12 +2583,52 @@ gl13Context* gl13NewContext() {
     glc->fnVertex4f = (gl13PVertex4f)gl13LibGetProcAddress("glVertex4f");
     glc->fnVertex4d = (gl13PVertex4d)gl13LibGetProcAddress("glVertex4d");
     glc->fnViewport = (gl13PViewport)gl13LibGetProcAddress("glViewport");
+    glc->fnGetConvolutionParameterfv = (gl13PGetConvolutionParameterfv)gl13LibGetProcAddress("glGetConvolutionParameterfv");
+    glc->fnGetConvolutionParameteriv = (gl13PGetConvolutionParameteriv)gl13LibGetProcAddress("glGetConvolutionParameteriv");
+    glc->fnAreTexturesResident = (gl13PAreTexturesResident)gl13LibGetProcAddress("glAreTexturesResident");
+    glc->fnArrayElement = (gl13PArrayElement)gl13LibGetProcAddress("glArrayElement");
+    glc->fnDrawArrays = (gl13PDrawArrays)gl13LibGetProcAddress("glDrawArrays");
+    glc->fnDrawElements = (gl13PDrawElements)gl13LibGetProcAddress("glDrawElements");
+    glc->fnGetPointerv = (gl13PGetPointerv)gl13LibGetProcAddress("glGetPointerv");
+    glc->fnPolygonOffset = (gl13PPolygonOffset)gl13LibGetProcAddress("glPolygonOffset");
+    glc->fnCopyTexImage1D = (gl13PCopyTexImage1D)gl13LibGetProcAddress("glCopyTexImage1D");
+    glc->fnCopyTexImage2D = (gl13PCopyTexImage2D)gl13LibGetProcAddress("glCopyTexImage2D");
+    glc->fnCopyTexSubImage1D = (gl13PCopyTexSubImage1D)gl13LibGetProcAddress("glCopyTexSubImage1D");
+    glc->fnCopyTexSubImage2D = (gl13PCopyTexSubImage2D)gl13LibGetProcAddress("glCopyTexSubImage2D");
+    glc->fnBindTexture = (gl13PBindTexture)gl13LibGetProcAddress("glBindTexture");
+    glc->fnDeleteTextures = (gl13PDeleteTextures)gl13LibGetProcAddress("glDeleteTextures");
+    glc->fnGenTextures = (gl13PGenTextures)gl13LibGetProcAddress("glGenTextures");
+    glc->fnIsTexture = (gl13PIsTexture)gl13LibGetProcAddress("glIsTexture");
+    glc->fnColorPointer = (gl13PColorPointer)gl13LibGetProcAddress("glColorPointer");
+    glc->fnEnableClientState = (gl13PEnableClientState)gl13LibGetProcAddress("glEnableClientState");
+    glc->fnDisableClientState = (gl13PDisableClientState)gl13LibGetProcAddress("glDisableClientState");
+    glc->fnIndexub = (gl13PIndexub)gl13LibGetProcAddress("glIndexub");
+    glc->fnIndexubv = (gl13PIndexubv)gl13LibGetProcAddress("glIndexubv");
+    glc->fnInterleavedArrays = (gl13PInterleavedArrays)gl13LibGetProcAddress("glInterleavedArrays");
+    glc->fnNormalPointer = (gl13PNormalPointer)gl13LibGetProcAddress("glNormalPointer");
+    glc->fnPushClientAttrib = (gl13PPushClientAttrib)gl13LibGetProcAddress("glPushClientAttrib");
+    glc->fnPrioritizeTextures = (gl13PPrioritizeTextures)gl13LibGetProcAddress("glPrioritizeTextures");
+    glc->fnPopClientAttrib = (gl13PPopClientAttrib)gl13LibGetProcAddress("glPopClientAttrib");
+    glc->fnTexCoordPointer = (gl13PTexCoordPointer)gl13LibGetProcAddress("glTexCoordPointer");
+    glc->fnTexSubImage1D = (gl13PTexSubImage1D)gl13LibGetProcAddress("glTexSubImage1D");
+    glc->fnTexSubImage2D = (gl13PTexSubImage2D)gl13LibGetProcAddress("glTexSubImage2D");
+    glc->fnVertexPointer = (gl13PVertexPointer)gl13LibGetProcAddress("glVertexPointer");
+    glc->fnColorTable = (gl13PColorTable)gl13GLGetProcAddress("glColorTable");
+    glc->fnColorTableParameterfv = (gl13PColorTableParameterfv)gl13GLGetProcAddress("glColorTableParameterfv");
+    glc->fnColorTableParameteriv = (gl13PColorTableParameteriv)gl13GLGetProcAddress("glColorTableParameteriv");
+    glc->fnColorSubTable = (gl13PColorSubTable)gl13GLGetProcAddress("glColorSubTable");
+    glc->fnConvolutionFilter1D = (gl13PConvolutionFilter1D)gl13GLGetProcAddress("glConvolutionFilter1D");
+    glc->fnConvolutionFilter2D = (gl13PConvolutionFilter2D)gl13GLGetProcAddress("glConvolutionFilter2D");
+    glc->fnConvolutionParameterf = (gl13PConvolutionParameterf)gl13GLGetProcAddress("glConvolutionParameterf");
+    glc->fnConvolutionParameteri = (gl13PConvolutionParameteri)gl13GLGetProcAddress("glConvolutionParameteri");
+    glc->fnCopyColorTable = (gl13PCopyColorTable)gl13GLGetProcAddress("glCopyColorTable");
+    glc->fnCopyColorSubTable = (gl13PCopyColorSubTable)gl13GLGetProcAddress("glCopyColorSubTable");
+    glc->fnCopyConvolutionFilter1D = (gl13PCopyConvolutionFilter1D)gl13GLGetProcAddress("glCopyConvolutionFilter1D");
+    glc->fnCopyConvolutionFilter2D = (gl13PCopyConvolutionFilter2D)gl13GLGetProcAddress("glCopyConvolutionFilter2D");
     glc->fnGetColorTable = (gl13PGetColorTable)gl13GLGetProcAddress("glGetColorTable");
     glc->fnGetColorTableParameterfv = (gl13PGetColorTableParameterfv)gl13GLGetProcAddress("glGetColorTableParameterfv");
     glc->fnGetColorTableParameteriv = (gl13PGetColorTableParameteriv)gl13GLGetProcAddress("glGetColorTableParameteriv");
     glc->fnGetConvolutionFilter = (gl13PGetConvolutionFilter)gl13GLGetProcAddress("glGetConvolutionFilter");
-    glc->fnGetConvolutionParameterfv = (gl13PGetConvolutionParameterfv)gl13LibGetProcAddress("glGetConvolutionParameterfv");
-    glc->fnGetConvolutionParameteriv = (gl13PGetConvolutionParameteriv)gl13LibGetProcAddress("glGetConvolutionParameteriv");
     glc->fnGetHistogram = (gl13PGetHistogram)gl13GLGetProcAddress("glGetHistogram");
     glc->fnGetHistogramParameterfv = (gl13PGetHistogramParameterfv)gl13GLGetProcAddress("glGetHistogramParameterfv");
     glc->fnGetHistogramParameteriv = (gl13PGetHistogramParameteriv)gl13GLGetProcAddress("glGetHistogramParameteriv");
@@ -2002,34 +2670,6 @@ gl13Context* gl13NewContext() {
     glc->fnResetHistogram = (gl13PResetHistogram)gl13GLGetProcAddress("glResetHistogram");
     glc->fnResetMinmax = (gl13PResetMinmax)gl13GLGetProcAddress("glResetMinmax");
     glc->fnSeparableFilter2D = (gl13PSeparableFilter2D)gl13GLGetProcAddress("glSeparableFilter2D");
-    glc->fnAreTexturesResident = (gl13PAreTexturesResident)gl13LibGetProcAddress("glAreTexturesResident");
-    glc->fnArrayElement = (gl13PArrayElement)gl13LibGetProcAddress("glArrayElement");
-    glc->fnDrawArrays = (gl13PDrawArrays)gl13LibGetProcAddress("glDrawArrays");
-    glc->fnDrawElements = (gl13PDrawElements)gl13LibGetProcAddress("glDrawElements");
-    glc->fnGetPointerv = (gl13PGetPointerv)gl13LibGetProcAddress("glGetPointerv");
-    glc->fnPolygonOffset = (gl13PPolygonOffset)gl13LibGetProcAddress("glPolygonOffset");
-    glc->fnCopyTexImage1D = (gl13PCopyTexImage1D)gl13LibGetProcAddress("glCopyTexImage1D");
-    glc->fnCopyTexImage2D = (gl13PCopyTexImage2D)gl13LibGetProcAddress("glCopyTexImage2D");
-    glc->fnCopyTexSubImage1D = (gl13PCopyTexSubImage1D)gl13LibGetProcAddress("glCopyTexSubImage1D");
-    glc->fnCopyTexSubImage2D = (gl13PCopyTexSubImage2D)gl13LibGetProcAddress("glCopyTexSubImage2D");
-    glc->fnBindTexture = (gl13PBindTexture)gl13LibGetProcAddress("glBindTexture");
-    glc->fnDeleteTextures = (gl13PDeleteTextures)gl13LibGetProcAddress("glDeleteTextures");
-    glc->fnGenTextures = (gl13PGenTextures)gl13LibGetProcAddress("glGenTextures");
-    glc->fnIsTexture = (gl13PIsTexture)gl13LibGetProcAddress("glIsTexture");
-    glc->fnColorPointer = (gl13PColorPointer)gl13LibGetProcAddress("glColorPointer");
-    glc->fnEnableClientState = (gl13PEnableClientState)gl13LibGetProcAddress("glEnableClientState");
-    glc->fnDisableClientState = (gl13PDisableClientState)gl13LibGetProcAddress("glDisableClientState");
-    glc->fnIndexub = (gl13PIndexub)gl13LibGetProcAddress("glIndexub");
-    glc->fnIndexubv = (gl13PIndexubv)gl13LibGetProcAddress("glIndexubv");
-    glc->fnInterleavedArrays = (gl13PInterleavedArrays)gl13LibGetProcAddress("glInterleavedArrays");
-    glc->fnNormalPointer = (gl13PNormalPointer)gl13LibGetProcAddress("glNormalPointer");
-    glc->fnPushClientAttrib = (gl13PPushClientAttrib)gl13LibGetProcAddress("glPushClientAttrib");
-    glc->fnPrioritizeTextures = (gl13PPrioritizeTextures)gl13LibGetProcAddress("glPrioritizeTextures");
-    glc->fnPopClientAttrib = (gl13PPopClientAttrib)gl13LibGetProcAddress("glPopClientAttrib");
-    glc->fnTexCoordPointer = (gl13PTexCoordPointer)gl13LibGetProcAddress("glTexCoordPointer");
-    glc->fnTexSubImage1D = (gl13PTexSubImage1D)gl13LibGetProcAddress("glTexSubImage1D");
-    glc->fnTexSubImage2D = (gl13PTexSubImage2D)gl13LibGetProcAddress("glTexSubImage2D");
-    glc->fnVertexPointer = (gl13PVertexPointer)gl13LibGetProcAddress("glVertexPointer");
     glc->fnBlendColor = (gl13PBlendColor)gl13GLGetProcAddress("glBlendColor");
     glc->fnBlendEquation = (gl13PBlendEquation)gl13GLGetProcAddress("glBlendEquation");
     glc->fnCopyTexSubImage3D = (gl13PCopyTexSubImage3D)gl13GLGetProcAddress("glCopyTexSubImage3D");
@@ -2050,6 +2690,166 @@ gl13Context* gl13NewContext() {
     glc->fnMultTransposeMatrixd = (gl13PMultTransposeMatrixd)gl13GLGetProcAddress("glMultTransposeMatrixd");
     glc->fnMultTransposeMatrixf = (gl13PMultTransposeMatrixf)gl13GLGetProcAddress("glMultTransposeMatrixf");
     glc->fnSampleCoverage = (gl13PSampleCoverage)gl13GLGetProcAddress("glSampleCoverage");
+    glc->fnBlendFuncSeparate = (gl13PBlendFuncSeparate)gl13GLGetProcAddress("glBlendFuncSeparate");
+    glc->fnFogCoordPointer = (gl13PFogCoordPointer)gl13GLGetProcAddress("glFogCoordPointer");
+    glc->fnFogCoordd = (gl13PFogCoordd)gl13GLGetProcAddress("glFogCoordd");
+    glc->fnFogCoordf = (gl13PFogCoordf)gl13GLGetProcAddress("glFogCoordf");
+    glc->fnFogCoorddv = (gl13PFogCoorddv)gl13GLGetProcAddress("glFogCoorddv");
+    glc->fnFogCoordfv = (gl13PFogCoordfv)gl13GLGetProcAddress("glFogCoordfv");
+    glc->fnMultiDrawArrays = (gl13PMultiDrawArrays)gl13GLGetProcAddress("glMultiDrawArrays");
+    glc->fnMultiDrawElements = (gl13PMultiDrawElements)gl13GLGetProcAddress("glMultiDrawElements");
+    glc->fnPointParameterf = (gl13PPointParameterf)gl13GLGetProcAddress("glPointParameterf");
+    glc->fnPointParameteri = (gl13PPointParameteri)gl13GLGetProcAddress("glPointParameteri");
+    glc->fnSecondaryColor3b = (gl13PSecondaryColor3b)gl13GLGetProcAddress("glSecondaryColor3b");
+    glc->fnSecondaryColor3s = (gl13PSecondaryColor3s)gl13GLGetProcAddress("glSecondaryColor3s");
+    glc->fnSecondaryColor3i = (gl13PSecondaryColor3i)gl13GLGetProcAddress("glSecondaryColor3i");
+    glc->fnSecondaryColor3f = (gl13PSecondaryColor3f)gl13GLGetProcAddress("glSecondaryColor3f");
+    glc->fnSecondaryColor3d = (gl13PSecondaryColor3d)gl13GLGetProcAddress("glSecondaryColor3d");
+    glc->fnSecondaryColor3ub = (gl13PSecondaryColor3ub)gl13GLGetProcAddress("glSecondaryColor3ub");
+    glc->fnSecondaryColor3us = (gl13PSecondaryColor3us)gl13GLGetProcAddress("glSecondaryColor3us");
+    glc->fnSecondaryColor3ui = (gl13PSecondaryColor3ui)gl13GLGetProcAddress("glSecondaryColor3ui");
+    glc->fnSecondaryColor3bv = (gl13PSecondaryColor3bv)gl13GLGetProcAddress("glSecondaryColor3bv");
+    glc->fnSecondaryColor3sv = (gl13PSecondaryColor3sv)gl13GLGetProcAddress("glSecondaryColor3sv");
+    glc->fnSecondaryColor3iv = (gl13PSecondaryColor3iv)gl13GLGetProcAddress("glSecondaryColor3iv");
+    glc->fnSecondaryColor3fv = (gl13PSecondaryColor3fv)gl13GLGetProcAddress("glSecondaryColor3fv");
+    glc->fnSecondaryColor3dv = (gl13PSecondaryColor3dv)gl13GLGetProcAddress("glSecondaryColor3dv");
+    glc->fnSecondaryColor3ubv = (gl13PSecondaryColor3ubv)gl13GLGetProcAddress("glSecondaryColor3ubv");
+    glc->fnSecondaryColor3usv = (gl13PSecondaryColor3usv)gl13GLGetProcAddress("glSecondaryColor3usv");
+    glc->fnSecondaryColor3uiv = (gl13PSecondaryColor3uiv)gl13GLGetProcAddress("glSecondaryColor3uiv");
+    glc->fnSecondaryColorPointer = (gl13PSecondaryColorPointer)gl13GLGetProcAddress("glSecondaryColorPointer");
+    glc->fnWindowPos2s = (gl13PWindowPos2s)gl13GLGetProcAddress("glWindowPos2s");
+    glc->fnWindowPos2i = (gl13PWindowPos2i)gl13GLGetProcAddress("glWindowPos2i");
+    glc->fnWindowPos2f = (gl13PWindowPos2f)gl13GLGetProcAddress("glWindowPos2f");
+    glc->fnWindowPos2d = (gl13PWindowPos2d)gl13GLGetProcAddress("glWindowPos2d");
+    glc->fnWindowPos3s = (gl13PWindowPos3s)gl13GLGetProcAddress("glWindowPos3s");
+    glc->fnWindowPos3i = (gl13PWindowPos3i)gl13GLGetProcAddress("glWindowPos3i");
+    glc->fnWindowPos3f = (gl13PWindowPos3f)gl13GLGetProcAddress("glWindowPos3f");
+    glc->fnWindowPos3d = (gl13PWindowPos3d)gl13GLGetProcAddress("glWindowPos3d");
+    glc->fnWindowPos2sv = (gl13PWindowPos2sv)gl13GLGetProcAddress("glWindowPos2sv");
+    glc->fnWindowPos2iv = (gl13PWindowPos2iv)gl13GLGetProcAddress("glWindowPos2iv");
+    glc->fnWindowPos2fv = (gl13PWindowPos2fv)gl13GLGetProcAddress("glWindowPos2fv");
+    glc->fnWindowPos2dv = (gl13PWindowPos2dv)gl13GLGetProcAddress("glWindowPos2dv");
+    glc->fnWindowPos3sv = (gl13PWindowPos3sv)gl13GLGetProcAddress("glWindowPos3sv");
+    glc->fnWindowPos3iv = (gl13PWindowPos3iv)gl13GLGetProcAddress("glWindowPos3iv");
+    glc->fnWindowPos3fv = (gl13PWindowPos3fv)gl13GLGetProcAddress("glWindowPos3fv");
+    glc->fnWindowPos3dv = (gl13PWindowPos3dv)gl13GLGetProcAddress("glWindowPos3dv");
+    glc->fnBeginQuery = (gl13PBeginQuery)gl13GLGetProcAddress("glBeginQuery");
+    glc->fnBindBuffer = (gl13PBindBuffer)gl13GLGetProcAddress("glBindBuffer");
+    glc->fnBufferData = (gl13PBufferData)gl13GLGetProcAddress("glBufferData");
+    glc->fnBufferSubData = (gl13PBufferSubData)gl13GLGetProcAddress("glBufferSubData");
+    glc->fnDeleteBuffers = (gl13PDeleteBuffers)gl13GLGetProcAddress("glDeleteBuffers");
+    glc->fnDeleteQueries = (gl13PDeleteQueries)gl13GLGetProcAddress("glDeleteQueries");
+    glc->fnGenBuffers = (gl13PGenBuffers)gl13GLGetProcAddress("glGenBuffers");
+    glc->fnGenQueries = (gl13PGenQueries)gl13GLGetProcAddress("glGenQueries");
+    glc->fnGetBufferParameteriv = (gl13PGetBufferParameteriv)gl13GLGetProcAddress("glGetBufferParameteriv");
+    glc->fnGetBufferPointerv = (gl13PGetBufferPointerv)gl13GLGetProcAddress("glGetBufferPointerv");
+    glc->fnGetBufferSubData = (gl13PGetBufferSubData)gl13GLGetProcAddress("glGetBufferSubData");
+    glc->fnGetQueryObjectiv = (gl13PGetQueryObjectiv)gl13GLGetProcAddress("glGetQueryObjectiv");
+    glc->fnGetQueryObjectuiv = (gl13PGetQueryObjectuiv)gl13GLGetProcAddress("glGetQueryObjectuiv");
+    glc->fnGetQueryiv = (gl13PGetQueryiv)gl13GLGetProcAddress("glGetQueryiv");
+    glc->fnIsBuffer = (gl13PIsBuffer)gl13GLGetProcAddress("glIsBuffer");
+    glc->fnIsQuery = (gl13PIsQuery)gl13GLGetProcAddress("glIsQuery");
+    glc->fnMapBuffer = (gl13PMapBuffer)gl13GLGetProcAddress("glMapBuffer");
+    glc->fnUnmapBuffer = (gl13PUnmapBuffer)gl13GLGetProcAddress("glUnmapBuffer");
+    glc->fnAttachShader = (gl13PAttachShader)gl13GLGetProcAddress("glAttachShader");
+    glc->fnBindAttribLocation = (gl13PBindAttribLocation)gl13GLGetProcAddress("glBindAttribLocation");
+    glc->fnBlendEquationSeperate = (gl13PBlendEquationSeperate)gl13GLGetProcAddress("glBlendEquationSeperate");
+    glc->fnCompileShader = (gl13PCompileShader)gl13GLGetProcAddress("glCompileShader");
+    glc->fnCreateProgram = (gl13PCreateProgram)gl13GLGetProcAddress("glCreateProgram");
+    glc->fnCreateShader = (gl13PCreateShader)gl13GLGetProcAddress("glCreateShader");
+    glc->fnDeleteProgram = (gl13PDeleteProgram)gl13GLGetProcAddress("glDeleteProgram");
+    glc->fnDeleteShader = (gl13PDeleteShader)gl13GLGetProcAddress("glDeleteShader");
+    glc->fnDetachShader = (gl13PDetachShader)gl13GLGetProcAddress("glDetachShader");
+    glc->fnEnableVertexAttribArray = (gl13PEnableVertexAttribArray)gl13GLGetProcAddress("glEnableVertexAttribArray");
+    glc->fnDisableVertexAttribArray = (gl13PDisableVertexAttribArray)gl13GLGetProcAddress("glDisableVertexAttribArray");
+    glc->fnDrawBuffers = (gl13PDrawBuffers)gl13LibGetProcAddress("glDrawBuffers");
+    glc->fnGetActiveAttrib = (gl13PGetActiveAttrib)gl13LibGetProcAddress("glGetActiveAttrib");
+    glc->fnGetActiveUniform = (gl13PGetActiveUniform)gl13LibGetProcAddress("glGetActiveUniform");
+    glc->fnGetAttachedShaders = (gl13PGetAttachedShaders)gl13LibGetProcAddress("glGetAttachedShaders");
+    glc->fnGetAttribLocation = (gl13PGetAttribLocation)gl13LibGetProcAddress("glGetAttribLocation");
+    glc->fnGetProgramiv = (gl13PGetProgramiv)gl13LibGetProcAddress("glGetProgramiv");
+    glc->fnGetProgramInfoLog = (gl13PGetProgramInfoLog)gl13LibGetProcAddress("glGetProgramInfoLog");
+    glc->fnGetShaderiv = (gl13PGetShaderiv)gl13LibGetProcAddress("glGetShaderiv");
+    glc->fnGetShaderInfoLog = (gl13PGetShaderInfoLog)gl13LibGetProcAddress("glGetShaderInfoLog");
+    glc->fnGetShaderSource = (gl13PGetShaderSource)gl13LibGetProcAddress("glGetShaderSource");
+    glc->fnGetUniformfv = (gl13PGetUniformfv)gl13LibGetProcAddress("glGetUniformfv");
+    glc->fnGetUniformiv = (gl13PGetUniformiv)gl13LibGetProcAddress("glGetUniformiv");
+    glc->fnGetUniformLocation = (gl13PGetUniformLocation)gl13LibGetProcAddress("glGetUniformLocation");
+    glc->fnGetVertexAttribdv = (gl13PGetVertexAttribdv)gl13LibGetProcAddress("glGetVertexAttribdv");
+    glc->fnGetVertexAttribfv = (gl13PGetVertexAttribfv)gl13LibGetProcAddress("glGetVertexAttribfv");
+    glc->fnGetVertexAttribiv = (gl13PGetVertexAttribiv)gl13LibGetProcAddress("glGetVertexAttribiv");
+    glc->fnGetVertexAttribPointerv = (gl13PGetVertexAttribPointerv)gl13LibGetProcAddress("glGetVertexAttribPointerv");
+    glc->fnIsProgram = (gl13PIsProgram)gl13LibGetProcAddress("glIsProgram");
+    glc->fnIsShader = (gl13PIsShader)gl13LibGetProcAddress("glIsShader");
+    glc->fnLinkProgram = (gl13PLinkProgram)gl13LibGetProcAddress("glLinkProgram");
+    glc->fnShaderSource = (gl13PShaderSource)gl13LibGetProcAddress("glShaderSource");
+    glc->fnStencilFuncSeparate = (gl13PStencilFuncSeparate)gl13LibGetProcAddress("glStencilFuncSeparate");
+    glc->fnStencilMaskSeparate = (gl13PStencilMaskSeparate)gl13LibGetProcAddress("glStencilMaskSeparate");
+    glc->fnStencilOpSeparate = (gl13PStencilOpSeparate)gl13LibGetProcAddress("glStencilOpSeparate");
+    glc->fnUniform1f = (gl13PUniform1f)gl13LibGetProcAddress("glUniform1f");
+    glc->fnUniform2f = (gl13PUniform2f)gl13LibGetProcAddress("glUniform2f");
+    glc->fnUniform3f = (gl13PUniform3f)gl13LibGetProcAddress("glUniform3f");
+    glc->fnUniform4f = (gl13PUniform4f)gl13LibGetProcAddress("glUniform4f");
+    glc->fnUniform1i = (gl13PUniform1i)gl13LibGetProcAddress("glUniform1i");
+    glc->fnUniform2i = (gl13PUniform2i)gl13LibGetProcAddress("glUniform2i");
+    glc->fnUniform3i = (gl13PUniform3i)gl13LibGetProcAddress("glUniform3i");
+    glc->fnUniform4i = (gl13PUniform4i)gl13LibGetProcAddress("glUniform4i");
+    glc->fnUniform1fv = (gl13PUniform1fv)gl13LibGetProcAddress("glUniform1fv");
+    glc->fnUniform2fv = (gl13PUniform2fv)gl13LibGetProcAddress("glUniform2fv");
+    glc->fnUniform3fv = (gl13PUniform3fv)gl13LibGetProcAddress("glUniform3fv");
+    glc->fnUniform4fv = (gl13PUniform4fv)gl13LibGetProcAddress("glUniform4fv");
+    glc->fnUniform1iv = (gl13PUniform1iv)gl13LibGetProcAddress("glUniform1iv");
+    glc->fnUniform2iv = (gl13PUniform2iv)gl13LibGetProcAddress("glUniform2iv");
+    glc->fnUniform3iv = (gl13PUniform3iv)gl13LibGetProcAddress("glUniform3iv");
+    glc->fnUniform4iv = (gl13PUniform4iv)gl13LibGetProcAddress("glUniform4iv");
+    glc->fnUseProgram = (gl13PUseProgram)gl13LibGetProcAddress("glUseProgram");
+    glc->fnValidateProgram = (gl13PValidateProgram)gl13LibGetProcAddress("glValidateProgram");
+    glc->fnVertexAttribPointer = (gl13PVertexAttribPointer)gl13LibGetProcAddress("glVertexAttribPointer");
+    glc->fnVertexAttrib1f = (gl13PVertexAttrib1f)gl13LibGetProcAddress("glVertexAttrib1f");
+    glc->fnVertexAttrib1s = (gl13PVertexAttrib1s)gl13LibGetProcAddress("glVertexAttrib1s");
+    glc->fnVertexAttrib1d = (gl13PVertexAttrib1d)gl13LibGetProcAddress("glVertexAttrib1d");
+    glc->fnVertexAttrib2f = (gl13PVertexAttrib2f)gl13LibGetProcAddress("glVertexAttrib2f");
+    glc->fnVertexAttrib2s = (gl13PVertexAttrib2s)gl13LibGetProcAddress("glVertexAttrib2s");
+    glc->fnVertexAttrib2d = (gl13PVertexAttrib2d)gl13LibGetProcAddress("glVertexAttrib2d");
+    glc->fnVertexAttrib3f = (gl13PVertexAttrib3f)gl13LibGetProcAddress("glVertexAttrib3f");
+    glc->fnVertexAttrib3s = (gl13PVertexAttrib3s)gl13LibGetProcAddress("glVertexAttrib3s");
+    glc->fnVertexAttrib3d = (gl13PVertexAttrib3d)gl13LibGetProcAddress("glVertexAttrib3d");
+    glc->fnVertexAttrib4f = (gl13PVertexAttrib4f)gl13LibGetProcAddress("glVertexAttrib4f");
+    glc->fnVertexAttrib4s = (gl13PVertexAttrib4s)gl13LibGetProcAddress("glVertexAttrib4s");
+    glc->fnVertexAttrib4d = (gl13PVertexAttrib4d)gl13LibGetProcAddress("glVertexAttrib4d");
+    glc->fnVertexAttrib4Nuv = (gl13PVertexAttrib4Nuv)gl13LibGetProcAddress("glVertexAttrib4Nuv");
+    glc->fnVertexAttrib1fv = (gl13PVertexAttrib1fv)gl13LibGetProcAddress("glVertexAttrib1fv");
+    glc->fnVertexAttrib1sv = (gl13PVertexAttrib1sv)gl13LibGetProcAddress("glVertexAttrib1sv");
+    glc->fnVertexAttrib1dv = (gl13PVertexAttrib1dv)gl13LibGetProcAddress("glVertexAttrib1dv");
+    glc->fnVertexAttrib2fv = (gl13PVertexAttrib2fv)gl13LibGetProcAddress("glVertexAttrib2fv");
+    glc->fnVertexAttrib2sv = (gl13PVertexAttrib2sv)gl13LibGetProcAddress("glVertexAttrib2sv");
+    glc->fnVertexAttrib2dv = (gl13PVertexAttrib2dv)gl13LibGetProcAddress("glVertexAttrib2dv");
+    glc->fnVertexAttrib3fv = (gl13PVertexAttrib3fv)gl13LibGetProcAddress("glVertexAttrib3fv");
+    glc->fnVertexAttrib3sv = (gl13PVertexAttrib3sv)gl13LibGetProcAddress("glVertexAttrib3sv");
+    glc->fnVertexAttrib3dv = (gl13PVertexAttrib3dv)gl13LibGetProcAddress("glVertexAttrib3dv");
+    glc->fnVertexAttrib4fv = (gl13PVertexAttrib4fv)gl13LibGetProcAddress("glVertexAttrib4fv");
+    glc->fnVertexAttrib4sv = (gl13PVertexAttrib4sv)gl13LibGetProcAddress("glVertexAttrib4sv");
+    glc->fnVertexAttrib4dv = (gl13PVertexAttrib4dv)gl13LibGetProcAddress("glVertexAttrib4dv");
+    glc->fnVertexAttrib4iv = (gl13PVertexAttrib4iv)gl13LibGetProcAddress("glVertexAttrib4iv");
+    glc->fnVertexAttrib4bv = (gl13PVertexAttrib4bv)gl13LibGetProcAddress("glVertexAttrib4bv");
+    glc->fnVertexAttrib4ubv = (gl13PVertexAttrib4ubv)gl13LibGetProcAddress("glVertexAttrib4ubv");
+    glc->fnVertexAttrib4usv = (gl13PVertexAttrib4usv)gl13LibGetProcAddress("glVertexAttrib4usv");
+    glc->fnVertexAttrib4uiv = (gl13PVertexAttrib4uiv)gl13LibGetProcAddress("glVertexAttrib4uiv");
+    glc->fnVertexAttrib4Nbv = (gl13PVertexAttrib4Nbv)gl13LibGetProcAddress("glVertexAttrib4Nbv");
+    glc->fnVertexAttrib4Nsv = (gl13PVertexAttrib4Nsv)gl13LibGetProcAddress("glVertexAttrib4Nsv");
+    glc->fnVertexAttrib4Niv = (gl13PVertexAttrib4Niv)gl13LibGetProcAddress("glVertexAttrib4Niv");
+    glc->fnVertexAttrib4Nubv = (gl13PVertexAttrib4Nubv)gl13LibGetProcAddress("glVertexAttrib4Nubv");
+    glc->fnVertexAttrib4Nusv = (gl13PVertexAttrib4Nusv)gl13LibGetProcAddress("glVertexAttrib4Nusv");
+    glc->fnVertexAttrib4Nuiv = (gl13PVertexAttrib4Nuiv)gl13LibGetProcAddress("glVertexAttrib4Nuiv");
+    glc->fnUniformMatrix2fv = (gl13PUniformMatrix2fv)gl13LibGetProcAddress("glUniformMatrix2fv");
+    glc->fnUniformMatrix3fv = (gl13PUniformMatrix3fv)gl13LibGetProcAddress("glUniformMatrix3fv");
+    glc->fnUniformMatrix4fv = (gl13PUniformMatrix4fv)gl13LibGetProcAddress("glUniformMatrix4fv");
+    glc->fnUniformMatrix2x3fv = (gl13PUniformMatrix2x3fv)gl13LibGetProcAddress("glUniformMatrix2x3fv");
+    glc->fnUniformMatrix3x2fv = (gl13PUniformMatrix3x2fv)gl13LibGetProcAddress("glUniformMatrix3x2fv");
+    glc->fnUniformMatrix2x4fv = (gl13PUniformMatrix2x4fv)gl13LibGetProcAddress("glUniformMatrix2x4fv");
+    glc->fnUniformMatrix4x2fv = (gl13PUniformMatrix4x2fv)gl13LibGetProcAddress("glUniformMatrix4x2fv");
+    glc->fnUniformMatrix3x4fv = (gl13PUniformMatrix3x4fv)gl13LibGetProcAddress("glUniformMatrix3x4fv");
+    glc->fnUniformMatrix4x3fv = (gl13PUniformMatrix4x3fv)gl13LibGetProcAddress("glUniformMatrix4x3fv");
     return glc;
 }
 

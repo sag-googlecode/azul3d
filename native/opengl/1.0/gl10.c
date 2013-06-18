@@ -3,31 +3,31 @@
 #include <stdlib.h>
 
 #ifdef _WIN32
-	#include <windows.h>
+#include <windows.h>
 #endif
 
 #include "gl10.h"
 
 #ifdef _WIN32
-	HMODULE gl10OpenGL32;
+HMODULE gl10OpenGL32;
 
-	void* gl10LibGetProcAddress(char* name) {
-		if(gl10OpenGL32 == NULL) {
-			gl10OpenGL32 = LoadLibrary(TEXT("opengl32.dll"));
-		}
-		return GetProcAddress(gl10OpenGL32, TEXT(name));
+void* gl10LibGetProcAddress(char* name) {
+	if(gl10OpenGL32 == NULL) {
+		gl10OpenGL32 = LoadLibrary(TEXT("opengl32.dll"));
 	}
+	return GetProcAddress(gl10OpenGL32, TEXT(name));
+}
 
-	void* gl10GLGetProcAddress(char* name) {
-		void* ptr = wglGetProcAddress(name);
+void* gl10GLGetProcAddress(char* name) {
+	void* ptr = wglGetProcAddress(name);
 
-		intptr_t iptr = (intptr_t)ptr;
+	intptr_t iptr = (intptr_t)ptr;
 
-		if(iptr == 0 || iptr == 1 || iptr == 2 || iptr == 3 || iptr == -1) {
-			return NULL;
-		}
-		return ptr;
+	if(iptr == 0 || iptr == 1 || iptr == 2 || iptr == 3 || iptr == -1) {
+		return NULL;
 	}
+	return ptr;
+}
 #endif
 
 
@@ -227,60 +227,12 @@ void gl10ColorMaterial(gl10Context* glc, GLenum face, GLenum mode) {
     return glc->fnColorMaterial(face, mode);
 }
 
-void gl10ColorTable(gl10Context* glc, GLenum target, GLenum internalformat, GLsizei width, GLenum format, GLenum type, GLvoid* data) {
-    return glc->fnColorTable(target, internalformat, width, format, type, data);
-}
-
-void gl10ColorTableParameterfv(gl10Context* glc, GLenum target, GLenum pname, GLfloat* params) {
-    return glc->fnColorTableParameterfv(target, pname, params);
-}
-
-void gl10ColorTableParameteriv(gl10Context* glc, GLenum target, GLenum pname, GLint* params) {
-    return glc->fnColorTableParameteriv(target, pname, params);
-}
-
-void gl10ColorSubTable(gl10Context* glc, GLenum target, GLsizei start, GLsizei count, GLenum format, GLenum type, GLvoid* data) {
-    return glc->fnColorSubTable(target, start, count, format, type, data);
-}
-
 void gl10CopyPixels(gl10Context* glc, GLint x, GLint y, GLsizei width, GLsizei height, GLenum type) {
     return glc->fnCopyPixels(x, y, width, height, type);
 }
 
 void gl10CullFace(gl10Context* glc, GLenum mode) {
     return glc->fnCullFace(mode);
-}
-
-void gl10ConvolutionFilter1D(gl10Context* glc, GLenum target, GLenum internalformat, GLsizei width, GLenum format, GLenum type, GLvoid* data) {
-    return glc->fnConvolutionFilter1D(target, internalformat, width, format, type, data);
-}
-
-void gl10ConvolutionFilter2D(gl10Context* glc, GLenum target, GLenum internalformat, GLsizei width, GLsizei height, GLenum format, GLenum type, GLvoid* data) {
-    return glc->fnConvolutionFilter2D(target, internalformat, width, height, format, type, data);
-}
-
-void gl10ConvolutionParameterf(gl10Context* glc, GLenum target, GLenum pname, GLfloat params) {
-    return glc->fnConvolutionParameterf(target, pname, params);
-}
-
-void gl10ConvolutionParameteri(gl10Context* glc, GLenum target, GLenum pname, GLint params) {
-    return glc->fnConvolutionParameteri(target, pname, params);
-}
-
-void gl10CopyColorTable(gl10Context* glc, GLenum target, GLenum internalformat, GLint x, GLint y, GLsizei width) {
-    return glc->fnCopyColorTable(target, internalformat, x, y, width);
-}
-
-void gl10CopyColorSubTable(gl10Context* glc, GLenum target, GLsizei start, GLint x, GLint y, GLsizei width) {
-    return glc->fnCopyColorSubTable(target, start, x, y, width);
-}
-
-void gl10CopyConvolutionFilter1D(gl10Context* glc, GLenum target, GLenum internalformat, GLint x, GLint y, GLsizei width) {
-    return glc->fnCopyConvolutionFilter1D(target, internalformat, x, y, width);
-}
-
-void gl10CopyConvolutionFilter2D(gl10Context* glc, GLenum target, GLenum internalformat, GLint x, GLint y, GLsizei width, GLsizei height) {
-    return glc->fnCopyConvolutionFilter2D(target, internalformat, x, y, width, height);
 }
 
 void gl10DeleteLists(gl10Context* glc, GLuint list, GLsizei range) {
@@ -1263,6 +1215,62 @@ void gl10Viewport(gl10Context* glc, GLint x, GLint y, GLsizei width, GLsizei hei
     return glc->fnViewport(x, y, width, height);
 }
 
+void gl10GetConvolutionParameterfv(gl10Context* glc, GLenum target, GLenum pname, GLfloat* params) {
+    return glc->fnGetConvolutionParameterfv(target, pname, params);
+}
+
+void gl10GetConvolutionParameteriv(gl10Context* glc, GLenum target, GLenum pname, GLint* params) {
+    return glc->fnGetConvolutionParameteriv(target, pname, params);
+}
+
+void gl10ColorTable(gl10Context* glc, GLenum target, GLenum internalformat, GLsizei width, GLenum format, GLenum type, GLvoid* data) {
+    return glc->fnColorTable(target, internalformat, width, format, type, data);
+}
+
+void gl10ColorTableParameterfv(gl10Context* glc, GLenum target, GLenum pname, GLfloat* params) {
+    return glc->fnColorTableParameterfv(target, pname, params);
+}
+
+void gl10ColorTableParameteriv(gl10Context* glc, GLenum target, GLenum pname, GLint* params) {
+    return glc->fnColorTableParameteriv(target, pname, params);
+}
+
+void gl10ColorSubTable(gl10Context* glc, GLenum target, GLsizei start, GLsizei count, GLenum format, GLenum type, GLvoid* data) {
+    return glc->fnColorSubTable(target, start, count, format, type, data);
+}
+
+void gl10ConvolutionFilter1D(gl10Context* glc, GLenum target, GLenum internalformat, GLsizei width, GLenum format, GLenum type, GLvoid* data) {
+    return glc->fnConvolutionFilter1D(target, internalformat, width, format, type, data);
+}
+
+void gl10ConvolutionFilter2D(gl10Context* glc, GLenum target, GLenum internalformat, GLsizei width, GLsizei height, GLenum format, GLenum type, GLvoid* data) {
+    return glc->fnConvolutionFilter2D(target, internalformat, width, height, format, type, data);
+}
+
+void gl10ConvolutionParameterf(gl10Context* glc, GLenum target, GLenum pname, GLfloat params) {
+    return glc->fnConvolutionParameterf(target, pname, params);
+}
+
+void gl10ConvolutionParameteri(gl10Context* glc, GLenum target, GLenum pname, GLint params) {
+    return glc->fnConvolutionParameteri(target, pname, params);
+}
+
+void gl10CopyColorTable(gl10Context* glc, GLenum target, GLenum internalformat, GLint x, GLint y, GLsizei width) {
+    return glc->fnCopyColorTable(target, internalformat, x, y, width);
+}
+
+void gl10CopyColorSubTable(gl10Context* glc, GLenum target, GLsizei start, GLint x, GLint y, GLsizei width) {
+    return glc->fnCopyColorSubTable(target, start, x, y, width);
+}
+
+void gl10CopyConvolutionFilter1D(gl10Context* glc, GLenum target, GLenum internalformat, GLint x, GLint y, GLsizei width) {
+    return glc->fnCopyConvolutionFilter1D(target, internalformat, x, y, width);
+}
+
+void gl10CopyConvolutionFilter2D(gl10Context* glc, GLenum target, GLenum internalformat, GLint x, GLint y, GLsizei width, GLsizei height) {
+    return glc->fnCopyConvolutionFilter2D(target, internalformat, x, y, width, height);
+}
+
 void gl10GetColorTable(gl10Context* glc, GLenum target, GLenum format, GLenum type, GLvoid* table) {
     return glc->fnGetColorTable(target, format, type, table);
 }
@@ -1277,14 +1285,6 @@ void gl10GetColorTableParameteriv(gl10Context* glc, GLenum target, GLenum pname,
 
 void gl10GetConvolutionFilter(gl10Context* glc, GLenum target, GLenum format, GLenum type, GLvoid* image) {
     return glc->fnGetConvolutionFilter(target, format, type, image);
-}
-
-void gl10GetConvolutionParameterfv(gl10Context* glc, GLenum target, GLenum pname, GLfloat* params) {
-    return glc->fnGetConvolutionParameterfv(target, pname, params);
-}
-
-void gl10GetConvolutionParameteriv(gl10Context* glc, GLenum target, GLenum pname, GLint* params) {
-    return glc->fnGetConvolutionParameteriv(target, pname, params);
 }
 
 void gl10GetHistogram(gl10Context* glc, GLenum target, GLboolean reset, GLenum format, GLenum type, GLvoid* values) {
@@ -1451,6 +1451,838 @@ void gl10SeparableFilter2D(gl10Context* glc, GLenum target, GLenum internalforma
     return glc->fnSeparableFilter2D(target, internalformat, width, height, format, type, row, column);
 }
 
+GLboolean gl10AreTexturesResident(gl10Context* glc, GLsizei n, GLuint* textures, GLboolean* residences) {
+    return glc->fnAreTexturesResident(n, textures, residences);
+}
+
+void gl10ArrayElement(gl10Context* glc, GLint i) {
+    return glc->fnArrayElement(i);
+}
+
+void gl10DrawArrays(gl10Context* glc, GLenum mode, GLint first, GLsizei count) {
+    return glc->fnDrawArrays(mode, first, count);
+}
+
+void gl10DrawElements(gl10Context* glc, GLenum mode, GLsizei count, GLenum type, GLvoid* indices) {
+    return glc->fnDrawElements(mode, count, type, indices);
+}
+
+void gl10GetPointerv(gl10Context* glc, GLenum pname, GLvoid* params) {
+    return glc->fnGetPointerv(pname, params);
+}
+
+void gl10PolygonOffset(gl10Context* glc, GLfloat factor, GLfloat units) {
+    return glc->fnPolygonOffset(factor, units);
+}
+
+void gl10CopyTexImage1D(gl10Context* glc, GLenum target, GLint level, GLenum internalFormat, GLint x, GLint y, GLsizei width, GLint border) {
+    return glc->fnCopyTexImage1D(target, level, internalFormat, x, y, width, border);
+}
+
+void gl10CopyTexImage2D(gl10Context* glc, GLenum target, GLint level, GLenum internalFormat, GLint x, GLint y, GLsizei width, GLsizei height, GLint border) {
+    return glc->fnCopyTexImage2D(target, level, internalFormat, x, y, width, height, border);
+}
+
+void gl10CopyTexSubImage1D(gl10Context* glc, GLenum target, GLint level, GLint xoffset, GLint x, GLint y, GLsizei width) {
+    return glc->fnCopyTexSubImage1D(target, level, xoffset, x, y, width);
+}
+
+void gl10CopyTexSubImage2D(gl10Context* glc, GLenum target, GLint level, GLint xoffset, GLint yoffset, GLint x, GLint y, GLsizei width, GLsizei height) {
+    return glc->fnCopyTexSubImage2D(target, level, xoffset, yoffset, x, y, width, height);
+}
+
+void gl10BindTexture(gl10Context* glc, GLenum target, GLuint texture) {
+    return glc->fnBindTexture(target, texture);
+}
+
+void gl10DeleteTextures(gl10Context* glc, GLsizei n, GLuint* textures) {
+    return glc->fnDeleteTextures(n, textures);
+}
+
+void gl10GenTextures(gl10Context* glc, GLsizei n, GLuint* textures) {
+    return glc->fnGenTextures(n, textures);
+}
+
+GLboolean gl10IsTexture(gl10Context* glc, GLuint texture) {
+    return glc->fnIsTexture(texture);
+}
+
+void gl10ColorPointer(gl10Context* glc, GLint size, GLenum type, GLsizei stride, GLvoid* pointer) {
+    return glc->fnColorPointer(size, type, stride, pointer);
+}
+
+void gl10EnableClientState(gl10Context* glc, GLenum cap) {
+    return glc->fnEnableClientState(cap);
+}
+
+void gl10DisableClientState(gl10Context* glc, GLenum cap) {
+    return glc->fnDisableClientState(cap);
+}
+
+void gl10Indexub(gl10Context* glc, GLubyte c) {
+    return glc->fnIndexub(c);
+}
+
+void gl10Indexubv(gl10Context* glc, GLubyte* c) {
+    return glc->fnIndexubv(c);
+}
+
+void gl10InterleavedArrays(gl10Context* glc, GLenum format, GLsizei stride, GLvoid* pointer) {
+    return glc->fnInterleavedArrays(format, stride, pointer);
+}
+
+void gl10NormalPointer(gl10Context* glc, GLenum type, GLsizei stride, GLvoid* pointer) {
+    return glc->fnNormalPointer(type, stride, pointer);
+}
+
+void gl10PushClientAttrib(gl10Context* glc, GLbitfield mask) {
+    return glc->fnPushClientAttrib(mask);
+}
+
+void gl10PrioritizeTextures(gl10Context* glc, GLsizei n, GLuint* textures, GLclampf* priorities) {
+    return glc->fnPrioritizeTextures(n, textures, priorities);
+}
+
+void gl10PopClientAttrib(gl10Context* glc) {
+    return glc->fnPopClientAttrib();
+}
+
+void gl10TexCoordPointer(gl10Context* glc, GLint size, GLenum type, GLsizei stride, GLvoid* pointer) {
+    return glc->fnTexCoordPointer(size, type, stride, pointer);
+}
+
+void gl10TexSubImage1D(gl10Context* glc, GLenum target, GLint level, GLint xoffset, GLsizei width, GLenum format, GLenum type, GLvoid* pixels) {
+    return glc->fnTexSubImage1D(target, level, xoffset, width, format, type, pixels);
+}
+
+void gl10TexSubImage2D(gl10Context* glc, GLenum target, GLint level, GLint xoffset, GLint yoffset, GLsizei width, GLsizei height, GLenum format, GLenum type, GLvoid* pixels) {
+    return glc->fnTexSubImage2D(target, level, xoffset, yoffset, width, height, format, type, pixels);
+}
+
+void gl10VertexPointer(gl10Context* glc, GLint size, GLenum type, GLsizei stride, GLvoid* pointer) {
+    return glc->fnVertexPointer(size, type, stride, pointer);
+}
+
+void gl10BlendColor(gl10Context* glc, GLclampf red, GLclampf green, GLclampf blue, GLclampf alpha) {
+    return glc->fnBlendColor(red, green, blue, alpha);
+}
+
+void gl10BlendEquation(gl10Context* glc, GLenum mode) {
+    return glc->fnBlendEquation(mode);
+}
+
+void gl10CopyTexSubImage3D(gl10Context* glc, GLenum target, GLint level, GLint xoffset, GLint yoffset, GLint zoffset, GLint x, GLint y, GLsizei width, GLsizei height) {
+    return glc->fnCopyTexSubImage3D(target, level, xoffset, yoffset, zoffset, x, y, width, height);
+}
+
+void gl10DrawRangeElements(gl10Context* glc, GLenum mode, GLuint start, GLuint end, GLsizei count, GLenum type, GLvoid* indices) {
+    return glc->fnDrawRangeElements(mode, start, end, count, type, indices);
+}
+
+void gl10TexImage3D(gl10Context* glc, GLenum target, GLint level, GLint internalformat, GLsizei width, GLsizei height, GLsizei depth, GLint border, GLenum format, GLenum type, GLvoid* pixels) {
+    return glc->fnTexImage3D(target, level, internalformat, width, height, depth, border, format, type, pixels);
+}
+
+void gl10TexSubImage3D(gl10Context* glc, GLenum target, GLint level, GLint xoffset, GLint yoffset, GLint zoffset, GLsizei width, GLsizei height, GLsizei depth, GLenum format, GLenum type, GLvoid* pixels) {
+    return glc->fnTexSubImage3D(target, level, xoffset, yoffset, zoffset, width, height, depth, format, type, pixels);
+}
+
+void gl10ActiveTexture(gl10Context* glc, GLenum texture) {
+    return glc->fnActiveTexture(texture);
+}
+
+void gl10ClientActiveTexture(gl10Context* glc, GLenum texture) {
+    return glc->fnClientActiveTexture(texture);
+}
+
+void gl10CompressedTexImage1D(gl10Context* glc, GLenum target, GLint level, GLenum internalformat, GLsizei width, GLint border, GLsizei imageSize, GLvoid* data) {
+    return glc->fnCompressedTexImage1D(target, level, internalformat, width, border, imageSize, data);
+}
+
+void gl10CompressedTexImage2D(gl10Context* glc, GLenum target, GLint level, GLenum internalformat, GLsizei width, GLsizei height, GLint border, GLsizei imageSize, GLvoid* data) {
+    return glc->fnCompressedTexImage2D(target, level, internalformat, width, height, border, imageSize, data);
+}
+
+void gl10CompressedTexImage3D(gl10Context* glc, GLenum target, GLint level, GLenum internalformat, GLsizei width, GLsizei height, GLsizei depth, GLint border, GLsizei imageSize, GLvoid* data) {
+    return glc->fnCompressedTexImage3D(target, level, internalformat, width, height, depth, border, imageSize, data);
+}
+
+void gl10CompressedTexSubImage1D(gl10Context* glc, GLenum target, GLint level, GLint xoffset, GLsizei width, GLenum format, GLsizei imageSize, GLvoid* data) {
+    return glc->fnCompressedTexSubImage1D(target, level, xoffset, width, format, imageSize, data);
+}
+
+void gl10CompressedTexSubImage2D(gl10Context* glc, GLenum target, GLint level, GLint xoffset, GLint yoffset, GLsizei width, GLsizei height, GLenum format, GLsizei imageSize, GLvoid* data) {
+    return glc->fnCompressedTexSubImage2D(target, level, xoffset, yoffset, width, height, format, imageSize, data);
+}
+
+void gl10CompressedTexSubImage3D(gl10Context* glc, GLenum target, GLint level, GLint xoffset, GLint yoffset, GLint zoffset, GLsizei width, GLsizei height, GLsizei depth, GLenum format, GLsizei imageSize, GLvoid* data) {
+    return glc->fnCompressedTexSubImage3D(target, level, xoffset, yoffset, zoffset, width, height, depth, format, imageSize, data);
+}
+
+void gl10GetCompressedTexImage(gl10Context* glc, GLenum target, GLint lod, GLvoid* img) {
+    return glc->fnGetCompressedTexImage(target, lod, img);
+}
+
+void gl10LoadTransposeMatrixd(gl10Context* glc, GLdouble* m) {
+    return glc->fnLoadTransposeMatrixd(m);
+}
+
+void gl10LoadTransposeMatrixf(gl10Context* glc, GLdouble* m) {
+    return glc->fnLoadTransposeMatrixf(m);
+}
+
+void gl10MultTransposeMatrixd(gl10Context* glc, GLdouble* m) {
+    return glc->fnMultTransposeMatrixd(m);
+}
+
+void gl10MultTransposeMatrixf(gl10Context* glc, GLfloat* m) {
+    return glc->fnMultTransposeMatrixf(m);
+}
+
+void gl10SampleCoverage(gl10Context* glc, GLclampf value, GLboolean invert) {
+    return glc->fnSampleCoverage(value, invert);
+}
+
+void gl10BlendFuncSeparate(gl10Context* glc, GLenum srcRGB, GLenum dstRGB, GLenum srcAlpha, GLenum dstAlpha) {
+    return glc->fnBlendFuncSeparate(srcRGB, dstRGB, srcAlpha, dstAlpha);
+}
+
+void gl10FogCoordPointer(gl10Context* glc, GLenum type, GLsizei stride, GLvoid* pointer) {
+    return glc->fnFogCoordPointer(type, stride, pointer);
+}
+
+void gl10FogCoordd(gl10Context* glc, GLdouble coord) {
+    return glc->fnFogCoordd(coord);
+}
+
+void gl10FogCoordf(gl10Context* glc, GLfloat coord) {
+    return glc->fnFogCoordf(coord);
+}
+
+void gl10FogCoorddv(gl10Context* glc, GLdouble* coord) {
+    return glc->fnFogCoorddv(coord);
+}
+
+void gl10FogCoordfv(gl10Context* glc, GLfloat* coord) {
+    return glc->fnFogCoordfv(coord);
+}
+
+void gl10MultiDrawArrays(gl10Context* glc, GLenum mode, GLint* first, GLsizei* count, GLsizei primcount) {
+    return glc->fnMultiDrawArrays(mode, first, count, primcount);
+}
+
+void gl10MultiDrawElements(gl10Context* glc, GLenum mode, GLsizei* count, GLenum type, GLvoid* indices, GLsizei primcount) {
+    return glc->fnMultiDrawElements(mode, count, type, indices, primcount);
+}
+
+void gl10PointParameterf(gl10Context* glc, GLenum pname, GLfloat param) {
+    return glc->fnPointParameterf(pname, param);
+}
+
+void gl10PointParameteri(gl10Context* glc, GLenum pname, GLint param) {
+    return glc->fnPointParameteri(pname, param);
+}
+
+void gl10SecondaryColor3b(gl10Context* glc, GLbyte red, GLbyte green, GLbyte blue) {
+    return glc->fnSecondaryColor3b(red, green, blue);
+}
+
+void gl10SecondaryColor3s(gl10Context* glc, GLshort red, GLshort green, GLshort blue) {
+    return glc->fnSecondaryColor3s(red, green, blue);
+}
+
+void gl10SecondaryColor3i(gl10Context* glc, GLint red, GLint green, GLint blue) {
+    return glc->fnSecondaryColor3i(red, green, blue);
+}
+
+void gl10SecondaryColor3f(gl10Context* glc, GLfloat red, GLfloat green, GLfloat blue) {
+    return glc->fnSecondaryColor3f(red, green, blue);
+}
+
+void gl10SecondaryColor3d(gl10Context* glc, GLdouble red, GLdouble green, GLdouble blue) {
+    return glc->fnSecondaryColor3d(red, green, blue);
+}
+
+void gl10SecondaryColor3ub(gl10Context* glc, GLubyte red, GLubyte green, GLubyte blue) {
+    return glc->fnSecondaryColor3ub(red, green, blue);
+}
+
+void gl10SecondaryColor3us(gl10Context* glc, GLushort red, GLushort green, GLushort blue) {
+    return glc->fnSecondaryColor3us(red, green, blue);
+}
+
+void gl10SecondaryColor3ui(gl10Context* glc, GLuint red, GLuint green, GLuint blue) {
+    return glc->fnSecondaryColor3ui(red, green, blue);
+}
+
+void gl10SecondaryColor3bv(gl10Context* glc, GLbyte* v) {
+    return glc->fnSecondaryColor3bv(v);
+}
+
+void gl10SecondaryColor3sv(gl10Context* glc, GLshort* v) {
+    return glc->fnSecondaryColor3sv(v);
+}
+
+void gl10SecondaryColor3iv(gl10Context* glc, GLint* v) {
+    return glc->fnSecondaryColor3iv(v);
+}
+
+void gl10SecondaryColor3fv(gl10Context* glc, GLfloat* v) {
+    return glc->fnSecondaryColor3fv(v);
+}
+
+void gl10SecondaryColor3dv(gl10Context* glc, GLdouble* v) {
+    return glc->fnSecondaryColor3dv(v);
+}
+
+void gl10SecondaryColor3ubv(gl10Context* glc, GLubyte* v) {
+    return glc->fnSecondaryColor3ubv(v);
+}
+
+void gl10SecondaryColor3usv(gl10Context* glc, GLushort* v) {
+    return glc->fnSecondaryColor3usv(v);
+}
+
+void gl10SecondaryColor3uiv(gl10Context* glc, GLuint* v) {
+    return glc->fnSecondaryColor3uiv(v);
+}
+
+void gl10SecondaryColorPointer(gl10Context* glc, GLint size, GLenum type, GLsizei stride, GLvoid* pointer) {
+    return glc->fnSecondaryColorPointer(size, type, stride, pointer);
+}
+
+void gl10WindowPos2s(gl10Context* glc, GLshort x, GLshort y) {
+    return glc->fnWindowPos2s(x, y);
+}
+
+void gl10WindowPos2i(gl10Context* glc, GLint x, GLint y) {
+    return glc->fnWindowPos2i(x, y);
+}
+
+void gl10WindowPos2f(gl10Context* glc, GLfloat x, GLfloat y) {
+    return glc->fnWindowPos2f(x, y);
+}
+
+void gl10WindowPos2d(gl10Context* glc, GLdouble x, GLdouble y) {
+    return glc->fnWindowPos2d(x, y);
+}
+
+void gl10WindowPos3s(gl10Context* glc, GLshort x, GLshort y, GLshort z) {
+    return glc->fnWindowPos3s(x, y, z);
+}
+
+void gl10WindowPos3i(gl10Context* glc, GLint x, GLint y, GLint z) {
+    return glc->fnWindowPos3i(x, y, z);
+}
+
+void gl10WindowPos3f(gl10Context* glc, GLfloat x, GLfloat y, GLfloat z) {
+    return glc->fnWindowPos3f(x, y, z);
+}
+
+void gl10WindowPos3d(gl10Context* glc, GLdouble x, GLdouble y, GLdouble z) {
+    return glc->fnWindowPos3d(x, y, z);
+}
+
+void gl10WindowPos2sv(gl10Context* glc, GLshort* v) {
+    return glc->fnWindowPos2sv(v);
+}
+
+void gl10WindowPos2iv(gl10Context* glc, GLint* v) {
+    return glc->fnWindowPos2iv(v);
+}
+
+void gl10WindowPos2fv(gl10Context* glc, GLfloat* v) {
+    return glc->fnWindowPos2fv(v);
+}
+
+void gl10WindowPos2dv(gl10Context* glc, GLdouble* v) {
+    return glc->fnWindowPos2dv(v);
+}
+
+void gl10WindowPos3sv(gl10Context* glc, GLshort* v) {
+    return glc->fnWindowPos3sv(v);
+}
+
+void gl10WindowPos3iv(gl10Context* glc, GLint* v) {
+    return glc->fnWindowPos3iv(v);
+}
+
+void gl10WindowPos3fv(gl10Context* glc, GLfloat* v) {
+    return glc->fnWindowPos3fv(v);
+}
+
+void gl10WindowPos3dv(gl10Context* glc, GLdouble* v) {
+    return glc->fnWindowPos3dv(v);
+}
+
+void gl10BeginQuery(gl10Context* glc, GLenum target, GLuint id) {
+    return glc->fnBeginQuery(target, id);
+}
+
+void gl10BindBuffer(gl10Context* glc, GLenum target, GLuint buffer) {
+    return glc->fnBindBuffer(target, buffer);
+}
+
+void gl10BufferData(gl10Context* glc, GLenum target, GLsizeiptr size, GLvoid* data, GLenum usage) {
+    return glc->fnBufferData(target, size, data, usage);
+}
+
+void gl10BufferSubData(gl10Context* glc, GLenum target, GLenum offset, GLsizeiptr size, GLvoid* data) {
+    return glc->fnBufferSubData(target, offset, size, data);
+}
+
+void gl10DeleteBuffers(gl10Context* glc, GLsizei n, GLuint* buffers) {
+    return glc->fnDeleteBuffers(n, buffers);
+}
+
+void gl10DeleteQueries(gl10Context* glc, GLsizei n, GLuint* ids) {
+    return glc->fnDeleteQueries(n, ids);
+}
+
+void gl10GenBuffers(gl10Context* glc, GLsizei n, GLuint* buffers) {
+    return glc->fnGenBuffers(n, buffers);
+}
+
+void gl10GenQueries(gl10Context* glc, GLsizei n, GLuint* ids) {
+    return glc->fnGenQueries(n, ids);
+}
+
+void gl10GetBufferParameteriv(gl10Context* glc, GLenum target, GLenum value, GLint* data) {
+    return glc->fnGetBufferParameteriv(target, value, data);
+}
+
+void gl10GetBufferPointerv(gl10Context* glc, GLenum target, GLenum pname, GLvoid* params) {
+    return glc->fnGetBufferPointerv(target, pname, params);
+}
+
+void gl10GetBufferSubData(gl10Context* glc, GLenum target, GLintptr offset, GLsizeiptr size, GLvoid* data) {
+    return glc->fnGetBufferSubData(target, offset, size, data);
+}
+
+void gl10GetQueryObjectiv(gl10Context* glc, GLuint id, GLenum pname, GLint* params) {
+    return glc->fnGetQueryObjectiv(id, pname, params);
+}
+
+void gl10GetQueryObjectuiv(gl10Context* glc, GLuint id, GLenum pname, GLuint* params) {
+    return glc->fnGetQueryObjectuiv(id, pname, params);
+}
+
+void gl10GetQueryiv(gl10Context* glc, GLenum target, GLenum pname, GLint* params) {
+    return glc->fnGetQueryiv(target, pname, params);
+}
+
+GLboolean gl10IsBuffer(gl10Context* glc, GLuint buffer) {
+    return glc->fnIsBuffer(buffer);
+}
+
+GLboolean gl10IsQuery(gl10Context* glc, GLuint id) {
+    return glc->fnIsQuery(id);
+}
+
+GLvoid* gl10MapBuffer(gl10Context* glc, GLenum target, GLenum access) {
+    return glc->fnMapBuffer(target, access);
+}
+
+GLboolean gl10UnmapBuffer(gl10Context* glc, GLenum target) {
+    return glc->fnUnmapBuffer(target);
+}
+
+void gl10AttachShader(gl10Context* glc, GLuint program, GLuint shader) {
+    return glc->fnAttachShader(program, shader);
+}
+
+void gl10BindAttribLocation(gl10Context* glc, GLuint program, GLuint index, GLchar* name) {
+    return glc->fnBindAttribLocation(program, index, name);
+}
+
+void gl10BlendEquationSeperate(gl10Context* glc, GLenum modeRGB, GLenum modeAlpha) {
+    return glc->fnBlendEquationSeperate(modeRGB, modeAlpha);
+}
+
+void gl10CompileShader(gl10Context* glc, GLuint shader) {
+    return glc->fnCompileShader(shader);
+}
+
+GLuint gl10CreateProgram(gl10Context* glc) {
+    return glc->fnCreateProgram();
+}
+
+GLuint gl10CreateShader(gl10Context* glc, GLenum shaderType) {
+    return glc->fnCreateShader(shaderType);
+}
+
+void gl10DeleteProgram(gl10Context* glc, GLuint program) {
+    return glc->fnDeleteProgram(program);
+}
+
+void gl10DeleteShader(gl10Context* glc, GLuint shader) {
+    return glc->fnDeleteShader(shader);
+}
+
+void gl10DetachShader(gl10Context* glc, GLuint program, GLuint shader) {
+    return glc->fnDetachShader(program, shader);
+}
+
+void gl10EnableVertexAttribArray(gl10Context* glc, GLuint index) {
+    return glc->fnEnableVertexAttribArray(index);
+}
+
+void gl10DisableVertexAttribArray(gl10Context* glc, GLuint index) {
+    return glc->fnDisableVertexAttribArray(index);
+}
+
+void gl10DrawBuffers(gl10Context* glc, GLsizei n, GLenum* bufs) {
+    return glc->fnDrawBuffers(n, bufs);
+}
+
+void gl10GetActiveAttrib(gl10Context* glc, GLuint program, GLuint index, GLsizei bufSize, GLsizei* length, GLint* size, GLenum* type, GLchar* name) {
+    return glc->fnGetActiveAttrib(program, index, bufSize, length, size, type, name);
+}
+
+void gl10GetActiveUniform(gl10Context* glc, GLuint program, GLuint index, GLsizei bufSize, GLsizei* length, GLint* size, GLenum* type, GLchar* name) {
+    return glc->fnGetActiveUniform(program, index, bufSize, length, size, type, name);
+}
+
+void gl10GetAttachedShaders(gl10Context* glc, GLuint program, GLsizei maxCount, GLsizei* count, GLuint* shaders) {
+    return glc->fnGetAttachedShaders(program, maxCount, count, shaders);
+}
+
+GLint gl10GetAttribLocation(gl10Context* glc, GLuint program, GLchar* name) {
+    return glc->fnGetAttribLocation(program, name);
+}
+
+void gl10GetProgramiv(gl10Context* glc, GLuint program, GLenum pname, GLint* params) {
+    return glc->fnGetProgramiv(program, pname, params);
+}
+
+void gl10GetProgramInfoLog(gl10Context* glc, GLuint program, GLsizei maxLength, GLsizei* length, GLchar* infoLog) {
+    return glc->fnGetProgramInfoLog(program, maxLength, length, infoLog);
+}
+
+void gl10GetShaderiv(gl10Context* glc, GLuint program, GLenum pname, GLint* params) {
+    return glc->fnGetShaderiv(program, pname, params);
+}
+
+void gl10GetShaderInfoLog(gl10Context* glc, GLuint shader, GLsizei maxLength, GLsizei* length, GLchar* infoLog) {
+    return glc->fnGetShaderInfoLog(shader, maxLength, length, infoLog);
+}
+
+void gl10GetShaderSource(gl10Context* glc, GLuint shader, GLsizei bufSize, GLsizei* length, GLchar* source) {
+    return glc->fnGetShaderSource(shader, bufSize, length, source);
+}
+
+void gl10GetUniformfv(gl10Context* glc, GLuint program, GLint location, GLfloat* params) {
+    return glc->fnGetUniformfv(program, location, params);
+}
+
+void gl10GetUniformiv(gl10Context* glc, GLuint program, GLint location, GLint* params) {
+    return glc->fnGetUniformiv(program, location, params);
+}
+
+GLint gl10GetUniformLocation(gl10Context* glc, GLuint program, GLchar* name) {
+    return glc->fnGetUniformLocation(program, name);
+}
+
+void gl10GetVertexAttribdv(gl10Context* glc, GLuint index, GLenum pname, GLdouble* params) {
+    return glc->fnGetVertexAttribdv(index, pname, params);
+}
+
+void gl10GetVertexAttribfv(gl10Context* glc, GLuint index, GLenum pname, GLfloat* params) {
+    return glc->fnGetVertexAttribfv(index, pname, params);
+}
+
+void gl10GetVertexAttribiv(gl10Context* glc, GLuint index, GLenum pname, GLint* params) {
+    return glc->fnGetVertexAttribiv(index, pname, params);
+}
+
+void gl10GetVertexAttribPointerv(gl10Context* glc, GLuint index, GLenum pname, GLvoid* pointer) {
+    return glc->fnGetVertexAttribPointerv(index, pname, pointer);
+}
+
+GLboolean gl10IsProgram(gl10Context* glc, GLuint program) {
+    return glc->fnIsProgram(program);
+}
+
+GLboolean gl10IsShader(gl10Context* glc, GLuint shader) {
+    return glc->fnIsShader(shader);
+}
+
+void gl10LinkProgram(gl10Context* glc, GLuint program) {
+    return glc->fnLinkProgram(program);
+}
+
+void gl10ShaderSource(gl10Context* glc, GLuint shader, GLsizei count, GLchar** string, GLint* length) {
+    return glc->fnShaderSource(shader, count, string, length);
+}
+
+void gl10StencilFuncSeparate(gl10Context* glc, GLenum face, GLenum func, GLint ref, GLuint mask) {
+    return glc->fnStencilFuncSeparate(face, func, ref, mask);
+}
+
+void gl10StencilMaskSeparate(gl10Context* glc, GLenum face, GLuint mask) {
+    return glc->fnStencilMaskSeparate(face, mask);
+}
+
+void gl10StencilOpSeparate(gl10Context* glc, GLenum face, GLenum sfail, GLenum dpfail, GLenum dppass) {
+    return glc->fnStencilOpSeparate(face, sfail, dpfail, dppass);
+}
+
+void gl10Uniform1f(gl10Context* glc, GLint location, GLfloat v0) {
+    return glc->fnUniform1f(location, v0);
+}
+
+void gl10Uniform2f(gl10Context* glc, GLint location, GLfloat v0, GLfloat v1) {
+    return glc->fnUniform2f(location, v0, v1);
+}
+
+void gl10Uniform3f(gl10Context* glc, GLint location, GLfloat v0, GLfloat v1, GLfloat v2) {
+    return glc->fnUniform3f(location, v0, v1, v2);
+}
+
+void gl10Uniform4f(gl10Context* glc, GLint location, GLfloat v0, GLfloat v1, GLfloat v2, GLfloat v3) {
+    return glc->fnUniform4f(location, v0, v1, v2, v3);
+}
+
+void gl10Uniform1i(gl10Context* glc, GLint location, GLint v0) {
+    return glc->fnUniform1i(location, v0);
+}
+
+void gl10Uniform2i(gl10Context* glc, GLint location, GLint v0, GLint v1) {
+    return glc->fnUniform2i(location, v0, v1);
+}
+
+void gl10Uniform3i(gl10Context* glc, GLint location, GLint v0, GLint v1, GLint v2) {
+    return glc->fnUniform3i(location, v0, v1, v2);
+}
+
+void gl10Uniform4i(gl10Context* glc, GLint location, GLint v0, GLint v1, GLint v2, GLint v3) {
+    return glc->fnUniform4i(location, v0, v1, v2, v3);
+}
+
+void gl10Uniform1fv(gl10Context* glc, GLint location, GLsizei count, GLfloat* value) {
+    return glc->fnUniform1fv(location, count, value);
+}
+
+void gl10Uniform2fv(gl10Context* glc, GLint location, GLsizei count, GLfloat* value) {
+    return glc->fnUniform2fv(location, count, value);
+}
+
+void gl10Uniform3fv(gl10Context* glc, GLint location, GLsizei count, GLfloat* value) {
+    return glc->fnUniform3fv(location, count, value);
+}
+
+void gl10Uniform4fv(gl10Context* glc, GLint location, GLsizei count, GLfloat* value) {
+    return glc->fnUniform4fv(location, count, value);
+}
+
+void gl10Uniform1iv(gl10Context* glc, GLint location, GLsizei count, GLint* value) {
+    return glc->fnUniform1iv(location, count, value);
+}
+
+void gl10Uniform2iv(gl10Context* glc, GLint location, GLsizei count, GLint* value) {
+    return glc->fnUniform2iv(location, count, value);
+}
+
+void gl10Uniform3iv(gl10Context* glc, GLint location, GLsizei count, GLint* value) {
+    return glc->fnUniform3iv(location, count, value);
+}
+
+void gl10Uniform4iv(gl10Context* glc, GLint location, GLsizei count, GLint* value) {
+    return glc->fnUniform4iv(location, count, value);
+}
+
+void gl10UseProgram(gl10Context* glc, GLuint program) {
+    return glc->fnUseProgram(program);
+}
+
+void gl10ValidateProgram(gl10Context* glc, GLuint program) {
+    return glc->fnValidateProgram(program);
+}
+
+void gl10VertexAttribPointer(gl10Context* glc, GLuint index, GLint size, GLenum type, GLboolean normalized, GLsizei stride, GLvoid* pointer) {
+    return glc->fnVertexAttribPointer(index, size, type, normalized, stride, pointer);
+}
+
+void gl10VertexAttrib1f(gl10Context* glc, GLuint index, GLfloat v0) {
+    return glc->fnVertexAttrib1f(index, v0);
+}
+
+void gl10VertexAttrib1s(gl10Context* glc, GLuint index, GLshort v0) {
+    return glc->fnVertexAttrib1s(index, v0);
+}
+
+void gl10VertexAttrib1d(gl10Context* glc, GLuint index, GLdouble v0) {
+    return glc->fnVertexAttrib1d(index, v0);
+}
+
+void gl10VertexAttrib2f(gl10Context* glc, GLuint index, GLfloat v0, GLfloat v1) {
+    return glc->fnVertexAttrib2f(index, v0, v1);
+}
+
+void gl10VertexAttrib2s(gl10Context* glc, GLuint index, GLshort v0, GLshort v1) {
+    return glc->fnVertexAttrib2s(index, v0, v1);
+}
+
+void gl10VertexAttrib2d(gl10Context* glc, GLuint index, GLdouble v0, GLdouble v1) {
+    return glc->fnVertexAttrib2d(index, v0, v1);
+}
+
+void gl10VertexAttrib3f(gl10Context* glc, GLuint index, GLfloat v0, GLfloat v1, GLfloat v2) {
+    return glc->fnVertexAttrib3f(index, v0, v1, v2);
+}
+
+void gl10VertexAttrib3s(gl10Context* glc, GLuint index, GLshort v0, GLshort v1, GLshort v2) {
+    return glc->fnVertexAttrib3s(index, v0, v1, v2);
+}
+
+void gl10VertexAttrib3d(gl10Context* glc, GLuint index, GLdouble v0, GLdouble v1, GLdouble v2) {
+    return glc->fnVertexAttrib3d(index, v0, v1, v2);
+}
+
+void gl10VertexAttrib4f(gl10Context* glc, GLuint index, GLfloat v0, GLfloat v1, GLfloat v2, GLfloat v3) {
+    return glc->fnVertexAttrib4f(index, v0, v1, v2, v3);
+}
+
+void gl10VertexAttrib4s(gl10Context* glc, GLuint index, GLshort v0, GLshort v1, GLshort v2, GLshort v3) {
+    return glc->fnVertexAttrib4s(index, v0, v1, v2, v3);
+}
+
+void gl10VertexAttrib4d(gl10Context* glc, GLuint index, GLdouble v0, GLdouble v1, GLdouble v2, GLdouble v3) {
+    return glc->fnVertexAttrib4d(index, v0, v1, v2, v3);
+}
+
+void gl10VertexAttrib4Nuv(gl10Context* glc, GLuint index, GLubyte v0, GLubyte v1, GLubyte v2, GLubyte v3) {
+    return glc->fnVertexAttrib4Nuv(index, v0, v1, v2, v3);
+}
+
+void gl10VertexAttrib1fv(gl10Context* glc, GLuint index, GLfloat* v) {
+    return glc->fnVertexAttrib1fv(index, v);
+}
+
+void gl10VertexAttrib1sv(gl10Context* glc, GLuint index, GLshort* v) {
+    return glc->fnVertexAttrib1sv(index, v);
+}
+
+void gl10VertexAttrib1dv(gl10Context* glc, GLuint index, GLdouble* v) {
+    return glc->fnVertexAttrib1dv(index, v);
+}
+
+void gl10VertexAttrib2fv(gl10Context* glc, GLuint index, GLfloat* v) {
+    return glc->fnVertexAttrib2fv(index, v);
+}
+
+void gl10VertexAttrib2sv(gl10Context* glc, GLuint index, GLshort* v) {
+    return glc->fnVertexAttrib2sv(index, v);
+}
+
+void gl10VertexAttrib2dv(gl10Context* glc, GLuint index, GLdouble* v) {
+    return glc->fnVertexAttrib2dv(index, v);
+}
+
+void gl10VertexAttrib3fv(gl10Context* glc, GLuint index, GLfloat* v) {
+    return glc->fnVertexAttrib3fv(index, v);
+}
+
+void gl10VertexAttrib3sv(gl10Context* glc, GLuint index, GLshort* v) {
+    return glc->fnVertexAttrib3sv(index, v);
+}
+
+void gl10VertexAttrib3dv(gl10Context* glc, GLuint index, GLdouble* v) {
+    return glc->fnVertexAttrib3dv(index, v);
+}
+
+void gl10VertexAttrib4fv(gl10Context* glc, GLuint index, GLfloat* v) {
+    return glc->fnVertexAttrib4fv(index, v);
+}
+
+void gl10VertexAttrib4sv(gl10Context* glc, GLuint index, GLshort* v) {
+    return glc->fnVertexAttrib4sv(index, v);
+}
+
+void gl10VertexAttrib4dv(gl10Context* glc, GLuint index, GLdouble* v) {
+    return glc->fnVertexAttrib4dv(index, v);
+}
+
+void gl10VertexAttrib4iv(gl10Context* glc, GLuint index, GLint* v) {
+    return glc->fnVertexAttrib4iv(index, v);
+}
+
+void gl10VertexAttrib4bv(gl10Context* glc, GLuint index, GLbyte* v) {
+    return glc->fnVertexAttrib4bv(index, v);
+}
+
+void gl10VertexAttrib4ubv(gl10Context* glc, GLuint index, GLubyte* v) {
+    return glc->fnVertexAttrib4ubv(index, v);
+}
+
+void gl10VertexAttrib4usv(gl10Context* glc, GLuint index, GLushort* v) {
+    return glc->fnVertexAttrib4usv(index, v);
+}
+
+void gl10VertexAttrib4uiv(gl10Context* glc, GLuint index, GLuint* v) {
+    return glc->fnVertexAttrib4uiv(index, v);
+}
+
+void gl10VertexAttrib4Nbv(gl10Context* glc, GLuint index, GLbyte* v) {
+    return glc->fnVertexAttrib4Nbv(index, v);
+}
+
+void gl10VertexAttrib4Nsv(gl10Context* glc, GLuint index, GLshort* v) {
+    return glc->fnVertexAttrib4Nsv(index, v);
+}
+
+void gl10VertexAttrib4Niv(gl10Context* glc, GLuint index, GLint* v) {
+    return glc->fnVertexAttrib4Niv(index, v);
+}
+
+void gl10VertexAttrib4Nubv(gl10Context* glc, GLuint index, GLubyte* v) {
+    return glc->fnVertexAttrib4Nubv(index, v);
+}
+
+void gl10VertexAttrib4Nusv(gl10Context* glc, GLuint index, GLushort* v) {
+    return glc->fnVertexAttrib4Nusv(index, v);
+}
+
+void gl10VertexAttrib4Nuiv(gl10Context* glc, GLuint index, GLuint* v) {
+    return glc->fnVertexAttrib4Nuiv(index, v);
+}
+
+void gl10UniformMatrix2fv(gl10Context* glc, GLint location, GLsizei count, GLboolean transpose, GLfloat* value) {
+    return glc->fnUniformMatrix2fv(location, count, transpose, value);
+}
+
+void gl10UniformMatrix3fv(gl10Context* glc, GLint location, GLsizei count, GLboolean transpose, GLfloat* value) {
+    return glc->fnUniformMatrix3fv(location, count, transpose, value);
+}
+
+void gl10UniformMatrix4fv(gl10Context* glc, GLint location, GLsizei count, GLboolean transpose, GLfloat* value) {
+    return glc->fnUniformMatrix4fv(location, count, transpose, value);
+}
+
+void gl10UniformMatrix2x3fv(gl10Context* glc, GLint location, GLsizei count, GLboolean transpose, GLfloat* value) {
+    return glc->fnUniformMatrix2x3fv(location, count, transpose, value);
+}
+
+void gl10UniformMatrix3x2fv(gl10Context* glc, GLint location, GLsizei count, GLboolean transpose, GLfloat* value) {
+    return glc->fnUniformMatrix3x2fv(location, count, transpose, value);
+}
+
+void gl10UniformMatrix2x4fv(gl10Context* glc, GLint location, GLsizei count, GLboolean transpose, GLfloat* value) {
+    return glc->fnUniformMatrix2x4fv(location, count, transpose, value);
+}
+
+void gl10UniformMatrix4x2fv(gl10Context* glc, GLint location, GLsizei count, GLboolean transpose, GLfloat* value) {
+    return glc->fnUniformMatrix4x2fv(location, count, transpose, value);
+}
+
+void gl10UniformMatrix3x4fv(gl10Context* glc, GLint location, GLsizei count, GLboolean transpose, GLfloat* value) {
+    return glc->fnUniformMatrix3x4fv(location, count, transpose, value);
+}
+
+void gl10UniformMatrix4x3fv(gl10Context* glc, GLint location, GLsizei count, GLboolean transpose, GLfloat* value) {
+    return glc->fnUniformMatrix4x3fv(location, count, transpose, value);
+}
+
 gl10Context* gl10NewContext() {
     gl10Context* glc = calloc(1, sizeof(gl10Context));
 
@@ -1504,20 +2336,8 @@ gl10Context* gl10NewContext() {
     glc->fnColor4usv = (gl10PColor4usv)gl10LibGetProcAddress("glColor4usv");
     glc->fnColorMask = (gl10PColorMask)gl10LibGetProcAddress("glColorMask");
     glc->fnColorMaterial = (gl10PColorMaterial)gl10LibGetProcAddress("glColorMaterial");
-    glc->fnColorTable = (gl10PColorTable)gl10GLGetProcAddress("glColorTable");
-    glc->fnColorTableParameterfv = (gl10PColorTableParameterfv)gl10GLGetProcAddress("glColorTableParameterfv");
-    glc->fnColorTableParameteriv = (gl10PColorTableParameteriv)gl10GLGetProcAddress("glColorTableParameteriv");
-    glc->fnColorSubTable = (gl10PColorSubTable)gl10GLGetProcAddress("glColorSubTable");
     glc->fnCopyPixels = (gl10PCopyPixels)gl10LibGetProcAddress("glCopyPixels");
     glc->fnCullFace = (gl10PCullFace)gl10LibGetProcAddress("glCullFace");
-    glc->fnConvolutionFilter1D = (gl10PConvolutionFilter1D)gl10GLGetProcAddress("glConvolutionFilter1D");
-    glc->fnConvolutionFilter2D = (gl10PConvolutionFilter2D)gl10GLGetProcAddress("glConvolutionFilter2D");
-    glc->fnConvolutionParameterf = (gl10PConvolutionParameterf)gl10GLGetProcAddress("glConvolutionParameterf");
-    glc->fnConvolutionParameteri = (gl10PConvolutionParameteri)gl10GLGetProcAddress("glConvolutionParameteri");
-    glc->fnCopyColorTable = (gl10PCopyColorTable)gl10GLGetProcAddress("glCopyColorTable");
-    glc->fnCopyColorSubTable = (gl10PCopyColorSubTable)gl10GLGetProcAddress("glCopyColorSubTable");
-    glc->fnCopyConvolutionFilter1D = (gl10PCopyConvolutionFilter1D)gl10GLGetProcAddress("glCopyConvolutionFilter1D");
-    glc->fnCopyConvolutionFilter2D = (gl10PCopyConvolutionFilter2D)gl10GLGetProcAddress("glCopyConvolutionFilter2D");
     glc->fnDeleteLists = (gl10PDeleteLists)gl10LibGetProcAddress("glDeleteLists");
     glc->fnDepthFunc = (gl10PDepthFunc)gl10LibGetProcAddress("glDepthFunc");
     glc->fnDepthMask = (gl10PDepthMask)gl10LibGetProcAddress("glDepthMask");
@@ -1763,12 +2583,24 @@ gl10Context* gl10NewContext() {
     glc->fnVertex4f = (gl10PVertex4f)gl10LibGetProcAddress("glVertex4f");
     glc->fnVertex4d = (gl10PVertex4d)gl10LibGetProcAddress("glVertex4d");
     glc->fnViewport = (gl10PViewport)gl10LibGetProcAddress("glViewport");
+    glc->fnGetConvolutionParameterfv = (gl10PGetConvolutionParameterfv)gl10LibGetProcAddress("glGetConvolutionParameterfv");
+    glc->fnGetConvolutionParameteriv = (gl10PGetConvolutionParameteriv)gl10LibGetProcAddress("glGetConvolutionParameteriv");
+    glc->fnColorTable = (gl10PColorTable)gl10GLGetProcAddress("glColorTable");
+    glc->fnColorTableParameterfv = (gl10PColorTableParameterfv)gl10GLGetProcAddress("glColorTableParameterfv");
+    glc->fnColorTableParameteriv = (gl10PColorTableParameteriv)gl10GLGetProcAddress("glColorTableParameteriv");
+    glc->fnColorSubTable = (gl10PColorSubTable)gl10GLGetProcAddress("glColorSubTable");
+    glc->fnConvolutionFilter1D = (gl10PConvolutionFilter1D)gl10GLGetProcAddress("glConvolutionFilter1D");
+    glc->fnConvolutionFilter2D = (gl10PConvolutionFilter2D)gl10GLGetProcAddress("glConvolutionFilter2D");
+    glc->fnConvolutionParameterf = (gl10PConvolutionParameterf)gl10GLGetProcAddress("glConvolutionParameterf");
+    glc->fnConvolutionParameteri = (gl10PConvolutionParameteri)gl10GLGetProcAddress("glConvolutionParameteri");
+    glc->fnCopyColorTable = (gl10PCopyColorTable)gl10GLGetProcAddress("glCopyColorTable");
+    glc->fnCopyColorSubTable = (gl10PCopyColorSubTable)gl10GLGetProcAddress("glCopyColorSubTable");
+    glc->fnCopyConvolutionFilter1D = (gl10PCopyConvolutionFilter1D)gl10GLGetProcAddress("glCopyConvolutionFilter1D");
+    glc->fnCopyConvolutionFilter2D = (gl10PCopyConvolutionFilter2D)gl10GLGetProcAddress("glCopyConvolutionFilter2D");
     glc->fnGetColorTable = (gl10PGetColorTable)gl10GLGetProcAddress("glGetColorTable");
     glc->fnGetColorTableParameterfv = (gl10PGetColorTableParameterfv)gl10GLGetProcAddress("glGetColorTableParameterfv");
     glc->fnGetColorTableParameteriv = (gl10PGetColorTableParameteriv)gl10GLGetProcAddress("glGetColorTableParameteriv");
     glc->fnGetConvolutionFilter = (gl10PGetConvolutionFilter)gl10GLGetProcAddress("glGetConvolutionFilter");
-    glc->fnGetConvolutionParameterfv = (gl10PGetConvolutionParameterfv)gl10LibGetProcAddress("glGetConvolutionParameterfv");
-    glc->fnGetConvolutionParameteriv = (gl10PGetConvolutionParameteriv)gl10LibGetProcAddress("glGetConvolutionParameteriv");
     glc->fnGetHistogram = (gl10PGetHistogram)gl10GLGetProcAddress("glGetHistogram");
     glc->fnGetHistogramParameterfv = (gl10PGetHistogramParameterfv)gl10GLGetProcAddress("glGetHistogramParameterfv");
     glc->fnGetHistogramParameteriv = (gl10PGetHistogramParameteriv)gl10GLGetProcAddress("glGetHistogramParameteriv");
@@ -1810,6 +2642,214 @@ gl10Context* gl10NewContext() {
     glc->fnResetHistogram = (gl10PResetHistogram)gl10GLGetProcAddress("glResetHistogram");
     glc->fnResetMinmax = (gl10PResetMinmax)gl10GLGetProcAddress("glResetMinmax");
     glc->fnSeparableFilter2D = (gl10PSeparableFilter2D)gl10GLGetProcAddress("glSeparableFilter2D");
+    glc->fnAreTexturesResident = (gl10PAreTexturesResident)gl10LibGetProcAddress("glAreTexturesResident");
+    glc->fnArrayElement = (gl10PArrayElement)gl10LibGetProcAddress("glArrayElement");
+    glc->fnDrawArrays = (gl10PDrawArrays)gl10LibGetProcAddress("glDrawArrays");
+    glc->fnDrawElements = (gl10PDrawElements)gl10LibGetProcAddress("glDrawElements");
+    glc->fnGetPointerv = (gl10PGetPointerv)gl10LibGetProcAddress("glGetPointerv");
+    glc->fnPolygonOffset = (gl10PPolygonOffset)gl10LibGetProcAddress("glPolygonOffset");
+    glc->fnCopyTexImage1D = (gl10PCopyTexImage1D)gl10LibGetProcAddress("glCopyTexImage1D");
+    glc->fnCopyTexImage2D = (gl10PCopyTexImage2D)gl10LibGetProcAddress("glCopyTexImage2D");
+    glc->fnCopyTexSubImage1D = (gl10PCopyTexSubImage1D)gl10LibGetProcAddress("glCopyTexSubImage1D");
+    glc->fnCopyTexSubImage2D = (gl10PCopyTexSubImage2D)gl10LibGetProcAddress("glCopyTexSubImage2D");
+    glc->fnBindTexture = (gl10PBindTexture)gl10LibGetProcAddress("glBindTexture");
+    glc->fnDeleteTextures = (gl10PDeleteTextures)gl10LibGetProcAddress("glDeleteTextures");
+    glc->fnGenTextures = (gl10PGenTextures)gl10LibGetProcAddress("glGenTextures");
+    glc->fnIsTexture = (gl10PIsTexture)gl10LibGetProcAddress("glIsTexture");
+    glc->fnColorPointer = (gl10PColorPointer)gl10LibGetProcAddress("glColorPointer");
+    glc->fnEnableClientState = (gl10PEnableClientState)gl10LibGetProcAddress("glEnableClientState");
+    glc->fnDisableClientState = (gl10PDisableClientState)gl10LibGetProcAddress("glDisableClientState");
+    glc->fnIndexub = (gl10PIndexub)gl10LibGetProcAddress("glIndexub");
+    glc->fnIndexubv = (gl10PIndexubv)gl10LibGetProcAddress("glIndexubv");
+    glc->fnInterleavedArrays = (gl10PInterleavedArrays)gl10LibGetProcAddress("glInterleavedArrays");
+    glc->fnNormalPointer = (gl10PNormalPointer)gl10LibGetProcAddress("glNormalPointer");
+    glc->fnPushClientAttrib = (gl10PPushClientAttrib)gl10LibGetProcAddress("glPushClientAttrib");
+    glc->fnPrioritizeTextures = (gl10PPrioritizeTextures)gl10LibGetProcAddress("glPrioritizeTextures");
+    glc->fnPopClientAttrib = (gl10PPopClientAttrib)gl10LibGetProcAddress("glPopClientAttrib");
+    glc->fnTexCoordPointer = (gl10PTexCoordPointer)gl10LibGetProcAddress("glTexCoordPointer");
+    glc->fnTexSubImage1D = (gl10PTexSubImage1D)gl10LibGetProcAddress("glTexSubImage1D");
+    glc->fnTexSubImage2D = (gl10PTexSubImage2D)gl10LibGetProcAddress("glTexSubImage2D");
+    glc->fnVertexPointer = (gl10PVertexPointer)gl10LibGetProcAddress("glVertexPointer");
+    glc->fnBlendColor = (gl10PBlendColor)gl10GLGetProcAddress("glBlendColor");
+    glc->fnBlendEquation = (gl10PBlendEquation)gl10GLGetProcAddress("glBlendEquation");
+    glc->fnCopyTexSubImage3D = (gl10PCopyTexSubImage3D)gl10GLGetProcAddress("glCopyTexSubImage3D");
+    glc->fnDrawRangeElements = (gl10PDrawRangeElements)gl10GLGetProcAddress("glDrawRangeElements");
+    glc->fnTexImage3D = (gl10PTexImage3D)gl10GLGetProcAddress("glTexImage3D");
+    glc->fnTexSubImage3D = (gl10PTexSubImage3D)gl10GLGetProcAddress("glTexSubImage3D");
+    glc->fnActiveTexture = (gl10PActiveTexture)gl10GLGetProcAddress("glActiveTexture");
+    glc->fnClientActiveTexture = (gl10PClientActiveTexture)gl10GLGetProcAddress("glClientActiveTexture");
+    glc->fnCompressedTexImage1D = (gl10PCompressedTexImage1D)gl10GLGetProcAddress("glCompressedTexImage1D");
+    glc->fnCompressedTexImage2D = (gl10PCompressedTexImage2D)gl10GLGetProcAddress("glCompressedTexImage2D");
+    glc->fnCompressedTexImage3D = (gl10PCompressedTexImage3D)gl10GLGetProcAddress("glCompressedTexImage3D");
+    glc->fnCompressedTexSubImage1D = (gl10PCompressedTexSubImage1D)gl10GLGetProcAddress("glCompressedTexSubImage1D");
+    glc->fnCompressedTexSubImage2D = (gl10PCompressedTexSubImage2D)gl10GLGetProcAddress("glCompressedTexSubImage2D");
+    glc->fnCompressedTexSubImage3D = (gl10PCompressedTexSubImage3D)gl10GLGetProcAddress("glCompressedTexSubImage3D");
+    glc->fnGetCompressedTexImage = (gl10PGetCompressedTexImage)gl10GLGetProcAddress("glGetCompressedTexImage");
+    glc->fnLoadTransposeMatrixd = (gl10PLoadTransposeMatrixd)gl10GLGetProcAddress("glLoadTransposeMatrixd");
+    glc->fnLoadTransposeMatrixf = (gl10PLoadTransposeMatrixf)gl10GLGetProcAddress("glLoadTransposeMatrixf");
+    glc->fnMultTransposeMatrixd = (gl10PMultTransposeMatrixd)gl10GLGetProcAddress("glMultTransposeMatrixd");
+    glc->fnMultTransposeMatrixf = (gl10PMultTransposeMatrixf)gl10GLGetProcAddress("glMultTransposeMatrixf");
+    glc->fnSampleCoverage = (gl10PSampleCoverage)gl10GLGetProcAddress("glSampleCoverage");
+    glc->fnBlendFuncSeparate = (gl10PBlendFuncSeparate)gl10GLGetProcAddress("glBlendFuncSeparate");
+    glc->fnFogCoordPointer = (gl10PFogCoordPointer)gl10GLGetProcAddress("glFogCoordPointer");
+    glc->fnFogCoordd = (gl10PFogCoordd)gl10GLGetProcAddress("glFogCoordd");
+    glc->fnFogCoordf = (gl10PFogCoordf)gl10GLGetProcAddress("glFogCoordf");
+    glc->fnFogCoorddv = (gl10PFogCoorddv)gl10GLGetProcAddress("glFogCoorddv");
+    glc->fnFogCoordfv = (gl10PFogCoordfv)gl10GLGetProcAddress("glFogCoordfv");
+    glc->fnMultiDrawArrays = (gl10PMultiDrawArrays)gl10GLGetProcAddress("glMultiDrawArrays");
+    glc->fnMultiDrawElements = (gl10PMultiDrawElements)gl10GLGetProcAddress("glMultiDrawElements");
+    glc->fnPointParameterf = (gl10PPointParameterf)gl10GLGetProcAddress("glPointParameterf");
+    glc->fnPointParameteri = (gl10PPointParameteri)gl10GLGetProcAddress("glPointParameteri");
+    glc->fnSecondaryColor3b = (gl10PSecondaryColor3b)gl10GLGetProcAddress("glSecondaryColor3b");
+    glc->fnSecondaryColor3s = (gl10PSecondaryColor3s)gl10GLGetProcAddress("glSecondaryColor3s");
+    glc->fnSecondaryColor3i = (gl10PSecondaryColor3i)gl10GLGetProcAddress("glSecondaryColor3i");
+    glc->fnSecondaryColor3f = (gl10PSecondaryColor3f)gl10GLGetProcAddress("glSecondaryColor3f");
+    glc->fnSecondaryColor3d = (gl10PSecondaryColor3d)gl10GLGetProcAddress("glSecondaryColor3d");
+    glc->fnSecondaryColor3ub = (gl10PSecondaryColor3ub)gl10GLGetProcAddress("glSecondaryColor3ub");
+    glc->fnSecondaryColor3us = (gl10PSecondaryColor3us)gl10GLGetProcAddress("glSecondaryColor3us");
+    glc->fnSecondaryColor3ui = (gl10PSecondaryColor3ui)gl10GLGetProcAddress("glSecondaryColor3ui");
+    glc->fnSecondaryColor3bv = (gl10PSecondaryColor3bv)gl10GLGetProcAddress("glSecondaryColor3bv");
+    glc->fnSecondaryColor3sv = (gl10PSecondaryColor3sv)gl10GLGetProcAddress("glSecondaryColor3sv");
+    glc->fnSecondaryColor3iv = (gl10PSecondaryColor3iv)gl10GLGetProcAddress("glSecondaryColor3iv");
+    glc->fnSecondaryColor3fv = (gl10PSecondaryColor3fv)gl10GLGetProcAddress("glSecondaryColor3fv");
+    glc->fnSecondaryColor3dv = (gl10PSecondaryColor3dv)gl10GLGetProcAddress("glSecondaryColor3dv");
+    glc->fnSecondaryColor3ubv = (gl10PSecondaryColor3ubv)gl10GLGetProcAddress("glSecondaryColor3ubv");
+    glc->fnSecondaryColor3usv = (gl10PSecondaryColor3usv)gl10GLGetProcAddress("glSecondaryColor3usv");
+    glc->fnSecondaryColor3uiv = (gl10PSecondaryColor3uiv)gl10GLGetProcAddress("glSecondaryColor3uiv");
+    glc->fnSecondaryColorPointer = (gl10PSecondaryColorPointer)gl10GLGetProcAddress("glSecondaryColorPointer");
+    glc->fnWindowPos2s = (gl10PWindowPos2s)gl10GLGetProcAddress("glWindowPos2s");
+    glc->fnWindowPos2i = (gl10PWindowPos2i)gl10GLGetProcAddress("glWindowPos2i");
+    glc->fnWindowPos2f = (gl10PWindowPos2f)gl10GLGetProcAddress("glWindowPos2f");
+    glc->fnWindowPos2d = (gl10PWindowPos2d)gl10GLGetProcAddress("glWindowPos2d");
+    glc->fnWindowPos3s = (gl10PWindowPos3s)gl10GLGetProcAddress("glWindowPos3s");
+    glc->fnWindowPos3i = (gl10PWindowPos3i)gl10GLGetProcAddress("glWindowPos3i");
+    glc->fnWindowPos3f = (gl10PWindowPos3f)gl10GLGetProcAddress("glWindowPos3f");
+    glc->fnWindowPos3d = (gl10PWindowPos3d)gl10GLGetProcAddress("glWindowPos3d");
+    glc->fnWindowPos2sv = (gl10PWindowPos2sv)gl10GLGetProcAddress("glWindowPos2sv");
+    glc->fnWindowPos2iv = (gl10PWindowPos2iv)gl10GLGetProcAddress("glWindowPos2iv");
+    glc->fnWindowPos2fv = (gl10PWindowPos2fv)gl10GLGetProcAddress("glWindowPos2fv");
+    glc->fnWindowPos2dv = (gl10PWindowPos2dv)gl10GLGetProcAddress("glWindowPos2dv");
+    glc->fnWindowPos3sv = (gl10PWindowPos3sv)gl10GLGetProcAddress("glWindowPos3sv");
+    glc->fnWindowPos3iv = (gl10PWindowPos3iv)gl10GLGetProcAddress("glWindowPos3iv");
+    glc->fnWindowPos3fv = (gl10PWindowPos3fv)gl10GLGetProcAddress("glWindowPos3fv");
+    glc->fnWindowPos3dv = (gl10PWindowPos3dv)gl10GLGetProcAddress("glWindowPos3dv");
+    glc->fnBeginQuery = (gl10PBeginQuery)gl10GLGetProcAddress("glBeginQuery");
+    glc->fnBindBuffer = (gl10PBindBuffer)gl10GLGetProcAddress("glBindBuffer");
+    glc->fnBufferData = (gl10PBufferData)gl10GLGetProcAddress("glBufferData");
+    glc->fnBufferSubData = (gl10PBufferSubData)gl10GLGetProcAddress("glBufferSubData");
+    glc->fnDeleteBuffers = (gl10PDeleteBuffers)gl10GLGetProcAddress("glDeleteBuffers");
+    glc->fnDeleteQueries = (gl10PDeleteQueries)gl10GLGetProcAddress("glDeleteQueries");
+    glc->fnGenBuffers = (gl10PGenBuffers)gl10GLGetProcAddress("glGenBuffers");
+    glc->fnGenQueries = (gl10PGenQueries)gl10GLGetProcAddress("glGenQueries");
+    glc->fnGetBufferParameteriv = (gl10PGetBufferParameteriv)gl10GLGetProcAddress("glGetBufferParameteriv");
+    glc->fnGetBufferPointerv = (gl10PGetBufferPointerv)gl10GLGetProcAddress("glGetBufferPointerv");
+    glc->fnGetBufferSubData = (gl10PGetBufferSubData)gl10GLGetProcAddress("glGetBufferSubData");
+    glc->fnGetQueryObjectiv = (gl10PGetQueryObjectiv)gl10GLGetProcAddress("glGetQueryObjectiv");
+    glc->fnGetQueryObjectuiv = (gl10PGetQueryObjectuiv)gl10GLGetProcAddress("glGetQueryObjectuiv");
+    glc->fnGetQueryiv = (gl10PGetQueryiv)gl10GLGetProcAddress("glGetQueryiv");
+    glc->fnIsBuffer = (gl10PIsBuffer)gl10GLGetProcAddress("glIsBuffer");
+    glc->fnIsQuery = (gl10PIsQuery)gl10GLGetProcAddress("glIsQuery");
+    glc->fnMapBuffer = (gl10PMapBuffer)gl10GLGetProcAddress("glMapBuffer");
+    glc->fnUnmapBuffer = (gl10PUnmapBuffer)gl10GLGetProcAddress("glUnmapBuffer");
+    glc->fnAttachShader = (gl10PAttachShader)gl10GLGetProcAddress("glAttachShader");
+    glc->fnBindAttribLocation = (gl10PBindAttribLocation)gl10GLGetProcAddress("glBindAttribLocation");
+    glc->fnBlendEquationSeperate = (gl10PBlendEquationSeperate)gl10GLGetProcAddress("glBlendEquationSeperate");
+    glc->fnCompileShader = (gl10PCompileShader)gl10GLGetProcAddress("glCompileShader");
+    glc->fnCreateProgram = (gl10PCreateProgram)gl10GLGetProcAddress("glCreateProgram");
+    glc->fnCreateShader = (gl10PCreateShader)gl10GLGetProcAddress("glCreateShader");
+    glc->fnDeleteProgram = (gl10PDeleteProgram)gl10GLGetProcAddress("glDeleteProgram");
+    glc->fnDeleteShader = (gl10PDeleteShader)gl10GLGetProcAddress("glDeleteShader");
+    glc->fnDetachShader = (gl10PDetachShader)gl10GLGetProcAddress("glDetachShader");
+    glc->fnEnableVertexAttribArray = (gl10PEnableVertexAttribArray)gl10GLGetProcAddress("glEnableVertexAttribArray");
+    glc->fnDisableVertexAttribArray = (gl10PDisableVertexAttribArray)gl10GLGetProcAddress("glDisableVertexAttribArray");
+    glc->fnDrawBuffers = (gl10PDrawBuffers)gl10LibGetProcAddress("glDrawBuffers");
+    glc->fnGetActiveAttrib = (gl10PGetActiveAttrib)gl10LibGetProcAddress("glGetActiveAttrib");
+    glc->fnGetActiveUniform = (gl10PGetActiveUniform)gl10LibGetProcAddress("glGetActiveUniform");
+    glc->fnGetAttachedShaders = (gl10PGetAttachedShaders)gl10LibGetProcAddress("glGetAttachedShaders");
+    glc->fnGetAttribLocation = (gl10PGetAttribLocation)gl10LibGetProcAddress("glGetAttribLocation");
+    glc->fnGetProgramiv = (gl10PGetProgramiv)gl10LibGetProcAddress("glGetProgramiv");
+    glc->fnGetProgramInfoLog = (gl10PGetProgramInfoLog)gl10LibGetProcAddress("glGetProgramInfoLog");
+    glc->fnGetShaderiv = (gl10PGetShaderiv)gl10LibGetProcAddress("glGetShaderiv");
+    glc->fnGetShaderInfoLog = (gl10PGetShaderInfoLog)gl10LibGetProcAddress("glGetShaderInfoLog");
+    glc->fnGetShaderSource = (gl10PGetShaderSource)gl10LibGetProcAddress("glGetShaderSource");
+    glc->fnGetUniformfv = (gl10PGetUniformfv)gl10LibGetProcAddress("glGetUniformfv");
+    glc->fnGetUniformiv = (gl10PGetUniformiv)gl10LibGetProcAddress("glGetUniformiv");
+    glc->fnGetUniformLocation = (gl10PGetUniformLocation)gl10LibGetProcAddress("glGetUniformLocation");
+    glc->fnGetVertexAttribdv = (gl10PGetVertexAttribdv)gl10LibGetProcAddress("glGetVertexAttribdv");
+    glc->fnGetVertexAttribfv = (gl10PGetVertexAttribfv)gl10LibGetProcAddress("glGetVertexAttribfv");
+    glc->fnGetVertexAttribiv = (gl10PGetVertexAttribiv)gl10LibGetProcAddress("glGetVertexAttribiv");
+    glc->fnGetVertexAttribPointerv = (gl10PGetVertexAttribPointerv)gl10LibGetProcAddress("glGetVertexAttribPointerv");
+    glc->fnIsProgram = (gl10PIsProgram)gl10LibGetProcAddress("glIsProgram");
+    glc->fnIsShader = (gl10PIsShader)gl10LibGetProcAddress("glIsShader");
+    glc->fnLinkProgram = (gl10PLinkProgram)gl10LibGetProcAddress("glLinkProgram");
+    glc->fnShaderSource = (gl10PShaderSource)gl10LibGetProcAddress("glShaderSource");
+    glc->fnStencilFuncSeparate = (gl10PStencilFuncSeparate)gl10LibGetProcAddress("glStencilFuncSeparate");
+    glc->fnStencilMaskSeparate = (gl10PStencilMaskSeparate)gl10LibGetProcAddress("glStencilMaskSeparate");
+    glc->fnStencilOpSeparate = (gl10PStencilOpSeparate)gl10LibGetProcAddress("glStencilOpSeparate");
+    glc->fnUniform1f = (gl10PUniform1f)gl10LibGetProcAddress("glUniform1f");
+    glc->fnUniform2f = (gl10PUniform2f)gl10LibGetProcAddress("glUniform2f");
+    glc->fnUniform3f = (gl10PUniform3f)gl10LibGetProcAddress("glUniform3f");
+    glc->fnUniform4f = (gl10PUniform4f)gl10LibGetProcAddress("glUniform4f");
+    glc->fnUniform1i = (gl10PUniform1i)gl10LibGetProcAddress("glUniform1i");
+    glc->fnUniform2i = (gl10PUniform2i)gl10LibGetProcAddress("glUniform2i");
+    glc->fnUniform3i = (gl10PUniform3i)gl10LibGetProcAddress("glUniform3i");
+    glc->fnUniform4i = (gl10PUniform4i)gl10LibGetProcAddress("glUniform4i");
+    glc->fnUniform1fv = (gl10PUniform1fv)gl10LibGetProcAddress("glUniform1fv");
+    glc->fnUniform2fv = (gl10PUniform2fv)gl10LibGetProcAddress("glUniform2fv");
+    glc->fnUniform3fv = (gl10PUniform3fv)gl10LibGetProcAddress("glUniform3fv");
+    glc->fnUniform4fv = (gl10PUniform4fv)gl10LibGetProcAddress("glUniform4fv");
+    glc->fnUniform1iv = (gl10PUniform1iv)gl10LibGetProcAddress("glUniform1iv");
+    glc->fnUniform2iv = (gl10PUniform2iv)gl10LibGetProcAddress("glUniform2iv");
+    glc->fnUniform3iv = (gl10PUniform3iv)gl10LibGetProcAddress("glUniform3iv");
+    glc->fnUniform4iv = (gl10PUniform4iv)gl10LibGetProcAddress("glUniform4iv");
+    glc->fnUseProgram = (gl10PUseProgram)gl10LibGetProcAddress("glUseProgram");
+    glc->fnValidateProgram = (gl10PValidateProgram)gl10LibGetProcAddress("glValidateProgram");
+    glc->fnVertexAttribPointer = (gl10PVertexAttribPointer)gl10LibGetProcAddress("glVertexAttribPointer");
+    glc->fnVertexAttrib1f = (gl10PVertexAttrib1f)gl10LibGetProcAddress("glVertexAttrib1f");
+    glc->fnVertexAttrib1s = (gl10PVertexAttrib1s)gl10LibGetProcAddress("glVertexAttrib1s");
+    glc->fnVertexAttrib1d = (gl10PVertexAttrib1d)gl10LibGetProcAddress("glVertexAttrib1d");
+    glc->fnVertexAttrib2f = (gl10PVertexAttrib2f)gl10LibGetProcAddress("glVertexAttrib2f");
+    glc->fnVertexAttrib2s = (gl10PVertexAttrib2s)gl10LibGetProcAddress("glVertexAttrib2s");
+    glc->fnVertexAttrib2d = (gl10PVertexAttrib2d)gl10LibGetProcAddress("glVertexAttrib2d");
+    glc->fnVertexAttrib3f = (gl10PVertexAttrib3f)gl10LibGetProcAddress("glVertexAttrib3f");
+    glc->fnVertexAttrib3s = (gl10PVertexAttrib3s)gl10LibGetProcAddress("glVertexAttrib3s");
+    glc->fnVertexAttrib3d = (gl10PVertexAttrib3d)gl10LibGetProcAddress("glVertexAttrib3d");
+    glc->fnVertexAttrib4f = (gl10PVertexAttrib4f)gl10LibGetProcAddress("glVertexAttrib4f");
+    glc->fnVertexAttrib4s = (gl10PVertexAttrib4s)gl10LibGetProcAddress("glVertexAttrib4s");
+    glc->fnVertexAttrib4d = (gl10PVertexAttrib4d)gl10LibGetProcAddress("glVertexAttrib4d");
+    glc->fnVertexAttrib4Nuv = (gl10PVertexAttrib4Nuv)gl10LibGetProcAddress("glVertexAttrib4Nuv");
+    glc->fnVertexAttrib1fv = (gl10PVertexAttrib1fv)gl10LibGetProcAddress("glVertexAttrib1fv");
+    glc->fnVertexAttrib1sv = (gl10PVertexAttrib1sv)gl10LibGetProcAddress("glVertexAttrib1sv");
+    glc->fnVertexAttrib1dv = (gl10PVertexAttrib1dv)gl10LibGetProcAddress("glVertexAttrib1dv");
+    glc->fnVertexAttrib2fv = (gl10PVertexAttrib2fv)gl10LibGetProcAddress("glVertexAttrib2fv");
+    glc->fnVertexAttrib2sv = (gl10PVertexAttrib2sv)gl10LibGetProcAddress("glVertexAttrib2sv");
+    glc->fnVertexAttrib2dv = (gl10PVertexAttrib2dv)gl10LibGetProcAddress("glVertexAttrib2dv");
+    glc->fnVertexAttrib3fv = (gl10PVertexAttrib3fv)gl10LibGetProcAddress("glVertexAttrib3fv");
+    glc->fnVertexAttrib3sv = (gl10PVertexAttrib3sv)gl10LibGetProcAddress("glVertexAttrib3sv");
+    glc->fnVertexAttrib3dv = (gl10PVertexAttrib3dv)gl10LibGetProcAddress("glVertexAttrib3dv");
+    glc->fnVertexAttrib4fv = (gl10PVertexAttrib4fv)gl10LibGetProcAddress("glVertexAttrib4fv");
+    glc->fnVertexAttrib4sv = (gl10PVertexAttrib4sv)gl10LibGetProcAddress("glVertexAttrib4sv");
+    glc->fnVertexAttrib4dv = (gl10PVertexAttrib4dv)gl10LibGetProcAddress("glVertexAttrib4dv");
+    glc->fnVertexAttrib4iv = (gl10PVertexAttrib4iv)gl10LibGetProcAddress("glVertexAttrib4iv");
+    glc->fnVertexAttrib4bv = (gl10PVertexAttrib4bv)gl10LibGetProcAddress("glVertexAttrib4bv");
+    glc->fnVertexAttrib4ubv = (gl10PVertexAttrib4ubv)gl10LibGetProcAddress("glVertexAttrib4ubv");
+    glc->fnVertexAttrib4usv = (gl10PVertexAttrib4usv)gl10LibGetProcAddress("glVertexAttrib4usv");
+    glc->fnVertexAttrib4uiv = (gl10PVertexAttrib4uiv)gl10LibGetProcAddress("glVertexAttrib4uiv");
+    glc->fnVertexAttrib4Nbv = (gl10PVertexAttrib4Nbv)gl10LibGetProcAddress("glVertexAttrib4Nbv");
+    glc->fnVertexAttrib4Nsv = (gl10PVertexAttrib4Nsv)gl10LibGetProcAddress("glVertexAttrib4Nsv");
+    glc->fnVertexAttrib4Niv = (gl10PVertexAttrib4Niv)gl10LibGetProcAddress("glVertexAttrib4Niv");
+    glc->fnVertexAttrib4Nubv = (gl10PVertexAttrib4Nubv)gl10LibGetProcAddress("glVertexAttrib4Nubv");
+    glc->fnVertexAttrib4Nusv = (gl10PVertexAttrib4Nusv)gl10LibGetProcAddress("glVertexAttrib4Nusv");
+    glc->fnVertexAttrib4Nuiv = (gl10PVertexAttrib4Nuiv)gl10LibGetProcAddress("glVertexAttrib4Nuiv");
+    glc->fnUniformMatrix2fv = (gl10PUniformMatrix2fv)gl10LibGetProcAddress("glUniformMatrix2fv");
+    glc->fnUniformMatrix3fv = (gl10PUniformMatrix3fv)gl10LibGetProcAddress("glUniformMatrix3fv");
+    glc->fnUniformMatrix4fv = (gl10PUniformMatrix4fv)gl10LibGetProcAddress("glUniformMatrix4fv");
+    glc->fnUniformMatrix2x3fv = (gl10PUniformMatrix2x3fv)gl10LibGetProcAddress("glUniformMatrix2x3fv");
+    glc->fnUniformMatrix3x2fv = (gl10PUniformMatrix3x2fv)gl10LibGetProcAddress("glUniformMatrix3x2fv");
+    glc->fnUniformMatrix2x4fv = (gl10PUniformMatrix2x4fv)gl10LibGetProcAddress("glUniformMatrix2x4fv");
+    glc->fnUniformMatrix4x2fv = (gl10PUniformMatrix4x2fv)gl10LibGetProcAddress("glUniformMatrix4x2fv");
+    glc->fnUniformMatrix3x4fv = (gl10PUniformMatrix3x4fv)gl10LibGetProcAddress("glUniformMatrix3x4fv");
+    glc->fnUniformMatrix4x3fv = (gl10PUniformMatrix4x3fv)gl10LibGetProcAddress("glUniformMatrix4x3fv");
     return glc;
 }
 
