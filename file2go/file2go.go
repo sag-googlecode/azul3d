@@ -1,17 +1,17 @@
 // file2go is an simple tool to convert an binary file to an go source file as an []byte
 package main
 
-import(
-	"io/ioutil"
+import (
 	"flag"
 	"fmt"
+	"io/ioutil"
 	"log"
 	"os"
 )
 
-var(
+var (
 	input, output, pkg, v string
-	force bool
+	force                 bool
 )
 
 func init() {
@@ -39,7 +39,6 @@ func main() {
 		log.Fatal("Output file already exists. (Use -f to overwrite).")
 		os.Exit(1)
 	}
-
 
 	inputFile, err := os.Open(input)
 	if err != nil {
@@ -74,4 +73,3 @@ func main() {
 
 	fmt.Fprintf(outputFile, "\n}")
 }
-
