@@ -10,11 +10,10 @@ import (
 )
 
 var (
-	dwmapi                     = syscall.NewLazyDLL("dwmapi.dll")
-	pDwmEnableBlurBehindWindow = dwmapi.NewProc("DwmEnableBlurBehindWindow")
+	dwmapi                        = syscall.NewLazyDLL("dwmapi.dll")
+	pDwmEnableBlurBehindWindow    = dwmapi.NewProc("DwmEnableBlurBehindWindow")
 	pDwmExtendFrameIntoClientArea = dwmapi.NewProc("DwmExtendFrameIntoClientArea")
 )
-
 
 type DWM_BLURBEHIND struct {
 	DwFlags                uint32
@@ -64,4 +63,3 @@ func DwmExtendFrameIntoClientArea(hwnd HWND, pMarInset *MARGINS) error {
 		return errors.New(fmt.Sprintf("No window blur support: DwmExtendFrameIntoClientArea(): HRESULT = %d", ret))
 	}
 }
-

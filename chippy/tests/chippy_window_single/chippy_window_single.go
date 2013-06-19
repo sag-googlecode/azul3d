@@ -11,8 +11,8 @@ package main
 
 import (
 	"code.google.com/p/azul3d/chippy"
-	"log"
 	"fmt"
+	"log"
 	"os"
 )
 

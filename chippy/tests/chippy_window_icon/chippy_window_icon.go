@@ -7,11 +7,11 @@ package main
 
 import (
 	"code.google.com/p/azul3d/chippy"
-	_ "image/png"
 	"image"
-	"time"
+	_ "image/png"
 	"log"
 	"os"
+	"time"
 )
 
 func main() {

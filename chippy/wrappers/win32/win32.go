@@ -41,9 +41,9 @@ LPTSTR macro_MAKEINTRESOURCE(WORD wInteger);
 import "C"
 
 import (
+	"sync"
 	"unicode/utf16"
 	"unsafe"
-	"sync"
 )
 
 // UTF16ToString returns the UTF-8 encoding of the UTF-16 sequence s,
@@ -529,6 +529,7 @@ func IntToHBRUSH(v Int) HBRUSH {
 }
 
 type COLORREF C.COLORREF
+
 func CreateSolidBrush(crColor COLORREF) HBRUSH {
 	return HBRUSH(C.CreateSolidBrush(C.COLORREF(crColor)))
 }
@@ -539,19 +540,18 @@ func CreateRectRgn(nLeftRect, nTopRect, nRightRect, nBottomRect int) HRGN {
 	return HRGN(C.CreateRectRgn(C.int(nLeftRect), C.int(nTopRect), C.int(nRightRect), C.int(nBottomRect)))
 }
 
-
 type HMONITOR C.HMONITOR
 
 func MonitorFromWindow(hwnd HWND, dwFlags DWORD) HMONITOR {
 	return HMONITOR(C.MonitorFromWindow(C.HWND(hwnd), C.DWORD(dwFlags)))
 }
 
-type MONITORINFOEX struct{
-	CbSize DWORD
+type MONITORINFOEX struct {
+	CbSize    DWORD
 	RcMonitor RECT
-	RcWork RECT
-	DwFlags DWORD
-	szDevice [C.CCHDEVICENAME]uint16
+	RcWork    RECT
+	DwFlags   DWORD
+	szDevice  [C.CCHDEVICENAME]uint16
 }
 
 func (m *MONITORINFOEX) SetSize() {
@@ -559,7 +559,7 @@ func (m *MONITORINFOEX) SetSize() {
 }
 
 func (m *MONITORINFOEX) Device() string {
-	ar := make([]uint16, len(m.szDevice) + 1)
+	ar := make([]uint16, len(m.szDevice)+1)
 	for i, c := range m.szDevice {
 		ar[i] = c
 	}
@@ -573,6 +573,7 @@ func GetMonitorInfo(hMonitor HMONITOR, lpmi *MONITORINFOEX) bool {
 type MonitorEnumProc func(hMonitor HMONITOR, hdcMonitor HDC, lprcMonitor *RECT, dwData LPARAM) bool
 
 var monitorEnumProcCallback MonitorEnumProc
+
 /*
 BOOL CALLBACK MonitorEnumProc(
   _In_  HMONITOR hMonitor,
@@ -596,6 +597,7 @@ func EnumDisplayMonitors(hdc HDC, lprcClip *RECT, fn MonitorEnumProc, dwData LPA
 	monitorEnumProcCallback = nil
 	return ret
 }
+
 /*
 BOOL EnumDisplayMonitors(
   _In_  HDC hdc,
@@ -605,8 +607,8 @@ BOOL EnumDisplayMonitors(
 );
 */
 
-
 type LowLevelKeyboardHookProc func(nCode Int, wParam WPARAM, lParam LPARAM) LRESULT
+
 /*
 LRESULT CALLBACK LowLevelKeyboardProc(
   _In_  int nCode,
@@ -623,6 +625,7 @@ func LowLevelKeyboardHookCallback(nCode C.int, wParam C.WPARAM, lParam C.LPARAM)
 }
 
 type HHOOK C.HHOOK
+
 func SetLowLevelKeyboardHook(fn LowLevelKeyboardHookProc, hMod HINSTANCE, dwThreadId DWORD) HHOOK {
 	lowLevelKeyboardHookCallback = fn
 	return HHOOK(C.SetWindowsHookEx(C.WH_KEYBOARD_LL, C.win32_LowLevelKeyboardHookCallbackHandle, C.HINSTANCE(hMod), C.DWORD(dwThreadId)))
@@ -634,23 +637,20 @@ func UnhookWindowsHookEx(hook HHOOK) bool {
 }
 
 type KBDLLHOOKSTRUCT struct {
-	VkCode DWORD
-	ScanCode DWORD
-	Flags DWORD
-	Time DWORD
+	VkCode      DWORD
+	ScanCode    DWORD
+	Flags       DWORD
+	Time        DWORD
 	DwExtraInfo ULONG_PTR
 }
 
-const(
+const (
 	HC_ACTION = C.HC_ACTION
 )
+
 func CallNextHookEx(hhk HHOOK, nCode Int, wParam WPARAM, lParam LPARAM) LRESULT {
 	return LRESULT(C.CallNextHookEx(C.HHOOK(hhk), C.int(nCode), C.WPARAM(wParam), C.LPARAM(lParam)))
 }
-
-
-
-
 
 type WNDCLASSEX C.WNDCLASSEX
 
@@ -1102,16 +1102,16 @@ const (
 	WMSZ_TOPRIGHT    = C.WMSZ_TOPRIGHT
 	WM_SIZING        = C.WM_SIZING
 
-	WM_PAINT = C.WM_PAINT
+	WM_PAINT      = C.WM_PAINT
 	WM_ERASEBKGND = C.WM_ERASEBKGND
 
 	WM_SETCURSOR = C.WM_SETCURSOR
 
-	ICON_BIG     = C.ICON_BIG
-	ICON_SMALL   = C.ICON_SMALL
-	ICON_SMALL2  = C.ICON_SMALL2
-	WM_GETICON   = C.WM_GETICON
-	WM_SETICON   = C.WM_SETICON
+	ICON_BIG    = C.ICON_BIG
+	ICON_SMALL  = C.ICON_SMALL
+	ICON_SMALL2 = C.ICON_SMALL2
+	WM_GETICON  = C.WM_GETICON
+	WM_SETICON  = C.WM_SETICON
 
 	WM_SIZE        = C.WM_SIZE
 	SIZE_MAXIMIZED = C.SIZE_MAXIMIZED
@@ -1137,13 +1137,13 @@ const (
 	WM_MBUTTONDBLCLK = C.WM_MBUTTONDBLCLK
 	WM_MOUSEWHEEL    = C.WM_MOUSEWHEEL
 
-	MK_CONTROL=0x0008
-	MK_LBUTTON=0x0001
-	MK_MBUTTON=0x0010
-	MK_RBUTTON=0x0002
-	MK_SHIFT=0x0004
-	MK_XBUTTON1=0x0020
-	MK_XBUTTON2=0x0040
+	MK_CONTROL       = 0x0008
+	MK_LBUTTON       = 0x0001
+	MK_MBUTTON       = 0x0010
+	MK_RBUTTON       = 0x0002
+	MK_SHIFT         = 0x0004
+	MK_XBUTTON1      = 0x0020
+	MK_XBUTTON2      = 0x0040
 	WM_XBUTTONDOWN   = C.WM_XBUTTONDOWN
 	WM_XBUTTONUP     = C.WM_XBUTTONUP
 	WM_XBUTTONDBLCLK = C.WM_XBUTTONDBLCLK
@@ -1154,9 +1154,9 @@ const (
 	WM_MOUSELEAVE = C.WM_MOUSELEAVE
 
 	WM_SYSKEYDOWN = C.WM_SYSKEYDOWN
-	WM_SYSKEYUP = C.WM_SYSKEYUP
-	WM_KEYDOWN = C.WM_KEYDOWN
-	WM_KEYUP   = C.WM_KEYUP
+	WM_SYSKEYUP   = C.WM_SYSKEYUP
+	WM_KEYDOWN    = C.WM_KEYDOWN
+	WM_KEYUP      = C.WM_KEYUP
 
 	WM_CHAR = C.WM_CHAR
 
@@ -1164,16 +1164,16 @@ const (
 
 	WM_INPUT = C.WM_INPUT
 
-	GIDC_ARRIVAL = 1
-	GIDC_REMOVAL = 2
+	GIDC_ARRIVAL           = 1
+	GIDC_REMOVAL           = 2
 	WM_INPUT_DEVICE_CHANGE = 0x00FE
 
 	MONITOR_DEFAULTTONEAREST = C.MONITOR_DEFAULTTONEAREST
-	WM_EXITSIZEMOVE = C.WM_EXITSIZEMOVE
+	WM_EXITSIZEMOVE          = C.WM_EXITSIZEMOVE
 
-	HTNOWHERE = C.HTNOWHERE
+	HTNOWHERE     = C.HTNOWHERE
 	HTTRANSPARENT = C.HTTRANSPARENT
-	WM_NCHITTEST = C.WM_NCHITTEST
+	WM_NCHITTEST  = C.WM_NCHITTEST
 )
 
 func IsIconic(hwnd HWND) bool {
@@ -1230,7 +1230,7 @@ func GetUpdateRect(hwnd HWND, lpRect *RECT, bErase bool) bool {
 	if lpRect != nil {
 		return C.GetUpdateRect(C.HWND(hwnd), (C.LPRECT)(unsafe.Pointer(&lpRect)), cbool) != 0
 	}
-		return C.GetUpdateRect(C.HWND(hwnd), nil, cbool) != 0
+	return C.GetUpdateRect(C.HWND(hwnd), nil, cbool) != 0
 }
 
 func ValidateRect(hwnd HWND, rect *RECT) bool {
@@ -1258,12 +1258,12 @@ const (
 	SM_CYCAPTION   = C.SM_CYCAPTION // Title bar width
 	SM_CXSIZEFRAME = C.SM_CXSIZEFRAME
 	SM_CYSIZEFRAME = C.SM_CYSIZEFRAME
-	SM_CXCURSOR = C.SM_CXCURSOR
-	SM_CYCURSOR = C.SM_CYCURSOR
-	SM_CXICON = C.SM_CXICON
-	SM_CYICON = C.SM_CYICON
-	SM_CXSMICON = C.SM_CXSMICON
-	SM_CYSMICON = C.SM_CYSMICON
+	SM_CXCURSOR    = C.SM_CXCURSOR
+	SM_CYCURSOR    = C.SM_CYCURSOR
+	SM_CXICON      = C.SM_CXICON
+	SM_CYICON      = C.SM_CYICON
+	SM_CXSMICON    = C.SM_CXSMICON
+	SM_CYSMICON    = C.SM_CYSMICON
 )
 
 func GetSystemMetrics(nIndex Int) (ret Int) {
@@ -1342,10 +1342,10 @@ func SetWindowText(hwnd HWND, lpString string) bool {
 type HBITMAP unsafe.Pointer
 
 type ICONINFO struct {
-	FIcon Int
+	FIcon    Int
 	XHotspot DWORD
 	YHotspot DWORD
-	HbmMask HBITMAP
+	HbmMask  HBITMAP
 	HbmColor HBITMAP
 }
 
@@ -1375,12 +1375,13 @@ type BITMAPINFO struct {
 	BmiColors [1]RGBQUAD
 }
 
-const(
+const (
 	DIB_RGB_COLORS = C.DIB_RGB_COLORS
-	BI_RGB = C.BI_RGB
+	BI_RGB         = C.BI_RGB
 )
 
 type HGDIOBJ C.HGDIOBJ
+
 func DeleteObject(object HGDIOBJ) bool {
 	return C.DeleteObject(C.HGDIOBJ(object)) != 0
 }
@@ -1393,8 +1394,8 @@ func CreateCompatibleDC(hdc HDC) HDC {
 	return HDC(C.CreateCompatibleDC(C.HDC(hdc)))
 }
 
-const(
-	NULL_BRUSH = C.NULL_BRUSH
+const (
+	NULL_BRUSH  = C.NULL_BRUSH
 	BLACK_BRUSH = C.BLACK_BRUSH
 )
 
@@ -1407,14 +1408,14 @@ func FillRect(hdc HDC, rect *RECT, hbr HBRUSH) bool {
 }
 
 type BLENDFUNCTION struct {
-	BlendOp BYTE
-	BlendFlags BYTE
+	BlendOp             BYTE
+	BlendFlags          BYTE
 	SourceConstantAlpha BYTE
-	AlphaFormat BYTE
+	AlphaFormat         BYTE
 }
 
-const(
-	AC_SRC_OVER = C.AC_SRC_OVER
+const (
+	AC_SRC_OVER  = C.AC_SRC_OVER
 	AC_SRC_ALPHA = C.AC_SRC_ALPHA
 )
 
@@ -1422,8 +1423,7 @@ func AlphaBlend(hdcDest HDC, xoriginDest, yoriginDest, wDest, hDest Int, hdcSrc 
 	return C.AlphaBlend(C.HDC(hdcDest), C.int(xoriginDest), C.int(yoriginDest), C.int(wDest), C.int(hDest), C.HDC(hdcSrc), C.int(xoriginSrc), C.int(yoriginSrc), C.int(wSrc), C.int(hSrc), *(*C.BLENDFUNCTION)(unsafe.Pointer(ftn))) != 0
 }
 
-
-var(
+var (
 	IDC_ARROW = LPTSTR(C.macro_MAKEINTRESOURCE(32512))
 )
 
@@ -1598,24 +1598,24 @@ func SwapBuffers(hdc HDC) bool {
 	return C.SwapBuffers(C.HDC(hdc)) != 0
 }
 
-
-const(
-	HID_USAGE_PAGE_GENERIC USHORT = 0x01
+const (
+	HID_USAGE_PAGE_GENERIC  USHORT = 0x01
 	HID_USAGE_GENERIC_MOUSE USHORT = 0x02
-	RIDEV_INPUTSINK = C.RIDEV_INPUTSINK
+	RIDEV_INPUTSINK                = C.RIDEV_INPUTSINK
 
-	RID_INPUT = C.RID_INPUT
+	RID_INPUT     = C.RID_INPUT
 	RIM_TYPEMOUSE = C.RIM_TYPEMOUSE
 )
 
 type RAWINPUTHEADER struct {
-	Type DWORD
-	Size DWORD
+	Type   DWORD
+	Size   DWORD
 	Device unsafe.Pointer
-	Param WPARAM
+	Param  WPARAM
 }
 
 type RAWMOUSE C.RAWMOUSE
+
 /*
 typedef struct tagRAWMOUSE {
   USHORT usFlags;
@@ -1640,6 +1640,7 @@ func (c *RAWMOUSE) LastY() LONG {
 }
 
 type RAWINPUT C.RAWINPUT
+
 /*
 typedef struct tagRAWINPUT {
   RAWINPUTHEADER header;
@@ -1662,9 +1663,9 @@ func (c *RAWINPUT) Mouse() *RAWMOUSE {
 
 type RAWINPUTDEVICE struct {
 	UsagePage USHORT
-	Usage USHORT
-	Flags DWORD
-	Target HWND
+	Usage     USHORT
+	Flags     DWORD
+	Target    HWND
 }
 
 func RegisterRawInputDevices(pRawInputDevices *RAWINPUTDEVICE, uiNumDevices UINT, cbSize UINT) bool {
@@ -1689,26 +1690,26 @@ func GetKeyState(vKey Int) int16 {
 	return int16(C.GetKeyState(C.int(vKey)))
 }
 
-const(
-	VK_LBUTTON = 0x01
-	VK_RBUTTON = 0x02
-	VK_CANCEL  = 0x03
-	VK_MBUTTON = 0x04
+const (
+	VK_LBUTTON  = 0x01
+	VK_RBUTTON  = 0x02
+	VK_CANCEL   = 0x03
+	VK_MBUTTON  = 0x04
 	VK_XBUTTON1 = 0x05
 	VK_XBUTTON2 = 0x06
-	VK_BACK = 0x08
-	VK_TAB = 0x09
-	VK_CLEAR = 0x0C
-	VK_RETURN = 0x0D
-	VK_SHIFT = 0x10
-	VK_CONTROL = 0x11
-	VK_MENU = 0x12
-	VK_PAUSE = 0x13
-	VK_CAPITAL = 0x14
+	VK_BACK     = 0x08
+	VK_TAB      = 0x09
+	VK_CLEAR    = 0x0C
+	VK_RETURN   = 0x0D
+	VK_SHIFT    = 0x10
+	VK_CONTROL  = 0x11
+	VK_MENU     = 0x12
+	VK_PAUSE    = 0x13
+	VK_CAPITAL  = 0x14
 
-	VK_KANA = 0x15
+	VK_KANA    = 0x15
 	VK_HANGUEL = 0x15
-	VK_HANGUL = 0x15
+	VK_HANGUL  = 0x15
 
 	VK_JUNJA = 0x17
 	VK_FINAL = 0x18
@@ -1716,28 +1717,28 @@ const(
 	VK_HANJA = 0x19
 	VK_KANJI = 0x19
 
-	VK_ESCAPE = 0x1B
-	VK_CONVERT = 0x1C
+	VK_ESCAPE     = 0x1B
+	VK_CONVERT    = 0x1C
 	VK_NONCONVERT = 0x1D
-	VK_ACCEPT = 0x1E
+	VK_ACCEPT     = 0x1E
 
 	VK_MODECHANGE = 0x1F
-	VK_SPACE = 0x20
-	VK_PRIOR = 0x21
-	VK_NEXT = 0x22
-	VK_END = 0x23
-	VK_HOME = 0x24
-	VK_LEFT=0x25
-	VK_UP=0x26
-	VK_RIGHT=0x27
-	VK_DOWN=0x28
-	VK_SELECT=0x29
-	VK_PRINT=0x2A
-	VK_EXECUTE=0x2B
-	VK_SNAPSHOT=0x2C
-	VK_INSERT=0x2D
-	VK_DELETE=0x2E
-	VK_HELP=0x2F
+	VK_SPACE      = 0x20
+	VK_PRIOR      = 0x21
+	VK_NEXT       = 0x22
+	VK_END        = 0x23
+	VK_HOME       = 0x24
+	VK_LEFT       = 0x25
+	VK_UP         = 0x26
+	VK_RIGHT      = 0x27
+	VK_DOWN       = 0x28
+	VK_SELECT     = 0x29
+	VK_PRINT      = 0x2A
+	VK_EXECUTE    = 0x2B
+	VK_SNAPSHOT   = 0x2C
+	VK_INSERT     = 0x2D
+	VK_DELETE     = 0x2E
+	VK_HELP       = 0x2F
 
 	VK_UNDEF_0 = 0x30
 	VK_UNDEF_1 = 0x31
@@ -1754,125 +1755,122 @@ const(
 	VK_UNDEF_B = 0x42
 	VK_UNDEF_C = 0x43
 	VK_UNDEF_D = 0x44
-	VK_UNDEF_E  =0x45
-	VK_UNDEF_F  =0x46
-	VK_UNDEF_G  =0x47
-	VK_UNDEF_H  =0x48
-	VK_UNDEF_I  =0x49
-	VK_UNDEF_J  =0x4A
-	VK_UNDEF_K  =0x4B
-	VK_UNDEF_L  =0x4C
-	VK_UNDEF_M  =0x4D
-	VK_UNDEF_N  =0x4E
-	VK_UNDEF_O  =0x4F
-	VK_UNDEF_P  =0x50
-	VK_UNDEF_Q  =0x51
-	VK_UNDEF_R  =0x52
-	VK_UNDEF_S  =0x53
-	VK_UNDEF_T  =0x54
-	VK_UNDEF_U  =0x55
-	VK_UNDEF_V  =0x56
-	VK_UNDEF_W  =0x57
-	VK_UNDEF_X  =0x58
-	VK_UNDEF_Y  =0x59
-	VK_UNDEF_Z  =0x5A
+	VK_UNDEF_E = 0x45
+	VK_UNDEF_F = 0x46
+	VK_UNDEF_G = 0x47
+	VK_UNDEF_H = 0x48
+	VK_UNDEF_I = 0x49
+	VK_UNDEF_J = 0x4A
+	VK_UNDEF_K = 0x4B
+	VK_UNDEF_L = 0x4C
+	VK_UNDEF_M = 0x4D
+	VK_UNDEF_N = 0x4E
+	VK_UNDEF_O = 0x4F
+	VK_UNDEF_P = 0x50
+	VK_UNDEF_Q = 0x51
+	VK_UNDEF_R = 0x52
+	VK_UNDEF_S = 0x53
+	VK_UNDEF_T = 0x54
+	VK_UNDEF_U = 0x55
+	VK_UNDEF_V = 0x56
+	VK_UNDEF_W = 0x57
+	VK_UNDEF_X = 0x58
+	VK_UNDEF_Y = 0x59
+	VK_UNDEF_Z = 0x5A
 
-	VK_LWIN = 0x5B
-	VK_RWIN = 0x5C
-	VK_APPS = 0x5D
-	VK_SLEEP =0x5F
-	VK_NUMPAD0=0x60
-	VK_NUMPAD1=0x61
-	VK_NUMPAD2=0x62
-	VK_NUMPAD3 = 0x63
-	VK_NUMPAD4 = 0x64
-	VK_NUMPAD5 = 0x65
-	VK_NUMPAD6 = 0x66
-	VK_NUMPAD7 = 0x67
-	VK_NUMPAD8 = 0x68
-	VK_NUMPAD9 = 0x69
-	VK_MULTIPLY = 0x6A
-	VK_ADD = 0x6B
+	VK_LWIN      = 0x5B
+	VK_RWIN      = 0x5C
+	VK_APPS      = 0x5D
+	VK_SLEEP     = 0x5F
+	VK_NUMPAD0   = 0x60
+	VK_NUMPAD1   = 0x61
+	VK_NUMPAD2   = 0x62
+	VK_NUMPAD3   = 0x63
+	VK_NUMPAD4   = 0x64
+	VK_NUMPAD5   = 0x65
+	VK_NUMPAD6   = 0x66
+	VK_NUMPAD7   = 0x67
+	VK_NUMPAD8   = 0x68
+	VK_NUMPAD9   = 0x69
+	VK_MULTIPLY  = 0x6A
+	VK_ADD       = 0x6B
 	VK_SEPARATOR = 0x6C
-	VK_SUBTRACT = 0x6D
-	VK_DECIMAL = 0x6E
-	VK_DIVIDE = 0x6F
-	VK_F1 = 0x70
-	VK_F2 = 0x71
-	VK_F3 = 0x72
-	VK_F4 = 0x73
-	VK_F5 = 0x74
-	VK_F6 = 0x75
-	VK_F7 = 0x76
-	VK_F8 = 0x77
-	VK_F9 = 0x78
-	VK_F10 = 0x79
-	VK_F11 = 0x7A
-	VK_F12 = 0x7B
-	VK_F13 = 0x7C
-	VK_F14 = 0x7D
-	VK_F15 = 0x7E
-	VK_F16 = 0x7F
-	VK_F17 = 0x80
-	VK_F18 = 0x81
-	VK_F19 = 0x82
-	VK_F20 = 0x83
-	VK_F21 = 0x84
-	VK_F22 = 0x85
-	VK_F23 = 0x86
-	VK_F24 = 0x87
+	VK_SUBTRACT  = 0x6D
+	VK_DECIMAL   = 0x6E
+	VK_DIVIDE    = 0x6F
+	VK_F1        = 0x70
+	VK_F2        = 0x71
+	VK_F3        = 0x72
+	VK_F4        = 0x73
+	VK_F5        = 0x74
+	VK_F6        = 0x75
+	VK_F7        = 0x76
+	VK_F8        = 0x77
+	VK_F9        = 0x78
+	VK_F10       = 0x79
+	VK_F11       = 0x7A
+	VK_F12       = 0x7B
+	VK_F13       = 0x7C
+	VK_F14       = 0x7D
+	VK_F15       = 0x7E
+	VK_F16       = 0x7F
+	VK_F17       = 0x80
+	VK_F18       = 0x81
+	VK_F19       = 0x82
+	VK_F20       = 0x83
+	VK_F21       = 0x84
+	VK_F22       = 0x85
+	VK_F23       = 0x86
+	VK_F24       = 0x87
 
-	VK_NUMLOCK = 0x90
-	VK_SCROLL = 0x91
-	VK_LSHIFT = 0xA0
-	VK_RSHIFT = 0xA1
+	VK_NUMLOCK  = 0x90
+	VK_SCROLL   = 0x91
+	VK_LSHIFT   = 0xA0
+	VK_RSHIFT   = 0xA1
 	VK_LCONTROL = 0xA2
 	VK_RCONTROL = 0xA3
-	VK_LMENU = 0xA4
+	VK_LMENU    = 0xA4
 
-
-	VK_RMENU = 0xA5
-	VK_BROWSER_BACK = 0xA6
-	VK_BROWSER_FORWARD = 0xA7
-	VK_BROWSER_REFRESH = 0xA8
-	VK_BROWSER_STOP = 0xA9
-	VK_BROWSER_SEARCH = 0xAA
-	VK_BROWSER_FAVORITES = 0xAB
-	VK_BROWSER_HOME = 0xAC
-	VK_VOLUME_MUTE = 0xAD
-	VK_VOLUME_DOWN = 0xAE
-	VK_VOLUME_UP = 0xAF
-	VK_MEDIA_NEXT_TRACK = 0xB0
-	VK_MEDIA_PREV_TRACK = 0xB1
-	VK_MEDIA_STOP = 0xB2
-	VK_MEDIA_PLAY_PAUSE = 0xB3
-	VK_LAUNCH_MAIL = 0xB4
+	VK_RMENU               = 0xA5
+	VK_BROWSER_BACK        = 0xA6
+	VK_BROWSER_FORWARD     = 0xA7
+	VK_BROWSER_REFRESH     = 0xA8
+	VK_BROWSER_STOP        = 0xA9
+	VK_BROWSER_SEARCH      = 0xAA
+	VK_BROWSER_FAVORITES   = 0xAB
+	VK_BROWSER_HOME        = 0xAC
+	VK_VOLUME_MUTE         = 0xAD
+	VK_VOLUME_DOWN         = 0xAE
+	VK_VOLUME_UP           = 0xAF
+	VK_MEDIA_NEXT_TRACK    = 0xB0
+	VK_MEDIA_PREV_TRACK    = 0xB1
+	VK_MEDIA_STOP          = 0xB2
+	VK_MEDIA_PLAY_PAUSE    = 0xB3
+	VK_LAUNCH_MAIL         = 0xB4
 	VK_LAUNCH_MEDIA_SELECT = 0xB5
-	VK_LAUNCH_APP1 = 0xB6
-	VK_LAUNCH_APP2 = 0xB7
-	VK_OEM_1 = 0xBA
-	VK_OEM_PLUS = 0xBB
-	VK_OEM_COMMA = 0xBC
-	VK_OEM_MINUS = 0xBD
-	VK_OEM_PERIOD = 0xBE
-	VK_OEM_2 = 0xBF
-	VK_OEM_3 = 0xC0
-	VK_OEM_4 = 0xDB
-	VK_OEM_5 = 0xDC
-	VK_OEM_6 = 0xDD
-	VK_OEM_7 = 0xDE
-	VK_OEM_8 = 0xDF
-	VK_OEM_102 = 0xE2
-	VK_PROCESSKEY = 0xE5
-	VK_PACKET = 0xE7
-	VK_ATTN = 0xF6
-	VK_CRSEL = 0xF7
-	VK_EXSEL = 0xF8
-	VK_EREOF = 0xF9
-	VK_PLAY = 0xFA
-	VK_ZOOM = 0xFB
-	VK_PA1 = 0xFD
-	VK_OEM_CLEAR = 0xFE
+	VK_LAUNCH_APP1         = 0xB6
+	VK_LAUNCH_APP2         = 0xB7
+	VK_OEM_1               = 0xBA
+	VK_OEM_PLUS            = 0xBB
+	VK_OEM_COMMA           = 0xBC
+	VK_OEM_MINUS           = 0xBD
+	VK_OEM_PERIOD          = 0xBE
+	VK_OEM_2               = 0xBF
+	VK_OEM_3               = 0xC0
+	VK_OEM_4               = 0xDB
+	VK_OEM_5               = 0xDC
+	VK_OEM_6               = 0xDD
+	VK_OEM_7               = 0xDE
+	VK_OEM_8               = 0xDF
+	VK_OEM_102             = 0xE2
+	VK_PROCESSKEY          = 0xE5
+	VK_PACKET              = 0xE7
+	VK_ATTN                = 0xF6
+	VK_CRSEL               = 0xF7
+	VK_EXSEL               = 0xF8
+	VK_EREOF               = 0xF9
+	VK_PLAY                = 0xFA
+	VK_ZOOM                = 0xFB
+	VK_PA1                 = 0xFD
+	VK_OEM_CLEAR           = 0xFE
 )
-
-

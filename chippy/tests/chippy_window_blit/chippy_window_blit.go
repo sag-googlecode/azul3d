@@ -7,11 +7,11 @@ package main
 
 import (
 	"code.google.com/p/azul3d/chippy"
-	_ "image/png"
 	"image"
-	"time"
+	_ "image/png"
 	"log"
 	"os"
+	"time"
 )
 
 func main() {
@@ -70,7 +70,7 @@ func main() {
 		window.PixelBlit(0, 0, image)
 
 		// Wait for an paint event
-		<- paintEvents.Read
+		<-paintEvents.Read
 	}
 
 	log.Println("Waiting 15 seconds...")

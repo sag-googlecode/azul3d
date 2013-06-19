@@ -7,9 +7,9 @@ package main
 
 import (
 	"code.google.com/p/azul3d/chippy"
-	"time"
 	"log"
 	"os"
+	"time"
 )
 
 func main() {
@@ -39,7 +39,7 @@ func main() {
 	log.Println(window)
 
 	go func() {
-		for{
+		for {
 			time.Sleep(5 * time.Second)
 			isGrabbed := window.CursorGrabbed()
 			window.SetCursorGrabbed(!isGrabbed)
@@ -47,16 +47,15 @@ func main() {
 		}
 	}()
 
-
 	cursorPositionEvents := window.CursorPositionEvents()
 	closeEvents := window.CloseEvents()
-	for{
-		select{
-			case v := <-cursorPositionEvents.Read:
-				log.Printf("Grabbed? %v | Position: %v", window.CursorGrabbed(), v)
+	for {
+		select {
+		case v := <-cursorPositionEvents.Read:
+			log.Printf("Grabbed? %v | Position: %v", window.CursorGrabbed(), v)
 
-			case <-closeEvents.Read:
-				return
+		case <-closeEvents.Read:
+			return
 		}
 	}
 }

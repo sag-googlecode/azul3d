@@ -7,12 +7,12 @@ package main
 
 import (
 	"code.google.com/p/azul3d/chippy"
-	_ "image/png"
-	"image"
-	"time"
-	"log"
 	"fmt"
+	"image"
+	_ "image/png"
+	"log"
 	"os"
+	"time"
 )
 
 func main() {
@@ -54,8 +54,8 @@ func main() {
 
 		cursor := &chippy.Cursor{
 			Image: cursorImage,
-			X: 16,
-			Y: 16,
+			X:     16,
+			Y:     16,
 		}
 		window.PrepareCursor(cursor)
 		cursors = append(cursors, cursor)

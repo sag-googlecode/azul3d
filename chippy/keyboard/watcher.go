@@ -1,6 +1,6 @@
 package keyboard
 
-import(
+import (
 	"sync"
 )
 
@@ -51,4 +51,3 @@ func NewStateWatcher() *StateWatcher {
 	s.states = make(map[Key]State)
 	return s
 }
-

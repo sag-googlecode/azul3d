@@ -18,4 +18,3 @@ type WORD uint16
 type USHORT uint16
 
 type LRESULT LONG_PTR
-

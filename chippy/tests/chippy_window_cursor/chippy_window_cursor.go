@@ -7,11 +7,11 @@ package main
 
 import (
 	"code.google.com/p/azul3d/chippy"
-	_ "image/png"
 	"image"
-	"time"
+	_ "image/png"
 	"log"
 	"os"
+	"time"
 )
 
 func main() {
@@ -33,8 +33,8 @@ func main() {
 	// The last two numbers are the (X, Y) hotspot
 	cursor := &chippy.Cursor{
 		Image: cursorImage,
-		X: 3,
-		Y: 4,
+		X:     3,
+		Y:     4,
 	}
 
 	// Enable debug output
