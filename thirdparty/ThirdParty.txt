@@ -1,42 +1,35 @@
-This directory contains source code of external Go libraries used by Azul3D.
+This directory contains source code of external Go packages that Azul3D uses.
 
 It should be strictly noted that all software in this directory is licensed
-under it's own, original license, and as such you are required to follow the
-license it is placed under.
+under it's own, seperate, original license, and as such you are required to
+abide by the license described within the respective package documentation.
 
-For convenience, we provide the license of each third party software library
-used by Azul3D, as it is mentioned by the software's documentation, below.
+For your convenience we list an link to each license that each package is licensed
+under.
 
-(Developer note: Only code within Azul3D should use these libraries, other
-software outside of Azul3D should use the libraries original import path.)
+(Developers note: Only code within Azul3D should use these packages, other
+software outside of Azul3D should use the packages original import path.)
 
 
 
-The 'resize' package:
-  Original URL:
-    http://code.google.com/p/appengine-go/source/browse/example/moustachio/resize/
+Package; "resize";
+  URL: http://code.google.com/p/appengine-go/source/browse/example/moustachio/resize/
 
-  License according to "resize.go" file:
-    // Copyright 2011 The Go Authors. All rights reserved.
-    // Use of this source code is governed by a BSD-style
-    // license that can be found in the LICENSE file.
+  License; "Apache License, Version 2.0";
+    URL: http://code.google.com/p/appengine-go/source/browse/LICENSE
 
-  "LICENSE" file at http://code.google.com/p/appengine-go/source/browse/LICENSE :
-    GOOGLE APP ENGINE SDK
-    =====================
-    Copyright 2011 Google Inc.
-    All rights reserved.
 
-    Licensed under the Apache License, Version 2.0 (the "License");
-    you may not use this file except in compliance with the License.
-    You may obtain a copy of the License at
 
-        http://www.apache.org/licenses/LICENSE-2.0
+Package; "freetype-go";
+  URL: https://code.google.com/p/freetype-go/
 
-    Unless required by applicable law or agreed to in writing, software
-    distributed under the License is distributed on an "AS IS" BASIS,
-    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-    See the License for the specific language governing permissions and
-    limitations under the License.
+  Note: You may choose either one of the licenses listed below.
+    FreeType License is similar to the original BSD license.
+
+  License choice one; "FreeType License";
+    URL: https://freetype-go.googlecode.com/hg/licenses/ftl.txt
+
+  License choice two; "GNU General Public License (GPL), version 2 or later";
+    URL: https://freetype-go.googlecode.com/hg/licenses/gpl.txt
 
 
