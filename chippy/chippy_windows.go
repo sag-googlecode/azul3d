@@ -10,15 +10,11 @@ import (
 	"errors"
 	"fmt"
 	"sync"
-	"time"
 	"unsafe"
 )
 
 func eventLoop() {
 	for {
-		// Small sleep just to stop hogging CPU
-		time.Sleep(2 * time.Millisecond)
-
 		dispatch(func() {
 			var msg *win32.MSG
 			hasMessage := true

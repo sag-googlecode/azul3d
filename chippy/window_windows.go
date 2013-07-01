@@ -1846,6 +1846,24 @@ func (w *W32Window) tryAddKeyboardStateEvent(ev *keyboard.StateEvent) {
 	}
 }
 
+func (w *W32Window) releaseDownedKeys() {
+	for key, state := range w.States() {
+		if state == keyboard.Down {
+			// Set new state
+			state = keyboard.Up
+
+			// Assign key state to the window
+			w.SetState(key, state)
+
+			// Add keyboard state event
+			w.addKeyboardStateEvent(&keyboard.StateEvent{
+				Key: key,
+				State: state,
+			})
+		}
+	}
+}
+
 // Our MS windows event handler
 //
 // This is never executed under the pretence of an window's respective lock.
@@ -1855,7 +1873,7 @@ func mainWindowProc(hwnd win32.HWND, msg win32.UINT, wParam win32.WPARAM, lParam
 	// invoke mainWindowProc(), and when it does the function, FooEx(), will block until each and
 	// every message has been handled by mainWindowProc(). This line stops the message pump from
 	// pausing other goroutines.
-	defer runtime.Gosched()
+	runtime.Gosched()
 
 	w, ok := windowsByHwnd[hwnd]
 	if ok {
@@ -2060,6 +2078,32 @@ func mainWindowProc(hwnd win32.HWND, msg win32.UINT, wParam win32.WPARAM, lParam
 				if w.focused {
 					w.focused = false
 					w.addFocusedEvent(w.focused)
+
+					// If the window loses focus due to another window coming into the foreground,
+					// like ctrl+alt+delete on 7+, or alt+tab to another application, then we never
+					// receive mouse exit event, also we don't know to release mouse grab then.
+					if w.cursorWithin {
+						w.cursorWithin = false
+						w.addCursorWithinEvent(w.cursorWithin)
+
+						if w.cursorGrabbed {
+							// ReleaseCapture() sends an message into the loop.. but the window is already
+							// locked.. so do an unlock and lock here
+							unlock()
+
+							// Run
+							win32.ReleaseCapture()
+
+							// Recreate unlocker
+							unlock = w.newAttemptUnlocker()
+							defer unlock()
+						}
+					}
+
+					// Also if keys where held down while the window did have focus, as it no
+					// longer does, we need to release those keys or else the user can only
+					// release them by putting them into down-state and then releasing again!
+					w.releaseDownedKeys()
 				}
 			} else {
 				if !w.focused {

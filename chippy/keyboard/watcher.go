@@ -26,14 +26,26 @@ func (s *StateWatcher) SetState(key Key, state State) {
 
 // State returns the current state of the specified key.
 func (s *StateWatcher) State(key Key) State {
-	s.access.RLock()
-	defer s.access.RUnlock()
+	s.access.Lock()
+	defer s.access.Unlock()
 
 	state, ok := s.states[key]
 	if !ok {
 		s.states[key] = Down
 	}
 	return state
+}
+
+// States returns an copy of the internal key state map used by this StateWatcher.
+func (s *StateWatcher) States() map[Key]State {
+	s.access.RLock()
+	defer s.access.RUnlock()
+
+	copy := make(map[Key]State)
+	for key, state := range s.states {
+		copy[key] = state
+	}
+	return copy
 }
 
 // Down tells weather the specified key is currently in the down state.
