@@ -481,32 +481,58 @@ func (a *Mat4) SetPerspective(fovY, aspect, zNear, zFar Real) {
 	a.SetFrustum(-fW, fW, -fH, fH, zNear, zFar)
 }
 
-// SetOrtho turns this matrix into an orthogonal projection matrix representing the specified left,
-// right, bottom, top, near, and far bounds of the frustum.
+// SetOrtho assigns this matrix to be an orthographic projection matrix using the
+// specified bounds for the frustum.
+//
+// See: http://en.wikipedia.org/wiki/Orthographic_projection_(geometry)
 func (a *Mat4) SetOrtho(left, right, bottom, top, near, far Real) {
-	normalWidth := 1.0 / (right - left)
-	normalHeight := 1.0 / (bottom - top)
-	normalDepth := 1.0 / (near - far)
-
 	a.Assign(
-		-2.0*normalWidth,
+		2.0 / (right - left),
 		0,
 		0,
 		0,
 
 		0,
-		-2.0*normalHeight,
+		2.0 / (top - bottom),
 		0,
 		0,
 
 		0,
 		0,
-		2.0*normalDepth,
+		-2.0 / (far - near),
 		0,
 
-		(left+right)*normalWidth,
-		(top+bottom)*normalHeight,
-		(far+near)*normalDepth,
+		-(right + left) / (right - left),
+		-(top + bottom) / (top - bottom),
+		-(far + near) / (far - near),
+		1,
+	)
+}
+
+/// SetUnOrtho assigns this matrix to be an orthographic unprojection matrix using the
+// specified bounds for the frustum.
+//
+// See: http://en.wikipedia.org/wiki/Orthographic_projection_(geometry)
+func (a *Mat4) SetUnOrtho(left, right, bottom, top, near, far Real) {
+	a.Assign(
+		(right - left) / 2.0,
+		0,
+		0,
+		0,
+
+		0,
+		(top - bottom) / 2.0,
+		0,
+		0,
+
+		0,
+		0,
+		(far - near) / -2.0,
+		0,
+
+		(left + right) / 2,
+		(top + bottom) / 2,
+		(far + near) / -2,
 		1,
 	)
 }

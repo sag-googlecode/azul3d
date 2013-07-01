@@ -6,6 +6,8 @@
 
 package math
 
+import "math"
+
 // Real represents an 64 bit or 32 bit floating point number, based on weather the build tag
 // "float64" is present.
 //
@@ -17,5 +19,6 @@ const (
 	RealIsFloat64      = false
 	RealSizeBits       = 32
 	RealSizeBytes      = 32 / 8
-	RealNearZero  Real = 1.0e-6
+	RealNearZero  Real = math.SmallestNonzeroFloat32
+	MaxReal = math.MaxFloat32
 )
