@@ -125,4 +125,14 @@ type GLRenderable interface {
 	// If the GLConfig set previously via GLSetConfig() is not DoubleBuffered, then this function
 	// is no-op.
 	GLSwapBuffers()
+
+	// GLSetVerticalSync turns on or off vertical refresh rate syncing (vsync).
+	//
+	// Possible values are:
+	//
+	//   0 = vsync off
+	//   1 = vsync on
+	//  -1 = adaptive vsync on
+	//
+	GLSetVerticalSync(vsync int)
 }

@@ -284,3 +284,16 @@ func (w *W32Window) GLSwapBuffers() {
 		logger.Println("Unable to swap GL buffers; SwapBuffers():", win32.GetLastErrorString())
 	}
 }
+
+func (w *W32Window) GLSetVerticalSync(vsync int) {
+	if vsync != 0 && vsync != 1 && vsync != -1 {
+		panic("Invalid vsync flag; must be 0, 1, or -1.")
+	}
+	if w.Destroyed() {
+		return
+	}
+	if !win32.WglSwapIntervalEXT(vsync) {
+		logger.Println("Unable to set vertical sync; wglSwapIntervalEXT():", win32.GetLastErrorString())
+	}
+}
+

@@ -15,6 +15,7 @@ package win32
 
 typedef HGLRC (*chippy_p_wglCreateContextAttribsARB) (HDC, HGLRC, const int*);
 typedef char* (*chippy_p_wglGetExtensionsStringARB) (HDC);
+typedef BOOL (*chippy_p_wglSwapIntervalEXT) (int);
 
 HGLRC chippy_wglCreateContextAttribsARB(void* p, HDC hDC, HGLRC hshareContext, const int* attribList) {
 	chippy_p_wglCreateContextAttribsARB fn = (chippy_p_wglCreateContextAttribsARB)p;
@@ -25,6 +26,12 @@ char* chippy_wglGetExtensionsStringARB(void* p, HDC hdc) {
 	chippy_p_wglGetExtensionsStringARB fn = (chippy_p_wglGetExtensionsStringARB)p;
 	return fn(hdc);
 }
+
+BOOL chippy_wglSwapIntervalEXT(void* p, int interval) {
+	chippy_p_wglSwapIntervalEXT fn = (chippy_p_wglSwapIntervalEXT)p;
+	return fn(interval);
+}
+
 */
 import "C"
 
@@ -98,6 +105,14 @@ func WglGetExtensionsStringARB(hdc HDC) (string, bool) {
 	}
 	ret := C.chippy_wglGetExtensionsStringARB(unsafe.Pointer(ptr), C.HDC(hdc))
 	return C.GoString(ret), true
+}
+
+func WglSwapIntervalEXT(interval int) (bool) {
+	ptr := WglGetProcAddress("wglSwapIntervalEXT")
+	if ptr == 0 {
+		return false
+	}
+	return C.chippy_wglSwapIntervalEXT(unsafe.Pointer(ptr), C.int(interval)) != 0
 }
 
 const (
