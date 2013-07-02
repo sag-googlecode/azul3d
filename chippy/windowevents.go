@@ -130,7 +130,7 @@ func (b *PaintEventBuffer) Length() int {
 	return <-b.lengthQuery
 }
 func (b *PaintEventBuffer) Close() {
-	close(b.write)
+	b.closeBuffer <- true
 }
 
 type CloseEventBuffer struct {
@@ -143,7 +143,7 @@ func (b *CloseEventBuffer) Length() int {
 	return <-b.lengthQuery
 }
 func (b *CloseEventBuffer) Close() {
-	close(b.write)
+	b.closeBuffer <- true
 }
 
 type CursorPositionEventBuffer struct {
@@ -156,7 +156,7 @@ func (b *CursorPositionEventBuffer) Length() int {
 	return <-b.lengthQuery
 }
 func (b *CursorPositionEventBuffer) Close() {
-	close(b.write)
+	b.closeBuffer <- true
 }
 
 type CursorWithinEventBuffer struct {
@@ -169,7 +169,7 @@ func (b *CursorWithinEventBuffer) Length() int {
 	return <-b.lengthQuery
 }
 func (b *CursorWithinEventBuffer) Close() {
-	close(b.write)
+	b.closeBuffer <- true
 }
 
 type KeyboardStateEventBuffer struct {
@@ -182,7 +182,7 @@ func (b *KeyboardStateEventBuffer) Length() int {
 	return <-b.lengthQuery
 }
 func (b *KeyboardStateEventBuffer) Close() {
-	close(b.write)
+	b.closeBuffer <- true
 }
 
 type KeyboardTypedEventBuffer struct {
@@ -195,7 +195,7 @@ func (b *KeyboardTypedEventBuffer) Length() int {
 	return <-b.lengthQuery
 }
 func (b *KeyboardTypedEventBuffer) Close() {
-	close(b.write)
+	b.closeBuffer <- true
 }
 
 type ResizeEventBuffer struct {
@@ -208,7 +208,7 @@ func (b *ResizeEventBuffer) Length() int {
 	return <-b.lengthQuery
 }
 func (b *ResizeEventBuffer) Close() {
-	close(b.write)
+	b.closeBuffer <- true
 }
 
 type MaximizedEventBuffer struct {
@@ -221,7 +221,7 @@ func (b *MaximizedEventBuffer) Length() int {
 	return <-b.lengthQuery
 }
 func (b *MaximizedEventBuffer) Close() {
-	close(b.write)
+	b.closeBuffer <- true
 }
 
 type MinimizedEventBuffer struct {
@@ -234,7 +234,7 @@ func (b *MinimizedEventBuffer) Length() int {
 	return <-b.lengthQuery
 }
 func (b *MinimizedEventBuffer) Close() {
-	close(b.write)
+	b.closeBuffer <- true
 }
 
 type MouseEventBuffer struct {
@@ -247,7 +247,7 @@ func (b *MouseEventBuffer) Length() int {
 	return <-b.lengthQuery
 }
 func (b *MouseEventBuffer) Close() {
-	close(b.write)
+	b.closeBuffer <- true
 }
 
 type FocusedEventBuffer struct {
@@ -260,7 +260,7 @@ func (b *FocusedEventBuffer) Length() int {
 	return <-b.lengthQuery
 }
 func (b *FocusedEventBuffer) Close() {
-	close(b.write)
+	b.closeBuffer <- true
 }
 
 type PositionEventBuffer struct {
@@ -273,7 +273,7 @@ func (b *PositionEventBuffer) Length() int {
 	return <-b.lengthQuery
 }
 func (b *PositionEventBuffer) Close() {
-	close(b.write)
+	b.closeBuffer <- true
 }
 
 type SizeEventBuffer struct {
@@ -286,7 +286,7 @@ func (b *SizeEventBuffer) Length() int {
 	return <-b.lengthQuery
 }
 func (b *SizeEventBuffer) Close() {
-	close(b.write)
+	b.closeBuffer <- true
 }
 
 type ScreenChangedEventBuffer struct {
@@ -299,7 +299,7 @@ func (b *ScreenChangedEventBuffer) Length() int {
 	return <-b.lengthQuery
 }
 func (b *ScreenChangedEventBuffer) Close() {
-	close(b.write)
+	b.closeBuffer <- true
 }
 
 type eventDispatcher struct {
