@@ -107,7 +107,7 @@ func WglGetExtensionsStringARB(hdc HDC) (string, bool) {
 	return C.GoString(ret), true
 }
 
-func WglSwapIntervalEXT(interval int) (bool) {
+func WglSwapIntervalEXT(interval int) bool {
 	ptr := WglGetProcAddress("wglSwapIntervalEXT")
 	if ptr == 0 {
 		return false

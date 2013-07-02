@@ -296,4 +296,3 @@ func (w *W32Window) GLSetVerticalSync(vsync int) {
 		logger.Println("Unable to set vertical sync; wglSwapIntervalEXT():", win32.GetLastErrorString())
 	}
 }
-

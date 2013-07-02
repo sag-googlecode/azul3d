@@ -1858,7 +1858,7 @@ func (w *W32Window) releaseDownedKeys() {
 
 			// Add keyboard state event
 			w.addKeyboardStateEvent(&keyboard.StateEvent{
-				Key: key,
+				Key:   key,
 				State: state,
 			})
 		}
