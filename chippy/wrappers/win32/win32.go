@@ -1254,6 +1254,19 @@ func GetClientRect(hwnd HWND) (status bool, r *RECT) {
 	return
 }
 
+func ClipCursor(rect *RECT) bool {
+	return C.ClipCursor((*C.RECT)(unsafe.Pointer(rect))) != 0
+}
+
+func GetClipCursor() (clip *RECT, ok bool) {
+	var c RECT
+	ret := C.GetClipCursor((C.LPRECT)(unsafe.Pointer(&c)))
+	if ret != 0 {
+		return nil, false
+	}
+	return &c, true
+}
+
 const (
 	SM_CYCAPTION   = C.SM_CYCAPTION // Title bar width
 	SM_CXSIZEFRAME = C.SM_CXSIZEFRAME

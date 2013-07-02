@@ -61,6 +61,7 @@ type W32Window struct {
 	windowClass                                                              string
 	styleFlags                                                               win32.DWORD
 	lastWmSizingLeft, lastWmSizingRight, lastWmSizingBottom, lastWmSizingTop win32.LONG
+	lastCursorClip                                                           *win32.RECT
 
 	// Blit things here
 	blitBitmap   win32.HBITMAP
@@ -1864,6 +1865,38 @@ func (w *W32Window) releaseDownedKeys() {
 	}
 }
 
+func (w *W32Window) updateCursorClip() {
+	// We don't use cursor clip if we have none to restore to (due to an failure).
+	if w.lastCursorClip == nil {
+		return
+	}
+
+	tl := new(win32.POINT)
+	tl.SetX(0)
+	tl.SetY(0)
+	if !win32.ClientToScreen(w.hwnd, tl) {
+		logger.Println("Unable to set clip cursor; ClientToScreen():", win32.GetLastErrorString())
+	}
+
+	br := new(win32.POINT)
+	br.SetX(win32.LONG(w.width))
+	br.SetY(win32.LONG(w.height))
+	if !win32.ClientToScreen(w.hwnd, br) {
+		logger.Println("Unable to set clip cursor; ClientToScreen():", win32.GetLastErrorString())
+	}
+
+	clip := new(win32.RECT)
+	clip.SetLeft(tl.X())
+	clip.SetTop(tl.Y())
+
+	clip.SetRight(br.X())
+	clip.SetBottom(br.Y())
+
+	if !win32.ClipCursor(clip) {
+		logger.Println("Unable to set clip cursor; ClipCursor():", win32.GetLastErrorString())
+	}
+}
+
 // Our MS windows event handler
 //
 // This is never executed under the pretence of an window's respective lock.
@@ -1980,6 +2013,11 @@ func mainWindowProc(hwnd win32.HWND, msg win32.UINT, wParam win32.WPARAM, lParam
 					w.height = newHeight
 
 					w.addSizeEvent([]uint{w.width, w.height})
+
+					if w.cursorGrabbed {
+						// Update our clip
+						w.updateCursorClip()
+					}
 				}
 			}
 			return 0
@@ -2086,18 +2124,24 @@ func mainWindowProc(hwnd win32.HWND, msg win32.UINT, wParam win32.WPARAM, lParam
 						w.cursorWithin = false
 						w.addCursorWithinEvent(w.cursorWithin)
 
-						if w.cursorGrabbed {
-							// ReleaseCapture() sends an message into the loop.. but the window is already
-							// locked.. so do an unlock and lock here
-							unlock()
+						// Restore previous cursor clip
+						if w.lastCursorClip != nil {
+							win32.ClipCursor(w.lastCursorClip)
 
-							// Run
-							win32.ReleaseCapture()
-
-							// Recreate unlocker
-							unlock = w.newAttemptUnlocker()
-							defer unlock()
+							// Clear it so we don't accidently restore it again later
+							w.lastCursorClip = nil
 						}
+
+						// ReleaseCapture() sends an message into the loop.. but the window is already
+						// locked.. so do an unlock and lock here
+						unlock()
+
+						// Run
+						win32.ReleaseCapture()
+
+						// Recreate unlocker
+						unlock = w.newAttemptUnlocker()
+						defer unlock()
 					}
 
 					// Also if keys where held down while the window did have focus, as it no
@@ -2302,6 +2346,10 @@ func mainWindowProc(hwnd win32.HWND, msg win32.UINT, wParam win32.WPARAM, lParam
 			if w.cursorX >= int(w.width) || w.cursorY >= int(w.height) || w.cursorX <= 0 || w.cursorY <= 0 || !w.focused {
 				// Better than WM_MOUSELEAVE
 				if w.cursorWithin && !w.cursorGrabbed {
+					// Restore previous cursor clip
+					if w.lastCursorClip != nil {
+						win32.ClipCursor(w.lastCursorClip)
+					}
 
 					// ReleaseCapture() sends an message into the loop.. but the window is already
 					// locked.. so do an unlock and lock here
@@ -2320,6 +2368,17 @@ func mainWindowProc(hwnd win32.HWND, msg win32.UINT, wParam win32.WPARAM, lParam
 			} else {
 				// Closest we'll get to WM_MOUSEENTER
 				if !w.cursorWithin {
+					if w.cursorGrabbed {
+						// Store previous clipping
+						w.lastCursorClip, ok = win32.GetClipCursor()
+						if !ok {
+							logger.Println("Unable to set clip cursor; GetClipCursor():", win32.GetLastErrorString())
+						}
+
+						// Update our clip
+						w.updateCursorClip()
+					}
+
 					win32.SetCapture(w.hwnd)
 
 					w.cursorWithin = true
