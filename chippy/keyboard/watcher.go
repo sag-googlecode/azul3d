@@ -5,10 +5,11 @@ import (
 )
 
 type StateWatcherInterface interface {
-	SetState(key Key, state State)
-	State(key Key) State
-	Down(key Key) bool
-	Up(key Key) bool
+	SetKeyState(key Key, state State)
+	KeyStates() map[Key]State
+	KeyState(key Key) State
+	KeyDown(key Key) bool
+	KeyUp(key Key) bool
 }
 
 type StateWatcher struct {
@@ -16,28 +17,16 @@ type StateWatcher struct {
 	states map[Key]State
 }
 
-// SetState specifies the current state of the specified key.
-func (s *StateWatcher) SetState(key Key, state State) {
+// SetKeyState specifies the current state of the specified key.
+func (s *StateWatcher) SetKeyState(key Key, state State) {
 	s.access.Lock()
 	defer s.access.Unlock()
 
 	s.states[key] = state
 }
 
-// State returns the current state of the specified key.
-func (s *StateWatcher) State(key Key) State {
-	s.access.Lock()
-	defer s.access.Unlock()
-
-	state, ok := s.states[key]
-	if !ok {
-		s.states[key] = Down
-	}
-	return state
-}
-
-// States returns an copy of the internal key state map used by this StateWatcher.
-func (s *StateWatcher) States() map[Key]State {
+// KeyStates returns an copy of the internal key state map used by this StateWatcher.
+func (s *StateWatcher) KeyStates() map[Key]State {
 	s.access.RLock()
 	defer s.access.RUnlock()
 
@@ -48,14 +37,26 @@ func (s *StateWatcher) States() map[Key]State {
 	return copy
 }
 
-// Down tells weather the specified key is currently in the down state.
-func (s *StateWatcher) Down(key Key) bool {
-	return s.State(key) == Down
+// KeyState returns the current state of the specified key.
+func (s *StateWatcher) KeyState(key Key) State {
+	s.access.Lock()
+	defer s.access.Unlock()
+
+	state, ok := s.states[key]
+	if !ok {
+		s.states[key] = Down
+	}
+	return state
 }
 
-// Up tells weather the specified key is currently in the up state.
-func (s *StateWatcher) Up(key Key) bool {
-	return s.State(key) == Up
+// KeyDown tells weather the specified key is currently in the down state.
+func (s *StateWatcher) KeyDown(key Key) bool {
+	return s.KeyState(key) == Down
+}
+
+// KeyUp tells weather the specified key is currently in the up state.
+func (s *StateWatcher) KeyUp(key Key) bool {
+	return s.KeyState(key) == Up
 }
 
 func NewStateWatcher() *StateWatcher {

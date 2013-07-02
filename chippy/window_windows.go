@@ -1841,20 +1841,20 @@ func (w *W32Window) translateKey(wParam win32.WPARAM) (key keyboard.Key) {
 }
 
 func (w *W32Window) tryAddKeyboardStateEvent(ev *keyboard.StateEvent) {
-	if w.State(ev.Key) != ev.State {
-		w.SetState(ev.Key, ev.State)
+	if w.KeyState(ev.Key) != ev.State {
+		w.SetKeyState(ev.Key, ev.State)
 		w.addKeyboardStateEvent(ev)
 	}
 }
 
 func (w *W32Window) releaseDownedKeys() {
-	for key, state := range w.States() {
+	for key, state := range w.KeyStates() {
 		if state == keyboard.Down {
 			// Set new state
 			state = keyboard.Up
 
 			// Assign key state to the window
-			w.SetState(key, state)
+			w.SetKeyState(key, state)
 
 			// Add keyboard state event
 			w.addKeyboardStateEvent(&keyboard.StateEvent{
