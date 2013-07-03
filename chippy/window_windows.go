@@ -963,19 +963,24 @@ func (w *W32Window) SetCursorGrabbed(grabbed bool) {
 		w.cursorGrabbed = grabbed
 
 		if w.cursorGrabbed {
-			if w.cursorWithin {
-				w.preGrabCursorX = w.cursorX
-				w.preGrabCursorY = w.cursorY
-			}
+			w.preGrabCursorX = w.cursorX
+			w.preGrabCursorY = w.cursorY
 		} else {
 			w.cursorX = w.preGrabCursorX
 			w.cursorY = w.preGrabCursorY
 			w.preGrabCursorX = 0
 			w.preGrabCursorY = 0
 		}
-		if w.opened {
+		if w.opened && w.cursorWithin {
 			unlock()
 			dispatch(func() {
+				if grabbed {
+					w.saveCursorClip()
+					w.updateCursorClip()
+				} else {
+					w.restoreCursorClip()
+				}
+
 				w.doSetCursor()
 				w.doSetCursorPos()
 			})
@@ -1865,6 +1870,29 @@ func (w *W32Window) releaseDownedKeys() {
 	}
 }
 
+func (w *W32Window) saveCursorClip() {
+	if w.lastCursorClip != nil {
+		return
+	}
+
+	var ok bool
+	w.lastCursorClip, ok = win32.GetClipCursor()
+	if !ok {
+		logger.Println("Unable to set clip cursor; GetClipCursor():", win32.GetLastErrorString())
+	}
+}
+
+func (w *W32Window) restoreCursorClip() {
+	if w.lastCursorClip == nil {
+		return
+	}
+
+	win32.ClipCursor(w.lastCursorClip)
+
+	// Clear it so we don't accidently restore it again later
+	w.lastCursorClip = nil
+}
+
 func (w *W32Window) updateCursorClip() {
 	// We don't use cursor clip if we have none to restore to (due to an failure).
 	if w.lastCursorClip == nil {
@@ -2125,12 +2153,7 @@ func mainWindowProc(hwnd win32.HWND, msg win32.UINT, wParam win32.WPARAM, lParam
 						w.addCursorWithinEvent(w.cursorWithin)
 
 						// Restore previous cursor clip
-						if w.lastCursorClip != nil {
-							win32.ClipCursor(w.lastCursorClip)
-
-							// Clear it so we don't accidently restore it again later
-							w.lastCursorClip = nil
-						}
+						w.restoreCursorClip()
 
 						// ReleaseCapture() sends an message into the loop.. but the window is already
 						// locked.. so do an unlock and lock here
@@ -2347,9 +2370,7 @@ func mainWindowProc(hwnd win32.HWND, msg win32.UINT, wParam win32.WPARAM, lParam
 				// Better than WM_MOUSELEAVE
 				if w.cursorWithin && !w.cursorGrabbed {
 					// Restore previous cursor clip
-					if w.lastCursorClip != nil {
-						win32.ClipCursor(w.lastCursorClip)
-					}
+					w.restoreCursorClip()
 
 					// ReleaseCapture() sends an message into the loop.. but the window is already
 					// locked.. so do an unlock and lock here
@@ -2370,10 +2391,7 @@ func mainWindowProc(hwnd win32.HWND, msg win32.UINT, wParam win32.WPARAM, lParam
 				if !w.cursorWithin {
 					if w.cursorGrabbed {
 						// Store previous clipping
-						w.lastCursorClip, ok = win32.GetClipCursor()
-						if !ok {
-							logger.Println("Unable to set clip cursor; GetClipCursor():", win32.GetLastErrorString())
-						}
+						w.saveCursorClip()
 
 						// Update our clip
 						w.updateCursorClip()

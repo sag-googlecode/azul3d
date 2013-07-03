@@ -1262,9 +1262,9 @@ func GetClipCursor() (clip *RECT, ok bool) {
 	var c RECT
 	ret := C.GetClipCursor((C.LPRECT)(unsafe.Pointer(&c)))
 	if ret != 0 {
-		return nil, false
+		return &c, true
 	}
-	return &c, true
+	return nil, false
 }
 
 const (
