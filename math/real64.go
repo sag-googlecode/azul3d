@@ -18,5 +18,5 @@ const (
 	RealSizeBits       = 64
 	RealSizeBytes      = 64 / 8
 	RealNearZero  Real = math.SmallestNonzeroFloat64
-	MaxReal = math.MaxFloat64
+	MaxReal            = math.MaxFloat64
 )

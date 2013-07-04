@@ -20,5 +20,5 @@ const (
 	RealSizeBits       = 32
 	RealSizeBytes      = 32 / 8
 	RealNearZero  Real = math.SmallestNonzeroFloat32
-	MaxReal = math.MaxFloat32
+	MaxReal            = math.MaxFloat32
 )

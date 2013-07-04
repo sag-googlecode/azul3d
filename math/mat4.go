@@ -487,24 +487,24 @@ func (a *Mat4) SetPerspective(fovY, aspect, zNear, zFar Real) {
 // See: http://en.wikipedia.org/wiki/Orthographic_projection_(geometry)
 func (a *Mat4) SetOrtho(left, right, bottom, top, near, far Real) {
 	a.Assign(
-		2.0 / (right - left),
+		2.0/(right-left),
 		0,
 		0,
 		0,
 
 		0,
-		2.0 / (top - bottom),
+		2.0/(top-bottom),
 		0,
 		0,
 
 		0,
 		0,
-		-2.0 / (far - near),
+		-2.0/(far-near),
 		0,
 
-		-(right + left) / (right - left),
-		-(top + bottom) / (top - bottom),
-		-(far + near) / (far - near),
+		-(right+left)/(right-left),
+		-(top+bottom)/(top-bottom),
+		-(far+near)/(far-near),
 		1,
 	)
 }
@@ -515,24 +515,24 @@ func (a *Mat4) SetOrtho(left, right, bottom, top, near, far Real) {
 // See: http://en.wikipedia.org/wiki/Orthographic_projection_(geometry)
 func (a *Mat4) SetUnOrtho(left, right, bottom, top, near, far Real) {
 	a.Assign(
-		(right - left) / 2.0,
+		(right-left)/2.0,
 		0,
 		0,
 		0,
 
 		0,
-		(top - bottom) / 2.0,
+		(top-bottom)/2.0,
 		0,
 		0,
 
 		0,
 		0,
-		(far - near) / -2.0,
+		(far-near)/-2.0,
 		0,
 
-		(left + right) / 2,
-		(top + bottom) / 2,
-		(far + near) / -2,
+		(left+right)/2,
+		(top+bottom)/2,
+		(far+near)/-2,
 		1,
 	)
 }
