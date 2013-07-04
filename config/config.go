@@ -1,3 +1,7 @@
+// Copyright 2012 Lightpoke. All rights reserved.
+// This source code is subject to the terms and
+// conditions defined in the "License.txt" file.
+
 // Package config implements an simple configuration file reader and writer.
 //
 // The configuration file format implemented by this package is designed to be very user friendly
