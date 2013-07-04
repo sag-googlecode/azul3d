@@ -79,6 +79,10 @@ void gl11ClearDepth(gl11Context* glc, GLclampd depth) {
     return glc->fnClearDepth(depth);
 }
 
+void gl11ClearDepthf(gl11Context* glc, GLclampf depth) {
+    return glc->fnClearDepthf(depth);
+}
+
 void gl11ClearIndex(gl11Context* glc, GLfloat c) {
     return glc->fnClearIndex(c);
 }
@@ -2299,6 +2303,7 @@ gl11Context* gl11NewContext() {
     glc->fnClearAccum = (gl11PClearAccum)gl11LibGetProcAddress("glClearAccum");
     glc->fnClearColor = (gl11PClearColor)gl11LibGetProcAddress("glClearColor");
     glc->fnClearDepth = (gl11PClearDepth)gl11LibGetProcAddress("glClearDepth");
+    glc->fnClearDepthf = (gl11PClearDepthf)gl11LibGetProcAddress("glClearDepthf");
     glc->fnClearIndex = (gl11PClearIndex)gl11LibGetProcAddress("glClearIndex");
     glc->fnClearStencil = (gl11PClearStencil)gl11LibGetProcAddress("glClearStencil");
     glc->fnClipPlane = (gl11PClipPlane)gl11LibGetProcAddress("glClipPlane");
