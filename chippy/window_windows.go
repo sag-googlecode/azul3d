@@ -227,9 +227,12 @@ func (w *W32Window) Open(screen Screen) (err error) {
 			State: state,
 		})
 
+		if w.cursor != nil {
+			w.doSetCursor()
+		}
 	})
 
-	if err == nil {
+	if err == nil && w.cursor == nil {
 		w.SetCursor(nil)
 	}
 	return
