@@ -433,6 +433,16 @@ func (v *Vec3) Degrees() *Vec3 {
 	return &Vec3{v.X.Degrees(), v.Y.Degrees(), v.Z.Degrees()}
 }
 
+// Clamp clamps each component of this vector to the specified min and max
+// values.
+func (v *Vec3) Clamp(min, max Real) *Vec3 {
+	return Vector3(
+		v.X.Clamp(min, max),
+		v.Y.Clamp(min, max),
+		v.Z.Clamp(min, max),
+	)
+}
+
 // Vector3 returns an new *Vec3 with the specified values.
 func Vector3(x, y, z Real) *Vec3 {
 	return &Vec3{x, y, z}

@@ -324,6 +324,17 @@ func (v *Vec4) Transform(m *Mat4) *Vec4 {
 	)
 }
 
+// Clamp clamps each component of this vector to the specified min and max
+// values.
+func (v *Vec4) Clamp(min, max Real) *Vec4 {
+	return Vector4(
+		v.X.Clamp(min, max),
+		v.Y.Clamp(min, max),
+		v.Z.Clamp(min, max),
+		v.W.Clamp(min, max),
+	)
+}
+
 // Vector4 returns an new *Vec4 with the specified values.
 func Vector4(x, y, z, w Real) *Vec4 {
 	return &Vec4{x, y, z, w}
