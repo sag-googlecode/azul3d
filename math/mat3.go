@@ -651,17 +651,17 @@ func (a *Mat3) Compose(scale, shear, hpr *Vec3, cs CoordSys) {
 	if !hpr.Z.Equals(0) {
 		r := new(Mat3)
 		r.SetRotation(hpr.Z, cs.Forward(), cs)
-		a.Mul(r)
+		*a = *a.Mul(r)
 	}
 	if !hpr.Y.Equals(0) {
 		r := new(Mat3)
 		r.SetRotation(hpr.Y, cs.Right(), cs)
-		a.Mul(r)
+		*a = *a.Mul(r)
 	}
 	if !hpr.X.Equals(0) {
 		r := new(Mat3)
 		r.SetRotation(hpr.X, cs.Up(), cs)
-		a.Mul(r)
+		*a = *a.Mul(r)
 	}
 }
 
