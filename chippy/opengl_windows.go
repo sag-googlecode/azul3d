@@ -53,7 +53,7 @@ func (w *W32Window) GLConfigs() (configs []*GLConfig) {
 			var pf *win32.PIXELFORMATDESCRIPTOR
 			max, pf = win32.DescribePixelFormat(w.dc, index)
 			if max == 0 {
-				logger.Println("Unable to get GLBufferFormats; DescribePixelFormat():", win32.GetLastErrorString())
+				logger().Println("Unable to get GLBufferFormats; DescribePixelFormat():", win32.GetLastErrorString())
 				return
 			}
 
@@ -87,10 +87,10 @@ func (w *W32Window) GLConfigs() (configs []*GLConfig) {
 
 					config.Transparent = (pf.DwFlags() & win32.PFD_SUPPORT_COMPOSITION) > 0
 
-					//logger.Println("GENERIC_FORMAT", pf.DwFlags() & win32.PFD_GENERIC_FORMAT)
-					//logger.Println("GENERIC_ACCELERATED", pf.DwFlags() & win32.PFD_GENERIC_ACCELERATED)
+					//logger().Println("GENERIC_FORMAT", pf.DwFlags() & win32.PFD_GENERIC_FORMAT)
+					//logger().Println("GENERIC_ACCELERATED", pf.DwFlags() & win32.PFD_GENERIC_ACCELERATED)
 					//config.Accelerated = ((pf.DwFlags() & win32.PFD_GENERIC_FORMAT)  & (pf.DwFlags() & win32.PFD_GENERIC_ACCELERATED)) > 0
-					//logger.Println(config.Accelerated)
+					//logger().Println(config.Accelerated)
 
 					config.DoubleBuffered = (pf.DwFlags() & win32.PFD_DOUBLEBUFFER) > 0
 					config.StereoScopic = (pf.DwFlags() & win32.PFD_STEREO) > 0
@@ -125,7 +125,7 @@ func (w *W32Window) GLSetConfig(config *GLConfig) {
 		}
 
 		if !win32.SetPixelFormat(w.dc, config.index, nil) {
-			logger.Println("GLSetConfig failed; SetPixelFormat():", win32.GetLastErrorString())
+			logger().Println("GLSetConfig failed; SetPixelFormat():", win32.GetLastErrorString())
 		}
 		w.glPixelFormatSet = true
 	})
@@ -201,7 +201,7 @@ func (w *W32Window) GLCreateContext(glVersionMajor, glVersionMinor uint, flags G
 				// The wglCreateContextAttribsARB entry point is missing
 				//
 				// Fall back to old context.
-				logger.Println("WGL_ARB_create_context supported -- but wglCreateContextAttribsARB is missing!")
+				logger().Println("WGL_ARB_create_context supported -- but wglCreateContextAttribsARB is missing!")
 				c.hglrc = fakeContext
 
 			} else if c.hglrc == nil {
@@ -209,7 +209,7 @@ func (w *W32Window) GLCreateContext(glVersionMajor, glVersionMinor uint, flags G
 				//
 				// Fall back to old context.
 
-				logger.Println("wglCreateContextAttribsARB() failed:", win32.GetLastErrorString())
+				logger().Println("wglCreateContextAttribsARB() failed:", win32.GetLastErrorString())
 				c.hglrc = fakeContext
 			} else {
 				// It worked! We got our context!
@@ -225,7 +225,7 @@ func (w *W32Window) GLCreateContext(glVersionMajor, glVersionMinor uint, flags G
 			// They have no WGL_ARB_create_context support.
 			//
 			// Fall back to old context.
-			logger.Println("WGL_ARB_create_context is unavailable.")
+			logger().Println("WGL_ARB_create_context is unavailable.")
 			c.hglrc = fakeContext
 		}
 
@@ -233,7 +233,7 @@ func (w *W32Window) GLCreateContext(glVersionMajor, glVersionMinor uint, flags G
 		defer win32.WglMakeCurrent(nil, nil)
 
 		ver := win32.GlGetString(win32.GL_VERSION)
-		//logger.Printf("OpenGL: Driver version string is %q\n", ver)
+		//logger().Printf("OpenGL: Driver version string is %q\n", ver)
 		if !versionSupported(ver, int(glVersionMajor), int(glVersionMinor)) {
 			err = errors.New(fmt.Sprintf("No OpenGL %d.%d support.", glVersionMajor, glVersionMinor))
 			return
@@ -251,7 +251,7 @@ func (w *W32Window) GLDestroyContext(c GLContext) {
 		wc.destroyed = true
 		dispatch(func() {
 			if !win32.WglDeleteContext(wc.hglrc) {
-				logger.Println("Unable to destroy GL context; wglDeleteContext():", win32.GetLastErrorString())
+				logger().Println("Unable to destroy GL context; wglDeleteContext():", win32.GetLastErrorString())
 			}
 		})
 	}
@@ -269,7 +269,7 @@ func (w *W32Window) GLMakeCurrent(c GLContext) {
 
 	// Note: Avoid the temptation, never dispatch()!
 	if !win32.WglMakeCurrent(w.dc, hglrc) {
-		logger.Println("Unable to make GL context current; wglMakeCurrent():", win32.GetLastErrorString())
+		logger().Println("Unable to make GL context current; wglMakeCurrent():", win32.GetLastErrorString())
 	}
 }
 
@@ -281,7 +281,7 @@ func (w *W32Window) GLSwapBuffers() {
 		return
 	}
 	if !win32.SwapBuffers(w.dc) {
-		logger.Println("Unable to swap GL buffers; SwapBuffers():", win32.GetLastErrorString())
+		logger().Println("Unable to swap GL buffers; SwapBuffers():", win32.GetLastErrorString())
 	}
 }
 
@@ -293,6 +293,6 @@ func (w *W32Window) GLSetVerticalSync(vsync int) {
 		return
 	}
 	if !win32.WglSwapIntervalEXT(vsync) {
-		logger.Println("Unable to set vertical sync; wglSwapIntervalEXT():", win32.GetLastErrorString())
+		logger().Println("Unable to set vertical sync; wglSwapIntervalEXT():", win32.GetLastErrorString())
 	}
 }

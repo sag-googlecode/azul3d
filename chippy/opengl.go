@@ -36,7 +36,7 @@ func versionSupported(ver string, wantedMajor, wantedMinor int) bool {
 			major, _ = strconv.Atoi(versions[0])
 			minor, _ = strconv.Atoi(versions[1])
 		} else {
-			logger.Printf("OpenGL: *** Driver reported version parsing failed for %q ***\n", ver)
+			logger().Printf("OpenGL: *** Driver reported version parsing failed for %q ***\n", ver)
 			return false
 		}
 

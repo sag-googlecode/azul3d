@@ -94,7 +94,7 @@ func newScreen() *w32Screen {
 		dispatchNoWait(func() {
 			// Do screen related cleanup here..
 			if !win32.DeleteDC(s.dc) {
-				logger.Println("Cannot delete DC; DeleteDC():", win32.GetLastErrorString())
+				logger().Println("Cannot delete DC; DeleteDC():", win32.GetLastErrorString())
 			}
 		})
 	})
@@ -163,7 +163,7 @@ func (s *w32Screen) SetScreenMode(newMode ScreenMode) (err error) {
 
 		ret := win32.ChangeDisplaySettingsEx(s.w32GraphicsDeviceName, mode, win32.CDS_TEST, nil)
 		if ret != 0 {
-			logger.Println("Unable to set screen mode; ChangeDisplaySettingsEx(,,CDS_TEST,) reports bad mode.")
+			logger().Println("Unable to set screen mode; ChangeDisplaySettingsEx(,,CDS_TEST,) reports bad mode.")
 			err = ErrBadScreenMode
 			return
 		}
@@ -171,12 +171,12 @@ func (s *w32Screen) SetScreenMode(newMode ScreenMode) (err error) {
 		ret = win32.ChangeDisplaySettingsEx(s.w32GraphicsDeviceName, mode, 0, nil)
 
 		if ret == win32.DISP_CHANGE_BADDUALVIEW {
-			logger.Println("Unable to set screen mode; Because the system is DualView capable.")
+			logger().Println("Unable to set screen mode; Because the system is DualView capable.")
 			err = ErrDualViewCapable
 			return
 		}
 		if ret == win32.DISP_CHANGE_BADMODE {
-			logger.Println("Unable to set screen mode; The graphics mode is not supported.")
+			logger().Println("Unable to set screen mode; The graphics mode is not supported.")
 			err = ErrBadScreenMode
 			return
 		}
@@ -184,22 +184,22 @@ func (s *w32Screen) SetScreenMode(newMode ScreenMode) (err error) {
 		// highly unlikely errors:
 
 		if ret == win32.DISP_CHANGE_BADFLAGS {
-			logger.Println("Unable to set screen mode; An invalid set of flags was passed in.")
+			logger().Println("Unable to set screen mode; An invalid set of flags was passed in.")
 			err = ErrBadScreenMode
 			return
 		}
 		if ret == win32.DISP_CHANGE_BADPARAM {
-			logger.Println("Unable to set screen mode; Invalid parameter or invalid flag (or combination of)")
+			logger().Println("Unable to set screen mode; Invalid parameter or invalid flag (or combination of)")
 			err = ErrBadScreenMode
 			return
 		}
 		if ret == win32.DISP_CHANGE_NOTUPDATED {
-			logger.Println("Unable to set screen mode; Unable to write settings to the registry.")
+			logger().Println("Unable to set screen mode; Unable to write settings to the registry.")
 			err = ErrBadScreenMode
 			return
 		}
 		if ret == win32.DISP_CHANGE_RESTART {
-			logger.Println("Unable to set screen mode; Windows requires restart to achieve specific mode.")
+			logger().Println("Unable to set screen mode; Windows requires restart to achieve specific mode.")
 			err = ErrBadScreenMode
 			return
 		}
@@ -276,7 +276,7 @@ func (s *w32Screen) SetGammaRamp(gammaRamp *GammaRamp) (err error) {
 
 		// On windows 2000, sometimes SetDeviceGammaRamp will return false, even though it worked.
 		if (win2kOrBelow && win32.GetLastError() != 0) || (!win2kOrBelow && !worked) {
-			logger.Println(fmt.Sprintf("Unable to set gamma ramp on %s; SetDeviceGammaRamp(): %s", s.name, win32.GetLastErrorString()))
+			logger().Println(fmt.Sprintf("Unable to set gamma ramp on %s; SetDeviceGammaRamp(): %s", s.name, win32.GetLastErrorString()))
 			err = ErrGammaRampsNotSupported
 		}
 		return
@@ -302,12 +302,12 @@ func (s *w32Screen) Restore() {
 
 	ramp, err := s.OriginalGammaRamp()
 	if err != nil {
-		logger.Println(err.Error())
+		logger().Println(err.Error())
 		return
 	}
 	err = s.SetGammaRamp(ramp)
 	if err != nil {
-		logger.Println(err.Error())
+		logger().Println(err.Error())
 		return
 	}
 }
@@ -317,12 +317,12 @@ func (s *w32Screen) setGammaRampSize() {
 		s.gammaRampSize = 256
 		return
 	}
-	logger.Println("GetDeviceCaps(CM_GAMMA_RAMP) reports no support for gamma ramps on device:", s.name)
+	logger().Println("GetDeviceCaps(CM_GAMMA_RAMP) reports no support for gamma ramps on device:", s.name)
 }
 
 func (s *w32Screen) setCurrentGammaRamp() {
 	if s.GammaRampSize() == 0 {
-		logger.Println("GetDeviceCaps(CM_GAMMA_RAMP) reports no support for gamma ramps on device:", s.name)
+		logger().Println("GetDeviceCaps(CM_GAMMA_RAMP) reports no support for gamma ramps on device:", s.name)
 		s.gammaRampError = ErrGammaRampsNotSupported
 		return
 	}
@@ -330,7 +330,7 @@ func (s *w32Screen) setCurrentGammaRamp() {
 	ret, deviceRamp := win32.GetDeviceGammaRamp(s.dc)
 	if ret == false {
 		s.gammaRampError = ErrGammaRampsNotSupported
-		logger.Println(fmt.Sprintf("Unable to get current gamma ramp on %s; GetDeviceGammaRamp(): %s", s.name, win32.GetLastErrorString()))
+		logger().Println(fmt.Sprintf("Unable to get current gamma ramp on %s; GetDeviceGammaRamp(): %s", s.name, win32.GetLastErrorString()))
 		return
 	}
 
@@ -350,7 +350,7 @@ func (s *w32Screen) setCurrentGammaRamp() {
 
 			// Get our float value back
 			x := (float32(v) - minValue) / rangeValue
-			//logger.Printf("%.3f, ", x)
+			//logger().Printf("%.3f, ", x)
 			return x
 		}
 
@@ -487,8 +487,8 @@ func backend_doScreens() (screens []Screen) {
 							// This hopefully never happens, but if it does that means
 							// there is something wrong with this screen most likely or
 							// an graphics driver bug or something else, who knows?
-							logger.Println("CreateDC() on screen failed! Unable to create device context!")
-							logger.Println("^ Screen will be ignored!")
+							logger().Println("CreateDC() on screen failed! Unable to create device context!")
+							logger().Println("^ Screen will be ignored!")
 						}
 					}
 				}
@@ -501,7 +501,7 @@ func backend_doScreens() (screens []Screen) {
 		mi := new(win32.MONITORINFOEX)
 		mi.SetSize()
 		if !win32.GetMonitorInfo(hMonitor, mi) {
-			logger.Println("Unable to detect monitor position; GetMonitorInfo():", win32.GetLastErrorString())
+			logger().Println("Unable to detect monitor position; GetMonitorInfo():", win32.GetLastErrorString())
 		} else {
 			for _, screen := range screens {
 				if screen.(*w32Screen).w32GraphicsDeviceName == mi.Device() {
@@ -514,7 +514,7 @@ func backend_doScreens() (screens []Screen) {
 	}
 
 	if !win32.EnumDisplayMonitors(nil, nil, proc, 0) {
-		logger.Println("Unable to detect monitor positions; EnumDisplayMonitors():", win32.GetLastErrorString())
+		logger().Println("Unable to detect monitor positions; EnumDisplayMonitors():", win32.GetLastErrorString())
 	}
 	return
 }
@@ -539,10 +539,10 @@ func backend_DefaultScreen() Screen {
 
 	// Should never happen
 	if len(screens) > 0 {
-		logger.Println("Unable to find default screen; falling back to first screen as default.")
+		logger().Println("Unable to find default screen; falling back to first screen as default.")
 		return screens[0]
 	}
-	logger.Println("No screens available!")
+	logger().Println("No screens available!")
 	return nil
 
 }

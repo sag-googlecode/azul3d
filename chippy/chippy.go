@@ -63,12 +63,22 @@ func panicUnlessInit() {
 	}
 }
 
-var logger *log.Logger
+var theLogger *log.Logger
+
+func logger() *log.Logger {
+	globalLock.RLock()
+	defer globalLock.RUnlock()
+
+	return theLogger
+}
 
 // SetDebugOutput specifies the io.Writer that debug output will be written to (ioutil.Discard by
 // default).
 func SetDebugOutput(w io.Writer) {
-	logger = log.New(w, "chippy: ", log.Ltime|log.Lshortfile)
+	globalLock.Lock()
+	defer globalLock.Unlock()
+
+	theLogger = log.New(w, "chippy: ", log.Ltime|log.Lshortfile)
 }
 
 func init() {

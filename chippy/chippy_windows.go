@@ -148,7 +148,7 @@ func backend_Init() error {
 
 		hKeyboardHook = win32.SetLowLevelKeyboardHook(keyboardHook, hInstance, 0)
 		if hKeyboardHook == nil {
-			logger.Println("Failed to disable keyboard shortcuts; SetWindowsHookEx():", win32.GetLastErrorString())
+			logger().Println("Failed to disable keyboard shortcuts; SetWindowsHookEx():", win32.GetLastErrorString())
 		}
 	})
 
@@ -165,7 +165,7 @@ func backend_Destroy() {
 	dispatch(func() {
 		if hKeyboardHook != nil {
 			if !win32.UnhookWindowsHookEx(hKeyboardHook) {
-				logger.Println("Failed to unhook keyboard hook; UnhookWindowsHookEx():", win32.GetLastErrorString())
+				logger().Println("Failed to unhook keyboard hook; UnhookWindowsHookEx():", win32.GetLastErrorString())
 			}
 		}
 	})

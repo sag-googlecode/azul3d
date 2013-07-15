@@ -244,11 +244,11 @@ func (w *W32Window) doRebuildWindow() (err error) {
 		delete(windowsByHwnd, w.hwnd)
 
 		if !win32.DestroyWindow(w.hwnd) {
-			logger.Println("Unable to destroy window; DestroyWindow():", win32.GetLastErrorString())
+			logger().Println("Unable to destroy window; DestroyWindow():", win32.GetLastErrorString())
 		}
 
 		if !win32.UnregisterClass(w.windowClass, hInstance) {
-			logger.Println("Failed to unregister window class; UnregisterClass():", win32.GetLastErrorString())
+			logger().Println("Failed to unregister window class; UnregisterClass():", win32.GetLastErrorString())
 		}
 		w.hwnd = nil
 	}
@@ -338,11 +338,11 @@ func (w *W32Window) Destroy() {
 		delete(windowsByHwnd, w.hwnd)
 
 		if !win32.DestroyWindow(w.hwnd) {
-			logger.Println("Unable to destroy window; DestroyWindow():", win32.GetLastErrorString())
+			logger().Println("Unable to destroy window; DestroyWindow():", win32.GetLastErrorString())
 		}
 
 		if !win32.UnregisterClass(w.windowClass, hInstance) {
-			logger.Println("Failed to unregister window class; UnregisterClass():", win32.GetLastErrorString())
+			logger().Println("Failed to unregister window class; UnregisterClass():", win32.GetLastErrorString())
 		}
 	})
 }
@@ -405,11 +405,11 @@ func (w *W32Window) PixelBlit(x, y uint, image image.Image) {
 	dispatch(func() {
 		if w.blitBitmap != nil {
 			if !win32.DeleteDC(w.blitBitmapDc) {
-				logger.Println("Unable to delete blit bitmap; DeleteDC():", win32.GetLastErrorString())
+				logger().Println("Unable to delete blit bitmap; DeleteDC():", win32.GetLastErrorString())
 			}
 
 			if !win32.DeleteObject(win32.HGDIOBJ(w.blitBitmap)) {
-				logger.Println("Unable to delete blit bitmap; DeleteObject():", win32.GetLastErrorString())
+				logger().Println("Unable to delete blit bitmap; DeleteObject():", win32.GetLastErrorString())
 			}
 		}
 
@@ -420,7 +420,7 @@ func (w *W32Window) PixelBlit(x, y uint, image image.Image) {
 		w.blitBitmapDc = win32.CreateCompatibleDC(w.dc)
 		w.blitBitmap = win32.CreateCompatibleBitmap(w.dc, win32.Int(width), win32.Int(height))
 		if win32.SelectObject(w.blitBitmapDc, win32.HGDIOBJ(w.blitBitmap)) == nil {
-			logger.Println("Unable to blit; SelectObject():", win32.GetLastErrorString())
+			logger().Println("Unable to blit; SelectObject():", win32.GetLastErrorString())
 			return
 		}
 
@@ -453,7 +453,7 @@ func (w *W32Window) PixelBlit(x, y uint, image image.Image) {
 			},
 		}
 		if win32.SetDIBits(w.dc, w.blitBitmap, 0, win32.UINT(height), unsafe.Pointer(&w.blitBits[0]), &bitmapInfo, win32.DIB_RGB_COLORS) == 0 {
-			logger.Println("Unable to blit; SetDiBits():", win32.GetLastErrorString())
+			logger().Println("Unable to blit; SetDiBits():", win32.GetLastErrorString())
 			return
 		}
 
@@ -465,7 +465,7 @@ func (w *W32Window) PixelBlit(x, y uint, image image.Image) {
 		}
 
 		if !win32.AlphaBlend(w.dc, win32.Int(x), win32.Int(y), win32.Int(width), win32.Int(height), w.blitBitmapDc, 0, 0, win32.Int(width), win32.Int(height), &blend) {
-			logger.Println("Unable to blit: TransparentBlt():", win32.GetLastErrorString())
+			logger().Println("Unable to blit: TransparentBlt():", win32.GetLastErrorString())
 			return
 		}
 	})
@@ -500,7 +500,7 @@ func (w *W32Window) SetTitle(title string) {
 			unlock()
 			dispatch(func() {
 				if !win32.SetWindowText(w.hwnd, w.title) {
-					logger.Println("Unable to set window title; SetWindowText():", win32.GetLastErrorString())
+					logger().Println("Unable to set window title; SetWindowText():", win32.GetLastErrorString())
 				}
 			})
 		}
@@ -811,7 +811,7 @@ func (w *W32Window) doPrepareCursor(cursor *Cursor) {
 		}
 	}
 	if win32.SetDIBits(w.dc, lc.cursorColorBitmap, 0, win32.UINT(cursorHeight), unsafe.Pointer(&lc.cursorColorBits[0]), &cursorBitmapInfo, win32.DIB_RGB_COLORS) == 0 {
-		logger.Println("Unable to set cursor; SetDiBits():", win32.GetLastErrorString())
+		logger().Println("Unable to set cursor; SetDiBits():", win32.GetLastErrorString())
 		return
 	}
 
@@ -831,7 +831,7 @@ func (w *W32Window) doPrepareCursor(cursor *Cursor) {
 		}
 	}
 	if win32.SetDIBits(w.dc, lc.cursorMaskBitmap, 0, win32.UINT(cursorHeight), unsafe.Pointer(&lc.cursorMaskBits[0]), &cursorBitmapInfo, win32.DIB_RGB_COLORS) == 0 {
-		logger.Println("Unable to set cursor; SetDiBits():", win32.GetLastErrorString())
+		logger().Println("Unable to set cursor; SetDiBits():", win32.GetLastErrorString())
 		return
 	}
 
@@ -845,7 +845,7 @@ func (w *W32Window) doPrepareCursor(cursor *Cursor) {
 
 	lc.hCursor = win32.CreateIconIndirect(&cursorInfo)
 	if lc.hCursor == nil {
-		logger.Println("Unable to set cursor; CreateIconIndirect():", win32.GetLastErrorString())
+		logger().Println("Unable to set cursor; CreateIconIndirect():", win32.GetLastErrorString())
 		return
 	}
 
@@ -899,15 +899,15 @@ func (w *W32Window) FreeCursor(cursor *Cursor) {
 		unlock()
 		dispatch(func() {
 			if !win32.DestroyCursor(win32.HCURSOR(lc.hCursor)) {
-				logger.Println("Failed to free cursor; DestroyCursor():", win32.GetLastErrorString())
+				logger().Println("Failed to free cursor; DestroyCursor():", win32.GetLastErrorString())
 			}
 
 			if !win32.DeleteObject(win32.HGDIOBJ(lc.cursorColorBitmap)) {
-				logger.Println("Failed to free cursor; DeleteObject(cursorColorBitmap) failed!")
+				logger().Println("Failed to free cursor; DeleteObject(cursorColorBitmap) failed!")
 			}
 
 			if !win32.DeleteObject(win32.HGDIOBJ(lc.cursorMaskBitmap)) {
-				logger.Println("Failed to free cursor; DeleteObject(cursorMaskBitmap) failed!")
+				logger().Println("Failed to free cursor; DeleteObject(cursorMaskBitmap) failed!")
 			}
 		})
 	}
@@ -1175,15 +1175,15 @@ func (w *W32Window) doMakeIcon() {
 	///////////////////
 	if w.hIcon != nil {
 		if !win32.DestroyIcon(w.hIcon) {
-			logger.Println("Failed to destroy icon; DestroyIcon():", win32.GetLastErrorString())
+			logger().Println("Failed to destroy icon; DestroyIcon():", win32.GetLastErrorString())
 		}
 
 		if !win32.DeleteObject(win32.HGDIOBJ(w.iconColorBitmap)) {
-			logger.Println("Failed to destroy icon; DeleteObject(iconColorBitmap) failed!")
+			logger().Println("Failed to destroy icon; DeleteObject(iconColorBitmap) failed!")
 		}
 
 		if !win32.DeleteObject(win32.HGDIOBJ(w.iconMaskBitmap)) {
-			logger.Println("Failed to destroy icon; DeleteObject(iconMaskBitmap) failed!")
+			logger().Println("Failed to destroy icon; DeleteObject(iconMaskBitmap) failed!")
 		}
 	}
 
@@ -1221,7 +1221,7 @@ func (w *W32Window) doMakeIcon() {
 		}
 	}
 	if win32.SetDIBits(w.dc, w.iconColorBitmap, 0, win32.UINT(iconHeight), unsafe.Pointer(&w.iconColorBits[0]), &iconBitmapInfo, win32.DIB_RGB_COLORS) == 0 {
-		logger.Println("Unable to set icon; SetDiBits():", win32.GetLastErrorString())
+		logger().Println("Unable to set icon; SetDiBits():", win32.GetLastErrorString())
 		return
 	}
 
@@ -1241,7 +1241,7 @@ func (w *W32Window) doMakeIcon() {
 		}
 	}
 	if win32.SetDIBits(w.dc, w.iconMaskBitmap, 0, win32.UINT(iconHeight), unsafe.Pointer(&w.iconMaskBits[0]), &iconBitmapInfo, win32.DIB_RGB_COLORS) == 0 {
-		logger.Println("Unable to set icon; SetDiBits():", win32.GetLastErrorString())
+		logger().Println("Unable to set icon; SetDiBits():", win32.GetLastErrorString())
 		return
 	}
 
@@ -1255,7 +1255,7 @@ func (w *W32Window) doMakeIcon() {
 
 	w.hIcon = win32.CreateIconIndirect(&iconInfo)
 	if w.hIcon == nil {
-		logger.Println("Unable to set icon; CreateIconIndirect():", win32.GetLastErrorString())
+		logger().Println("Unable to set icon; CreateIconIndirect():", win32.GetLastErrorString())
 		return
 	}
 
@@ -1264,15 +1264,15 @@ func (w *W32Window) doMakeIcon() {
 	////////////////
 	if w.hSmIcon != nil {
 		if !win32.DestroyIcon(w.hSmIcon) {
-			logger.Println("Failed to destroy icon; DestroyIcon():", win32.GetLastErrorString())
+			logger().Println("Failed to destroy icon; DestroyIcon():", win32.GetLastErrorString())
 		}
 
 		if !win32.DeleteObject(win32.HGDIOBJ(w.smIconColorBitmap)) {
-			logger.Println("Failed to destroy icon; DeleteObject(smIconColorBitmap) failed!")
+			logger().Println("Failed to destroy icon; DeleteObject(smIconColorBitmap) failed!")
 		}
 
 		if !win32.DeleteObject(win32.HGDIOBJ(w.smIconMaskBitmap)) {
-			logger.Println("Failed to destroy icon; DeleteObject(smIconMaskBitmap) failed!")
+			logger().Println("Failed to destroy icon; DeleteObject(smIconMaskBitmap) failed!")
 		}
 	}
 
@@ -1310,7 +1310,7 @@ func (w *W32Window) doMakeIcon() {
 		}
 	}
 	if win32.SetDIBits(w.dc, w.smIconColorBitmap, 0, win32.UINT(iconHeight), unsafe.Pointer(&w.smIconColorBits[0]), &iconBitmapInfo, win32.DIB_RGB_COLORS) == 0 {
-		logger.Println("Unable to set icon; SetDiBits():", win32.GetLastErrorString())
+		logger().Println("Unable to set icon; SetDiBits():", win32.GetLastErrorString())
 		return
 	}
 
@@ -1330,7 +1330,7 @@ func (w *W32Window) doMakeIcon() {
 		}
 	}
 	if win32.SetDIBits(w.dc, w.smIconMaskBitmap, 0, win32.UINT(iconHeight), unsafe.Pointer(&w.smIconMaskBits[0]), &iconBitmapInfo, win32.DIB_RGB_COLORS) == 0 {
-		logger.Println("Unable to set icon; SetDiBits():", win32.GetLastErrorString())
+		logger().Println("Unable to set icon; SetDiBits():", win32.GetLastErrorString())
 		return
 	}
 
@@ -1344,7 +1344,7 @@ func (w *W32Window) doMakeIcon() {
 
 	w.hSmIcon = win32.CreateIconIndirect(&iconInfo)
 	if w.hSmIcon == nil {
-		logger.Println("Unable to set icon; CreateIconIndirect():", win32.GetLastErrorString())
+		logger().Println("Unable to set icon; CreateIconIndirect():", win32.GetLastErrorString())
 		return
 	}
 	w.doSetIcon()
@@ -1377,7 +1377,7 @@ func (w *W32Window) doSetCursor() {
 				lc := new(loadedCursor)
 				lc.hCursor = win32.HICON(win32.LoadCursor(nil, win32.IDC_ARROW))
 				if lc.hCursor == nil {
-					logger.Println("Unable to load default (IDC_ARROW) cursor! LoadCursor():", win32.GetLastErrorString())
+					logger().Println("Unable to load default (IDC_ARROW) cursor! LoadCursor():", win32.GetLastErrorString())
 				} else {
 					w.loadedCursor = lc
 				}
@@ -1400,7 +1400,7 @@ func (w *W32Window) doSetCursorPos() {
 	}
 
 	if !win32.SetCursorPos(int32(w.x+w.cursorX), int32(w.y+w.cursorY)) {
-		logger.Println("Unable to set cursor position: SetCursorPos():", win32.GetLastErrorString())
+		logger().Println("Unable to set cursor position: SetCursorPos():", win32.GetLastErrorString())
 	}
 }
 
@@ -1416,7 +1416,7 @@ func (w *W32Window) doUpdateTransparency() {
 	bb.HRgbBlur = rgn
 	err := win32.DwmEnableBlurBehindWindow(w.hwnd, &bb)
 	if err != nil {
-		logger.Println(err)
+		logger().Println(err)
 	}
 }
 
@@ -1520,7 +1520,7 @@ func (w *W32Window) doSetWindowPos() {
 
 	// |win32.SWP_NOZORDER|win32.SWP_NOOWNERZORDER
 	if !win32.SetWindowPos(w.hwnd, insertAfter, x, y, win32.Int(width), win32.Int(height), win32.SWP_FRAMECHANGED) {
-		logger.Println("Unable to set window position; SetWindowPos():", win32.GetLastErrorString())
+		logger().Println("Unable to set window position; SetWindowPos():", win32.GetLastErrorString())
 	}
 }
 
@@ -1881,7 +1881,7 @@ func (w *W32Window) saveCursorClip() {
 	var ok bool
 	w.lastCursorClip, ok = win32.GetClipCursor()
 	if !ok {
-		logger.Println("Unable to set clip cursor; GetClipCursor():", win32.GetLastErrorString())
+		logger().Println("Unable to set clip cursor; GetClipCursor():", win32.GetLastErrorString())
 	}
 }
 
@@ -1906,14 +1906,14 @@ func (w *W32Window) updateCursorClip() {
 	tl.SetX(0)
 	tl.SetY(0)
 	if !win32.ClientToScreen(w.hwnd, tl) {
-		logger.Println("Unable to set clip cursor; ClientToScreen():", win32.GetLastErrorString())
+		logger().Println("Unable to set clip cursor; ClientToScreen():", win32.GetLastErrorString())
 	}
 
 	br := new(win32.POINT)
 	br.SetX(win32.LONG(w.width))
 	br.SetY(win32.LONG(w.height))
 	if !win32.ClientToScreen(w.hwnd, br) {
-		logger.Println("Unable to set clip cursor; ClientToScreen():", win32.GetLastErrorString())
+		logger().Println("Unable to set clip cursor; ClientToScreen():", win32.GetLastErrorString())
 	}
 
 	clip := new(win32.RECT)
@@ -1924,7 +1924,7 @@ func (w *W32Window) updateCursorClip() {
 	clip.SetBottom(br.Y())
 
 	if !win32.ClipCursor(clip) {
-		logger.Println("Unable to set clip cursor; ClipCursor():", win32.GetLastErrorString())
+		logger().Println("Unable to set clip cursor; ClipCursor():", win32.GetLastErrorString())
 	}
 }
 
@@ -2123,7 +2123,7 @@ func mainWindowProc(hwnd win32.HWND, msg win32.UINT, wParam win32.WPARAM, lParam
 			mi := new(win32.MONITORINFOEX)
 			mi.SetSize()
 			if !win32.GetMonitorInfo(hMonitor, mi) {
-				logger.Println("Unable to detect monitor position; GetMonitorInfo():", win32.GetLastErrorString())
+				logger().Println("Unable to detect monitor position; GetMonitorInfo():", win32.GetLastErrorString())
 			} else {
 				screens := backend_doScreens()
 				for _, screen := range screens {
@@ -2244,7 +2244,7 @@ func mainWindowProc(hwnd win32.HWND, msg win32.UINT, wParam win32.WPARAM, lParam
 
 			k := w.translateKey(wParam)
 			if k == keyboard.Invalid {
-				logger.Printf("Unknown key wParam=%d hex=0x%X)\n", wParam, wParam)
+				logger().Printf("Unknown key wParam=%d hex=0x%X)\n", wParam, wParam)
 			}
 
 			var state keyboard.State
