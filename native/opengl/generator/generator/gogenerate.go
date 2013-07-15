@@ -15,8 +15,7 @@ import (
 	"strings"
 )
 
-const goHelperCode = `
-// Package 'opengl' implements OpenGL version <VERSION>
+const goHelperCode = `// Package 'opengl' implements OpenGL version <VERSION>
 package opengl
 
 // #cgo LDFLAGS: -lopengl32
@@ -102,6 +101,38 @@ func versionSupported(glc *Context) bool {
 	}
 	return false
 }
+
+func (glc *Context) queryExtensions() {
+	// Initialize extensions map
+	glc.extensions = make(map[string]bool)
+
+	// Query extensions string
+	extString := glc.GetString(EXTENSIONS)
+
+	if len(extString) > 0 {
+		for _, ext := range strings.Split(extString, " ") {
+			if len(ext) > 0 {
+				glc.extensions[ext] = true
+			}
+		}
+	}
+}
+
+// Extension tells if the specified extension is supported by the OpenGL
+// context.
+//
+// Extensions are stored internally as an map for performance, so lookups are
+// very quick and require no OpenGL calls.
+//
+// Like other OpenGL functions, this is not thread safe.
+//
+// If this function always returns false, ensure that New() has been called in
+// an active OpenGL context (as the extensions are queried then).
+func (glc *Context) Extension(ext string) bool {
+	_, ok := glc.extensions[ext]
+	return ok
+}
+
 `
 
 func generateGo(packageDir, prefix, version, versionWithoutDots string, versionProcs, possibleProcs []*Procedure, constants map[string]string) {
@@ -133,6 +164,7 @@ func generateGo(packageDir, prefix, version, versionWithoutDots string, versionP
 	// Write out the Context type
 	fmt.Fprintf(code, "type Context struct {\n")
 	fmt.Fprintf(code, "\tcontext *C.%sContext\n", prefix)
+	fmt.Fprintf(code, "\textensions map[string]bool\n")
 	for _, p := range allProcs {
 		var name, args, returns string
 
@@ -194,6 +226,8 @@ func generateGo(packageDir, prefix, version, versionWithoutDots string, versionP
 	fmt.Fprintf(code, "\tif !versionSupported(glc) {\n")
 	fmt.Fprintf(code, "\t\treturn nil\n")
 	fmt.Fprintf(code, "\t}\n")
+
+	fmt.Fprintf(code, "\tglc.queryExtensions()\n")
 
 	fmt.Fprintf(code, "\treturn glc\n")
 	fmt.Fprintf(code, "}\n")

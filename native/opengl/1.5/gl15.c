@@ -79,10 +79,6 @@ void gl15ClearDepth(gl15Context* glc, GLclampd depth) {
     return glc->fnClearDepth(depth);
 }
 
-void gl15ClearDepthf(gl15Context* glc, GLclampf depth) {
-    return glc->fnClearDepthf(depth);
-}
-
 void gl15ClearIndex(gl15Context* glc, GLfloat c) {
     return glc->fnClearIndex(c);
 }
@@ -2303,7 +2299,6 @@ gl15Context* gl15NewContext() {
     glc->fnClearAccum = (gl15PClearAccum)gl15LibGetProcAddress("glClearAccum");
     glc->fnClearColor = (gl15PClearColor)gl15LibGetProcAddress("glClearColor");
     glc->fnClearDepth = (gl15PClearDepth)gl15LibGetProcAddress("glClearDepth");
-    glc->fnClearDepthf = (gl15PClearDepthf)gl15LibGetProcAddress("glClearDepthf");
     glc->fnClearIndex = (gl15PClearIndex)gl15LibGetProcAddress("glClearIndex");
     glc->fnClearStencil = (gl15PClearStencil)gl15LibGetProcAddress("glClearStencil");
     glc->fnClipPlane = (gl15PClipPlane)gl15LibGetProcAddress("glClipPlane");

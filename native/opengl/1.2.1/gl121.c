@@ -79,10 +79,6 @@ void gl121ClearDepth(gl121Context* glc, GLclampd depth) {
     return glc->fnClearDepth(depth);
 }
 
-void gl121ClearDepthf(gl121Context* glc, GLclampf depth) {
-    return glc->fnClearDepthf(depth);
-}
-
 void gl121ClearIndex(gl121Context* glc, GLfloat c) {
     return glc->fnClearIndex(c);
 }
@@ -2303,7 +2299,6 @@ gl121Context* gl121NewContext() {
     glc->fnClearAccum = (gl121PClearAccum)gl121LibGetProcAddress("glClearAccum");
     glc->fnClearColor = (gl121PClearColor)gl121LibGetProcAddress("glClearColor");
     glc->fnClearDepth = (gl121PClearDepth)gl121LibGetProcAddress("glClearDepth");
-    glc->fnClearDepthf = (gl121PClearDepthf)gl121LibGetProcAddress("glClearDepthf");
     glc->fnClearIndex = (gl121PClearIndex)gl121LibGetProcAddress("glClearIndex");
     glc->fnClearStencil = (gl121PClearStencil)gl121LibGetProcAddress("glClearStencil");
     glc->fnClipPlane = (gl121PClipPlane)gl121LibGetProcAddress("glClipPlane");
