@@ -58,3 +58,11 @@ func (degrees Real) Radians() Real {
 func (radians Real) Degrees() Real {
 	return radians * (180.0 / Pi)
 }
+
+func (r Real) Rounded() Real {
+	if r < 0 {
+		return Ceil(r - 0.5)
+	}
+	return Floor(r + 0.5)
+}
+

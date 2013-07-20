@@ -19,6 +19,10 @@ func Mod(x, y Real) Real {
 	return Real(math.Mod(float64(x), float64(y)))
 }
 
+func Ceil(x Real) Real {
+	return Real(math.Ceil(float64(x)))
+}
+
 func Floor(x Real) Real {
 	return Real(math.Floor(float64(x)))
 }
