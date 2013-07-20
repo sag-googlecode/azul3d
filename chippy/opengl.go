@@ -101,7 +101,7 @@ type GLRenderable interface {
 	// * = It is not advised to use this flag in production.
 	//
 	// You must call GLSetConfig() before calling this function.
-	GLCreateContext(major, minor uint, flags GLContextFlags) (GLContext, error)
+	GLCreateContext(major, minor uint, flags GLContextFlags, share GLContext) (GLContext, error)
 
 	// GLDestroyContext destroys the specified OpenGL context.
 	//

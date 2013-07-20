@@ -135,12 +135,23 @@ func (w *W32Window) GLConfig() *GLConfig {
 	return w.glConfig
 }
 
-func (w *W32Window) GLCreateContext(glVersionMajor, glVersionMinor uint, flags GLContextFlags) (GLContext, error) {
+func (w *W32Window) GLCreateContext(glVersionMajor, glVersionMinor uint, flags GLContextFlags, share GLContext) (GLContext, error) {
 	if w.glConfig == nil {
 		panic("Must call GLSetConfig() before GLCreateContext()!")
 	}
 	c := new(W32GLContext)
 	c.valid = true
+
+	var(
+		swc *W32GLContext
+		shglrc win32.HGLRC
+	)
+	if share != nil {
+		swc = share.(*W32GLContext)
+		swc.panicUnlessValid()
+		swc.panicIfDestroyed()
+		shglrc = swc.hglrc
+	}
 
 	var err error
 	dispatch(func() {
@@ -196,13 +207,17 @@ func (w *W32Window) GLCreateContext(glVersionMajor, glVersionMinor uint, flags G
 			attribs = append(attribs, win32.WGL_CONTEXT_PROFILE_MASK_ARB)
 			attribs = append(attribs, profileMask)
 
-			c.hglrc, ok = win32.WglCreateContextAttribsARB(w.dc, nil, attribs)
+			c.hglrc, ok = win32.WglCreateContextAttribsARB(w.dc, shglrc, attribs)
 			if !ok {
 				// The wglCreateContextAttribsARB entry point is missing
 				//
 				// Fall back to old context.
 				logger().Println("WGL_ARB_create_context supported -- but wglCreateContextAttribsARB is missing!")
 				c.hglrc = fakeContext
+
+				if !win32.WglShareLists(c.hglrc, shglrc) {
+					logger().Println("wglShareLists() failed:", win32.GetLastErrorString())
+				}
 
 			} else if c.hglrc == nil {
 				// Context couldn't be created for some reason (likely the version is not supported).
@@ -211,6 +226,11 @@ func (w *W32Window) GLCreateContext(glVersionMajor, glVersionMinor uint, flags G
 
 				logger().Println("wglCreateContextAttribsARB() failed:", win32.GetLastErrorString())
 				c.hglrc = fakeContext
+
+				if !win32.WglShareLists(c.hglrc, shglrc) {
+					logger().Println("wglShareLists() failed:", win32.GetLastErrorString())
+				}
+
 			} else {
 				// It worked! We got our context!
 				//
@@ -227,6 +247,10 @@ func (w *W32Window) GLCreateContext(glVersionMajor, glVersionMinor uint, flags G
 			// Fall back to old context.
 			logger().Println("WGL_ARB_create_context is unavailable.")
 			c.hglrc = fakeContext
+
+			if !win32.WglShareLists(c.hglrc, shglrc) {
+				logger().Println("wglShareLists() failed:", win32.GetLastErrorString())
+			}
 		}
 
 		win32.WglMakeCurrent(w.dc, c.hglrc)

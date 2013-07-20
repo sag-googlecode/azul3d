@@ -66,6 +66,10 @@ func WglMakeCurrent(hdc HDC, hglrc HGLRC) bool {
 	return C.wglMakeCurrent(C.HDC(hdc), C.HGLRC(hglrc)) != 0
 }
 
+func WglShareLists(hglrc1, hglrc2 HGLRC) bool {
+	return C.wglShareLists(C.HGLRC(hglrc1), C.HGLRC(hglrc2)) != 0
+}
+
 const (
 	WGL_CONTEXT_MAJOR_VERSION_ARB = 0x2091
 	WGL_CONTEXT_MINOR_VERSION_ARB = 0x2092

@@ -135,7 +135,7 @@ func main() {
 	defer runtime.UnlockOSThread()
 
 	// Create an OpenGL context with the OpenGL version we wish
-	context, err := window.GLCreateContext(1, 5, chippy.GLCoreProfile)
+	context, err := window.GLCreateContext(1, 5, chippy.GLCoreProfile, nil)
 	if err != nil {
 		log.Fatal(err)
 	}
