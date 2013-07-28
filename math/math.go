@@ -65,4 +65,3 @@ func (r Real) Rounded() Real {
 	}
 	return Floor(r + 0.5)
 }
-
