@@ -142,8 +142,8 @@ func (w *W32Window) GLCreateContext(glVersionMajor, glVersionMinor uint, flags G
 	c := new(W32GLContext)
 	c.valid = true
 
-	var(
-		swc *W32GLContext
+	var (
+		swc    *W32GLContext
 		shglrc win32.HGLRC
 	)
 	if share != nil {

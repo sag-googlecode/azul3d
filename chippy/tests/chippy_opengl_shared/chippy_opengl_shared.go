@@ -16,12 +16,12 @@ import (
 	"time"
 )
 
-var(
-	gl *opengl.Context
+var (
+	gl           *opengl.Context
 	triangleList uint32
-	rot float64
-	window chippy.Window
-	glClock *clock.Clock
+	rot          float64
+	window       chippy.Window
+	glClock      *clock.Clock
 )
 
 // Alternative for gluPerspective.
@@ -36,14 +36,14 @@ func buildTriangleList() {
 	triangleList = gl.GenLists(1)
 
 	gl.NewList(triangleList, opengl.COMPILE)
-	gl.Begin(opengl.POLYGON)                // Start drawing a polygon
-	gl.Color3f(1.0, 0.0, 0.0)               // Red
-	gl.Vertex3f(0.0, 1.0, 0.0)              // Top
-	gl.Color3f(0.0, 1.0, 0.0)               // Green
-	gl.Vertex3f(1.0, -1.0, 0.0)             // Bottom Right
-	gl.Color3f(0.0, 0.0, 1.0)               // Blue
-	gl.Vertex3f(-1.0, -1.0, 0.0)            // Bottom Left
-	gl.End()                                // We are done with the polygon
+	gl.Begin(opengl.POLYGON)     // Start drawing a polygon
+	gl.Color3f(1.0, 0.0, 0.0)    // Red
+	gl.Vertex3f(0.0, 1.0, 0.0)   // Top
+	gl.Color3f(0.0, 1.0, 0.0)    // Green
+	gl.Vertex3f(1.0, -1.0, 0.0)  // Bottom Right
+	gl.Color3f(0.0, 0.0, 1.0)    // Blue
+	gl.Vertex3f(-1.0, -1.0, 0.0) // Bottom Left
+	gl.End()                     // We are done with the polygon
 	gl.EndList()
 }
 
@@ -68,7 +68,7 @@ func resizeScene(width, height int) {
 	gl.Viewport(0, 0, int32(width), int32(height)) // Reset The Current Viewport And Perspective Transformation
 	gl.MatrixMode(opengl.PROJECTION)
 	gl.LoadIdentity()
-	gluPerspective(gl, 45.0, float64(width) / float64(height), 0.1, 100.0)
+	gluPerspective(gl, 45.0, float64(width)/float64(height), 0.1, 100.0)
 	gl.MatrixMode(opengl.MODELVIEW)
 }
 
@@ -191,7 +191,6 @@ func main() {
 			log.Printf("FPS: %4.3f\tAverage: %4.3f\tDeviation: %f\n", glClock.FrameRate(), glClock.AverageFrameRate(), glClock.FrameRateDeviation())
 		}
 	}()
-
 
 	sizeEvents := window.SizeEvents()
 
