@@ -6,7 +6,7 @@
 
 package clock
 
-import(
+import (
 	"time"
 )
 
