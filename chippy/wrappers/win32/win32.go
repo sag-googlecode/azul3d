@@ -1228,7 +1228,7 @@ func GetUpdateRect(hwnd HWND, lpRect *RECT, bErase bool) bool {
 		cbool = 1
 	}
 	if lpRect != nil {
-		return C.GetUpdateRect(C.HWND(hwnd), (C.LPRECT)(unsafe.Pointer(&lpRect)), cbool) != 0
+		return C.GetUpdateRect(C.HWND(hwnd), (C.LPRECT)(unsafe.Pointer(lpRect)), cbool) != 0
 	}
 	return C.GetUpdateRect(C.HWND(hwnd), nil, cbool) != 0
 }
