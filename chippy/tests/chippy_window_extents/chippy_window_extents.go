@@ -11,28 +11,35 @@ import (
 	"os"
 )
 
+func program() {
+	defer chippy.Exit()
+
+	window := chippy.NewWindow()
+	err := window.Open(chippy.DefaultScreen())
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer window.Destroy()
+
+	// Print what the window extents are
+	log.Println(window.Extents())
+}
+
 func main() {
 	log.SetFlags(0)
 
 	// Enable debug output
 	chippy.SetDebugOutput(os.Stdout)
 
+	// Initialize Chippy
 	err := chippy.Init()
 	if err != nil {
 		log.Fatal(err)
 	}
-	defer chippy.Destroy()
 
-	window := chippy.NewWindow()
-	defer window.Destroy()
+	// Start program
+	go program()
 
-	// Actually open the windows
-	screen := chippy.DefaultScreen()
-	err = window.Open(screen)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	// Print what the window extents are
-	log.Println(window.Extents())
+	// Enter main loop
+	chippy.MainLoop()
 }

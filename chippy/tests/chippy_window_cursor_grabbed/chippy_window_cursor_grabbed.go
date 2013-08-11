@@ -12,23 +12,14 @@ import (
 	"time"
 )
 
-func main() {
-	log.SetFlags(0)
-
-	// Enable debug output
-	chippy.SetDebugOutput(os.Stdout)
-
-	err := chippy.Init()
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer chippy.Destroy()
+func program() {
+	defer chippy.Exit()
 
 	window := chippy.NewWindow()
 
 	// Actually open the window
 	screen := chippy.DefaultScreen()
-	err = window.Open(screen)
+	err := window.Open(screen)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -47,15 +38,37 @@ func main() {
 		}
 	}()
 
-	cursorPositionEvents := window.CursorPositionEvents()
-	closeEvents := window.CloseEvents()
-	for {
-		select {
-		case v := <-cursorPositionEvents.Read:
-			log.Printf("Grabbed? %v | Position: %v", window.CursorGrabbed(), v)
+	events := window.Events()
+	defer window.CloseEvents(events)
 
-		case <-closeEvents.Read:
+	for {
+		e := <-events
+
+		switch e.(type) {
+		case *chippy.CursorPositionEvent:
+			log.Printf("Grabbed? %v | %v", window.CursorGrabbed(), e)
+
+		case *chippy.CloseEvent:
 			return
 		}
 	}
+}
+
+func main() {
+	log.SetFlags(0)
+
+	// Enable debug output
+	chippy.SetDebugOutput(os.Stdout)
+
+	// Initialize Chippy
+	err := chippy.Init()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// Start program
+	go program()
+
+	// Enter main loop
+	chippy.MainLoop()
 }

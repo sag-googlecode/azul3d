@@ -13,17 +13,8 @@ import (
 	"time"
 )
 
-func main() {
-	log.SetFlags(0)
-
-	// Enable debug messages
-	chippy.SetDebugOutput(os.Stdout)
-
-	err := chippy.Init()
-	if err != nil {
-		log.Fatal(err.Error())
-	}
-	defer chippy.Destroy()
+func program() {
+	defer chippy.Exit()
 
 	screens := chippy.Screens()
 	log.Printf("There are %d screens.\n", len(screens))
@@ -35,7 +26,7 @@ func main() {
 
 	log.Printf("\nEnter screen: #")
 	var screen int
-	_, err = fmt.Scanln(&screen)
+	_, err := fmt.Scanln(&screen)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -150,4 +141,23 @@ func main() {
 
 	// Uncomment this line and the gamma will stay active on the screen after the program exits
 	//chippy.SetAutoRestoreOriginalGammaRamp(false)
+}
+
+func main() {
+	log.SetFlags(0)
+
+	// Enable debug output
+	chippy.SetDebugOutput(os.Stdout)
+
+	// Initialize Chippy
+	err := chippy.Init()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// Start program
+	go program()
+
+	// Enter main loop
+	chippy.MainLoop()
 }

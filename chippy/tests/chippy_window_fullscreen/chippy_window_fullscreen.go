@@ -12,17 +12,8 @@ import (
 	"time"
 )
 
-func main() {
-	log.SetFlags(0)
-
-	// Enable debug output
-	chippy.SetDebugOutput(os.Stdout)
-
-	err := chippy.Init()
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer chippy.Destroy()
+func program() {
+	defer chippy.Exit()
 
 	window := chippy.NewWindow()
 
@@ -30,7 +21,7 @@ func main() {
 
 	// Actually open the windows
 	screen := chippy.DefaultScreen()
-	err = window.Open(screen)
+	err := window.Open(screen)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -53,4 +44,23 @@ func main() {
 	// Just wait an while so they can enjoy the window
 	log.Println("Waiting 15 seconds...")
 	<-time.After(15 * time.Second)
+}
+
+func main() {
+	log.SetFlags(0)
+
+	// Enable debug output
+	chippy.SetDebugOutput(os.Stdout)
+
+	// Initialize Chippy
+	err := chippy.Init()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// Start program
+	go program()
+
+	// Enter main loop
+	chippy.MainLoop()
 }

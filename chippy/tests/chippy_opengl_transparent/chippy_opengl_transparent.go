@@ -8,6 +8,7 @@
 package main
 
 import (
+	"code.google.com/p/azul3d/chippy/keyboard"
 	"code.google.com/p/azul3d/chippy"
 	"code.google.com/p/azul3d/clock"
 	"code.google.com/p/azul3d/native/opengl/1.5"
@@ -21,7 +22,7 @@ import (
 var(
 	gl *opengl.Context
 	rot float64
-	window chippy.Window
+	window *chippy.Window
 	glClock *clock.Clock
 )
 
@@ -92,17 +93,26 @@ func renderScene() {
 	}
 }
 
-func main() {
-	log.SetFlags(0)
+func toggleVerticalSync() {
+	vsync := window.GLVerticalSync()
 
-	// Enable debug output
-	chippy.SetDebugOutput(os.Stdout)
+	switch(vsync) {
+		case chippy.NoVerticalSync:
+			vsync = chippy.VerticalSync
 
-	err := chippy.Init()
-	if err != nil {
-		log.Fatal(err)
+		case chippy.VerticalSync:
+			vsync = chippy.AdaptiveVerticalSync
+
+		case chippy.AdaptiveVerticalSync:
+			vsync = chippy.NoVerticalSync
 	}
-	defer chippy.Destroy()
+
+	log.Println(vsync)
+	window.GLSetVerticalSync(vsync)
+}
+
+func program() {
+	defer chippy.Exit()
 
 	window = chippy.NewWindow()
 
@@ -111,7 +121,7 @@ func main() {
 
 	// Actually open the windows
 	screen := chippy.DefaultScreen()
-	err = window.Open(screen)
+	err := window.Open(screen)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -172,7 +182,8 @@ func main() {
 	}()
 
 
-	sizeEvents := window.SizeEvents()
+	events := window.Events()
+	defer window.CloseEvents(events)
 
 	// Begin our rendering loop
 	for !window.Destroyed() {
@@ -181,9 +192,20 @@ func main() {
 		// Inform the clock that an new frame has begun
 		glClock.Tick()
 
-		for i := 0; i < sizeEvents.Length(); i++ {
-			size := <-sizeEvents.Read
-			resizeScene(int(size[0]), int(size[1]))
+		for i := 0; i < len(events); i++ {
+			e := <-events
+			switch ev := e.(type) {
+				case *chippy.ResizedEvent:
+					resizeScene(ev.Width, ev.Height)
+
+				case *keyboard.StateEvent:
+					if ev.State == keyboard.Down && ev.Key == keyboard.Space {
+						toggleVerticalSync()
+					}
+
+				case *chippy.CloseEvent:
+					return
+			}
 		}
 
 		// Render the scene
@@ -193,3 +215,23 @@ func main() {
 		window.GLSwapBuffers()
 	}
 }
+
+func main() {
+	log.SetFlags(0)
+
+	// Enable debug output
+	chippy.SetDebugOutput(os.Stdout)
+
+	// Initialize Chippy
+	err := chippy.Init()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// Start program
+	go program()
+
+	// Enter main loop
+	chippy.MainLoop()
+}
+

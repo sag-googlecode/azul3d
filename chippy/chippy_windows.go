@@ -83,7 +83,7 @@ func keyboardHook(nCode win32.Int, wParam win32.WPARAM, lParam win32.LPARAM) win
 
 			if anyKeysToEat {
 				for _, window := range windowsByHwnd {
-					if window.Focused() {
+					if window.r.Focused() {
 						eatKeystroke = true
 
 						// Send the event to the window

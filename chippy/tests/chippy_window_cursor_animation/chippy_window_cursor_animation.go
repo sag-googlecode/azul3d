@@ -15,26 +15,15 @@ import (
 	"time"
 )
 
-func main() {
-	var err error
-
-	log.SetFlags(0)
-
-	// Enable debug output
-	chippy.SetDebugOutput(os.Stdout)
-
-	err = chippy.Init()
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer chippy.Destroy()
+func program() {
+	defer chippy.Exit()
 
 	window := chippy.NewWindow()
 	window.SetTransparent(true)
 
 	// Actually open the windows
 	screen := chippy.DefaultScreen()
-	err = window.Open(screen)
+	err := window.Open(screen)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -42,7 +31,7 @@ func main() {
 	var cursors []*chippy.Cursor
 	for i := 1; i < 25; i++ {
 		// Load the image frame that we'll use for the animated cursor
-		file, err := os.Open(fmt.Sprintf("data/loading/%d.png", i))
+		file, err := os.Open(fmt.Sprintf("src/code.google.com/p/azul3d/chippy/tests/data/loading/%d.png", i))
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -61,25 +50,58 @@ func main() {
 		cursors = append(cursors, cursor)
 	}
 
-	// Those cursors use up memory (and are cached for speed), if we wanted to stop using the
+	// Those cursors are cached for speed (and use up memory), if we wanted to stop using the
 	// animated cursor, we could do the following:
-	//for _, cursor := range cursors {
-	//    window.FreeCursor(cursor)
-	//}
+	//
+	// for _, cursor := range cursors {
+	//     window.FreeCursor(cursor)
+	// }
 
 	// Print out what they currently has property-wise
 	log.Println(window)
 
-	frame := 0
-	for !window.Destroyed() {
-		// Play back at 24 FPS
-		time.Sleep((1000 / 24) * time.Millisecond)
+	events := window.Events()
+	defer window.CloseEvents(events)
 
-		cursor := cursors[frame]
-		window.SetCursor(cursor)
-		frame += 1
-		if frame >= 24 {
-			frame = 0
+	frame := 0
+	go func() {
+		for {
+			// Play back at 24 FPS
+			time.Sleep((1000 / 24) * time.Millisecond)
+
+			cursor := cursors[frame]
+			window.SetCursor(cursor)
+			frame += 1
+			if frame >= 24 {
+				frame = 0
+			}
+		}
+	}()
+
+	for {
+		e := <-events
+		switch e.(type) {
+		case *chippy.CloseEvent:
+			return
 		}
 	}
+}
+
+func main() {
+	log.SetFlags(0)
+
+	// Enable debug output
+	chippy.SetDebugOutput(os.Stdout)
+
+	// Initialize Chippy
+	err := chippy.Init()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// Start program
+	go program()
+
+	// Enter main loop
+	chippy.MainLoop()
 }

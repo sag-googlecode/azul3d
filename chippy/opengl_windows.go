@@ -30,21 +30,12 @@ func (w *W32GLContext) panicIfDestroyed() {
 	}
 }
 
-func (w *W32GLContext) Share(c GLContext) {
-	w.panicUnlessValid()
-	w.panicIfDestroyed()
-
-	oc := c.(*W32GLContext)
-	oc.panicUnlessValid()
-	oc.panicIfDestroyed()
-}
-
 type backend_GLConfig struct {
 	pf    *win32.PIXELFORMATDESCRIPTOR
 	index win32.Int
 }
 
-func (w *W32Window) GLConfigs() (configs []*GLConfig) {
+func (w *NativeWindow) GLConfigs() (configs []*GLConfig) {
 	dispatch(func() {
 		// Just to get started
 		max := win32.Int(2)
@@ -105,7 +96,7 @@ func (w *W32Window) GLConfigs() (configs []*GLConfig) {
 	return
 }
 
-func (w *W32Window) GLSetConfig(config *GLConfig) {
+func (w *NativeWindow) GLSetConfig(config *GLConfig) {
 	if config == nil {
 		panic("Invalid (nil) GLConfig; it must be an valid configuration!")
 	}
@@ -131,11 +122,11 @@ func (w *W32Window) GLSetConfig(config *GLConfig) {
 	})
 }
 
-func (w *W32Window) GLConfig() *GLConfig {
+func (w *NativeWindow) GLConfig() *GLConfig {
 	return w.glConfig
 }
 
-func (w *W32Window) GLCreateContext(glVersionMajor, glVersionMinor uint, flags GLContextFlags, share GLContext) (GLContext, error) {
+func (w *NativeWindow) GLCreateContext(glVersionMajor, glVersionMinor uint, flags GLContextFlags, share GLContext) (GLContext, error) {
 	if w.glConfig == nil {
 		panic("Must call GLSetConfig() before GLCreateContext()!")
 	}
@@ -269,7 +260,7 @@ func (w *W32Window) GLCreateContext(glVersionMajor, glVersionMinor uint, flags G
 	return c, err
 }
 
-func (w *W32Window) GLDestroyContext(c GLContext) {
+func (w *NativeWindow) GLDestroyContext(c GLContext) {
 	wc := c.(*W32GLContext)
 	if !wc.destroyed {
 		wc.destroyed = true
@@ -281,7 +272,7 @@ func (w *W32Window) GLDestroyContext(c GLContext) {
 	}
 }
 
-func (w *W32Window) GLMakeCurrent(c GLContext) {
+func (w *NativeWindow) GLMakeCurrent(c GLContext) {
 	var hglrc win32.HGLRC
 
 	if c != nil {
@@ -297,8 +288,8 @@ func (w *W32Window) GLMakeCurrent(c GLContext) {
 	}
 }
 
-func (w *W32Window) GLSwapBuffers() {
-	if w.Destroyed() {
+func (w *NativeWindow) GLSwapBuffers() {
+	if w.r.Destroyed() {
 		return
 	}
 	if w.glConfig.DoubleBuffered == false {
@@ -309,14 +300,33 @@ func (w *W32Window) GLSwapBuffers() {
 	}
 }
 
-func (w *W32Window) GLSetVerticalSync(vsync int) {
-	if vsync != 0 && vsync != 1 && vsync != -1 {
-		panic("Invalid vsync flag; must be 0, 1, or -1.")
+func (w *NativeWindow) GLVerticalSync() VSyncMode {
+	return w.glVSyncMode
+}
+
+func (w *NativeWindow) GLSetVerticalSync(mode VSyncMode) {
+	if !mode.Valid() {
+		panic("Invalid vertical sync constant specified.")
 	}
-	if w.Destroyed() {
+	if w.r.Destroyed() {
 		return
 	}
-	if !win32.WglSwapIntervalEXT(vsync) {
+
+	w.glVSyncMode = mode
+
+	var v int
+	switch mode {
+	case NoVerticalSync:
+		v = 0
+
+	case VerticalSync:
+		v = 1
+
+	case AdaptiveVerticalSync:
+		v = -1
+	}
+
+	if !win32.WglSwapIntervalEXT(v) {
 		logger().Println("Unable to set vertical sync; wglSwapIntervalEXT():", win32.GetLastErrorString())
 	}
 }

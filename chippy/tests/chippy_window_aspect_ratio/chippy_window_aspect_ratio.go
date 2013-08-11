@@ -2,7 +2,7 @@
 // This source code is subject to the terms and
 // conditions defined in the "License.txt" file.
 
-// Test application - Opens two windows, changes each of their maximum size properties
+// Test application - Opens two windows, changes each of their aspect ratio properties
 package main
 
 import (
@@ -12,17 +12,8 @@ import (
 	"time"
 )
 
-func main() {
-	log.SetFlags(0)
-
-	// Enable debug output
-	chippy.SetDebugOutput(os.Stdout)
-
-	err := chippy.Init()
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer chippy.Destroy()
+func program() {
+	defer chippy.Exit()
 
 	window1 := chippy.NewWindow()
 	window2 := chippy.NewWindow()
@@ -30,11 +21,11 @@ func main() {
 	window1.SetTitle("Window 1")
 	window2.SetTitle("Window 2")
 
-	window1.SetMaximumSize(300, 300)
+	window1.SetAspectRatio(480.0 / 640.0) // 0.75 aspect ratio
 
 	// Actually open the windows
 	screen := chippy.DefaultScreen()
-	err = window1.Open(screen)
+	err := window1.Open(screen)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -44,7 +35,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	window2.SetMaximumSize(300, 300)
+	window2.SetAspectRatio(640.0 / 480.0) // 1.333 aspect ratio
 
 	// Print out what they currently has property-wise
 	log.Println(window1)
@@ -53,4 +44,23 @@ func main() {
 	// Just wait an while so they can enjoy the window
 	log.Println("Waiting 30 seconds...")
 	<-time.After(30 * time.Second)
+}
+
+func main() {
+	log.SetFlags(0)
+
+	// Enable debug output
+	chippy.SetDebugOutput(os.Stdout)
+
+	// Initialize Chippy
+	err := chippy.Init()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// Start program
+	go program()
+
+	// Enter main loop
+	chippy.MainLoop()
 }

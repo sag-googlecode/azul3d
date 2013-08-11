@@ -14,13 +14,11 @@ import (
 	"time"
 )
 
-func main() {
-	var err error
-
-	log.SetFlags(0)
+func program() {
+	defer chippy.Exit()
 
 	// Load the image that we'll use for the window icon
-	file, err := os.Open("data/icon_128x128.png")
+	file, err := os.Open("src/code.google.com/p/azul3d/chippy/tests/data/icon_128x128.png")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -29,15 +27,6 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-
-	// Enable debug output
-	chippy.SetDebugOutput(os.Stdout)
-
-	err = chippy.Init()
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer chippy.Destroy()
 
 	window1 := chippy.NewWindow()
 	window2 := chippy.NewWindow()
@@ -72,4 +61,23 @@ func main() {
 	// Just wait an while so they can enjoy the window
 	log.Println("Waiting 15 seconds...")
 	<-time.After(15 * time.Second)
+}
+
+func main() {
+	log.SetFlags(0)
+
+	// Enable debug output
+	chippy.SetDebugOutput(os.Stdout)
+
+	// Initialize Chippy
+	err := chippy.Init()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// Start program
+	go program()
+
+	// Enter main loop
+	chippy.MainLoop()
 }

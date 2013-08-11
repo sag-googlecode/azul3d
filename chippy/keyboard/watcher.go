@@ -8,29 +8,22 @@ import (
 	"sync"
 )
 
-type StateWatcherInterface interface {
-	SetKeyState(key Key, state State)
-	KeyStates() map[Key]State
-	KeyState(key Key) State
-	KeyDown(key Key) bool
-	KeyUp(key Key) bool
-}
-
-type StateWatcher struct {
+// Watcher watches the state of various mouse buttons.
+type Watcher struct {
 	access sync.RWMutex
 	states map[Key]State
 }
 
-// SetKeyState specifies the current state of the specified key.
-func (s *StateWatcher) SetKeyState(key Key, state State) {
+// SetState specifies the current state of the specified key.
+func (s *Watcher) SetState(key Key, state State) {
 	s.access.Lock()
 	defer s.access.Unlock()
 
 	s.states[key] = state
 }
 
-// KeyStates returns an copy of the internal key state map used by this StateWatcher.
-func (s *StateWatcher) KeyStates() map[Key]State {
+// States returns an copy of the internal key state map used by this watcher.
+func (s *Watcher) States() map[Key]State {
 	s.access.RLock()
 	defer s.access.RUnlock()
 
@@ -41,8 +34,8 @@ func (s *StateWatcher) KeyStates() map[Key]State {
 	return copy
 }
 
-// KeyState returns the current state of the specified key.
-func (s *StateWatcher) KeyState(key Key) State {
+// State returns the current state of the specified key.
+func (s *Watcher) State(key Key) State {
 	s.access.Lock()
 	defer s.access.Unlock()
 
@@ -53,18 +46,19 @@ func (s *StateWatcher) KeyState(key Key) State {
 	return state
 }
 
-// KeyDown tells weather the specified key is currently in the down state.
-func (s *StateWatcher) KeyDown(key Key) bool {
-	return s.KeyState(key) == Down
+// Down tells weather the specified key is currently in the down state.
+func (s *Watcher) Down(key Key) bool {
+	return s.State(key) == Down
 }
 
-// KeyUp tells weather the specified key is currently in the up state.
-func (s *StateWatcher) KeyUp(key Key) bool {
-	return s.KeyState(key) == Up
+// Up tells weather the specified key is currently in the up state.
+func (s *Watcher) Up(key Key) bool {
+	return s.State(key) == Up
 }
 
-func NewStateWatcher() *StateWatcher {
-	s := new(StateWatcher)
+// NewWatcher returns a new, initialized, watcher.
+func NewWatcher() *Watcher {
+	s := new(Watcher)
 	s.states = make(map[Key]State)
 	return s
 }

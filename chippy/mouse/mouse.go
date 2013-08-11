@@ -2,12 +2,15 @@
 // This source code is subject to the terms and
 // conditions defined in the "License.txt" file.
 
+// Package mouse implements various mouse related data types.
 package mouse
 
 import (
 	"fmt"
 )
 
+// State represents an single mouse state, such as Up, Down, or an scroll
+// direction.
 type State uint8
 
 const (
@@ -20,26 +23,28 @@ const (
 	ScrollRight
 )
 
+// String returns an string representation of the mouse state.
 func (s State) String() string {
 	switch s {
 	case InvalidState:
-		return "InvalidState"
+		return "mouse.InvalidState"
 	case Down:
-		return "Down"
+		return "mouse.Down"
 	case Up:
-		return "Up"
+		return "mouse.Up"
 	case ScrollForward:
-		return "ScrollForward"
+		return "mouse.ScrollForward"
 	case ScrollBack:
-		return "ScrollBack"
+		return "mouse.ScrollBack"
 	case ScrollLeft:
-		return "ScrollLeft"
+		return "mouse.ScrollLeft"
 	case ScrollRight:
-		return "ScrollRight"
+		return "mouse.ScrollRight"
 	}
-	return ""
+	return fmt.Sprintf("mouse.State(%d)")
 }
 
+// Button represents an single mouse button.
 type Button uint8
 
 const (
@@ -54,28 +59,29 @@ const (
 	Eight
 )
 
+// String returns an string representation of the mouse button.
 func (b Button) String() string {
 	switch b {
 	case Invalid:
-		return "Invalid"
+		return "mouse.Invalid"
 	case Left:
-		return "Left"
+		return "mouse.Left"
 	case Right:
-		return "Right"
+		return "mouse.Right"
 	case Wheel:
-		return "Wheel"
+		return "mouse.Wheel"
 	case Four:
-		return "Four"
+		return "mouse.Four"
 	case Five:
-		return "Five"
+		return "mouse.Five"
 	case Six:
-		return "Six"
+		return "mouse.Six"
 	case Seven:
-		return "Seven"
+		return "mouse.Seven"
 	case Eight:
-		return "Eight"
+		return "mouse.Eight"
 	}
-	return ""
+	return fmt.Sprintf("mouse.Button(%d)", b)
 }
 
 const (
@@ -83,13 +89,3 @@ const (
 	Right = Two
 	Wheel = Three
 )
-
-// Event represents an single mouse event, such as pushing an button, or using the scroller, etc.
-type Event struct {
-	Button Button
-	State  State
-}
-
-func (e *Event) String() string {
-	return fmt.Sprintf("Event(Button=%s, State=%s)", e.Button.String(), e.State.String())
-}

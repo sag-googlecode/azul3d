@@ -13,23 +13,14 @@ import (
 	"os"
 )
 
-func main() {
-	log.SetFlags(0)
-
-	// Enable debug output
-	chippy.SetDebugOutput(os.Stdout)
-
-	err := chippy.Init()
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer chippy.Destroy()
+func program() {
+	defer chippy.Exit()
 
 	window := chippy.NewWindow()
 
 	// Actually open the windows
 	screen := chippy.DefaultScreen()
-	err = window.Open(screen)
+	err := window.Open(screen)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -44,3 +35,23 @@ func main() {
 		log.Println(config)
 	}
 }
+
+func main() {
+	log.SetFlags(0)
+
+	// Enable debug output
+	chippy.SetDebugOutput(os.Stdout)
+
+	// Initialize Chippy
+	err := chippy.Init()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// Start program
+	go program()
+
+	// Enter main loop
+	chippy.MainLoop()
+}
+

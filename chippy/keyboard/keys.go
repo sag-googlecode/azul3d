@@ -2,23 +2,19 @@
 // This source code is subject to the terms and
 // conditions defined in the "License.txt" file.
 
+// Package mouse implements various keyboard related data types.
 package keyboard
 
 import (
 	"fmt"
 )
 
+// Key represents an single keyboard button.
+//
+// It should be noted that it does not represent an character that pressing an
+// keyboard button would otherwise generate (hence you will find no capital
+// keys defined).
 type Key uint32
-
-// TypedEvent represents an event where some sort of user input has generated an input character
-// which should be considered input.
-type TypedEvent struct {
-	Rune rune
-}
-
-func (e *TypedEvent) String() string {
-	return fmt.Sprintf("TypedEvent(Rune=%U %q)", e.Rune, string(e.Rune))
-}
 
 const (
 	Invalid Key = iota
@@ -488,5 +484,5 @@ func (k Key) String() string {
 	case EraseEOF:
 		return "EraseEOF"
 	}
-	return fmt.Sprintf("Unknown(%d)", k)
+	return fmt.Sprintf("Key(%d)", k)
 }

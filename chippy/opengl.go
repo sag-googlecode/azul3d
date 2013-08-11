@@ -7,6 +7,7 @@
 package chippy
 
 import (
+	"fmt"
 	"strconv"
 	"strings"
 )
@@ -59,9 +60,49 @@ const (
 	GLCompatibilityProfile
 )
 
+// VSyncMode represents an single vertical reresh rate sync mode.
+type VSyncMode uint8
+
+const (
+	VerticalSync VSyncMode = iota
+	NoVerticalSync
+	AdaptiveVerticalSync
+)
+
+// Valid tells if the vertical sync mode is one of the predefined constants
+// defined in this package or not.
+func (mode VSyncMode) Valid() bool {
+	switch mode {
+	case VerticalSync:
+		return true
+
+	case NoVerticalSync:
+		return true
+
+	case AdaptiveVerticalSync:
+		return true
+	}
+	return false
+}
+
+// String returns a string representation of this vertical sync mode.
+func (mode VSyncMode) String() string {
+	switch mode {
+	case VerticalSync:
+		return "VerticalSync"
+
+	case NoVerticalSync:
+		return "NoVerticalSync"
+
+	case AdaptiveVerticalSync:
+		return "AdaptiveVerticalSync"
+	}
+	return fmt.Sprintf("VSyncMode(%d)", mode)
+}
+
+// GLContext represents an OpenGL contect; although it represents any value it
+// represents an important idea of what it's data actually is.
 type GLContext interface {
-	// Like wglShareLists(thisContext, c)
-	Share(c GLContext)
 }
 
 type GLRenderable interface {
@@ -126,13 +167,6 @@ type GLRenderable interface {
 	// is no-op.
 	GLSwapBuffers()
 
-	// GLSetVerticalSync turns on or off vertical refresh rate syncing (vsync).
-	//
-	// Possible values are:
-	//
-	//   0 = vsync off
-	//   1 = vsync on
-	//  -1 = adaptive vsync on
-	//
-	GLSetVerticalSync(vsync int)
+	// GLSetVerticalSync sets the vertical refresh rate sync mode (vsync).
+	GLSetVerticalSync(mode VSyncMode)
 }

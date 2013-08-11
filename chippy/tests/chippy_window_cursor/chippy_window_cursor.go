@@ -14,13 +14,11 @@ import (
 	"time"
 )
 
-func main() {
-	var err error
-
-	log.SetFlags(0)
+func program() {
+	defer chippy.Exit()
 
 	// Load the image that we'll use for the window icon
-	file, err := os.Open("data/cursor_32x32_3x4.png")
+	file, err := os.Open("src/code.google.com/p/azul3d/chippy/tests/data/cursor_32x32_3x4.png")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -36,15 +34,6 @@ func main() {
 		X:     3,
 		Y:     4,
 	}
-
-	// Enable debug output
-	chippy.SetDebugOutput(os.Stdout)
-
-	err = chippy.Init()
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer chippy.Destroy()
 
 	window1 := chippy.NewWindow()
 	window2 := chippy.NewWindow()
@@ -71,8 +60,8 @@ func main() {
 	log.Println(window1)
 	log.Println(window2)
 
-	log.Println("Waiting 5 seconds...")
-	<-time.After(5 * time.Second)
+	log.Println("Waiting 15 seconds...")
+	<-time.After(15 * time.Second)
 
 	// We don't need those other cursors, get rid of them!
 	window1.FreeCursor(cursor)
@@ -85,4 +74,23 @@ func main() {
 	// Just wait an while so they can enjoy the window
 	log.Println("Waiting 5 seconds...")
 	<-time.After(5 * time.Second)
+}
+
+func main() {
+	log.SetFlags(0)
+
+	// Enable debug output
+	chippy.SetDebugOutput(os.Stdout)
+
+	// Initialize Chippy
+	err := chippy.Init()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// Start program
+	go program()
+
+	// Enter main loop
+	chippy.MainLoop()
 }

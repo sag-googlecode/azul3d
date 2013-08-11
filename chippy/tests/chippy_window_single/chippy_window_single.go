@@ -16,17 +16,8 @@ import (
 	"os"
 )
 
-func main() {
-	log.SetFlags(0)
-
-	// Enable debug output
-	chippy.SetDebugOutput(os.Stdout)
-
-	err := chippy.Init()
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer chippy.Destroy()
+func program() {
+	defer chippy.Exit()
 
 	window := chippy.NewWindow()
 
@@ -41,7 +32,7 @@ func main() {
 
 	fmt.Printf("Open window on screen: #")
 	var screen int
-	_, err = fmt.Scanln(&screen)
+	_, err := fmt.Scanln(&screen)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -51,6 +42,12 @@ func main() {
 	}
 	chosenScreen := screens[screen]
 
+	// Some events are sent before the window is opened. (Like caps lock state,
+	// for instance)
+	events := window.Events()
+	defer window.CloseEvents(events)
+
+	// Open the window
 	err = window.Open(chosenScreen)
 	if err != nil {
 		log.Fatal(err)
@@ -59,57 +56,27 @@ func main() {
 	// Print out what it currently has property-wise
 	log.Println(window)
 
-	paintEvents := window.PaintEvents()
-	closeEvents := window.CloseEvents()
-	cursorPositionEvents := window.CursorPositionEvents()
-	keyboardStateEvents := window.KeyboardStateEvents()
-	keyboardTypedEvents := window.KeyboardTypedEvents()
-	maximizedEvents := window.MaximizedEvents()
-	minimizedEvents := window.MinimizedEvents()
-	mouseEvents := window.MouseEvents()
-	focusedEvents := window.FocusedEvents()
-	positionEvents := window.PositionEvents()
-	sizeEvents := window.SizeEvents()
-	screenChangedEvents := window.ScreenChangedEvents()
-
 	for {
-		select {
-		case <-paintEvents.Read:
-			log.Println("paint")
-
-		case <-closeEvents.Read:
-			log.Println("close")
-
-		case v := <-cursorPositionEvents.Read:
-			log.Println("cursorPosition", v)
-
-		case v := <-keyboardStateEvents.Read:
-			log.Println("keyboard", v)
-
-		case v := <-keyboardTypedEvents.Read:
-			log.Println("keyboard", v)
-
-		case v := <-maximizedEvents.Read:
-			log.Println("maximized", v)
-
-		case v := <-minimizedEvents.Read:
-			log.Println("minimized", v)
-
-		case v := <-mouseEvents.Read:
-			log.Println("mouse", v)
-
-		case v := <-focusedEvents.Read:
-			log.Println("focused", v)
-
-		case v := <-positionEvents.Read:
-			log.Println("position", v)
-
-		case v := <-sizeEvents.Read:
-			log.Println("size", v)
-
-		case v := <-screenChangedEvents.Read:
-			log.Println("screen changed", v)
-		}
-		//log.Println(window)
+		ev := <-events
+		log.Println(ev)
 	}
+}
+
+func main() {
+	log.SetFlags(0)
+
+	// Enable debug output
+	chippy.SetDebugOutput(os.Stdout)
+
+	// Initialize Chippy
+	err := chippy.Init()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// Start program
+	go program()
+
+	// Enter main loop
+	chippy.MainLoop()
 }
