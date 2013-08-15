@@ -15,12 +15,12 @@
 // must be recalculated).
 package dstarlite
 
-import(
+import (
 	"math"
 )
 
 // State represents an single DSL state.
-type State interface{
+type State interface {
 	// Equals should simply tell if they're equal (useful for pointer types, etc)
 	Equals(other State) bool
 }
@@ -31,7 +31,7 @@ func float64Equals(a, b float64) bool {
 		return true
 	}
 
-	if math.Abs(a - b) < math.SmallestNonzeroFloat64 {
+	if math.Abs(a-b) < math.SmallestNonzeroFloat64 {
 		return true
 	}
 	return false
@@ -40,7 +40,7 @@ func float64Equals(a, b float64) bool {
 // Data is the data that the DSL Planner struct will plan through.
 //
 // See dstarlite/grid for example usage.
-type Data interface{
+type Data interface {
 	// Succ should return an slice of successors to the specified state.
 	Succ(s State) []State
 
@@ -68,11 +68,11 @@ type Data interface{
 
 // Planner plans an path through DSL Data.
 type Planner struct {
-	d Data
+	d           Data
 	start, goal State
-	rhs, g valueMap
-	u *priorityQueue
-	km float64
+	rhs, g      valueMap
+	u           *priorityQueue
+	km          float64
 }
 
 // Start returns the start state, as it is currently.
@@ -117,7 +117,7 @@ func (s *Planner) computeShortestPath() {
 			s.u.remove(u)
 			for _, st := range s.d.Pred(u) {
 				if !st.Equals(s.goal) {
-					s.rhs[st] = math.Min(s.rhs.get(st), s.d.Cost(st, u) + s.g.get(u))
+					s.rhs[st] = math.Min(s.rhs.get(st), s.d.Cost(st, u)+s.g.get(u))
 				}
 
 				s.updateVertex(st)
@@ -130,7 +130,7 @@ func (s *Planner) computeShortestPath() {
 			preds = append(preds, u)
 
 			for _, st := range preds {
-				if float64Equals(s.rhs.get(st), s.d.Cost(st, u) + gOld) {
+				if float64Equals(s.rhs.get(st), s.d.Cost(st, u)+gOld) {
 					if !st.Equals(s.goal) {
 						minRhs := math.Inf(0)
 
@@ -156,9 +156,9 @@ func (s *Planner) computeShortestPath() {
 func (s *Planner) FlagChanged(u, v State, cOld, cNew float64) {
 	if cOld > cNew {
 		if !u.Equals(s.goal) {
-			s.rhs[u] = math.Min(s.rhs.get(u), cNew + s.g.get(v))
+			s.rhs[u] = math.Min(s.rhs.get(u), cNew+s.g.get(v))
 		}
-	} else if float64Equals(s.rhs.get(u), cOld + s.g.get(v)) {
+	} else if float64Equals(s.rhs.get(u), cOld+s.g.get(v)) {
 		if !u.Equals(s.goal) {
 			minRhs := math.Inf(1)
 

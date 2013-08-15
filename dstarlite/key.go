@@ -4,7 +4,7 @@
 
 package dstarlite
 
-import(
+import (
 	"fmt"
 )
 
@@ -46,4 +46,3 @@ func (a key) compare(b key) int {
 
 	return 0
 }
-

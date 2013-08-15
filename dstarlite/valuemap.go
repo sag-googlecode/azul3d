@@ -4,7 +4,7 @@
 
 package dstarlite
 
-import(
+import (
 	"math"
 )
 
@@ -20,4 +20,3 @@ func (v valueMap) get(s State) float64 {
 	}
 	return val
 }
-

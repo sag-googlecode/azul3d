@@ -4,7 +4,7 @@
 
 package dstarlite
 
-import(
+import (
 	"container/heap"
 	"math"
 )
@@ -22,7 +22,7 @@ type pqItem struct {
 type priorityQueue struct {
 	// State:index
 	lookups map[State]int
-	items []pqItem
+	items   []pqItem
 }
 
 //
@@ -66,7 +66,7 @@ func (q *priorityQueue) Pop() interface{} {
 	n := len(old)
 	item := old[n-1]
 	delete(q.lookups, item.s)
-	q.items = old[0:n-1]
+	q.items = old[0 : n-1]
 	return item
 }
 
@@ -137,4 +137,3 @@ func newPriorityQueue() *priorityQueue {
 	q.items = make([]pqItem, 0)
 	return q
 }
-

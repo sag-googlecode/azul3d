@@ -5,7 +5,7 @@
 // Grid implements D* Lite grid-based pathfinding
 package grid
 
-import(
+import (
 	"code.google.com/p/azul3d/dstarlite"
 	"math"
 )
@@ -20,15 +20,15 @@ func (a Coord) Equals(b dstarlite.State) bool {
 
 // Dist returns manhattan distance between two coordinates
 func (a Coord) Dist(b Coord) float64 {
-	return math.Abs(float64(b[0] - a[0])) + math.Abs(float64(b[1] - a[1]))
+	return math.Abs(float64(b[0]-a[0])) + math.Abs(float64(b[1]-a[1]))
 }
 
 // Data represents an actual grid's data.
 type Data struct {
-	dsl *dstarlite.Planner
-	coords map[Coord]float64
+	dsl           *dstarlite.Planner
+	coords        map[Coord]float64
 	width, height int
-	start, goal Coord
+	start, goal   Coord
 }
 
 // Start returns the start coordinate, as it is currently.
@@ -43,7 +43,7 @@ func (d *Data) Goal() Coord {
 
 // Size returns the width and height of the grid.
 func (d *Data) Size() (width, height int) {
-		return d.width, d.height
+	return d.width, d.height
 }
 
 // Implements dstarlite.Data interface.
@@ -94,14 +94,14 @@ func (d *Data) neighbors(ss dstarlite.State) (sl []dstarlite.State) {
 	x := s[0]
 	y := s[1]
 	next(x-1, y+1) // Top Left
-	next(  x, y+1) // Top Center
+	next(x, y+1)   // Top Center
 	next(x+1, y+1) // Top Right
 
 	next(x-1, y) // Center Left
 	next(x+1, y) // Center Right
 
 	next(x-1, y-1) // Bottom Left
-	next(  x, y-1) // Bottom Center
+	next(x, y-1)   // Bottom Center
 	next(x+1, y-1) // Bottom Right
 
 	return sl
