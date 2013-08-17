@@ -890,30 +890,18 @@ func CreateWindowEx(dwExStyle uint32, lpClassName, lpWindowName string, dwStyle 
 	cWindowName := (*C.WCHAR)(unsafe.Pointer(StringToLPTSTR(lpWindowName)))
 	defer C.free(unsafe.Pointer(cWindowName))
 
-	type arguments struct {
-		dwExStyle                 C.DWORD
-		lpClassName, lpWindowName *C.WCHAR
-		dwStyle                   C.DWORD
-		x, y, nWidth, nHeight     C.int
-		hWndParent                C.HWND
-		hMenu                     C.HMENU
-		hInstance                 C.HINSTANCE
-		createStruct              C.LPVOID
-	}
-
-	args := arguments{
+	ret = HWND(C.CreateWindowEx(
 		C.DWORD(dwExStyle),
 		cClassName,
 		cWindowName,
 		C.DWORD(dwStyle),
-		C.int(x), C.int(y), C.int(nWidth), C.int(nHeight),
+		C.int(x), C.int(y),
+		C.int(nWidth), C.int(nHeight),
 		C.HWND(hWndParent),
 		C.HMENU(hMenu),
 		C.HINSTANCE(hInstance),
-		C.LPVOID(&createStruct.lpCreateParams),
-	}
-
-	ret = HWND(C.CreateWindowEx(args.dwExStyle, args.lpClassName, args.lpWindowName, args.dwStyle, args.x, args.y, args.nWidth, args.nHeight, args.hWndParent, args.hMenu, args.hInstance, args.createStruct))
+		C.LPVOID(createStruct),
+	))
 	return
 }
 
