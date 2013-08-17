@@ -10,14 +10,16 @@ import (
 	"errors"
 	"fmt"
 	"sync"
+	"time"
 	"unsafe"
 )
 
 func eventLoop() {
 	for {
+		hasMessage := true
+
 		dispatch(func() {
 			var msg *win32.MSG
-			hasMessage := true
 
 			for hasMessage {
 				hasMessage, msg = win32.PeekMessage(nil, 0, 0, win32.PM_REMOVE|win32.PM_NOYIELD)
@@ -27,6 +29,11 @@ func eventLoop() {
 				}
 			}
 		})
+
+		if !hasMessage {
+			// let thread idle
+			time.Sleep(10 * time.Millisecond)
+		}
 	}
 }
 
