@@ -1904,11 +1904,13 @@ func mainWindowProc(hwnd win32.HWND, msg win32.UINT, wParam win32.WPARAM, lParam
 			wWidth, wHeight := w.r.Size()
 			if cursorX >= wWidth || cursorY >= wHeight || cursorX <= 0 || cursorY <= 0 || !w.r.Focused() {
 				// Better than WM_MOUSELEAVE
-				if w.r.trySetCursorWithin(false) {
-					// Restore previous cursor clip
-					w.restoreCursorClip()
+				if !w.r.CursorGrabbed() {
+					if w.r.trySetCursorWithin(false) {
+						// Restore previous cursor clip
+						w.restoreCursorClip()
 
-					win32.ReleaseCapture()
+						win32.ReleaseCapture()
+					}
 				}
 			} else {
 				// Closest we'll get to WM_MOUSEENTER
