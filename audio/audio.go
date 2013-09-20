@@ -58,7 +58,7 @@ type ReadSeeker interface {
 	Seek(d time.Duration)
 }
 
-// Decoder is the generic audio decoder interface, for use with the 
+// Decoder is the generic audio decoder interface, for use with the
 // RegisterFormat() function.
 type Decoder interface {
 	ReadSeeker
