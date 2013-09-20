@@ -4,7 +4,7 @@
 
 // +build tests,!no_opengl
 
-// Test - Opens an transparent window and uses OpenGL rendering
+// Test application - Opens an transparent window and uses OpenGL rendering
 package main
 
 import (

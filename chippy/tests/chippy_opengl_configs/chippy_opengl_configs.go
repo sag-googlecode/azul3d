@@ -4,7 +4,7 @@
 
 // +build tests,!no_opengl
 
-// Test - Opens an window displays all possible configurations
+// Test application - Opens an window displays all possible configurations
 package main
 
 import (

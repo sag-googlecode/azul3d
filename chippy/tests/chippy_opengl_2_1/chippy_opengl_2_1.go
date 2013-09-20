@@ -4,7 +4,7 @@
 
 // +build tests,!no_opengl
 
-// Test - Opens an window and uses OpenGL 2.1 rendering
+// Test application - Opens an window and uses OpenGL 2.1 rendering
 package main
 
 import (
