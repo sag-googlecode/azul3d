@@ -1,3 +1,7 @@
+// Copyright 2012 Lightpoke. All rights reserved.
+// This source code is subject to the terms and
+// conditions defined in the "License.txt" file.
+
 #include <stdbool.h>
 #include <stdlib.h>
 
@@ -527,6 +531,10 @@ typedef void(*gl13PUniform1i)(GLint, GLint);
 typedef void(*gl13PUniform2i)(GLint, GLint, GLint);
 typedef void(*gl13PUniform3i)(GLint, GLint, GLint, GLint);
 typedef void(*gl13PUniform4i)(GLint, GLint, GLint, GLint, GLint);
+typedef void(*gl13PUniform1ui)(GLint, GLuint);
+typedef void(*gl13PUniform2ui)(GLint, GLuint, GLuint);
+typedef void(*gl13PUniform3ui)(GLint, GLuint, GLuint, GLuint);
+typedef void(*gl13PUniform4ui)(GLint, GLuint, GLuint, GLuint, GLuint);
 typedef void(*gl13PUniform1fv)(GLint, GLsizei, GLfloat*);
 typedef void(*gl13PUniform2fv)(GLint, GLsizei, GLfloat*);
 typedef void(*gl13PUniform3fv)(GLint, GLsizei, GLfloat*);
@@ -535,6 +543,10 @@ typedef void(*gl13PUniform1iv)(GLint, GLsizei, GLint*);
 typedef void(*gl13PUniform2iv)(GLint, GLsizei, GLint*);
 typedef void(*gl13PUniform3iv)(GLint, GLsizei, GLint*);
 typedef void(*gl13PUniform4iv)(GLint, GLsizei, GLint*);
+typedef void(*gl13PUniform1uiv)(GLint, GLsizei, GLuint*);
+typedef void(*gl13PUniform2uiv)(GLint, GLsizei, GLuint*);
+typedef void(*gl13PUniform3uiv)(GLint, GLsizei, GLuint*);
+typedef void(*gl13PUniform4uiv)(GLint, GLsizei, GLuint*);
 typedef void(*gl13PUseProgram)(GLuint);
 typedef void(*gl13PValidateProgram)(GLuint);
 typedef void(*gl13PVertexAttribPointer)(GLuint, GLint, GLenum, GLboolean, GLsizei, GLvoid*);
@@ -1092,6 +1104,10 @@ typedef struct {
     gl13PUniform2i fnUniform2i;
     gl13PUniform3i fnUniform3i;
     gl13PUniform4i fnUniform4i;
+    gl13PUniform1ui fnUniform1ui;
+    gl13PUniform2ui fnUniform2ui;
+    gl13PUniform3ui fnUniform3ui;
+    gl13PUniform4ui fnUniform4ui;
     gl13PUniform1fv fnUniform1fv;
     gl13PUniform2fv fnUniform2fv;
     gl13PUniform3fv fnUniform3fv;
@@ -1100,6 +1116,10 @@ typedef struct {
     gl13PUniform2iv fnUniform2iv;
     gl13PUniform3iv fnUniform3iv;
     gl13PUniform4iv fnUniform4iv;
+    gl13PUniform1uiv fnUniform1uiv;
+    gl13PUniform2uiv fnUniform2uiv;
+    gl13PUniform3uiv fnUniform3uiv;
+    gl13PUniform4uiv fnUniform4uiv;
     gl13PUseProgram fnUseProgram;
     gl13PValidateProgram fnValidateProgram;
     gl13PVertexAttribPointer fnVertexAttribPointer;
@@ -1658,6 +1678,10 @@ void gl13Uniform1i(gl13Context* glc, GLint location, GLint v0);
 void gl13Uniform2i(gl13Context* glc, GLint location, GLint v0, GLint v1);
 void gl13Uniform3i(gl13Context* glc, GLint location, GLint v0, GLint v1, GLint v2);
 void gl13Uniform4i(gl13Context* glc, GLint location, GLint v0, GLint v1, GLint v2, GLint v3);
+void gl13Uniform1ui(gl13Context* glc, GLint location, GLuint v0);
+void gl13Uniform2ui(gl13Context* glc, GLint location, GLuint v0, GLuint v1);
+void gl13Uniform3ui(gl13Context* glc, GLint location, GLuint v0, GLuint v1, GLuint v2);
+void gl13Uniform4ui(gl13Context* glc, GLint location, GLuint v0, GLuint v1, GLuint v2, GLuint v3);
 void gl13Uniform1fv(gl13Context* glc, GLint location, GLsizei count, GLfloat* value);
 void gl13Uniform2fv(gl13Context* glc, GLint location, GLsizei count, GLfloat* value);
 void gl13Uniform3fv(gl13Context* glc, GLint location, GLsizei count, GLfloat* value);
@@ -1666,6 +1690,10 @@ void gl13Uniform1iv(gl13Context* glc, GLint location, GLsizei count, GLint* valu
 void gl13Uniform2iv(gl13Context* glc, GLint location, GLsizei count, GLint* value);
 void gl13Uniform3iv(gl13Context* glc, GLint location, GLsizei count, GLint* value);
 void gl13Uniform4iv(gl13Context* glc, GLint location, GLsizei count, GLint* value);
+void gl13Uniform1uiv(gl13Context* glc, GLint location, GLsizei count, GLuint* value);
+void gl13Uniform2uiv(gl13Context* glc, GLint location, GLsizei count, GLuint* value);
+void gl13Uniform3uiv(gl13Context* glc, GLint location, GLsizei count, GLuint* value);
+void gl13Uniform4uiv(gl13Context* glc, GLint location, GLsizei count, GLuint* value);
 void gl13UseProgram(gl13Context* glc, GLuint program);
 void gl13ValidateProgram(gl13Context* glc, GLuint program);
 void gl13VertexAttribPointer(gl13Context* glc, GLuint index, GLint size, GLenum type, GLboolean normalized, GLsizei stride, GLvoid* pointer);

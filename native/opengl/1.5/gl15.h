@@ -1,3 +1,7 @@
+// Copyright 2012 Lightpoke. All rights reserved.
+// This source code is subject to the terms and
+// conditions defined in the "License.txt" file.
+
 #include <stdbool.h>
 #include <stdlib.h>
 
@@ -527,6 +531,10 @@ typedef void(*gl15PUniform1i)(GLint, GLint);
 typedef void(*gl15PUniform2i)(GLint, GLint, GLint);
 typedef void(*gl15PUniform3i)(GLint, GLint, GLint, GLint);
 typedef void(*gl15PUniform4i)(GLint, GLint, GLint, GLint, GLint);
+typedef void(*gl15PUniform1ui)(GLint, GLuint);
+typedef void(*gl15PUniform2ui)(GLint, GLuint, GLuint);
+typedef void(*gl15PUniform3ui)(GLint, GLuint, GLuint, GLuint);
+typedef void(*gl15PUniform4ui)(GLint, GLuint, GLuint, GLuint, GLuint);
 typedef void(*gl15PUniform1fv)(GLint, GLsizei, GLfloat*);
 typedef void(*gl15PUniform2fv)(GLint, GLsizei, GLfloat*);
 typedef void(*gl15PUniform3fv)(GLint, GLsizei, GLfloat*);
@@ -535,6 +543,10 @@ typedef void(*gl15PUniform1iv)(GLint, GLsizei, GLint*);
 typedef void(*gl15PUniform2iv)(GLint, GLsizei, GLint*);
 typedef void(*gl15PUniform3iv)(GLint, GLsizei, GLint*);
 typedef void(*gl15PUniform4iv)(GLint, GLsizei, GLint*);
+typedef void(*gl15PUniform1uiv)(GLint, GLsizei, GLuint*);
+typedef void(*gl15PUniform2uiv)(GLint, GLsizei, GLuint*);
+typedef void(*gl15PUniform3uiv)(GLint, GLsizei, GLuint*);
+typedef void(*gl15PUniform4uiv)(GLint, GLsizei, GLuint*);
 typedef void(*gl15PUseProgram)(GLuint);
 typedef void(*gl15PValidateProgram)(GLuint);
 typedef void(*gl15PVertexAttribPointer)(GLuint, GLint, GLenum, GLboolean, GLsizei, GLvoid*);
@@ -1092,6 +1104,10 @@ typedef struct {
     gl15PUniform2i fnUniform2i;
     gl15PUniform3i fnUniform3i;
     gl15PUniform4i fnUniform4i;
+    gl15PUniform1ui fnUniform1ui;
+    gl15PUniform2ui fnUniform2ui;
+    gl15PUniform3ui fnUniform3ui;
+    gl15PUniform4ui fnUniform4ui;
     gl15PUniform1fv fnUniform1fv;
     gl15PUniform2fv fnUniform2fv;
     gl15PUniform3fv fnUniform3fv;
@@ -1100,6 +1116,10 @@ typedef struct {
     gl15PUniform2iv fnUniform2iv;
     gl15PUniform3iv fnUniform3iv;
     gl15PUniform4iv fnUniform4iv;
+    gl15PUniform1uiv fnUniform1uiv;
+    gl15PUniform2uiv fnUniform2uiv;
+    gl15PUniform3uiv fnUniform3uiv;
+    gl15PUniform4uiv fnUniform4uiv;
     gl15PUseProgram fnUseProgram;
     gl15PValidateProgram fnValidateProgram;
     gl15PVertexAttribPointer fnVertexAttribPointer;
@@ -1658,6 +1678,10 @@ void gl15Uniform1i(gl15Context* glc, GLint location, GLint v0);
 void gl15Uniform2i(gl15Context* glc, GLint location, GLint v0, GLint v1);
 void gl15Uniform3i(gl15Context* glc, GLint location, GLint v0, GLint v1, GLint v2);
 void gl15Uniform4i(gl15Context* glc, GLint location, GLint v0, GLint v1, GLint v2, GLint v3);
+void gl15Uniform1ui(gl15Context* glc, GLint location, GLuint v0);
+void gl15Uniform2ui(gl15Context* glc, GLint location, GLuint v0, GLuint v1);
+void gl15Uniform3ui(gl15Context* glc, GLint location, GLuint v0, GLuint v1, GLuint v2);
+void gl15Uniform4ui(gl15Context* glc, GLint location, GLuint v0, GLuint v1, GLuint v2, GLuint v3);
 void gl15Uniform1fv(gl15Context* glc, GLint location, GLsizei count, GLfloat* value);
 void gl15Uniform2fv(gl15Context* glc, GLint location, GLsizei count, GLfloat* value);
 void gl15Uniform3fv(gl15Context* glc, GLint location, GLsizei count, GLfloat* value);
@@ -1666,6 +1690,10 @@ void gl15Uniform1iv(gl15Context* glc, GLint location, GLsizei count, GLint* valu
 void gl15Uniform2iv(gl15Context* glc, GLint location, GLsizei count, GLint* value);
 void gl15Uniform3iv(gl15Context* glc, GLint location, GLsizei count, GLint* value);
 void gl15Uniform4iv(gl15Context* glc, GLint location, GLsizei count, GLint* value);
+void gl15Uniform1uiv(gl15Context* glc, GLint location, GLsizei count, GLuint* value);
+void gl15Uniform2uiv(gl15Context* glc, GLint location, GLsizei count, GLuint* value);
+void gl15Uniform3uiv(gl15Context* glc, GLint location, GLsizei count, GLuint* value);
+void gl15Uniform4uiv(gl15Context* glc, GLint location, GLsizei count, GLuint* value);
 void gl15UseProgram(gl15Context* glc, GLuint program);
 void gl15ValidateProgram(gl15Context* glc, GLuint program);
 void gl15VertexAttribPointer(gl15Context* glc, GLuint index, GLint size, GLenum type, GLboolean normalized, GLsizei stride, GLvoid* pointer);

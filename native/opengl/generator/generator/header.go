@@ -27,7 +27,10 @@ func generateHeader(packageDir, prefix string, versionProcs, possibleProcs []*Pr
 	}
 	defer header.Close()
 
-	fmt.Fprintf(header, "#include <stdbool.h>\n")
+	// Write license to file
+	header.Write([]byte(licenseHeader))
+
+	fmt.Fprintf(header, "\n#include <stdbool.h>\n")
 	fmt.Fprintf(header, "#include <stdlib.h>\n")
 	fmt.Fprintf(header, `
 typedef char GLchar;

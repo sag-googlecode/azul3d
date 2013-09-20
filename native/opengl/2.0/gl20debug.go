@@ -2,13 +2,13 @@
 // This source code is subject to the terms and
 // conditions defined in the "License.txt" file.
 //
-// +build !opengl_debug
+// +build opengl_debug
 
-// Package 'opengl' implements OpenGL version 3.0
+// Package 'opengl' implements OpenGL version 2.0
 package opengl
 
 // #cgo LDFLAGS: -lopengl32
-// #include "gl30.h"
+// #include "gl20.h"
 import "C"
 
 import (
@@ -62,9 +62,9 @@ func parseVersions(s string) (n, major, minor, rev int) {
 func versionSupported(glc *Context) bool {
 	ver := glc.GetString(VERSION)
 	if len(ver) > 0 {
-		n, wantedMajor, wantedMinor, wantedRev := parseVersions("3.0")
+		n, wantedMajor, wantedMinor, wantedRev := parseVersions("2.0")
 		if n < 2 {
-			fmt.Printf("OpenGL: *** JSON version parsing failed for %q ***\n", "3.0")
+			fmt.Printf("OpenGL: *** JSON version parsing failed for %q ***\n", "2.0")
 			return false
 		}
 
@@ -166,2354 +166,6 @@ func (glc *Context) Extension(ext string) bool {
 }
 
 const (
-	FOG_BIT                                                    = 0x00000080
-	OUT_OF_MEMORY                                              = 0x0505
-	FILTER                                                     = 0x829A
-	UNSIGNED_INT_ATOMIC_COUNTER                                = 0x92DB
-	MAX_NUM_COMPATIBLE_SUBROUTINES                             = 0x92F8
-	SAMPLE_PATTERN_EXT                                         = 0x80AC
-	EYE_LINE_SGIS                                              = 0x81F6
-	GEOMETRY_VERTICES_OUT                                      = 0x8916
-	UNSIGNED_NORMALIZED                                        = 0x8C17
-	COLOR_ATTACHMENT11_NV                                      = 0x8CEB
-	UNSIGNED_INT_IMAGE_CUBE_EXT                                = 0x9066
-	SYNC_X11_FENCE_EXT                                         = 0x90E1
-	COMPRESSED_RGBA_ASTC_10x10_KHR                             = 0x93BB
-	COMMAND_BARRIER_BIT                                        = 0x00000040
-	FIXED                                                      = 0x140C
-	SPRITE_SGIX                                                = 0x8148
-	FRAMEBUFFER_ATTACHMENT_RED_SIZE                            = 0x8212
-	OP_CLAMP_EXT                                               = 0x878E
-	UNSIGNALED_APPLE                                           = 0x9118
-	PROJECTION_STACK_DEPTH                                     = 0x0BA4
-	GL_2PASS_0_EXT                                             = 0x80A2
-	TEXTURE_LOD_BIAS_R_SGIX                                    = 0x8190
-	SLIM8U_SGIX                                                = 0x831D
-	DEPTH_STENCIL_OES                                          = 0x84F9
-	ATOMIC_COUNTER_BUFFER_REFERENCED_BY_TESS_EVALUATION_SHADER = 0x92C9
-	POLYGON_OFFSET_FACTOR                                      = 0x8038
-	DEBUG_SOURCE_THIRD_PARTY                                   = 0x8249
-	CURRENT_RASTER_SECONDARY_COLOR                             = 0x845F
-	TEXTURE_RANGE_POINTER_APPLE                                = 0x85B8
-	CIRCULAR_CW_ARC_TO_NV                                      = 0xFA
-	DEBUG_CALLBACK_USER_PARAM_ARB                              = 0x8245
-	COLOR_COMPONENTS                                           = 0x8283
-	CURRENT_RASTER_TEXTURE_COORDS                              = 0x0B06
-	MAP2_GRID_DOMAIN                                           = 0x0DD2
-	PIXEL_SUBSAMPLE_4444_SGIX                                  = 0x85A2
-	FOG_COORDINATE_ARRAY_POINTER                               = 0x8456
-	AVERAGE_HP                                                 = 0x8160
-	TEXTURE_MAG_SIZE_NV                                        = 0x871F
-	BUFFER_ACCESS_OES                                          = 0x88BB
-	FRAMEBUFFER_DEFAULT_SAMPLES                                = 0x9313
-	SCISSOR_TEST                                               = 0x0C11
-	TEXTURE_BLUE_SIZE                                          = 0x805E
-	GENERATE_MIPMAP_SGIS                                       = 0x8191
-	SOURCE3_ALPHA_NV                                           = 0x858B
-	INT16_VEC3_NV                                              = 0x8FE6
-	EDGE_FLAG_ARRAY_POINTER_EXT                                = 0x8093
-	SAMPLES_EXT                                                = 0x80A9
-	INTERNALFORMAT_STENCIL_TYPE                                = 0x827D
-	SECONDARY_COLOR_ARRAY_TYPE                                 = 0x845B
-	DRAW_BUFFER15_NV                                           = 0x8834
-	MATRIX23_ARB                                               = 0x88D7
-	SAMPLER_3D_OES                                             = 0x8B5F
-	FRAGMENT_SHADER_DERIVATIVE_HINT_OES                        = 0x8B8B
-	TEXTURE_BUFFER_FORMAT_EXT                                  = 0x8C2E
-	DRAW_FRAMEBUFFER_NV                                        = 0x8CA9
-	ALPHA16I_EXT                                               = 0x8D8A
-	MAX_COMBINED_SHADER_STORAGE_BLOCKS                         = 0x90DC
-	FRAMEBUFFER_DEFAULT_HEIGHT                                 = 0x9311
-	RESAMPLE_REPLICATE_SGIX                                    = 0x842E
-	MAX_GEOMETRY_IMAGE_UNIFORMS                                = 0x90CD
-	TEXTURE7_ARB                                               = 0x84C7
-	VARIABLE_F_NV                                              = 0x8528
-	SHADER_STORAGE_BUFFER_OFFSET_ALIGNMENT                     = 0x90DF
-	VERTEX_ATTRIB_ARRAY7_NV                                    = 0x8657
-	DSDT8_MAG8_INTENSITY8_NV                                   = 0x870B
-	MAX_PROGRAM_TEMPORARIES_ARB                                = 0x88A5
-	PROXY_TEXTURE_2D_ARRAY_EXT                                 = 0x8C1B
-	READ_FRAMEBUFFER_BINDING_NV                                = 0x8CAA
-	POINT_SMOOTH                                               = 0x0B10
-	INDEX_ARRAY_TYPE_EXT                                       = 0x8085
-	OUTPUT_TEXTURE_COORD18_EXT                                 = 0x87AF
-	DUAL_LUMINANCE4_SGIS                                       = 0x8114
-	OPERAND0_RGB_ARB                                           = 0x8590
-	VERTEX_STREAM1_ATI                                         = 0x876D
-	MAX_BINDABLE_UNIFORM_SIZE_EXT                              = 0x8DED
-	FONT_HEIGHT_BIT_NV                                         = 0x00800000
-	DEBUG_SEVERITY_HIGH                                        = 0x9146
-	CONVOLUTION_FILTER_SCALE_EXT                               = 0x8014
-	GL_422_AVERAGE_EXT                                         = 0x80CE
-	QUERY_WAIT_NV                                              = 0x8E13
-	TEXTURE_BINDING_CUBE_MAP_ARRAY                             = 0x900A
-	COMPRESSED_RGBA_PVRTC_4BPPV2_IMG                           = 0x9138
-	MAX_SPARSE_ARRAY_TEXTURE_LAYERS                            = 0x919A
-	SCISSOR_BOX                                                = 0x0C10
-	POST_CONVOLUTION_RED_BIAS                                  = 0x8020
-	FRAGMENT_TEXTURE                                           = 0x829F
-	TEXTURE16_ARB                                              = 0x84D0
-	DRAW_BUFFER15                                              = 0x8834
-	CURRENT_MATRIX_INDEX_ARB                                   = 0x8845
-	BUFFER_USAGE                                               = 0x8765
-	BUFFER_MAPPED                                              = 0x88BC
-	MATRIX0_ARB                                                = 0x88C0
-	PROGRAM_OBJECT_ARB                                         = 0x8B40
-	POINT_SIZE_RANGE                                           = 0x0B12
-	TEXTURE_MATERIAL_FACE_EXT                                  = 0x8351
-	FRAGMENT_COLOR_MATERIAL_SGIX                               = 0x8401
-	COMPRESSED_TEXTURE_FORMATS                                 = 0x86A3
-	MAX_PROGRAM_PATCH_ATTRIBS_NV                               = 0x86D8
-	SAMPLER_CUBE                                               = 0x8B60
-	COLOR_ARRAY_SIZE_EXT                                       = 0x8081
-	OP_MULTIPLY_MATRIX_EXT                                     = 0x8798
-	POST_COLOR_MATRIX_GREEN_BIAS_SGI                           = 0x80B9
-	MAX_COMPUTE_ATOMIC_COUNTER_BUFFERS                         = 0x8264
-	BACK_SECONDARY_COLOR_NV                                    = 0x8C78
-	COLOR_ATTACHMENT2_NV                                       = 0x8CE2
-	QUADRATIC_ATTENUATION                                      = 0x1209
-	RGB5_A1                                                    = 0x8057
-	SAMPLE_ALPHA_TO_MASK_SGIS                                  = 0x809E
-	COMBINE_ALPHA_ARB                                          = 0x8572
-	CURRENT_MATRIX_ARB                                         = 0x8641
-	TRACE_PIXELS_BIT_MESA                                      = 0x0010
-	REG_15_ATI                                                 = 0x8930
-	ATOMIC_COUNTER_BUFFER_INDEX                                = 0x9301
-	TEXTURE_BINDING_CUBE_MAP                                   = 0x8514
-	TRACE_ERRORS_BIT_MESA                                      = 0x0020
-	MATRIX8_ARB                                                = 0x88C8
-	SRGB_EXT                                                   = 0x8C40
-	CLIENT_PIXEL_STORE_BIT                                     = 0x00000001
-	RGBA4_OES                                                  = 0x8056
-	COLOR_ARRAY_EXT                                            = 0x8076
-	SAMPLE_MASK_INVERT_EXT                                     = 0x80AB
-	STREAM_READ_ARB                                            = 0x88E1
-	SECONDARY_COLOR_ARRAY_SIZE                                 = 0x845A
-	REFLECTION_MAP_OES                                         = 0x8512
-	TEXTURE_INDEX_SIZE_EXT                                     = 0x80ED
-	PERTURB_EXT                                                = 0x85AE
-	BUMP_ENVMAP_ATI                                            = 0x877B
-	ALPHA8                                                     = 0x803C
-	PIXEL_TRANSFORM_2D_MATRIX_EXT                              = 0x8338
-	SPARE0_NV                                                  = 0x852E
-	OBJECT_BUFFER_USAGE_ATI                                    = 0x8765
-	TEXTURE_COORD_ARRAY_STRIDE_EXT                             = 0x808A
-	UNKNOWN_CONTEXT_RESET_ARB                                  = 0x8255
-	REGISTER_COMBINERS_NV                                      = 0x8522
-	NEGATE_BIT_ATI                                             = 0x00000004
-	COMPRESSED_LUMINANCE_LATC1_EXT                             = 0x8C70
-	UNIFORM_BLOCK                                              = 0x92E2
-	ONE_MINUS_CONSTANT_COLOR                                   = 0x8002
-	ATTRIB_ARRAY_STRIDE_NV                                     = 0x8624
-	IMAGE_CUBE                                                 = 0x9050
-	LUMINANCE16                                                = 0x8042
-	VIEWPORT_INDEX_PROVOKING_VERTEX                            = 0x825F
-	TEXTURE_RANGE_LENGTH_APPLE                                 = 0x85B7
-	POINT_SIZE_ARRAY_BUFFER_BINDING_OES                        = 0x8B9F
-	INT_IMAGE_CUBE_MAP_ARRAY_EXT                               = 0x905F
-	CONDITION_SATISFIED_APPLE                                  = 0x911C
-	COMPRESSED_RGBA_ASTC_10x5_KHR                              = 0x93B8
-	MODELVIEW_STACK_DEPTH                                      = 0x0BA3
-	SEPARATE_SPECULAR_COLOR                                    = 0x81FA
-	VIEW_CLASS_96_BITS                                         = 0x82C5
-	MAX_RECTANGLE_TEXTURE_SIZE_ARB                             = 0x84F8
-	CON_19_ATI                                                 = 0x8954
-	COLOR_ATTACHMENT7_NV                                       = 0x8CE7
-	PREFER_DOUBLEBUFFER_HINT_PGI                               = 0x1A1F8
-	UNSIGNED_BYTE_3_3_2_EXT                                    = 0x8032
-	POST_COLOR_MATRIX_BLUE_BIAS_SGI                            = 0x80BA
-	DEPTH_COMPONENT24_SGIX                                     = 0x81A6
-	TEXTURE_MAX_CLAMP_T_SGIX                                   = 0x836A
-	TEXTURE10_ARB                                              = 0x84CA
-	PROXY_POST_COLOR_MATRIX_COLOR_TABLE                        = 0x80D5
-	TEXTURE9_ARB                                               = 0x84C9
-	MAP2_VERTEX_ATTRIB10_4_NV                                  = 0x867A
-	OP_EXP_BASE_2_EXT                                          = 0x8791
-	REG_12_ATI                                                 = 0x892D
-	UNSIGNED_INT_SAMPLER_1D_ARRAY                              = 0x8DD6
-	INT_IMAGE_2D_RECT                                          = 0x905A
-	MAX_TESS_EVALUATION_OUTPUT_COMPONENTS                      = 0x8E86
-	TEXTURE18                                                  = 0x84D2
-	DOT3_RGBA_EXT                                              = 0x8741
-	CIRCULAR_CCW_ARC_TO_NV                                     = 0xF8
-	UNSIGNED_INT_8_8_8_8_REV_EXT                               = 0x8367
-	TEXTURE_LUMINANCE_TYPE_ARB                                 = 0x8C14
-	SKIP_COMPONENTS3_NV                                        = -4
-	CURRENT_TEXTURE_COORDS                                     = 0x0B03
-	SRC1_RGB                                                   = 0x8581
-	QUAD_MESH_SUN                                              = 0x8614
-	OFFSET_TEXTURE_SCALE_NV                                    = 0x86E2
-	SIGNED_RGBA8_NV                                            = 0x86FC
-	WRITEONLY_RENDERING_QCOM                                   = 0x8823
-	RENDERBUFFER_BINDING                                       = 0x8CA7
-	RENDERBUFFER_HEIGHT_EXT                                    = 0x8D43
-	RGB8UI                                                     = 0x8D7D
-	PIXEL_BUFFER_BARRIER_BIT_EXT                               = 0x00000080
-	TEXTURE_STENCIL_SIZE                                       = 0x88F1
-	REG_13_ATI                                                 = 0x892E
-	LUMINANCE16_ALPHA16_SNORM                                  = 0x901A
-	TEXTURE_BINDING_1D                                         = 0x8068
-	FOG_COORD_ARRAY_POINTER                                    = 0x8456
-	ALPHA_FLOAT16_ATI                                          = 0x881C
-	DRAW_BUFFER3_ATI                                           = 0x8828
-	FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER_OES                     = 0x8CDB
-	SHADER_STORAGE_BARRIER_BIT                                 = 0x00002000
-	DEBUG_OUTPUT_SYNCHRONOUS                                   = 0x8242
-	VARIABLE_D_NV                                              = 0x8526
-	BUFFER_MAPPED_ARB                                          = 0x88BC
-	COMPRESSED_SRGB_ALPHA_S3TC_DXT1_EXT                        = 0x8C4D
-	MAX_TRANSFORM_FEEDBACK_INTERLEAVED_COMPONENTS_NV           = 0x8C8A
-	TESS_CONTROL_SHADER                                        = 0x8E88
-	COMPRESSED_SRGB8_ALPHA8_ASTC_10x6_KHR                      = 0x93D9
-	POST_CONVOLUTION_COLOR_TABLE_SGI                           = 0x80D1
-	SOURCE2_ALPHA                                              = 0x858A
-	TEXTURE_1D_STACK_BINDING_MESAX                             = 0x875D
-	DEPTH24_STENCIL8_OES                                       = 0x88F0
-	RELEASED_APPLE                                             = 0x8A19
-	SGIS_texture_edge_clamp                                    = 1
-	CONVOLUTION_HEIGHT                                         = 0x8019
-	IMAGE_MAG_FILTER_HP                                        = 0x815C
-	IMAGE_CLASS_10_10_10_2                                     = 0x82C3
-	VERTEX_ATTRIB_ARRAY_UNIFIED_NV                             = 0x8F1E
-	R16                                                        = 0x822A
-	TEXTURE_CUBE_MAP_NEGATIVE_Z                                = 0x851A
-	EXPAND_NORMAL_NV                                           = 0x8538
-	PALETTE8_RGBA8_OES                                         = 0x8B96
-	COLOR_ATTACHMENT0                                          = 0x8CE0
-	PROGRAM_INPUT                                              = 0x92E3
-	REFERENCED_BY_COMPUTE_SHADER                               = 0x930B
-	ALL_SHADER_BITS                                            = 0xFFFFFFFF
-	PIXEL_UNPACK_BUFFER_BINDING_EXT                            = 0x88EF
-	UNSIGNED_INT_SAMPLER_3D_EXT                                = 0x8DD3
-	COMMAND_BARRIER_BIT_EXT                                    = 0x00000040
-	ALPHA_BITS                                                 = 0x0D55
-	DEPTH_COMPONENT32                                          = 0x81A7
-	FRAMEBUFFER                                                = 0x8D40
-	INT_SAMPLER_3D                                             = 0x8DCB
-	ALL_BARRIER_BITS_EXT                                       = 0xFFFFFFFF
-	TRIANGLES                                                  = 0x0004
-	UNSIGNED_BYTE_2_3_3_REV                                    = 0x8362
-	PATH_STENCIL_DEPTH_OFFSET_UNITS_NV                         = 0x90BE
-	ALPHA12                                                    = 0x803D
-	UNSIGNED_SHORT_5_6_5                                       = 0x8363
-	TEXTURE_BLUE_SIZE_EXT                                      = 0x805E
-	SMOOTH_LINE_WIDTH_GRANULARITY                              = 0x0B23
-	VERTEX_STREAM6_ATI                                         = 0x8772
-	DRAW_BUFFER13                                              = 0x8832
-	MAX_DRAW_BUFFERS_NV                                        = 0x8824
-	UNIFORM_BLOCK_NAME_LENGTH                                  = 0x8A41
-	MAX_PROGRAM_OUTPUT_VERTICES_NV                             = 0x8C27
-	POLYGON_STIPPLE                                            = 0x0B42
-	COLOR_EXT                                                  = 0x1800
-	MINMAX                                                     = 0x802E
-	TEXTURE_CONSTANT_DATA_SUNX                                 = 0x81D6
-	SIGNED_RGB8_NV                                             = 0x86FF
-	WEIGHT_ARRAY_BUFFER_BINDING                                = 0x889E
-	CON_6_ATI                                                  = 0x8947
-	TEXTURE_SWIZZLE_RGBA_EXT                                   = 0x8E46
-	DISPATCH_INDIRECT_BUFFER_BINDING                           = 0x90EF
-	TEXTURE_GREEN_SIZE                                         = 0x805D
-	DEPTH_COMPONENT24                                          = 0x81A6
-	PROGRAM_NATIVE_PARAMETERS_ARB                              = 0x88AA
-	FRAGMENT_PROGRAM_CALLBACK_FUNC_MESA                        = 0x8BB2
-	COMPRESSED_RED_RGTC1_EXT                                   = 0x8DBB
-	TEXTURE_COMPARE_MODE_ARB                                   = 0x884C
-	FLOAT_RGB32_NV                                             = 0x8889
-	TRIANGLE_STRIP_ADJACENCY_ARB                               = 0x000D
-	SAMPLE_COVERAGE_ARB                                        = 0x80A0
-	INDEX_WRITEMASK                                            = 0x0C21
-	VERTEX_BINDING_STRIDE                                      = 0x82D8
-	RGBA4_DXT5_S3TC                                            = 0x83A5
-	COMBINER2_NV                                               = 0x8552
-	ONE_MINUS_SRC1_ALPHA                                       = 0x88FB
-	UNSIGNED_INT_IMAGE_2D_RECT                                 = 0x9065
-	CUBIC_CURVE_TO_NV                                          = 0x0C
-	COMPRESSED_RGB_FXT1_3DFX                                   = 0x86B0
-	TEXTURE_BUFFER_DATA_STORE_BINDING_ARB                      = 0x8C2D
-	MIN_MAP_BUFFER_ALIGNMENT                                   = 0x90BC
-	EXT_point_parameters                                       = 1
-	MAP_READ_BIT                                               = 0x0001
-	DSDT8_NV                                                   = 0x8709
-	MAD_ATI                                                    = 0x8968
-	COMPRESSED_SIGNED_LUMINANCE_ALPHA_LATC2_EXT                = 0x8C73
-	INT_SAMPLER_1D_ARRAY                                       = 0x8DCE
-	UNSIGNED_INT16_VEC4_NV                                     = 0x8FF3
-	PATH_END_CAPS_NV                                           = 0x9076
-	OP_FLOOR_EXT                                               = 0x878F
-	MAX_SAMPLES_EXT                                            = 0x8D57
-	MAX_VERTEX_UNIFORM_VECTORS                                 = 0x8DFB
-	TEXTURE_STORAGE_SPARSE_BIT_AMD                             = 0x00000001
-	TEXTURE_MAG_FILTER                                         = 0x2800
-	HISTOGRAM_FORMAT_EXT                                       = 0x8027
-	PALETTE8_R5_G6_B5_OES                                      = 0x8B97
-	ITALIC_BIT_NV                                              = 0x02
-	CLAMP_TO_BORDER_SGIS                                       = 0x812D
-	MAX_COMPUTE_IMAGE_UNIFORMS                                 = 0x91BD
-	PROGRAM_PIPELINE_BINDING_EXT                               = 0x825A
-	GEOMETRY_TEXTURE                                           = 0x829E
-	TEXTURE_COMPRESSED_ARB                                     = 0x86A1
-	SWIZZLE_STRQ_DQ_ATI                                        = 0x897B
-	FLOAT_VEC2                                                 = 0x8B50
-	TRANSFORM_FEEDBACK_BUFFER_BINDING_EXT                      = 0x8C8F
-	NORMAL_ARRAY_TYPE                                          = 0x807E
-	LIGHT4                                                     = 0x4004
-	UNPACK_CONSTANT_DATA_SUNX                                  = 0x81D5
-	PRIMITIVE_RESTART_INDEX_NV                                 = 0x8559
-	MAX_OPTIMIZED_VERTEX_SHADER_INSTRUCTIONS_EXT               = 0x87CA
-	HIGH_FLOAT                                                 = 0x8DF2
-	CURRENT_FOG_COORDINATE_EXT                                 = 0x8453
-	COLOR_ATTACHMENT5_NV                                       = 0x8CE5
-	VIDEO_CAPTURE_SURFACE_ORIGIN_NV                            = 0x903C
-	STENCIL_REF                                                = 0x0B97
-	TEXTURE_COORD_ARRAY_TYPE                                   = 0x8089
-	COMBINER_AB_DOT_PRODUCT_NV                                 = 0x8545
-	MAX_FRAGMENT_PROGRAM_LOCAL_PARAMETERS_NV                   = 0x8868
-	INT_SAMPLER_2D_ARRAY_EXT                                   = 0x8DCF
-	INT8_VEC2_NV                                               = 0x8FE1
-	BLEND_DST_RGB                                              = 0x80C8
-	VIEW_CLASS_S3TC_DXT1_RGB                                   = 0x82CC
-	TEXTURE_COMPARE_FUNC                                       = 0x884D
-	FORCE_BLUE_TO_ONE_NV                                       = 0x8860
-	COMPRESSED_SRGB_ALPHA                                      = 0x8C49
-	LUMINANCE_ALPHA32I_EXT                                     = 0x8D87
-	LAST_VIDEO_CAPTURE_STATUS_NV                               = 0x9027
-	BLEND_EQUATION_RGB_OES                                     = 0x8009
-	POST_CONVOLUTION_GREEN_BIAS                                = 0x8021
-	VERTEX_ARRAY_POINTER_EXT                                   = 0x808E
-	FOG_COORDINATE_ARRAY_TYPE_EXT                              = 0x8454
-	MAP1_VERTEX_ATTRIB5_4_NV                                   = 0x8665
-	HILO8_NV                                                   = 0x885E
-	RENDERBUFFER_HEIGHT_OES                                    = 0x8D43
-	INT_SAMPLER_1D                                             = 0x8DC9
-	PIXEL_TEX_GEN_Q_CEILING_SGIX                               = 0x8184
-	MAP2_VERTEX_ATTRIB14_4_NV                                  = 0x867E
-	DOT3_RGB_ARB                                               = 0x86AE
-	MAX_PROGRAM_LOOP_DEPTH_NV                                  = 0x88F7
-	TEXTURE14                                                  = 0x84CE
-	Z400_BINARY_AMD                                            = 0x8740
-	TEXTURE_DEPTH_SIZE                                         = 0x884A
-	MAP2_INDEX                                                 = 0x0DB1
-	PACK_SKIP_IMAGES                                           = 0x806B
-	FRAGMENT_SHADER_ATI                                        = 0x8920
-	PRIMITIVES_GENERATED_EXT                                   = 0x8C87
-	QUERY_NO_WAIT                                              = 0x8E14
-	SRC_ALPHA_SATURATE                                         = 0x0308
-	TEXTURE_ALPHA_SIZE                                         = 0x805F
-	RG_EXT                                                     = 0x8227
-	COMPRESSED_RGBA_S3TC_DXT5_EXT                              = 0x83F3
-	UNSIGNED_INT_8_24_REV_MESA                                 = 0x8752
-	GLYPH_VERTICAL_BEARING_Y_BIT_NV                            = 0x40
-	NO_ERROR                                                   = 0
-	SHADER_OBJECT_ARB                                          = 0x8B48
-	PERCENTAGE_AMD                                             = 0x8BC3
-	REG_0_ATI                                                  = 0x8921
-	FRAMEBUFFER_UNSUPPORTED_OES                                = 0x8CDD
-	VIDEO_CAPTURE_FRAME_WIDTH_NV                               = 0x9038
-	MAX_DEFORMATION_ORDER_SGIX                                 = 0x8197
-	DEBUG_PRINT_MESA                                           = 0x875A
-	RGBA_INTEGER_EXT                                           = 0x8D99
-	MAX_SHADER_STORAGE_BUFFER_BINDINGS                         = 0x90DD
-	ARRAY_SIZE                                                 = 0x92FB
-	COLOR_ARRAY_LIST_STRIDE_IBM                                = 103082
-	TEXTURE25                                                  = 0x84D9
-	X_EXT                                                      = 0x87D5
-	FRAGMENT_SHADER_ARB                                        = 0x8B30
-	CLIENT_ATTRIB_STACK_DEPTH                                  = 0x0BB1
-	INDEX_MODE                                                 = 0x0C30
-	DEPTH_SCALE                                                = 0x0D1E
-	RGB8_EXT                                                   = 0x8051
-	SCALE_BY_FOUR_NV                                           = 0x853F
-	WRITE_PIXEL_DATA_RANGE_LENGTH_NV                           = 0x887A
-	RENDERBUFFER_GREEN_SIZE_EXT                                = 0x8D51
-	COLOR_ATTACHMENT0_OES                                      = 0x8CE0
-	UNSIGNED_INT_IMAGE_2D_EXT                                  = 0x9063
-	COMPRESSED_SRGB8_ALPHA8_ASTC_10x10_KHR                     = 0x93DB
-	TEXTURE                                                    = 0x1702
-	UNSIGNED_BYTE_2_3_3_REV_EXT                                = 0x8362
-	DISTANCE_ATTENUATION_SGIS                                  = 0x8129
-	CURRENT_WEIGHT_ARB                                         = 0x86A8
-	MODELVIEW29_ARB                                            = 0x873D
-	BUMP_TARGET_ATI                                            = 0x877C
-	QUERY_RESULT                                               = 0x8866
-	RGBA16_SNORM                                               = 0x8F9B
-	INT8_VEC4_NV                                               = 0x8FE3
-	DOUBLE_VEC4_EXT                                            = 0x8FFE
-	DRAW_BUFFER12                                              = 0x8831
-	Z4Y12Z4CB12Z4A12Z4Y12Z4CR12Z4A12_4224_NV                   = 0x9036
-	PATH_DASH_OFFSET_NV                                        = 0x907E
-	SGIS_generate_mipmap                                       = 1
-	COLOR_TABLE_BIAS_SGI                                       = 0x80D7
-	LUMINANCE_ALPHA_FLOAT32_ATI                                = 0x8819
-	COPY_READ_BUFFER_BINDING                                   = 0x8F36
-	FRAMEBUFFER_ATTACHMENT_OBJECT_TYPE_EXT                     = 0x8CD0
-	INTENSITY8UI_EXT                                           = 0x8D7F
-	DOMAIN                                                     = 0x0A02
-	COLOR_ARRAY_COUNT_EXT                                      = 0x8084
-	SINGLE_COLOR                                               = 0x81F9
-	MAX_COMBINED_DIMENSIONS                                    = 0x8282
-	TEXTURE_BLUE_TYPE_ARB                                      = 0x8C12
-	UNSIGNED_INT_IMAGE_BUFFER_EXT                              = 0x9067
-	DUAL_INTENSITY4_SGIS                                       = 0x8118
-	TEXTURE_RECTANGLE_NV                                       = 0x84F5
-	UNIFORM_BUFFER_OFFSET_ALIGNMENT                            = 0x8A34
-	NORMAL_MAP_EXT                                             = 0x8511
-	UNSIGNED_INT16_NV                                          = 0x8FF0
-	COUNT_UP_NV                                                = 0x9088
-	QUAD_INTENSITY8_SGIS                                       = 0x8123
-	PROXY_POST_IMAGE_TRANSFORM_COLOR_TABLE_HP                  = 0x8163
-	YCRCB_SGIX                                                 = 0x8318
-	VERTEX_ATTRIB_ARRAY11_NV                                   = 0x865B
-	TEXTURE_BORDER_VALUES_NV                                   = 0x871A
-	PROXY_TEXTURE_1D_STACK_MESAX                               = 0x875B
-	PN_TRIANGLES_TESSELATION_LEVEL_ATI                         = 0x87F4
-	DYNAMIC_READ_ARB                                           = 0x88E9
-	CON_13_ATI                                                 = 0x894E
-	COLOR_ATTACHMENT0_EXT                                      = 0x8CE0
-	MAP_UNSYNCHRONIZED_BIT_EXT                                 = 0x0020
-	PIXEL_MAP_I_TO_G_SIZE                                      = 0x0CB3
-	BLEND_EQUATION_RGB                                         = 0x8009
-	DUAL_ALPHA4_SGIS                                           = 0x8110
-	PIXEL_TILE_HEIGHT_SGIX                                     = 0x8141
-	WRITE_ONLY_ARB                                             = 0x88B9
-	AFFINE_3D_NV                                               = 0x9094
-	ONE_MINUS_SRC_ALPHA                                        = 0x0303
-	VERTEX_PRECLIP_SGIX                                        = 0x83EE
-	FLOAT_VEC3_ARB                                             = 0x8B51
-	RGBA16I_EXT                                                = 0x8D88
-	DEPTH32F_STENCIL8_NV                                       = 0x8DAC
-	VERTEX_ARRAY_OBJECT_EXT                                    = 0x9154
-	SGIX_pixel_tiles                                           = 1
-	KEEP                                                       = 0x1E00
-	RGB_FLOAT32_ATI                                            = 0x8815
-	POINT_SIZE_MIN_SGIS                                        = 0x8126
-	MVP_MATRIX_EXT                                             = 0x87E3
-	SRGB8_EXT                                                  = 0x8C41
-	BACK_PRIMARY_COLOR_NV                                      = 0x8C77
-	COMPRESSED_RG_RGTC2                                        = 0x8DBD
-	IMAGE_CUBE_MAP_ARRAY_EXT                                   = 0x9054
-	SGIX_instruments                                           = 1
-	CLAMP_TO_BORDER_NV                                         = 0x812D
-	LINE_STRIP_ADJACENCY                                       = 0x000B
-	RGBA_S3TC                                                  = 0x83A2
-	SMOOTH_POINT_SIZE_GRANULARITY                              = 0x0B13
-	TEXTURE_BUFFER_OFFSET_ALIGNMENT                            = 0x919F
-	T2F_IUI_N3F_V2F_EXT                                        = 0x81B3
-	CURRENT_RASTER_NORMAL_SGIX                                 = 0x8406
-	MAP1_BINORMAL_EXT                                          = 0x8446
-	PROXY_TEXTURE_1D_ARRAY_EXT                                 = 0x8C19
-	AUX1                                                       = 0x040A
-	CURRENT_RASTER_POSITION_VALID                              = 0x0B08
-	COLOR_TABLE_ALPHA_SIZE                                     = 0x80DD
-	DEPTH24_STENCIL8                                           = 0x88F0
-	RGBA32UI_EXT                                               = 0x8D70
-	MAT_DIFFUSE_BIT_PGI                                        = 0x00400000
-	TEXTURE_COMPONENTS                                         = 0x1003
-	TEXTURE_COMPARE_FAIL_VALUE_ARB                             = 0x80BF
-	TEXTURE_BASE_LEVEL                                         = 0x813C
-	VARIANT_ARRAY_EXT                                          = 0x87E8
-	PATH_CLIENT_LENGTH_NV                                      = 0x907F
-	MAX_TESS_CONTROL_ATOMIC_COUNTERS                           = 0x92D3
-	RGB16                                                      = 0x8054
-	FULL_SUPPORT                                               = 0x82B7
-	VERTEX_STREAM5_ATI                                         = 0x8771
-	OP_LOG_BASE_2_EXT                                          = 0x8792
-	INDEX_ARRAY_ADDRESS_NV                                     = 0x8F24
-	SPRITE_OBJECT_ALIGNED_SGIX                                 = 0x814D
-	TEXTURE16                                                  = 0x84D0
-	UNSIGNED_INT64_VEC2_NV                                     = 0x8FF5
-	BUFFER_BINDING                                             = 0x9302
-	CMYK_EXT                                                   = 0x800C
-	PIXEL_TILE_GRID_WIDTH_SGIX                                 = 0x8142
-	DEBUG_CATEGORY_OTHER_AMD                                   = 0x9150
-	TEXTURE_LOD_BIAS_EXT                                       = 0x8501
-	TRANSPOSE_AFFINE_2D_NV                                     = 0x9096
-	STENCIL_CLEAR_VALUE                                        = 0x0B91
-	EYE_RADIAL_NV                                              = 0x855B
-	ACTIVE_PROGRAM_EXT                                         = 0x8B8D
-	TEXTURE_2D_MULTISAMPLE                                     = 0x9100
-	DEBUG_LOGGED_MESSAGES_ARB                                  = 0x9145
-	MAP_READ_BIT_EXT                                           = 0x0001
-	ACCUM_CLEAR_VALUE                                          = 0x0B80
-	INDEX_ARRAY_STRIDE_EXT                                     = 0x8086
-	DEBUG_SOURCE_OTHER_ARB                                     = 0x824B
-	READ_PIXEL_DATA_RANGE_LENGTH_NV                            = 0x887B
-	PROXY_TEXTURE_1D_ARRAY                                     = 0x8C19
-	MAX_GEOMETRY_TEXTURE_IMAGE_UNITS_ARB                       = 0x8C29
-	VERTEX_ATTRIB_MAP1_COEFF_APPLE                             = 0x8A03
-	SAMPLER_2D_ARRAY_EXT                                       = 0x8DC1
-	VIDEO_COLOR_CONVERSION_MATRIX_NV                           = 0x9029
-	MAP_WRITE_BIT_EXT                                          = 0x0002
-	R                                                          = 0x2002
-	UNSIGNED_SHORT_4_4_4_4                                     = 0x8033
-	INT_SAMPLER_CUBE_EXT                                       = 0x8DCC
-	UNSIGNED_INT_10_10_10_2_OES                                = 0x8DF6
-	VERTICAL_LINE_TO_NV                                        = 0x08
-	TEXTURE_DEFORMATION_BIT_SGIX                               = 0x00000001
-	SELECT                                                     = 0x1C02
-	TEXTURE_PRIORITY_EXT                                       = 0x8066
-	DEPENDENT_RGB_TEXTURE_CUBE_MAP_NV                          = 0x885A
-	PROGRAM_ERROR_STRING_ARB                                   = 0x8874
-	COMPRESSED_SRGB_S3TC_DXT1_NV                               = 0x8C4C
-	UNIFORM_BUFFER_BINDING_EXT                                 = 0x8DEF
-	TEXTURE_CUBE_MAP_ARRAY                                     = 0x9009
-	SRGB_READ                                                  = 0x8297
-	LUMINANCE16F_ARB                                           = 0x881E
-	REG_2_ATI                                                  = 0x8923
-	INT_10_10_10_2_OES                                         = 0x8DF7
-	OFFSET                                                     = 0x92FC
-	POLYGON_STIPPLE_BIT                                        = 0x00000010
-	STENCIL_EXT                                                = 0x1802
-	WEIGHT_SUM_UNITY_ARB                                       = 0x86A6
-	CON_24_ATI                                                 = 0x8959
-	TEXTURE_WIDTH_QCOM                                         = 0x8BD2
-	RENDERBUFFER_RED_SIZE                                      = 0x8D50
-	RGB32UI_EXT                                                = 0x8D71
-	MAX_CLIPMAP_DEPTH_SGIX                                     = 0x8177
-	FRAMEBUFFER_RENDERABLE_LAYERED                             = 0x828A
-	CURRENT_QUERY_ARB                                          = 0x8865
-	RASTERIZER_DISCARD_EXT                                     = 0x8C89
-	SAMPLER_CUBE_SHADOW_EXT                                    = 0x8DC5
-	ATOMIC_COUNTER_BUFFER_REFERENCED_BY_FRAGMENT_SHADER        = 0x92CB
-	VERTEX_ARRAY_LIST_IBM                                      = 103070
-	ALPHA16                                                    = 0x803E
-	INTENSITY_FLOAT16_APPLE                                    = 0x881D
-	TEXTURE_COORD_ARRAY_TYPE_EXT                               = 0x8089
-	COLOR_INDEX8_EXT                                           = 0x80E5
-	INDEX_TEST_FUNC_EXT                                        = 0x81B6
-	UNSIGNED_INT_SAMPLER_CUBE                                  = 0x8DD4
-	DOUBLE_MAT2_EXT                                            = 0x8F46
-	RGBA_SNORM                                                 = 0x8F93
-	PATH_INITIAL_END_CAP_NV                                    = 0x9077
-	DRAW_BUFFER                                                = 0x0C01
-	SIGNED_LUMINANCE_NV                                        = 0x8701
-	TEXTURE_LUMINANCE_TYPE                                     = 0x8C14
-	QUERY_WAIT                                                 = 0x8E13
-	PIXEL_TEXTURE_SGIS                                         = 0x8353
-	FRAGMENT_LIGHT_MODEL_LOCAL_VIEWER_SGIX                     = 0x8408
-	VERTEX_PROGRAM_TWO_SIDE_NV                                 = 0x8643
-	EXT_blend_color                                            = 1
-	MAGNITUDE_BIAS_NV                                          = 0x8718
-	TRANSFORM_FEEDBACK_BUFFER_START_NV                         = 0x8C84
-	TRANSLATE_3D_NV                                            = 0x9091
-	MAX_DEBUG_MESSAGE_LENGTH                                   = 0x9143
-	NAME_STACK_DEPTH                                           = 0x0D70
-	MATRIX11_ARB                                               = 0x88CB
-	TEXTURE_COORD_ARRAY_LIST_IBM                               = 103074
-	EVAL_BIT                                                   = 0x00010000
-	PIXEL_MAP_A_TO_A                                           = 0x0C79
-	COMPRESSED_LUMINANCE_ALPHA                                 = 0x84EB
-	MAX_PROGRAM_NATIVE_ATTRIBS_ARB                             = 0x88AF
-	PROGRAM_ATTRIB_COMPONENTS_NV                               = 0x8906
-	UNSIGNED_INT_SAMPLER_CUBE_EXT                              = 0x8DD4
-	VERTEX_ATTRIB_ARRAY_LENGTH_NV                              = 0x8F2A
-	EDGEFLAG_BIT_PGI                                           = 0x00040000
-	SAMPLE_COVERAGE_INVERT_ARB                                 = 0x80AB
-	INVERSE_TRANSPOSE_NV                                       = 0x862D
-	OUTPUT_TEXTURE_COORD2_EXT                                  = 0x879F
-	GEOMETRY_OUTPUT_TYPE_ARB                                   = 0x8DDC
-	INTERLEAVED_ATTRIBS                                        = 0x8C8C
-	LUMINANCE_INTEGER_EXT                                      = 0x8D9C
-	VERTEX_ARRAY_LENGTH_NV                                     = 0x8F2B
-	COMPRESSED_SRGB8_ALPHA8_ASTC_6x5_KHR                       = 0x93D3
-	SUBPIXEL_BITS                                              = 0x0D50
-	BLEND_DST_RGB_OES                                          = 0x80C8
-	TEXTURE_DEFORMATION_SGIX                                   = 0x8195
-	INTERNALFORMAT_DEPTH_SIZE                                  = 0x8275
-	DEPENDENT_GB_TEXTURE_2D_NV                                 = 0x86EA
-	TEXTURE_FREE_MEMORY_ATI                                    = 0x87FC
-	VERTEX_ATTRIB_ARRAY_NORMALIZED_ARB                         = 0x886A
-	REG_3_ATI                                                  = 0x8924
-	VERSION_2_1                                                = 1
-	COPY_PIXEL_TOKEN                                           = 0x0706
-	VERTEX_SHADER_OPTIMIZED_EXT                                = 0x87D4
-	FRAGMENT_PROGRAM_CALLBACK_MESA                             = 0x8BB1
-	TRANSFORM_FEEDBACK_BUFFER_PAUSED_NV                        = 0x8E23
-	MAX_CONVOLUTION_WIDTH                                      = 0x801A
-	COLOR_ARRAY_POINTER_EXT                                    = 0x8090
-	PACK_SKIP_VOLUMES_SGIS                                     = 0x8130
-	CONST_EYE_NV                                               = 0x86E5
-	FLOAT_R32_NV                                               = 0x8885
-	DEPTH_BOUNDS_TEST_EXT                                      = 0x8890
-	FRAMEBUFFER_INCOMPLETE_LAYER_COUNT_ARB                     = 0x8DA9
-	GL_4D_COLOR_TEXTURE                                        = 0x0604
-	NEAREST                                                    = 0x2600
-	POST_CONVOLUTION_ALPHA_SCALE                               = 0x801F
-	COLOR_ARRAY_STRIDE_EXT                                     = 0x8083
-	SWIZZLE_STRQ_ATI                                           = 0x897A
-	INT_SAMPLER_2D_ARRAY                                       = 0x8DCF
-	ELEMENT_ARRAY_LENGTH_NV                                    = 0x8F33
-	CONDITION_SATISFIED                                        = 0x911C
-	ONE_MINUS_SRC_COLOR                                        = 0x0301
-	COLOR_TABLE                                                = 0x80D0
-	FRAMEBUFFER_INCOMPLETE_DIMENSIONS_EXT                      = 0x8CD9
-	INT_IMAGE_2D_MULTISAMPLE_EXT                               = 0x9060
-	MULTISAMPLE_BIT_3DFX                                       = 0x20000000
-	UNPACK_SKIP_ROWS                                           = 0x0CF3
-	INDEX_ARRAY_COUNT_EXT                                      = 0x8087
-	SAMPLE_PATTERN_SGIS                                        = 0x80AC
-	TEXTURE_COMPARE_OPERATOR_SGIX                              = 0x819B
-	TEXTURE_ALPHA_TYPE                                         = 0x8C13
-	MAX_COLOR_ATTACHMENTS_EXT                                  = 0x8CDF
-	COPY_WRITE_BUFFER_BINDING                                  = 0x8F37
-	DOUBLE_MAT2x4                                              = 0x8F4A
-	DEBUG_CATEGORY_DEPRECATION_AMD                             = 0x914B
-	TEXTURE4_ARB                                               = 0x84C4
-	MATRIX_PALETTE_ARB                                         = 0x8840
-	SGIX_texture_add_env                                       = 1
-	HISTOGRAM_ALPHA_SIZE                                       = 0x802B
-	FRAGMENT_LIGHT2_SGIX                                       = 0x840E
-	WEIGHT_ARRAY_POINTER_OES                                   = 0x86AC
-	UNSIGNED_INT_SAMPLER_1D_ARRAY_EXT                          = 0x8DD6
-	EXT_texture_object                                         = 1
-	HISTOGRAM_ALPHA_SIZE_EXT                                   = 0x802B
-	VERSION_1_2                                                = 1
-	INDEX_ARRAY_EXT                                            = 0x8077
-	TEXTURE_HI_SIZE_NV                                         = 0x871B
-	MAX_TEXTURE_IMAGE_UNITS                                    = 0x8872
-	BIAS_BIT_ATI                                               = 0x00000008
-	TESS_CONTROL_SUBROUTINE_UNIFORM                            = 0x92EF
-	PIXEL_MAP_G_TO_G                                           = 0x0C77
-	TEXTURE_VIEW_NUM_LEVELS                                    = 0x82DC
-	TEXTURE_COMPRESSED_IMAGE_SIZE                              = 0x86A0
-	COMPRESSED_SIGNED_RED_RGTC1                                = 0x8DBC
-	MINMAX_SINK_EXT                                            = 0x8030
-	RGBA2_EXT                                                  = 0x8055
-	TEXTURE_ALPHA_SIZE_EXT                                     = 0x805F
-	CURRENT_MATRIX_STACK_DEPTH_NV                              = 0x8640
-	READ_PIXEL_DATA_RANGE_POINTER_NV                           = 0x887D
-	TEXTURE_LIGHTING_MODE_HP                                   = 0x8167
-	INTERLACE_READ_INGR                                        = 0x8568
-	SRC2_ALPHA                                                 = 0x858A
-	PROGRAM_ATTRIBS_ARB                                        = 0x88AC
-	MAX_ASYNC_READ_PIXELS_SGIX                                 = 0x8361
-	DOT4_ATI                                                   = 0x8967
-	COMPRESSED_SLUMINANCE_EXT                                  = 0x8C4A
-	COMPRESSED_SRGB_ALPHA_S3TC_DXT3_EXT                        = 0x8C4E
-	VERTEX_ATTRIB_ARRAY_BARRIER_BIT_EXT                        = 0x00000001
-	RGBA12_EXT                                                 = 0x805A
-	INDEX                                                      = 0x8222
-	MAX_LABEL_LENGTH                                           = 0x82E8
-	MAX_TRACK_MATRICES_NV                                      = 0x862F
-	COLOR_ATTACHMENT0_NV                                       = 0x8CE0
-	DRAW_INDIRECT_UNIFIED_NV                                   = 0x8F40
-	STRICT_DEPTHFUNC_HINT_PGI                                  = 0x1A216
-	SGIS_multisample                                           = 1
-	MODELVIEW13_ARB                                            = 0x872D
-	COLOR_ATTACHMENT6_EXT                                      = 0x8CE6
-	SCISSOR_BIT                                                = 0x00080000
-	BLEND                                                      = 0x0BE2
-	MAX_FRAGMENT_UNIFORM_COMPONENTS                            = 0x8B49
-	TEXTURE_BINDING_BUFFER                                     = 0x8C2C
-	RENDERBUFFER_WIDTH_OES                                     = 0x8D42
-	DOUBLE                                                     = 0x140A
-	R32UI                                                      = 0x8236
-	CURRENT_MATRIX_STACK_DEPTH_ARB                             = 0x8640
-	ALPHA_FLOAT16_APPLE                                        = 0x881C
-	MATRIX_INDEX_ARRAY_ARB                                     = 0x8844
-	CONTEXT_CORE_PROFILE_BIT                                   = 0x00000001
-	UNSIGNED_INVERT_NV                                         = 0x8537
-	COMPRESSED_SRGB_ALPHA_BPTC_UNORM_ARB                       = 0x8E8D
-	INDEX_ARRAY_POINTER_EXT                                    = 0x8091
-	COMBINER7_NV                                               = 0x8557
-	UNSIGNED_INT_8_8_S8_S8_REV_NV                              = 0x86DB
-	CULL_MODES_NV                                              = 0x86E0
-	MAX_FRAGMENT_BINDABLE_UNIFORMS_EXT                         = 0x8DE3
-	PN_TRIANGLES_NORMAL_MODE_QUADRATIC_ATI                     = 0x87F8
-	MAX_VERTEX_TEXTURE_IMAGE_UNITS_ARB                         = 0x8B4C
-	DEPTH_COMPONENT16                                          = 0x81A5
-	IMAGE_CLASS_1_X_16                                         = 0x82BE
-	TEXTURE3_ARB                                               = 0x84C3
-	GEOMETRY_SHADER_ARB                                        = 0x8DD9
-	FRAME_NV                                                   = 0x8E26
-	LUMINANCE4_EXT                                             = 0x803F
-	VIEW_CLASS_S3TC_DXT3_RGBA                                  = 0x82CE
-	OP_INDEX_EXT                                               = 0x8782
-	RGB8UI_EXT                                                 = 0x8D7D
-	MAX_COMBINED_IMAGE_UNITS_AND_FRAGMENT_OUTPUTS_EXT          = 0x8F39
-	MAX_SERVER_WAIT_TIMEOUT                                    = 0x9111
-	DRAW_BUFFER5_ATI                                           = 0x882A
-	STENCIL_TAG_BITS_EXT                                       = 0x88F2
-	TABLE_TOO_LARGE_EXT                                        = 0x8031
-	FRAGMENT_LIGHT5_SGIX                                       = 0x8411
-	DRAW_BUFFER14_ARB                                          = 0x8833
-	SLUMINANCE_ALPHA                                           = 0x8C44
-	COMPRESSED_SRGB_ALPHA_EXT                                  = 0x8C49
-	TRANSFORM_FEEDBACK_ACTIVE                                  = 0x8E24
-	SYNC_GPU_COMMANDS_COMPLETE_APPLE                           = 0x9117
-	INVALID_FRAMEBUFFER_OPERATION_OES                          = 0x0506
-	ALPHA8_EXT                                                 = 0x803C
-	DEBUG_SOURCE_WINDOW_SYSTEM                                 = 0x8247
-	UNSIGNED_INT64_AMD                                         = 0x8BC2
-	CURRENT_TIME_NV                                            = 0x8E28
-	DEBUG_CALLBACK_USER_PARAM                                  = 0x8245
-	IMAGE_CLASS_4_X_16                                         = 0x82BC
-	TEXTURE_LIGHT_EXT                                          = 0x8350
-	MAX_SPOT_EXPONENT_NV                                       = 0x8505
-	MATRIX5_NV                                                 = 0x8635
-	MODELVIEW0_MATRIX_EXT                                      = 0x0BA6
-	T4F_C4F_N3F_V4F                                            = 0x2A2D
-	MAX_GEOMETRY_OUTPUT_VERTICES_EXT                           = 0x8DE0
-	MAX_MULTISAMPLE_COVERAGE_MODES_NV                          = 0x8E11
-	LINEAR_SHARPEN_SGIS                                        = 0x80AD
-	IMAGE_ROTATE_ORIGIN_Y_HP                                   = 0x815B
-	STORAGE_SHARED_APPLE                                       = 0x85BF
-	FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER_EXT                     = 0x8CDB
-	RGB16I                                                     = 0x8D89
-	NUM_SHADER_BINARY_FORMATS                                  = 0x8DF9
-	FIRST_TO_REST_NV                                           = 0x90AF
-	SGIS_fog_function                                          = 1
-	VIEW_CLASS_128_BITS                                        = 0x82C4
-	COMPRESSED_RGBA_FXT1_3DFX                                  = 0x86B1
-	FONT_UNDERLINE_THICKNESS_BIT_NV                            = 0x08000000
-	TEXTURE_2D_MULTISAMPLE_ARRAY                               = 0x9102
-	INDEX_LOGIC_OP                                             = 0x0BF1
-	SAMPLE_BUFFERS_SGIS                                        = 0x80A8
-	INDEX_ARRAY_LENGTH_NV                                      = 0x8F2E
-	HISTOGRAM_BLUE_SIZE                                        = 0x802A
-	TEXTURE19                                                  = 0x84D3
-	MAP1_VERTEX_ATTRIB14_4_NV                                  = 0x866E
-	MAX_IMAGE_SAMPLES_EXT                                      = 0x906D
-	TEXTURE24                                                  = 0x84D8
-	VERTEX_ATTRIB_MAP1_DOMAIN_APPLE                            = 0x8A05
-	DEBUG_SEVERITY_LOW_ARB                                     = 0x9148
-	CONSTANT_ALPHA                                             = 0x8003
-	VERTEX_ARRAY_RANGE_NV                                      = 0x851D
-	CURRENT_VERTEX_ATTRIB_ARB                                  = 0x8626
-	TEXTURE_DT_SIZE_NV                                         = 0x871E
-	REPLACE_VALUE_AMD                                          = 0x874B
-	OUTPUT_TEXTURE_COORD31_EXT                                 = 0x87BC
-	INT_SAMPLER_2D_RECT_EXT                                    = 0x8DCD
-	SHADER_BINARY_FORMATS                                      = 0x8DF8
-	TEXTURE_SWIZZLE_R_EXT                                      = 0x8E42
-	BUFFER_UPDATE_BARRIER_BIT_EXT                              = 0x00000200
-	LIGHT5                                                     = 0x4005
-	VERTEX_STREAM0_ATI                                         = 0x876C
-	LUMINANCE_FLOAT16_ATI                                      = 0x881E
-	NATIVE_GRAPHICS_HANDLE_PGI                                 = 0x1A202
-	CCW                                                        = 0x0901
-	TEXTURE_LUMINANCE_SIZE                                     = 0x8060
-	SOURCE1_RGB_ARB                                            = 0x8581
-	MATRIX_INDEX_ARRAY_STRIDE_ARB                              = 0x8848
-	FLOAT_RG32_NV                                              = 0x8887
-	RASTERIZER_DISCARD_NV                                      = 0x8C89
-	FRAMEBUFFER_BINDING_EXT                                    = 0x8CA6
-	NUM_SAMPLE_COUNTS                                          = 0x9380
-	PIXEL_MAP_R_TO_R_SIZE                                      = 0x0CB6
-	TEXTURE_BORDER_COLOR                                       = 0x1004
-	TEXTURE11                                                  = 0x84CB
-	LUMINANCE_FLOAT16_APPLE                                    = 0x881E
-	SECONDARY_COLOR_ARRAY_BUFFER_BINDING                       = 0x889C
-	NUM_INSTRUCTIONS_TOTAL_ATI                                 = 0x8972
-	PATCH_DEFAULT_OUTER_LEVEL                                  = 0x8E74
-	UNSIGNED_INT_IMAGE_CUBE_MAP_ARRAY                          = 0x906A
-	EXT_vertex_array                                           = 1
-	PASS_THROUGH_TOKEN                                         = 0x0700
-	FOG_COLOR                                                  = 0x0B66
-	FRAMEBUFFER_ATTACHMENT_OBJECT_NAME                         = 0x8CD1
-	ALPHA16UI_EXT                                              = 0x8D78
-	INT_SAMPLER_CUBE                                           = 0x8DCC
-	FOG_COORD_ARRAY_ADDRESS_NV                                 = 0x8F28
-	MAP1_VERTEX_3                                              = 0x0D97
-	DRAW_BUFFER5_NV                                            = 0x882A
-	MATRIX10_ARB                                               = 0x88CA
-	ATOMIC_COUNTER_BUFFER_SIZE                                 = 0x92C3
-	LIGHT_MODEL_TWO_SIDE                                       = 0x0B52
-	MAX_OPTIMIZED_VERTEX_SHADER_INVARIANTS_EXT                 = 0x87CD
-	CONSTANT_ATTENUATION                                       = 0x1207
-	HILO_NV                                                    = 0x86F4
-	WRITE_PIXEL_DATA_RANGE_POINTER_NV                          = 0x887C
-	FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT_EXT              = 0x8CD7
-	RELATIVE_SMOOTH_QUADRATIC_CURVE_TO_NV                      = 0x0F
-	MAX_TESS_EVALUATION_IMAGE_UNIFORMS                         = 0x90CC
-	COLOR_ARRAY_LIST_IBM                                       = 103072
-	NATIVE_GRAPHICS_BEGIN_HINT_PGI                             = 0x1A203
-	MODELVIEW27_ARB                                            = 0x873B
-	COVERAGE_COMPONENT_NV                                      = 0x8ED0
-	INT_IMAGE_1D_EXT                                           = 0x9057
-	INTERNALFORMAT_STENCIL_SIZE                                = 0x8276
-	VERTEX_PROGRAM_NV                                          = 0x8620
-	INT_SAMPLER_2D_EXT                                         = 0x8DCA
-	CULL_VERTEX_EXT                                            = 0x81AA
-	OPERAND3_RGB_NV                                            = 0x8593
-	DOT_PRODUCT_CONST_EYE_REFLECT_CUBE_MAP_NV                  = 0x86F3
-	PROGRAM_BINARY_FORMATS                                     = 0x87FF
-	IMAGE_1D_ARRAY_EXT                                         = 0x9052
-	SAMPLE_ALPHA_TO_COVERAGE                                   = 0x809E
-	OFFSET_TEXTURE_RECTANGLE_SCALE_NV                          = 0x864D
-	FRAMEBUFFER_INCOMPLETE_FORMATS_EXT                         = 0x8CDA
-	PARTIAL_SUCCESS_NV                                         = 0x902E
-	SYNC_FLUSH_COMMANDS_BIT_APPLE                              = 0x00000001
-	TEXTURE_GEN_S                                              = 0x0C60
-	LINEAR_ATTENUATION                                         = 0x1208
-	PIXEL_TILE_BEST_ALIGNMENT_SGIX                             = 0x813E
-	POST_TEXTURE_FILTER_BIAS_RANGE_SGIX                        = 0x817B
-	TEXTURE_COMPRESSED_BLOCK_SIZE                              = 0x82B3
-	CONSTANT_ARB                                               = 0x8576
-	SHADER_COMPILER                                            = 0x8DFA
-	CLOSE_PATH_NV                                              = 0x00
-	RGBA16                                                     = 0x805B
-	RGB_SCALE                                                  = 0x8573
-	PACK_SUBSAMPLE_RATE_SGIX                                   = 0x85A0
-	SGIX_calligraphic_fragment                                 = 1
-	GL_3DC_XY_AMD                                              = 0x87FA
-	FRACTIONAL_ODD                                             = 0x8E7B
-	COMPRESSED_SIGNED_RG11_EAC                                 = 0x9273
-	DEBUG_OUTPUT                                               = 0x92E0
-	ARRAY_STRIDE                                               = 0x92FE
-	HISTOGRAM                                                  = 0x8024
-	TEXTURE21                                                  = 0x84D5
-	MAX_VERTEX_UNITS_ARB                                       = 0x86A4
-	SGIX_subsample                                             = 1
-	TEXTURE_COMPRESSION_HINT                                   = 0x84EF
-	EVAL_VERTEX_ATTRIB3_NV                                     = 0x86C9
-	LUMINANCE_ALPHA16I_EXT                                     = 0x8D8D
-	UNSIGNED_INT_IMAGE_2D_MULTISAMPLE                          = 0x906B
-	STENCIL_PASS_DEPTH_PASS                                    = 0x0B96
-	TEXTURE9                                                   = 0x84C9
-	LUMINANCE_ALPHA_FLOAT16_APPLE                              = 0x881F
-	SHADER_OBJECT_EXT                                          = 0x8B48
-	TRANSFORM_FEEDBACK_BUFFER_BINDING                          = 0x8C8F
-	SYNC_GPU_COMMANDS_COMPLETE                                 = 0x9117
-	LIST_BASE                                                  = 0x0B32
-	COMPRESSED_RGBA_S3TC_DXT3_EXT                              = 0x83F2
-	RELATIVE_SMOOTH_CUBIC_CURVE_TO_NV                          = 0x11
-	TRIANGLE_FAN                                               = 0x0006
-	RG8I                                                       = 0x8237
-	VERTEX_PROGRAM_ARB                                         = 0x8620
-	SAMPLER_1D_ARRAY_SHADOW                                    = 0x8DC3
-	SAMPLER_CUBE_SHADOW                                        = 0x8DC5
-	UNSIGNED_SHORT_8_8_REV_APPLE                               = 0x85BB
-	PROGRAM_POINT_SIZE                                         = 0x8642
-	MAX_PROGRAM_RESULT_COMPONENTS_NV                           = 0x8909
-	INT64_NV                                                   = 0x140E
-	TEXTURE28_ARB                                              = 0x84DC
-	COMBINER6_NV                                               = 0x8556
-	MAX_VERTEX_SHADER_INSTRUCTIONS_EXT                         = 0x87C5
-	DYNAMIC_READ                                               = 0x88E9
-	GEOMETRY_OUTPUT_TYPE                                       = 0x8918
-	RGBA16I                                                    = 0x8D88
-	TESS_GEN_SPACING                                           = 0x8E77
-	REFERENCED_BY_GEOMETRY_SHADER                              = 0x9309
-	DUAL_INTENSITY8_SGIS                                       = 0x8119
-	TRANSPOSE_COLOR_MATRIX_ARB                                 = 0x84E6
-	UNSIGNED_INT_24_8_NV                                       = 0x84FA
-	TEXTURE_CUBE_MAP_POSITIVE_Y_EXT                            = 0x8517
-	FIELDS_NV                                                  = 0x8E27
-	FONT_DESCENDER_BIT_NV                                      = 0x00400000
-	LINE_WIDTH_GRANULARITY                                     = 0x0B23
-	LUMINANCE12_EXT                                            = 0x8041
-	POST_COLOR_MATRIX_BLUE_BIAS                                = 0x80BA
-	TEXTURE_LOD_BIAS_S_SGIX                                    = 0x818E
-	SEPARATE_SPECULAR_COLOR_EXT                                = 0x81FA
-	DRAW_BUFFER10_ARB                                          = 0x882F
-	MAX_VARYING_COMPONENTS_EXT                                 = 0x8B4B
-	MAX_OPTIMIZED_VERTEX_SHADER_VARIANTS_EXT                   = 0x87CB
-	DRAW_BUFFER8_ARB                                           = 0x882D
-	FRAMEBUFFER_INCOMPLETE_LAYER_TARGETS                       = 0x8DA8
-	MAX_FRAGMENT_INTERPOLATION_OFFSET_NV                       = 0x8E5C
-	FRAMEBUFFER_DEFAULT_FIXED_SAMPLE_LOCATIONS                 = 0x9314
-	COLOR_INDEX2_EXT                                           = 0x80E3
-	SPRITE_TRANSLATION_SGIX                                    = 0x814B
-	COLOR_ENCODING                                             = 0x8296
-	TEXTURE_BINDING_RECTANGLE_NV                               = 0x84F6
-	RENDERBUFFER_DEPTH_SIZE_OES                                = 0x8D54
-	UNSIGNED_INT_IMAGE_BUFFER                                  = 0x9067
-	WAIT_FAILED_APPLE                                          = 0x911D
-	SGI_texture_color_table                                    = 1
-	NICEST                                                     = 0x1102
-	ASYNC_TEX_IMAGE_SGIX                                       = 0x835C
-	COLOR_LOGIC_OP                                             = 0x0BF2
-	R32I                                                       = 0x8235
-	FOG_COORD_ARRAY_TYPE                                       = 0x8454
-	PIXEL_COUNT_AVAILABLE_NV                                   = 0x8867
-	RENDER_MODE                                                = 0x0C40
-	COMPRESSED_RED                                             = 0x8225
-	DRAW_BUFFER8_NV                                            = 0x882D
-	COLOR_ATTACHMENT14_NV                                      = 0x8CEE
-	VERSION_1_4                                                = 1
-	SGIX_vertex_preclip                                        = 1
-	IMAGE_CLASS_2_X_8                                          = 0x82C0
-	STENCIL_INDEX1_OES                                         = 0x8D46
-	FRAGMENT_PROGRAM_PARAMETER_BUFFER_NV                       = 0x8DA4
-	POST_COLOR_MATRIX_BLUE_SCALE_SGI                           = 0x80B6
-	DUAL_LUMINANCE8_SGIS                                       = 0x8115
-	DRAW_BUFFER0_ARB                                           = 0x8825
-	COLOR_ATTACHMENT4_EXT                                      = 0x8CE4
-	PACK_SKIP_IMAGES_EXT                                       = 0x806B
-	SLUMINANCE8_ALPHA8                                         = 0x8C45
-	FRAMEBUFFER_COMPLETE_OES                                   = 0x8CD5
-	FONT_UNITS_PER_EM_BIT_NV                                   = 0x00100000
-	MAX_ATTRIB_STACK_DEPTH                                     = 0x0D35
-	C3F_V3F                                                    = 0x2A24
-	FENCE_CONDITION_NV                                         = 0x84F4
-	NUM_PROGRAM_BINARY_FORMATS                                 = 0x87FE
-	FRAGMENT_PROGRAM_NV                                        = 0x8870
-	IMAGE_2D_ARRAY_EXT                                         = 0x9053
-	INT_IMAGE_2D_RECT_EXT                                      = 0x905A
-	PATH_STENCIL_VALUE_MASK_NV                                 = 0x90B9
-	MAX_FRAGMENT_IMAGE_UNIFORMS                                = 0x90CE
-	UNPACK_COMPRESSED_BLOCK_SIZE                               = 0x912A
-	ONE_MINUS_DST_ALPHA                                        = 0x0305
-	DOT_PRODUCT_DEPTH_REPLACE_NV                               = 0x86ED
-	VERTEX_ATTRIB_ARRAY_DIVISOR                                = 0x88FE
-	NORMAL_ARRAY_ADDRESS_NV                                    = 0x8F22
-	MAX_COMPUTE_WORK_GROUP_SIZE                                = 0x91BF
-	DEBUG_SEVERITY_NOTIFICATION                                = 0x826B
-	DOT_PRODUCT_DIFFUSE_CUBE_MAP_NV                            = 0x86F1
-	SIGNED_ALPHA8_NV                                           = 0x8706
-	MAX_GEOMETRY_INPUT_COMPONENTS                              = 0x9123
-	FRAGMENT_LIGHT1_SGIX                                       = 0x840D
-	DISCARD_NV                                                 = 0x8530
-	LIGHT_MODEL_SPECULAR_VECTOR_APPLE                          = 0x85B0
-	FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER                         = 0x8CDB
-	UNSIGNED_INT_SAMPLER_2D_MULTISAMPLE                        = 0x910A
-	LIGHT_ENV_MODE_SGIX                                        = 0x8407
-	VARIABLE_A_NV                                              = 0x8523
-	SIGNED_RGB_UNSIGNED_ALPHA_NV                               = 0x870C
-	DUDV_ATI                                                   = 0x8779
-	ATC_RGBA_INTERPOLATED_ALPHA_AMD                            = 0x87EE
-	REG_4_ATI                                                  = 0x8925
-	COLOR_ATTACHMENT2                                          = 0x8CE2
-	CURRENT_RASTER_INDEX                                       = 0x0B05
-	MAX_CUBE_MAP_TEXTURE_SIZE_EXT                              = 0x851C
-	RGBA_FLOAT32_APPLE                                         = 0x8814
-	FALSE                                                      = 0
-	ZOOM_X                                                     = 0x0D16
-	POST_COLOR_MATRIX_ALPHA_SCALE_SGI                          = 0x80B7
-	OBJECT_ACTIVE_UNIFORM_MAX_LENGTH_ARB                       = 0x8B87
-	MINOR_VERSION                                              = 0x821C
-	CULL_FRAGMENT_NV                                           = 0x86E7
-	UNSIGNED_INT16_VEC2_NV                                     = 0x8FF1
-	CURRENT_BIT                                                = 0x00000001
-	LUMINANCE                                                  = 0x1909
-	QUAD_LUMINANCE4_SGIS                                       = 0x8120
-	FRAMEBUFFER_ATTACHMENT_COMPONENT_TYPE                      = 0x8211
-	MODELVIEW26_ARB                                            = 0x873A
-	MOV_ATI                                                    = 0x8961
-	RGBA8UI_EXT                                                = 0x8D7C
-	VERTEX_ATTRIB_ARRAY_ADDRESS_NV                             = 0x8F20
-	FACTOR_MAX_AMD                                             = 0x901D
-	GL_3D                                                      = 0x0601
-	R3_G3_B2                                                   = 0x2A10
-	INTENSITY16_EXT                                            = 0x804D
-	UNIFORM_BUFFER_SIZE                                        = 0x8A2A
-	SGIS_detail_texture                                        = 1
-	AUX0                                                       = 0x0409
-	TEXTURE8_ARB                                               = 0x84C8
-	TEXTURE_BINDING_CUBE_MAP_ARB                               = 0x8514
-	RENDERBUFFER_SAMPLES_EXT                                   = 0x8CAB
-	COLOR_TABLE_FORMAT                                         = 0x80D8
-	PHONG_HINT_WIN                                             = 0x80EB
-	MAX_VIEWPORTS                                              = 0x825B
-	NORMAL_ARRAY_BUFFER_BINDING                                = 0x8897
-	TESS_EVALUATION_SUBROUTINE_UNIFORM                         = 0x92F0
-	RGBA8I                                                     = 0x8D8E
-	UNPACK_SKIP_IMAGES                                         = 0x806D
-	FOG_COORDINATE_ARRAY_TYPE                                  = 0x8454
-	HALF_BIAS_NORMAL_NV                                        = 0x853A
-	ELEMENT_ARRAY_BUFFER_BINDING_ARB                           = 0x8895
-	PROGRAM_TEMPORARIES_ARB                                    = 0x88A4
-	PIXEL_PACK_BUFFER_BINDING                                  = 0x88ED
-	FRAGMENT_SHADER_DERIVATIVE_HINT_ARB                        = 0x8B8B
-	TEXTURE_BINDING_1D_ARRAY_EXT                               = 0x8C1C
-	FRAMEBUFFER_ATTACHMENT_LAYERED_EXT                         = 0x8DA7
-	LOCATION_INDEX                                             = 0x930F
-	TEXTURE_INTENSITY_SIZE                                     = 0x8061
-	LIGHT0                                                     = 0x4000
-	MAX_VERTEX_ATTRIB_RELATIVE_OFFSET                          = 0x82D9
-	MODELVIEW14_ARB                                            = 0x872E
-	MODELVIEW25_ARB                                            = 0x8739
-	DOT2_ADD_ATI                                               = 0x896C
-	STENCIL_WRITEMASK                                          = 0x0B98
-	SAMPLE_COVERAGE                                            = 0x80A0
-	COLOR_BUFFER_BIT                                           = 0x00004000
-	PROXY_POST_COLOR_MATRIX_COLOR_TABLE_SGI                    = 0x80D5
-	TEXTURE_VIEW                                               = 0x82B5
-	DOT3_RGBA                                                  = 0x86AF
-	ACTIVE_UNIFORM_MAX_LENGTH                                  = 0x8B87
-	DOUBLE_MAT4                                                = 0x8F48
-	FOG_COORDINATE_ARRAY_LIST_STRIDE_IBM                       = 103086
-	FOG_SPECULAR_TEXTURE_WIN                                   = 0x80EC
-	TEXTURE11_ARB                                              = 0x84CB
-	MAX_TEXTURE_MAX_ANISOTROPY_EXT                             = 0x84FF
-	OPERAND2_ALPHA_ARB                                         = 0x859A
-	VERTEX_ATTRIB_ARRAY_SIZE                                   = 0x8623
-	DRAW_BUFFER11_ATI                                          = 0x8830
-	PROXY_TEXTURE_2D_ARRAY                                     = 0x8C1B
-	HISTOGRAM_EXT                                              = 0x8024
-	SAMPLE_ALPHA_TO_COVERAGE_ARB                               = 0x809E
-	DUAL_LUMINANCE16_SGIS                                      = 0x8117
-	DEPTH_PASS_INSTRUMENT_MAX_SGIX                             = 0x8312
-	MATRIX12_ARB                                               = 0x88CC
-	OBJECT_TYPE_ARB                                            = 0x8B4E
-	BLUE_INTEGER                                               = 0x8D96
-	MAX_CLIPMAP_VIRTUAL_DEPTH_SGIX                             = 0x8178
-	DEBUG_NEXT_LOGGED_MESSAGE_LENGTH_ARB                       = 0x8243
-	WEIGHT_ARRAY_OES                                           = 0x86AD
-	FRAMEBUFFER_ATTACHMENT_OBJECT_TYPE_OES                     = 0x8CD0
-	STATIC_DRAW                                                = 0x88E4
-	FLOAT_VEC4                                                 = 0x8B52
-	PROGRAM_NATIVE_ADDRESS_REGISTERS_ARB                       = 0x88B2
-	MUL_ATI                                                    = 0x8964
-	FUNC_SUBTRACT_EXT                                          = 0x800A
-	DRAW_BUFFER2                                               = 0x8827
-	PIXEL_COUNT_NV                                             = 0x8866
-	FRAMEBUFFER_ATTACHMENT_TEXTURE_LEVEL                       = 0x8CD2
-	RGB8I_EXT                                                  = 0x8D8F
-	TIMEOUT_EXPIRED_APPLE                                      = 0x911B
-	PACK_SKIP_PIXELS                                           = 0x0D04
-	MAP1_NORMAL                                                = 0x0D92
-	MIRRORED_REPEAT_IBM                                        = 0x8370
-	MAX_PROGRAM_TEX_INDIRECTIONS_ARB                           = 0x880D
-	VERTEX_ATTRIB_ARRAY_INTEGER                                = 0x88FD
-	EDGE_FLAG_ARRAY_ADDRESS_NV                                 = 0x8F26
-	EXT_blend_subtract                                         = 1
-	NAND                                                       = 0x150E
-	BINORMAL_ARRAY_TYPE_EXT                                    = 0x8440
-	TEXTURE20                                                  = 0x84D4
-	SAMPLES_3DFX                                               = 0x86B4
-	RENDERBUFFER_ALPHA_SIZE_EXT                                = 0x8D53
-	UNSIGNED_INT_VEC3                                          = 0x8DC7
-	ACTIVE_RESOURCES                                           = 0x92F5
-	ALPHA_TEST_REF_QCOM                                        = 0x0BC2
-	FRAGMENT_LIGHT_MODEL_NORMAL_INTERPOLATION_SGIX             = 0x840B
-	COMBINER_BIAS_NV                                           = 0x8549
-	OP_MADD_EXT                                                = 0x8788
-	NORMAL_ARRAY_STRIDE_EXT                                    = 0x807F
-	VERTEX_ATTRIB_ARRAY0_NV                                    = 0x8650
-	MAX_VERTEX_UNIFORM_COMPONENTS                              = 0x8B4A
-	IMAGE_BINDING_ACCESS_EXT                                   = 0x8F3E
-	ELEMENT_ARRAY_BARRIER_BIT                                  = 0x00000002
-	CLIP_PLANE5                                                = 0x3005
-	OP_CROSS_PRODUCT_EXT                                       = 0x8797
-	SAMPLE_MASK_VALUE_NV                                       = 0x8E52
-	VIEWPORT_BIT                                               = 0x00000800
-	POINT_DISTANCE_ATTENUATION_ARB                             = 0x8129
-	TRANSPOSE_PROJECTION_MATRIX                                = 0x84E4
-	FLOAT_RG_NV                                                = 0x8881
-	SAMPLER_1D_SHADOW_ARB                                      = 0x8B61
-	RENDERBUFFER_BLUE_SIZE_EXT                                 = 0x8D52
-	FLOAT16_VEC4_NV                                            = 0x8FFB
-	BLUE_SCALE                                                 = 0x0D1A
-	IR_INSTRUMENT1_SGIX                                        = 0x817F
-	UNSIGNED_INT16_VEC3_NV                                     = 0x8FF2
-	BUFFER_DATA_SIZE                                           = 0x9303
-	TEXTURE_USAGE_ANGLE                                        = 0x93A2
-	LUMINANCE8_EXT                                             = 0x8040
-	SMOOTH_LINE_WIDTH_RANGE                                    = 0x0B22
-	EVAL_TRIANGULAR_2D_NV                                      = 0x86C1
-	TRANSFORM_FEEDBACK_BUFFER_ACTIVE_NV                        = 0x8E24
-	VIEWPORT                                                   = 0x0BA2
-	ARRAY_ELEMENT_LOCK_FIRST_EXT                               = 0x81A8
-	INTERNALFORMAT_SHARED_SIZE                                 = 0x8277
-	MANUAL_GENERATE_MIPMAP                                     = 0x8294
-	COMPARE_REF_DEPTH_TO_TEXTURE_EXT                           = 0x884E
-	BGR_INTEGER_EXT                                            = 0x8D9A
-	Z4Y12Z4CB12Z4Y12Z4CR12_422_NV                              = 0x9035
-	GL_2D                                                      = 0x0600
-	TEXTURE_BINDING_2D                                         = 0x8069
-	TEXTURE_BUFFER_ARB                                         = 0x8C2A
-	ASYNC_MARKER_SGIX                                          = 0x8329
-	PROXY_TEXTURE_RECTANGLE                                    = 0x84F7
-	MAX_CUBE_MAP_TEXTURE_SIZE_ARB                              = 0x851C
-	SGIS_texture_select                                        = 1
-	FRAMEBUFFER_ATTACHMENT_STENCIL_SIZE                        = 0x8217
-	RG16UI                                                     = 0x823A
-	FRAGMENT_DEPTH_EXT                                         = 0x8452
-	QUERY_BY_REGION_NO_WAIT_NV                                 = 0x8E16
-	CONTEXT_PROFILE_MASK                                       = 0x9126
-	COLOR_MATERIAL_FACE                                        = 0x0B55
-	HISTOGRAM_RED_SIZE_EXT                                     = 0x8028
-	BUFFER_SIZE                                                = 0x8764
-	REG_16_ATI                                                 = 0x8931
-	R11F_G11F_B10F                                             = 0x8C3A
-	ALPHA8I_EXT                                                = 0x8D90
-	PATH_FORMAT_PS_NV                                          = 0x9071
-	SHORT                                                      = 0x1402
-	TEXTURE6                                                   = 0x84C6
-	ELEMENT_ARRAY_ADDRESS_NV                                   = 0x8F29
-	ACTIVE_TEXTURE_ARB                                         = 0x84E0
-	MATRIX_EXT                                                 = 0x87C0
-	BGR_INTEGER                                                = 0x8D9A
-	TRIANGLE_STRIP                                             = 0x0005
-	TANGENT_ARRAY_STRIDE_EXT                                   = 0x843F
-	OPERAND1_ALPHA                                             = 0x8599
-	ADD_SIGNED_ARB                                             = 0x8574
-	UTF8_NV                                                    = 0x909A
-	DEBUG_SEVERITY_LOW                                         = 0x9148
-	PIXEL_MAP_S_TO_S_SIZE                                      = 0x0CB1
-	STENCIL_BITS                                               = 0x0D57
-	DEBUG_TYPE_ERROR_ARB                                       = 0x824C
-	SIGNED_IDENTITY_NV                                         = 0x853C
-	CLAMP_VERTEX_COLOR_ARB                                     = 0x891A
-	UNSIGNED_INT_VEC3_EXT                                      = 0x8DC7
-	MAP2_COLOR_4                                               = 0x0DB0
-	AND_INVERTED                                               = 0x1504
-	POST_CONVOLUTION_RED_BIAS_EXT                              = 0x8020
-	CAVEAT_SUPPORT                                             = 0x82B8
-	DECR_WRAP                                                  = 0x8508
-	VERTEX_ARRAY_RANGE_VALID_NV                                = 0x851F
-	MATRIX7_NV                                                 = 0x8637
-	MAX_DUAL_SOURCE_DRAW_BUFFERS                               = 0x88FC
-	SGIX_list_priority                                         = 1
-	UNSIGNED_SHORT_1_5_5_5_REV_EXT                             = 0x8366
-	RESCALE_NORMAL_EXT                                         = 0x803A
-	COMBINER_INPUT_NV                                          = 0x8542
-	READ_FRAMEBUFFER_BINDING_EXT                               = 0x8CAA
-	VIDEO_BUFFER_PITCH_NV                                      = 0x9028
-	TEXTURE_COVERAGE_SAMPLES_NV                                = 0x9045
-	NORMAL_ARRAY_STRIDE                                        = 0x807F
-	HISTOGRAM_FORMAT                                           = 0x8027
-	FRAGMENT_COLOR_MATERIAL_FACE_SGIX                          = 0x8402
-	OP_SUB_EXT                                                 = 0x8796
-	PRIMITIVES_GENERATED_NV                                    = 0x8C87
-	MAX_SAMPLES_ANGLE                                          = 0x8D57
-	INT_SAMPLER_3D_EXT                                         = 0x8DCB
-	GLYPH_HORIZONTAL_BEARING_ADVANCE_BIT_NV                    = 0x10
-	VERTEX_ATTRIB_BINDING                                      = 0x82D4
-	FRAMEBUFFER_OES                                            = 0x8D40
-	VERTEX_SHADER_BIT                                          = 0x00000001
-	TEXTURE_MATRIX                                             = 0x0BA8
-	CONVOLUTION_1D                                             = 0x8010
-	REPLACE_EXT                                                = 0x8062
-	DRAW_BUFFER4_ATI                                           = 0x8829
-	EXT_copy_texture                                           = 1
-	SAMPLE_COVERAGE_INVERT                                     = 0x80AB
-	TEXTURE_MULTI_BUFFER_HINT_SGIX                             = 0x812E
-	DRAW_BUFFER1_ATI                                           = 0x8826
-	FOG_COORD_ARRAY_BUFFER_BINDING                             = 0x889D
-	TEXTURE_GREEN_TYPE                                         = 0x8C11
-	SGIX_async_histogram                                       = 1
-	ETC1_SRGB8_NV                                              = 0x88EE
-	FRAMEBUFFER_ATTACHMENT_TEXTURE_LEVEL_OES                   = 0x8CD2
-	T2F_C4UB_V3F                                               = 0x2A29
-	MAX_CONVOLUTION_HEIGHT_EXT                                 = 0x801B
-	DUAL_ALPHA8_SGIS                                           = 0x8111
-	VERTEX_ATTRIB_ARRAY_LONG                                   = 0x874E
-	RENDERBUFFER_FREE_MEMORY_ATI                               = 0x87FD
-	DRAW_BUFFER1_NV                                            = 0x8826
-	INTENSITY8I_EXT                                            = 0x8D91
-	RED_SNORM                                                  = 0x8F90
-	QUERY_OBJECT_AMD                                           = 0x9153
-	LIGHT2                                                     = 0x4002
-	ZOOM_Y                                                     = 0x0D17
-	TEXTURE_BINDING_3D                                         = 0x806A
-	TEXTURE_2D_STACK_MESAX                                     = 0x875A
-	VERTEX_SHADER_LOCALS_EXT                                   = 0x87D3
-	PN_TRIANGLES_NORMAL_MODE_ATI                               = 0x87F3
-	VERTEX_ARRAY_BUFFER_BINDING                                = 0x8896
-	PRIMITIVE_ID_NV                                            = 0x8C7C
-	MAX_COMBINED_IMAGE_UNITS_AND_FRAGMENT_OUTPUTS              = 0x8F39
-	ALREADY_SIGNALED_APPLE                                     = 0x911A
-	RGBA_MODE                                                  = 0x0C31
-	NEGATIVE_ONE_EXT                                           = 0x87DF
-	MAX_PROGRAM_ADDRESS_REGISTERS_ARB                          = 0x88B1
-	RENDERBUFFER_RED_SIZE_EXT                                  = 0x8D50
-	BGR_EXT                                                    = 0x80E0
-	OBJECT_POINT_SGIS                                          = 0x81F5
-	OUTPUT_TEXTURE_COORD22_EXT                                 = 0x87B3
-	REG_25_ATI                                                 = 0x893A
-	FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT_OES              = 0x8CD7
-	PATH_OBJECT_BOUNDING_BOX_NV                                = 0x908A
-	VERTEX_ATTRIB_ARRAY_ENABLED                                = 0x8622
-	EVAL_2D_NV                                                 = 0x86C0
-	ALPHA32F_ARB                                               = 0x8816
-	BOOL_VEC2                                                  = 0x8B57
-	SLUMINANCE8_EXT                                            = 0x8C47
-	RASTERIZER_DISCARD                                         = 0x8C89
-	IMAGE_FORMAT_COMPATIBILITY_BY_SIZE                         = 0x90C8
-	DEPTH_CLEAR_VALUE                                          = 0x0B73
-	MAX_PROGRAM_ALU_INSTRUCTIONS_ARB                           = 0x880B
-	GL_4X_BIT_ATI                                              = 0x00000002
-	UNDEFINED_APPLE                                            = 0x8A1C
-	FLOAT_MAT3x2                                               = 0x8B67
-	TRANSFORM_FEEDBACK_BUFFER_EXT                              = 0x8C8E
-	FRAMEBUFFER_INCOMPLETE_FORMATS_OES                         = 0x8CDA
-	UNSIGNED_INT_SAMPLER_2D                                    = 0x8DD2
-	HISTOGRAM_SINK                                             = 0x802D
-	MATRIX3_NV                                                 = 0x8633
-	INTERPOLATE                                                = 0x8575
-	OPERAND1_ALPHA_EXT                                         = 0x8599
-	VERTEX_ATTRIB_ARRAY_ENABLED_ARB                            = 0x8622
-	DRAW_BUFFER6                                               = 0x882B
-	TRANSFORM_FEEDBACK_BUFFER_MODE_NV                          = 0x8C7F
-	TEXTURE_BORDER_COLOR_NV                                    = 0x1004
-	FRAGMENT_LIGHT0_SGIX                                       = 0x840C
-	MAP1_VERTEX_ATTRIB15_4_NV                                  = 0x866F
-	SLUMINANCE_NV                                              = 0x8C46
-	FRAMEBUFFER_EXT                                            = 0x8D40
-	AFFINE_2D_NV                                               = 0x9092
-	BUFFER_MAP_OFFSET                                          = 0x9121
-	STEREO                                                     = 0x0C33
-	TEXTURE_2D_BINDING_EXT                                     = 0x8069
-	R16F                                                       = 0x822D
-	DRAW_BUFFER13_ARB                                          = 0x8832
-	DEPTH_RANGE                                                = 0x0B70
-	FRAMEBUFFER_ATTACHMENT_GREEN_SIZE                          = 0x8213
-	VERTEX_PRECLIP_HINT_SGIX                                   = 0x83EF
-	LIST_MODE                                                  = 0x0B30
-	MIRRORED_REPEAT_ARB                                        = 0x8370
-	SLUMINANCE8_ALPHA8_EXT                                     = 0x8C45
-	POST_CONVOLUTION_GREEN_SCALE_EXT                           = 0x801D
-	PIXEL_SUBSAMPLE_4242_SGIX                                  = 0x85A4
-	GREEN_BIT_ATI                                              = 0x00000002
-	DRAW_FRAMEBUFFER_BINDING                                   = 0x8CA6
-	RG_SNORM                                                   = 0x8F91
-	MAX_TESS_EVALUATION_ATOMIC_COUNTERS                        = 0x92D4
-	POST_CONVOLUTION_GREEN_BIAS_EXT                            = 0x8021
-	FOG_FUNC_SGIS                                              = 0x812A
-	TEXTURE_BINDING_CUBE_MAP_OES                               = 0x8514
-	OPERAND0_RGB                                               = 0x8590
-	RGB10_A2UI                                                 = 0x906F
-	DEBUG_SEVERITY_MEDIUM_AMD                                  = 0x9147
-	COMPRESSED_R11_EAC                                         = 0x9270
-	WEIGHT_ARRAY_SIZE_OES                                      = 0x86AB
-	VERTEX_PROGRAM_POSITION_MESA                               = 0x8BB4
-	MAX_GEOMETRY_UNIFORM_COMPONENTS_EXT                        = 0x8DDF
-	NEXT_VIDEO_CAPTURE_BUFFER_STATUS_NV                        = 0x9025
-	DEBUG_SOURCE_SHADER_COMPILER                               = 0x8248
-	VIEW_CLASS_RGTC1_RED                                       = 0x82D0
-	UNPACK_RESAMPLE_SGIX                                       = 0x842D
-	TEXTURE0_ARB                                               = 0x84C0
-	UNSIGNED_INT_SAMPLER_1D_EXT                                = 0x8DD1
-	TRANSFORM_FEEDBACK_NV                                      = 0x8E22
-	FUNC_SUBTRACT                                              = 0x800A
-	RGBA4_S3TC                                                 = 0x83A3
-	UNPACK_ROW_BYTES_APPLE                                     = 0x8A16
-	COLOR_ATTACHMENT7                                          = 0x8CE7
-	ACTIVE_SUBROUTINE_UNIFORM_MAX_LENGTH                       = 0x8E49
-	SGX_PROGRAM_BINARY_IMG                                     = 0x9130
-	READ_BUFFER_EXT                                            = 0x0C02
-	NEAREST_CLIPMAP_NEAREST_SGIX                               = 0x844D
-	TESS_EVALUATION_TEXTURE                                    = 0x829D
-	REG_28_ATI                                                 = 0x893D
-	FOG_COORDINATE_EXT                                         = 0x8451
-	MATRIX19_ARB                                               = 0x88D3
-	RGB_422_APPLE                                              = 0x8A1F
-	SAMPLER_3D                                                 = 0x8B5F
-	FRAGMENT_PROGRAM_POSITION_MESA                             = 0x8BB0
-	INT_SAMPLER_RENDERBUFFER_NV                                = 0x8E57
-	PATH_COMPUTED_LENGTH_NV                                    = 0x90A0
-	FRAMEBUFFER_ATTACHMENT_COMPONENT_TYPE_EXT                  = 0x8211
-	SOURCE2_ALPHA_EXT                                          = 0x858A
-	FLOAT_CLEAR_COLOR_VALUE_NV                                 = 0x888D
-	ANY_SAMPLES_PASSED                                         = 0x8C2F
-	READ_FRAMEBUFFER                                           = 0x8CA8
-	POLYGON_SMOOTH_HINT                                        = 0x0C53
-	TEXTURE_COORD_ARRAY_COUNT_EXT                              = 0x808B
-	MAX_VERTEX_VARYING_COMPONENTS_EXT                          = 0x8DDE
-	LUMINANCE8_SNORM                                           = 0x9015
-	EDGE_FLAG                                                  = 0x0B43
-	COLOR_TABLE_SCALE_SGI                                      = 0x80D6
-	PROXY_TEXTURE_CUBE_MAP_EXT                                 = 0x851B
-	MAX_PROGRAM_TEX_INSTRUCTIONS_ARB                           = 0x880C
-	MATRIX21_ARB                                               = 0x88D5
-	HALF_FLOAT_NV                                              = 0x140B
-	TEXTURE_CLIPMAP_LOD_OFFSET_SGIX                            = 0x8175
-	VERTEX_ATTRIB_ARRAY8_NV                                    = 0x8658
-	SIGNED_RGB_NV                                              = 0x86FE
-	LOCAL_CONSTANT_EXT                                         = 0x87C3
-	MATRIX26_ARB                                               = 0x88DA
-	TESS_EVALUATION_PROGRAM_PARAMETER_BUFFER_NV                = 0x8C75
-	QUERY_RESULT_AVAILABLE_ARB                                 = 0x8867
-	MATRIX7_ARB                                                = 0x88C7
-	MAX_UNIFORM_BLOCK_SIZE                                     = 0x8A30
-	TRANSFORM_FEEDBACK_VARYINGS                                = 0x8C83
-	RGBA16F_EXT                                                = 0x881A
-	VERTEX_ATTRIB_ARRAY_INTEGER_NV                             = 0x88FD
-	RGBA_INTEGER                                               = 0x8D99
-	VIRTUAL_PAGE_SIZE_X_AMD                                    = 0x9195
-	COMBINE_ARB                                                = 0x8570
-	MODELVIEW28_ARB                                            = 0x873C
-	DRAW_BUFFER2_NV                                            = 0x8827
-	PALETTE4_RGB8_OES                                          = 0x8B90
-	RGB_INTEGER                                                = 0x8D98
-	COMPRESSED_SRGB8_ALPHA8_ASTC_10x8_KHR                      = 0x93DA
-	POLYGON_OFFSET_FACTOR_EXT                                  = 0x8038
-	VERTEX_ARRAY_STRIDE_EXT                                    = 0x807C
-	COMBINER3_NV                                               = 0x8553
-	MAP1_VERTEX_ATTRIB1_4_NV                                   = 0x8661
-	MAP2_VERTEX_ATTRIB2_4_NV                                   = 0x8672
-	DOT_PRODUCT_NV                                             = 0x86EC
-	MAX_VERTEX_STREAMS_ATI                                     = 0x876B
-	DU8DV8_ATI                                                 = 0x877A
-	DRAW_BUFFER9_NV                                            = 0x882E
-	CON_5_ATI                                                  = 0x8946
-	COMPRESSED_SRGB8_ALPHA8_ASTC_6x6_KHR                       = 0x93D4
-	LINE_LOOP                                                  = 0x0002
-	CLAMP                                                      = 0x2900
-	TEXTURE_GEQUAL_R_SGIX                                      = 0x819D
-	NORMAL_MAP_OES                                             = 0x8511
-	UNSIGNED_INT_24_8_OES                                      = 0x84FA
-	EXPAND_NEGATE_NV                                           = 0x8539
-	TEXTURE_BLUE_TYPE                                          = 0x8C12
-	FILE_NAME_NV                                               = 0x9074
-	COMPRESSED_RGB_S3TC_DXT1_EXT                               = 0x83F0
-	FRAMEBUFFER_ATTACHMENT_TEXTURE_LEVEL_EXT                   = 0x8CD2
-	MAX_TESS_EVALUATION_SHADER_STORAGE_BLOCKS                  = 0x90D9
-	PIXEL_MAP_S_TO_S                                           = 0x0C71
-	DEBUG_TYPE_UNDEFINED_BEHAVIOR                              = 0x824E
-	TEXTURE_MAX_CLAMP_S_SGIX                                   = 0x8369
-	EYE_PLANE_ABSOLUTE_NV                                      = 0x855C
-	CURRENT_VERTEX_ATTRIB                                      = 0x8626
-	ADD                                                        = 0x0104
-	SECONDARY_COLOR_ARRAY_EXT                                  = 0x845E
-	SRGB8                                                      = 0x8C41
-	AUX2                                                       = 0x040B
-	YCRCB_422_SGIX                                             = 0x81BB
-	COLOR_SUM                                                  = 0x8458
-	DELETE_STATUS                                              = 0x8B80
-	MAX_GEOMETRY_TEXTURE_IMAGE_UNITS_EXT                       = 0x8C29
-	TRANSFORM_FEEDBACK_BUFFER                                  = 0x8C8E
-	STENCIL_ATTACHMENT                                         = 0x8D20
-	UNSIGNED_INT64_VEC3_NV                                     = 0x8FF6
-	LOAD                                                       = 0x0101
-	EXTENSIONS                                                 = 0x1F03
-	AUX_DEPTH_STENCIL_APPLE                                    = 0x8A14
-	INTENSITY16UI_EXT                                          = 0x8D79
-	TRANSLATE_Y_NV                                             = 0x908F
-	QUERY_BUFFER_AMD                                           = 0x9192
-	QUADS                                                      = 0x0007
-	DEPTH_FUNC                                                 = 0x0B74
-	PIXEL_MAP_A_TO_A_SIZE                                      = 0x0CB9
-	PROGRAM_ERROR_POSITION_NV                                  = 0x864B
-	OUTPUT_TEXTURE_COORD25_EXT                                 = 0x87B6
-	PROGRAM_UNDER_NATIVE_LIMITS_ARB                            = 0x88B6
-	STENCIL_CLEAR_TAG_VALUE_EXT                                = 0x88F3
-	FRAMEBUFFER_BINDING_ANGLE                                  = 0x8CA6
-	RG16F                                                      = 0x822F
-	SRGB_WRITE                                                 = 0x8298
-	LUMINANCE8                                                 = 0x8040
-	MAX_COMBINED_COMPUTE_UNIFORM_COMPONENTS                    = 0x8266
-	IMAGE_CLASS_1_X_8                                          = 0x82C1
-	PN_TRIANGLES_NORMAL_MODE_LINEAR_ATI                        = 0x87F7
-	PATH_FOG_GEN_MODE_NV                                       = 0x90AC
-	WIDE_LINE_HINT_PGI                                         = 0x1A222
-	RGB_S3TC                                                   = 0x83A0
-	CON_22_ATI                                                 = 0x8957
-	MAX_DEBUG_LOGGED_MESSAGES_AMD                              = 0x9144
-	SPOT_EXPONENT                                              = 0x1205
-	CON_15_ATI                                                 = 0x8950
-	FONT_Y_MIN_BOUNDS_BIT_NV                                   = 0x00020000
-	TEXTURE0                                                   = 0x84C0
-	MAX_CLIENT_ATTRIB_STACK_DEPTH                              = 0x0D3B
-	EMBOSS_CONSTANT_NV                                         = 0x855E
-	WRITE_ONLY_OES                                             = 0x88B9
-	FRAMEBUFFER_INCOMPLETE_LAYER_TARGETS_ARB                   = 0x8DA8
-	TESS_CONTROL_OUTPUT_VERTICES                               = 0x8E75
-	RASTER_POSITION_UNCLIPPED_IBM                              = 0x19262
-	LINEAR_DETAIL_ALPHA_SGIS                                   = 0x8098
-	RGB4_S3TC                                                  = 0x83A1
-	DEPTH_CLAMP                                                = 0x864F
-	INVALID_OPERATION                                          = 0x0502
-	VERTEX_ARRAY_PARALLEL_POINTERS_INTEL                       = 0x83F5
-	TEXTURE_CUBE_MAP_POSITIVE_Y_OES                            = 0x8517
-	TRANSFORM_FEEDBACK_BINDING_NV                              = 0x8E25
-	UNSIGNED_INT_SAMPLER_CUBE_MAP_ARRAY                        = 0x900F
-	Z6Y10Z6CB10Z6Y10Z6CR10_422_NV                              = 0x9033
-	TEXTURE_COORD_ARRAY_LIST_STRIDE_IBM                        = 103084
-	DUAL_ALPHA16_SGIS                                          = 0x8113
-	YCRCB_444_SGIX                                             = 0x81BC
-	DEPTH_STENCIL                                              = 0x84F9
-	E_TIMES_F_NV                                               = 0x8531
-	N3F_V3F                                                    = 0x2A25
-	FUNC_SUBTRACT_OES                                          = 0x800A
-	SAMPLES_PASSED_ARB                                         = 0x8914
-	FRAMEBUFFER_INCOMPLETE_LAYER_TARGETS_EXT                   = 0x8DA8
-	PATH_DASH_CAPS_NV                                          = 0x907B
-	EQUIV                                                      = 0x1509
-	REG_6_ATI                                                  = 0x8927
-	DOT3_ATI                                                   = 0x8966
-	FRONT_AND_BACK                                             = 0x0408
-	ALPHA_SCALE                                                = 0x0D1C
-	COLOR_TABLE_GREEN_SIZE                                     = 0x80DB
-	SWIZZLE_STQ_DQ_ATI                                         = 0x8979
-	MAX_VERTEX_SHADER_STORAGE_BLOCKS                           = 0x90D6
-	CURRENT_SECONDARY_COLOR_EXT                                = 0x8459
-	TEXTURE30                                                  = 0x84DE
-	VERTEX_ATTRIB_ARRAY_POINTER                                = 0x8645
-	MAX_DRAW_BUFFERS_ATI                                       = 0x8824
-	STREAM_DRAW_ARB                                            = 0x88E0
-	COLOR_ATTACHMENT13_NV                                      = 0x8CED
-	RGB5_A1_EXT                                                = 0x8057
-	FRAGMENTS_INSTRUMENT_MAX_SGIX                              = 0x8315
-	YCBCR_422_APPLE                                            = 0x85B9
-	COMPUTE_SHADER                                             = 0x91B9
-	LINES_ADJACENCY_ARB                                        = 0x000A
-	OR_REVERSE                                                 = 0x150B
-	QUAD_LUMINANCE8_SGIS                                       = 0x8121
-	TRACK_MATRIX_NV                                            = 0x8648
-	PROGRAM_STRING_ARB                                         = 0x8628
-	TEXTURE_LO_SIZE_NV                                         = 0x871C
-	TEXTURE_LOD_BIAS_T_SGIX                                    = 0x818F
-	FOG_OFFSET_VALUE_SGIX                                      = 0x8199
-	RG16F_EXT                                                  = 0x822F
-	SHADER_IMAGE_LOAD                                          = 0x82A4
-	SECONDARY_COLOR_ARRAY                                      = 0x845E
-	OPERAND2_RGB                                               = 0x8592
-	OUTPUT_TEXTURE_COORD15_EXT                                 = 0x87AC
-	STATIC_DRAW_ARB                                            = 0x88E4
-	SAMPLER_CUBE_MAP_ARRAY_SHADOW                              = 0x900D
-	NORMAL_ARRAY                                               = 0x8075
-	AND_REVERSE                                                = 0x1502
-	PROXY_TEXTURE_1D                                           = 0x8063
-	PROGRAM_PIPELINE                                           = 0x82E4
-	ACCUM_ADJACENT_PAIRS_NV                                    = 0x90AD
-	UNSIGNED_SHORT_5_5_5_1_EXT                                 = 0x8034
-	SRGB8_ALPHA8_EXT                                           = 0x8C43
-	TEXCOORD4_BIT_PGI                                          = 0x80000000
-	BLEND_SRC_RGB                                              = 0x80C9
-	FILTER4_SGIS                                               = 0x8146
-	NUM_INSTRUCTIONS_PER_PASS_ATI                              = 0x8971
-	MAX_GEOMETRY_TEXTURE_IMAGE_UNITS                           = 0x8C29
-	MOVE_TO_RESETS_NV                                          = 0x90B5
-	ARC_TO_NV                                                  = 0xFE
-	EXT_abgr                                                   = 1
-	LINE_STIPPLE                                               = 0x0B24
-	PROGRAM_LENGTH_NV                                          = 0x8627
-	UNPACK_CMYK_HINT_EXT                                       = 0x800F
-	TEXTURE_WRAP_R_EXT                                         = 0x8072
-	COMPRESSED_RGBA_PVRTC_2BPPV2_IMG                           = 0x9137
-	MAX_GEOMETRY_ATOMIC_COUNTERS                               = 0x92D5
-	INTENSITY8_EXT                                             = 0x804B
-	PROGRAM_PIPELINE_BINDING                                   = 0x825A
-	TRANSPOSE_MODELVIEW_MATRIX_ARB                             = 0x84E3
-	DEPTH_COMPONENT32F_NV                                      = 0x8DAB
-	MAX_COMBINED_IMAGE_UNIFORMS                                = 0x90CF
-	MAX_FRAMEBUFFER_HEIGHT                                     = 0x9316
-	SHADOW_ATTENUATION_EXT                                     = 0x834E
-	MIRROR_CLAMP_EXT                                           = 0x8742
-	RELATIVE_ARC_TO_NV                                         = 0xFF
-	REFERENCED_BY_FRAGMENT_SHADER                              = 0x930A
-	CONSERVE_MEMORY_HINT_PGI                                   = 0x1A1FD
-	MULT                                                       = 0x0103
-	IMAGE_CLASS_4_X_32                                         = 0x82B9
-	SLIM10U_SGIX                                               = 0x831E
-	LUMINANCE_ALPHA32F_ARB                                     = 0x8819
-	STENCIL_INDEX4_OES                                         = 0x8D47
-	POLYGON_OFFSET_POINT                                       = 0x2A01
-	RENDERBUFFER_INTERNAL_FORMAT_EXT                           = 0x8D44
-	IMAGE_BINDING_LAYERED                                      = 0x8F3C
-	COMPRESSED_RGBA_ASTC_10x6_KHR                              = 0x93B9
-	TEXTURE17_ARB                                              = 0x84D1
-	SOURCE2_RGB_EXT                                            = 0x8582
-	ELEMENT_ARRAY_BUFFER_BINDING                               = 0x8895
-	CND_ATI                                                    = 0x896A
-	PATH_ERROR_POSITION_NV                                     = 0x90AB
-	SIGNALED                                                   = 0x9119
-	HISTOGRAM_GREEN_SIZE_EXT                                   = 0x8029
-	POINT_SIZE_MAX                                             = 0x8127
-	DS_BIAS_NV                                                 = 0x8716
-	LUMINANCE32F_ARB                                           = 0x8818
-	STENCIL_INDEX8                                             = 0x8D48
-	MAX_TESS_CONTROL_ATOMIC_COUNTER_BUFFERS                    = 0x92CD
-	NAME_LENGTH                                                = 0x92F9
-	RGB8                                                       = 0x8051
-	CONVOLUTION_1D_EXT                                         = 0x8010
-	TRANSFORM_FEEDBACK_BUFFER_MODE                             = 0x8C7F
-	IMAGE_BINDING_LEVEL                                        = 0x8F3B
-	ATOMIC_COUNTER_BUFFER_ACTIVE_ATOMIC_COUNTER_INDICES        = 0x92C6
-	INTENSITY                                                  = 0x8049
-	FRAMEBUFFER_ATTACHMENT_ALPHA_SIZE                          = 0x8215
-	TESS_CONTROL_TEXTURE                                       = 0x829C
-	MAX_PROGRAM_NATIVE_PARAMETERS_ARB                          = 0x88AB
-	SAMPLER_1D_ARRAY_EXT                                       = 0x8DC0
-	DOUBLE_VEC2_EXT                                            = 0x8FFC
-	IMAGE_CUBIC_WEIGHT_HP                                      = 0x815E
-	SOURCE1_ALPHA                                              = 0x8589
-	VERTEX_ATTRIB_ARRAY2_NV                                    = 0x8652
-	MATRIX9_ARB                                                = 0x88C9
-	CON_20_ATI                                                 = 0x8955
-	BOOL_VEC4                                                  = 0x8B59
-	TEXTURE_HEIGHT_QCOM                                        = 0x8BD3
-	RGBA16UI_EXT                                               = 0x8D76
-	PERFMON_GLOBAL_MODE_QCOM                                   = 0x8FA0
-	YCBYCR8_422_NV                                             = 0x9031
-	SYNC_STATUS_APPLE                                          = 0x9114
-	ALLOW_DRAW_OBJ_HINT_PGI                                    = 0x1A20E
-	INTERNALFORMAT_PREFERRED                                   = 0x8270
-	SLUMINANCE8                                                = 0x8C47
-	DEBUG_CATEGORY_UNDEFINED_BEHAVIOR_AMD                      = 0x914C
-	MODELVIEW                                                  = 0x1700
-	INDEX_TEST_REF_EXT                                         = 0x81B7
-	DEBUG_NEXT_LOGGED_MESSAGE_LENGTH                           = 0x8243
-	GET_TEXTURE_IMAGE_TYPE                                     = 0x8292
-	OPERAND0_ALPHA_ARB                                         = 0x8598
-	CURRENT_ATTRIB_NV                                          = 0x8626
-	FRAMEZOOM_FACTOR_SGIX                                      = 0x818C
-	REFLECTION_MAP                                             = 0x8512
-	MAX_TEXTURE_IMAGE_UNITS_ARB                                = 0x8872
-	OBJECT_SHADER_SOURCE_LENGTH_ARB                            = 0x8B88
-	VERTEX_PROGRAM_CALLBACK_DATA_MESA                          = 0x8BB7
-	UNSIGNED_INT_SAMPLER_BUFFER                                = 0x8DD8
-	DIFFUSE                                                    = 0x1201
-	PACK_CMYK_HINT_EXT                                         = 0x800E
-	STREAM_COPY                                                = 0x88E2
-	TEXTURE_RED_TYPE                                           = 0x8C10
-	INT_IMAGE_1D_ARRAY_EXT                                     = 0x905D
-	GEOMETRY_DEFORMATION_BIT_SGIX                              = 0x00000002
-	MAX_TEXTURE_UNITS                                          = 0x84E2
-	OP_DOT4_EXT                                                = 0x8785
-	VBO_FREE_MEMORY_ATI                                        = 0x87FB
-	EXP2                                                       = 0x0801
-	SOURCE0_RGB_EXT                                            = 0x8580
-	OFFSET_TEXTURE_MATRIX_NV                                   = 0x86E1
-	ZERO                                                       = 0
-	MAX_VIEWPORT_DIMS                                          = 0x0D3A
-	SYNC_CL_EVENT_COMPLETE_ARB                                 = 0x8241
-	PROGRAM_BINARY_FORMATS_OES                                 = 0x87FF
-	MATRIX_INDEX_ARRAY_TYPE_OES                                = 0x8847
-	BOUNDING_BOX_OF_BOUNDING_BOXES_NV                          = 0x909C
-	MAX_SERVER_WAIT_TIMEOUT_APPLE                              = 0x9111
-	ELEMENT_ARRAY_APPLE                                        = 0x8A0C
-	INTERLEAVED_ATTRIBS_EXT                                    = 0x8C8C
-	PROXY_TEXTURE_2D_MULTISAMPLE                               = 0x9101
-	RED                                                        = 0x1903
-	UNSIGNED_SHORT_8_8_APPLE                                   = 0x85BA
-	ALPHA16F_ARB                                               = 0x881C
-	UNSIGNED_INT_SAMPLER_RENDERBUFFER_NV                       = 0x8E58
-	COLOR_TABLE_FORMAT_SGI                                     = 0x80D8
-	DEPTH_COMPONENT32_ARB                                      = 0x81A7
-	VERTEX_ATTRIB_ARRAY14_NV                                   = 0x865E
-	UNSIGNED_SHORT_1_15_REV_MESA                               = 0x8754
-	COMPRESSED_RGB_BPTC_SIGNED_FLOAT_ARB                       = 0x8E8E
-	SMOOTH_CUBIC_CURVE_TO_NV                                   = 0x10
-	ACTIVE_PROGRAM                                             = 0x8259
-	TEXTURE12                                                  = 0x84CC
-	TESS_GEN_POINT_MODE                                        = 0x8E79
-	SLICE_ACCUM_SUN                                            = 0x85CC
-	FRAMEBUFFER_BINDING_OES                                    = 0x8CA6
-	ALPHA_SNORM                                                = 0x9010
-	MAP1_VERTEX_ATTRIB10_4_NV                                  = 0x866A
-	SPOT_CUTOFF                                                = 0x1206
-	IUI_N3F_V3F_EXT                                            = 0x81B0
-	INT_SAMPLER_2D_RECT                                        = 0x8DCD
-	HISTOGRAM_WIDTH_EXT                                        = 0x8026
-	MAP1_VERTEX_ATTRIB4_4_NV                                   = 0x8664
-	COMPARE_R_TO_TEXTURE_ARB                                   = 0x884E
-	PIXEL_UNPACK_BUFFER_BINDING_ARB                            = 0x88EF
-	ANY_SAMPLES_PASSED_CONSERVATIVE                            = 0x8D6A
-	NEXT_BUFFER_NV                                             = -2
-	UNSIGNALED                                                 = 0x9118
-	CURRENT_RASTER_POSITION                                    = 0x0B07
-	PROGRAM_BINARY_RETRIEVABLE_HINT                            = 0x8257
-	COMPRESSED_LUMINANCE                                       = 0x84EA
-	COMPRESSED_RGB_BPTC_UNSIGNED_FLOAT_ARB                     = 0x8E8F
-	NUM_VIDEO_CAPTURE_STREAMS_NV                               = 0x9024
-	PIXEL_TEX_GEN_Q_FLOOR_SGIX                                 = 0x8186
-	TEXTURE15_ARB                                              = 0x84CF
-	MAX_PROGRAM_TEXEL_OFFSET                                   = 0x8905
-	FACTOR_ALPHA_MODULATE_IMG                                  = 0x8C07
-	UNSIGNED_INT8_VEC3_NV                                      = 0x8FEE
-	COMPRESSED_RGBA_ASTC_12x10_KHR                             = 0x93BC
-	FOG_DENSITY                                                = 0x0B62
-	TRANSPOSE_MODELVIEW_MATRIX                                 = 0x84E3
-	SAMPLE_MASK_NV                                             = 0x8E51
-	MAX_RENDERBUFFER_SIZE_OES                                  = 0x84E8
-	DRAW_BUFFER0                                               = 0x8825
-	DEPTH_TEXTURE_MODE                                         = 0x884B
-	UNSIGNED_NORMALIZED_ARB                                    = 0x8C17
-	UNSIGNED_INT_2_10_10_10_REV                                = 0x8368
-	FOG_COORDINATE_ARRAY_STRIDE                                = 0x8455
-	TEXTURE26                                                  = 0x84DA
-	MAX_PROGRAM_LOOP_COUNT_NV                                  = 0x88F8
-	EXT_texture                                                = 1
-	LUMINANCE12_ALPHA4                                         = 0x8046
-	LUMINANCE16_ALPHA16                                        = 0x8048
-	PIXEL_FRAGMENT_RGB_SOURCE_SGIS                             = 0x8354
-	SCALE_BY_TWO_NV                                            = 0x853E
-	OPERAND1_RGB_ARB                                           = 0x8591
-	FRAMEBUFFER_SRGB_CAPABLE_EXT                               = 0x8DBA
-	MAT_COLOR_INDEXES_BIT_PGI                                  = 0x01000000
-	CONTEXT_FLAG_ROBUST_ACCESS_BIT_ARB                         = 0x00000004
-	TEXTURE_MIN_LOD                                            = 0x813A
-	MATRIX_INDEX_ARRAY_OES                                     = 0x8844
-	GENERIC_ATTRIB_NV                                          = 0x8C7D
-	FRAMEBUFFER_SRGB_EXT                                       = 0x8DB9
-	TEXTURE_SWIZZLE_B_EXT                                      = 0x8E44
-	SHADER_BINARY_VIV                                          = 0x8FC4
-	MODELVIEW0_STACK_DEPTH_EXT                                 = 0x0BA3
-	TEXTURE_MIN_LOD_SGIS                                       = 0x813A
-	EVAL_VERTEX_ATTRIB7_NV                                     = 0x86CD
-	OUTPUT_TEXTURE_COORD13_EXT                                 = 0x87AA
-	RGBA_FLOAT32_ATI                                           = 0x8814
-	PALETTE8_RGBA4_OES                                         = 0x8B98
-	BGRA                                                       = 0x80E1
-	MAX_ELEMENTS_INDICES_EXT                                   = 0x80E9
-	CONSTANT_BORDER                                            = 0x8151
-	INCR_WRAP_EXT                                              = 0x8507
-	INVERSE_NV                                                 = 0x862B
-	MAP2_VERTEX_ATTRIB3_4_NV                                   = 0x8673
-	UNSIGNED_INT_S8_S8_8_8_NV                                  = 0x86DA
-	SECONDARY_INTERPOLATOR_ATI                                 = 0x896D
-	IMAGE_FORMAT_COMPATIBILITY_BY_CLASS                        = 0x90C9
-	FRONT                                                      = 0x0404
-	CONVOLUTION_BORDER_MODE_EXT                                = 0x8013
-	UNSIGNED_SHORT_4_4_4_4_REV_EXT                             = 0x8365
-	COLOR_MATRIX_STACK_DEPTH_SGI                               = 0x80B2
-	BLEND_SRC_ALPHA                                            = 0x80CB
-	VERTEX_ARRAY_RANGE_POINTER_APPLE                           = 0x8521
-	COMBINER_MUX_SUM_NV                                        = 0x8547
-	TRACE_NAME_MESA                                            = 0x8756
-	EYE_LINEAR                                                 = 0x2400
-	OP_MUL_EXT                                                 = 0x8786
-	OUTPUT_TEXTURE_COORD0_EXT                                  = 0x879D
-	TEXTURE_GREEN_TYPE_ARB                                     = 0x8C11
-	RESAMPLE_REPLICATE_OML                                     = 0x8986
-	TRIANGLES_ADJACENCY                                        = 0x000C
-	LINEAR_DETAIL_SGIS                                         = 0x8097
-	DOT_PRODUCT_TEXTURE_CUBE_MAP_NV                            = 0x86F0
-	MAP_INVALIDATE_BUFFER_BIT                                  = 0x0008
-	ACTIVE_UNIFORMS                                            = 0x8B86
-	COVERAGE_BUFFER_BIT_NV                                     = 0x00008000
-	ATOMIC_COUNTER_BUFFER_START                                = 0x92C2
-	OFFSET_TEXTURE_BIAS_NV                                     = 0x86E3
-	DRAW_BUFFER4                                               = 0x8829
-	MAX_COMBINED_UNIFORM_BLOCKS                                = 0x8A2E
-	BUFFER_UPDATE_BARRIER_BIT                                  = 0x00000200
-	PROXY_POST_CONVOLUTION_COLOR_TABLE                         = 0x80D4
-	ACTIVE_SUBROUTINE_MAX_LENGTH                               = 0x8E48
-	UNSIGNED_INT_IMAGE_3D                                      = 0x9064
-	LEFT                                                       = 0x0406
-	PROGRAM_STRING_NV                                          = 0x8628
-	DOT3_RGB_EXT                                               = 0x8740
-	CON_18_ATI                                                 = 0x8953
-	DOUBLE_MAT3x4_EXT                                          = 0x8F4C
-	INT64_VEC4_NV                                              = 0x8FEB
-	ATOMIC_COUNTER_BUFFER_DATA_SIZE                            = 0x92C4
-	MAX_FRAMEBUFFER_WIDTH                                      = 0x9315
-	PIXEL_TEX_GEN_MODE_SGIX                                    = 0x832B
-	CURRENT_QUERY                                              = 0x8865
-	PROGRAM_OBJECT_EXT                                         = 0x8B40
-	COMPRESSED_SRGB8_ALPHA8_ASTC_12x10_KHR                     = 0x93DC
-	STRICT_SCISSOR_HINT_PGI                                    = 0x1A218
-	RGBA2                                                      = 0x8055
-	POST_CONVOLUTION_COLOR_TABLE                               = 0x80D1
-	TEXTURE_LOD_BIAS                                           = 0x8501
-	SOURCE0_ALPHA_ARB                                          = 0x8588
-	MAX_PROGRAM_TEXTURE_GATHER_OFFSET_ARB                      = 0x8E5F
-	WAIT_FAILED                                                = 0x911D
-	EXTERNAL_VIRTUAL_MEMORY_BUFFER_AMD                         = 0x9160
-	RGB_FLOAT16_ATI                                            = 0x881B
-	MAX_PROGRAM_INSTRUCTIONS_ARB                               = 0x88A1
-	TRANSLATED_SHADER_SOURCE_LENGTH_ANGLE                      = 0x93A0
-	DEBUG_TYPE_OTHER                                           = 0x8251
-	NORMAL_MAP_NV                                              = 0x8511
-	MODELVIEW_PROJECTION_NV                                    = 0x8629
-	MAX_IMAGE_SAMPLES                                          = 0x906D
-	MAP1_COLOR_4                                               = 0x0D90
-	IMAGE_ROTATE_ORIGIN_X_HP                                   = 0x815A
-	MAX_PALETTE_MATRICES_ARB                                   = 0x8842
-	DEPTH_CLAMP_FAR_AMD                                        = 0x901F
-	ALREADY_SIGNALED                                           = 0x911A
-	QUAD_STRIP                                                 = 0x0008
-	MODELVIEW1_STACK_DEPTH_EXT                                 = 0x8502
-	PROGRAM_NATIVE_TEMPORARIES_ARB                             = 0x88A6
-	MAX_GEOMETRY_SHADER_INVOCATIONS                            = 0x8E5A
-	DEBUG_CATEGORY_SHADER_COMPILER_AMD                         = 0x914E
-	STENCIL_INDEX                                              = 0x1901
-	SRC1_COLOR                                                 = 0x88F9
-	DEBUG_SOURCE_APPLICATION                                   = 0x824A
-	FRAGMENT_DEPTH                                             = 0x8452
-	SHADER_OPERATION_NV                                        = 0x86DF
-	VIBRANCE_SCALE_NV                                          = 0x8713
-	UNSIGNED_INT_24_8_MESA                                     = 0x8751
-	WEIGHT_ARRAY_BUFFER_BINDING_OES                            = 0x889E
-	FLAT                                                       = 0x1D00
-	GL_4PASS_1_EXT                                             = 0x80A5
-	CLAMP_READ_COLOR_ARB                                       = 0x891C
-	MAX_COMBINED_SHADER_OUTPUT_RESOURCES                       = 0x8F39
-	LIST_PRIORITY_SGIX                                         = 0x8182
-	GL_2_BYTES                                                 = 0x1407
-	TEXTURE_MATERIAL_PARAMETER_EXT                             = 0x8352
-	TEXTURE_CUBE_MAP_ARB                                       = 0x8513
-	WEIGHT_ARRAY_TYPE_OES                                      = 0x86A9
-	LUMINANCE_FLOAT32_APPLE                                    = 0x8818
-	DRAW_BUFFER7_NV                                            = 0x882C
-	QUERY_COUNTER_BITS_ARB                                     = 0x8864
-	ARRAY_BUFFER_BINDING_ARB                                   = 0x8894
-	COMPRESSED_RGB_PVRTC_2BPPV1_IMG                            = 0x8C01
-	ACTIVE_VARYINGS_NV                                         = 0x8C81
-	COMPRESSED_RGBA_S3TC_DXT1_EXT                              = 0x83F1
-	VERTEX_ARRAY_RANGE_LENGTH_NV                               = 0x851E
-	PIXEL_PACK_BUFFER_BINDING_ARB                              = 0x88ED
-	RGBA32I_EXT                                                = 0x8D82
-	POLYGON_TOKEN                                              = 0x0703
-	RETAINED_APPLE                                             = 0x8A1B
-	RENDERBUFFER_DEPTH_SIZE_EXT                                = 0x8D54
-	TEXCOORD1_BIT_PGI                                          = 0x10000000
-	MAP_FLUSH_EXPLICIT_BIT                                     = 0x0010
-	LIGHT_MODEL_AMBIENT                                        = 0x0B53
-	QUAD_ALPHA8_SGIS                                           = 0x811F
-	SINGLE_COLOR_EXT                                           = 0x81F9
-	R8                                                         = 0x8229
-	DEBUG_SOURCE_API_ARB                                       = 0x8246
-	FOG_COORDINATE                                             = 0x8451
-	TEXTURE_COMPARE_FUNC_ARB                                   = 0x884D
-	MAX_VERTEX_OUTPUT_COMPONENTS                               = 0x9122
-	INDEX_ARRAY_POINTER                                        = 0x8091
-	RED_BITS                                                   = 0x0D52
-	MATRIX3_ARB                                                = 0x88C3
-	SAMPLE_POSITION_NV                                         = 0x8E50
-	MIN_SPARSE_LEVEL_AMD                                       = 0x919B
-	COLOR_ARRAY                                                = 0x8076
-	SHADER_SOURCE_LENGTH                                       = 0x8B88
-	DEBUG_CATEGORY_PERFORMANCE_AMD                             = 0x914D
-	CLIP_DISTANCE0                                             = 0x3000
-	RG8                                                        = 0x822B
-	OPERAND1_ALPHA_ARB                                         = 0x8599
-	CURRENT_VERTEX_WEIGHT_EXT                                  = 0x850B
-	SOURCE0_ALPHA                                              = 0x8588
-	MODELVIEW21_ARB                                            = 0x8735
-	DYNAMIC_COPY                                               = 0x88EA
-	TESS_CONTROL_SUBROUTINE                                    = 0x92E9
-	DEPTH_STENCIL_TO_BGRA_NV                                   = 0x886F
-	STENCIL_ATTACHMENT_EXT                                     = 0x8D20
-	UNSIGNED_INT_VEC2                                          = 0x8DC6
-	DEPTH_BUFFER_BIT                                           = 0x00000100
-	POST_TEXTURE_FILTER_SCALE_RANGE_SGIX                       = 0x817C
-	COMPRESSED_RG11_EAC                                        = 0x9272
-	LUMINANCE4                                                 = 0x803F
-	FRAGMENTS_INSTRUMENT_COUNTERS_SGIX                         = 0x8314
-	COLOR_ATTACHMENT2_EXT                                      = 0x8CE2
-	TEXTURE30_ARB                                              = 0x84DE
-	COMPRESSED_RGBA_BPTC_UNORM_ARB                             = 0x8E8C
-	UNSIGNED_INT8_VEC4_NV                                      = 0x8FEF
-	AND                                                        = 0x1501
-	COMBINER_CD_OUTPUT_NV                                      = 0x854B
-	PATH_STENCIL_DEPTH_OFFSET_FACTOR_NV                        = 0x90BD
-	COMPUTE_PROGRAM_NV                                         = 0x90FB
-	FRAMEBUFFER_INCOMPLETE_MULTISAMPLE_IMG                     = 0x9134
-	INTENSITY12                                                = 0x804C
-	SAMPLE_ALPHA_TO_MASK_EXT                                   = 0x809E
-	MAX_TESS_CONTROL_TEXTURE_IMAGE_UNITS                       = 0x8E81
-	MAX_CONVOLUTION_WIDTH_EXT                                  = 0x801A
-	DRAW_BUFFER15_ATI                                          = 0x8834
-	QUERY_COUNTER_BITS                                         = 0x8864
-	SAMPLER_1D_ARB                                             = 0x8B5D
-	HALF_FLOAT_ARB                                             = 0x140B
-	COMPRESSED_RGBA_ASTC_5x5_KHR                               = 0x93B2
-	FLOAT                                                      = 0x1406
-	POST_COLOR_MATRIX_RED_SCALE_SGI                            = 0x80B4
-	PRIMITIVE_RESTART_NV                                       = 0x8558
-	TEXTURE_TARGET_QCOM                                        = 0x8BDA
-	COLOR_ATTACHMENT10                                         = 0x8CEA
-	CPU_OPTIMIZED_QCOM                                         = 0x8FB1
-	TEXTURE_WIDTH                                              = 0x1000
-	INTENSITY16F_ARB                                           = 0x881D
-	QUERY_RESULT_ARB                                           = 0x8866
-	COMPRESSED_RED_GREEN_RGTC2_EXT                             = 0x8DBD
-	MAX_GEOMETRY_ATOMIC_COUNTER_BUFFERS                        = 0x92CF
-	DRAW_BUFFER10_NV                                           = 0x882F
-	FOG_COORD_ARRAY_STRIDE                                     = 0x8455
-	RGB_SCALE_ARB                                              = 0x8573
-	ATC_RGB_AMD                                                = 0x8C92
-	TYPE                                                       = 0x92FA
-	BLEND_DST_ALPHA_OES                                        = 0x80CA
-	MODELVIEW20_ARB                                            = 0x8734
-	TEXTURE_NUM_LEVELS_QCOM                                    = 0x8BD9
-	PATH_TERMINAL_END_CAP_NV                                   = 0x9078
-	MAX_CLIP_DISTANCES                                         = 0x0D32
-	SPRITE_MODE_SGIX                                           = 0x8149
-	SEPARATE_ATTRIBS_EXT                                       = 0x8C8D
-	RGBA8I_EXT                                                 = 0x8D8E
-	RG8_SNORM                                                  = 0x8F95
-	CONVOLUTION_BORDER_COLOR                                   = 0x8154
-	READ_WRITE                                                 = 0x88BA
-	SHADING_LANGUAGE_VERSION_ARB                               = 0x8B8C
-	MAX_IMAGE_UNITS                                            = 0x8F38
-	SIGNED_LUMINANCE_ALPHA_NV                                  = 0x8703
-	STENCIL_BACK_FUNC_ATI                                      = 0x8800
-	INTENSITY_FLOAT32_ATI                                      = 0x8817
-	MAX_PROGRAM_TOTAL_OUTPUT_COMPONENTS_NV                     = 0x8C28
-	COLOR_ATTACHMENT10_NV                                      = 0x8CEA
-	UNSIGNED_INT_SAMPLER_2D_RECT                               = 0x8DD5
-	ISOLINES                                                   = 0x8E7A
-	UNSIGNED_INT_IMAGE_2D_MULTISAMPLE_ARRAY_EXT                = 0x906C
-	VIRTUAL_PAGE_SIZE_Y_AMD                                    = 0x9196
-	BLEND_DST_RGB_EXT                                          = 0x80C8
-	MAX_COMPUTE_TEXTURE_IMAGE_UNITS                            = 0x91BC
-	NOTEQUAL                                                   = 0x0205
-	RGB5                                                       = 0x8050
-	CONVOLUTION_FORMAT                                         = 0x8017
-	POST_CONVOLUTION_ALPHA_SCALE_EXT                           = 0x801F
-	POINT_DISTANCE_ATTENUATION                                 = 0x8129
-	TEXTURE_STORAGE_HINT_APPLE                                 = 0x85BC
-	MODELVIEW6_ARB                                             = 0x8726
-	SECONDARY_COLOR_ARRAY_LIST_STRIDE_IBM                      = 103087
-	CONSTANT_COLOR                                             = 0x8001
-	FRAGMENTS_INSTRUMENT_SGIX                                  = 0x8313
-	ATC_RGBA_EXPLICIT_ALPHA_AMD                                = 0x8C93
-	MAX_SUBROUTINE_UNIFORM_LOCATIONS                           = 0x8DE8
-	MAX_SPARSE_3D_TEXTURE_SIZE_AMD                             = 0x9199
-	TEXTURE_ENV_COLOR                                          = 0x2201
-	COLOR_ARRAY_PARALLEL_POINTERS_INTEL                        = 0x83F7
-	SOURCE3_RGB_NV                                             = 0x8583
-	MAP2_VERTEX_ATTRIB12_4_NV                                  = 0x867C
-	CON_31_ATI                                                 = 0x8960
-	RENDERBUFFER_BINDING_EXT                                   = 0x8CA7
-	IMAGE_1D_EXT                                               = 0x904C
-	RELATIVE_QUADRATIC_CURVE_TO_NV                             = 0x0B
-	FONT_X_MAX_BOUNDS_BIT_NV                                   = 0x00040000
-	MAX_GEOMETRY_OUTPUT_COMPONENTS                             = 0x9124
-	ALLOW_DRAW_WIN_HINT_PGI                                    = 0x1A20F
-	SAMPLER_2D_RECT                                            = 0x8B63
-	DOUBLE_MAT3                                                = 0x8F47
-	MAX_FRAMEBUFFER_LAYERS                                     = 0x9317
-	SKIP_COMPONENTS2_NV                                        = -5
-	LIST_INDEX                                                 = 0x0B33
-	DETAIL_TEXTURE_2D_SGIS                                     = 0x8095
-	TEXTURE_2D_ARRAY_EXT                                       = 0x8C1A
-	TEXTURE_COORD_ARRAY_SIZE_EXT                               = 0x8088
-	PIXEL_TEX_GEN_SGIX                                         = 0x8139
-	SHARED_TEXTURE_PALETTE_EXT                                 = 0x81FB
-	CLIENT_ACTIVE_TEXTURE_ARB                                  = 0x84E1
-	LUMINANCE_FLOAT32_ATI                                      = 0x8818
-	STENCIL_INDEX1                                             = 0x8D46
-	MIN_PROGRAM_TEXTURE_GATHER_OFFSET                          = 0x8E5E
-	LUMINANCE8_ALPHA8                                          = 0x8045
-	SRGB_DECODE_ARB                                            = 0x8299
-	FRAGMENT_LIGHT6_SGIX                                       = 0x8412
-	CONVOLUTION_BORDER_COLOR_HP                                = 0x8154
-	IMAGE_TRANSFORM_2D_HP                                      = 0x8161
-	PERFMON_RESULT_SIZE_AMD                                    = 0x8BC5
-	READ_FRAMEBUFFER_ANGLE                                     = 0x8CA8
-	INTENSITY32UI_EXT                                          = 0x8D73
-	MAX_GEOMETRY_TOTAL_OUTPUT_COMPONENTS                       = 0x8DE1
-	INDEX_ARRAY_LIST_STRIDE_IBM                                = 103083
-	MAP1_TEXTURE_COORD_2                                       = 0x0D94
-	TEXTURE_1D_BINDING_EXT                                     = 0x8068
-	MULTISAMPLE_EXT                                            = 0x809D
-	IMAGE_TEXEL_SIZE                                           = 0x82A7
-	PROGRAM_NATIVE_TEX_INDIRECTIONS_ARB                        = 0x880A
-	TEXTURE_BUFFER                                             = 0x8C2A
-	OP_MAX_EXT                                                 = 0x878A
-	DRAW_BUFFER13_NV                                           = 0x8832
-	SYNC_CONDITION_APPLE                                       = 0x9113
-	LUMINANCE_ALPHA32UI_EXT                                    = 0x8D75
-	UNPACK_COMPRESSED_SIZE_SGIX                                = 0x831A
-	SPARE0_PLUS_SECONDARY_COLOR_NV                             = 0x8532
-	VARIANT_EXT                                                = 0x87C1
-	GL_3DC_X_AMD                                               = 0x87F9
-	MATRIX2_ARB                                                = 0x88C2
-	FONT_HAS_KERNING_BIT_NV                                    = 0x10000000
-	BACK_NORMALS_HINT_PGI                                      = 0x1A223
-	OUTPUT_TEXTURE_COORD1_EXT                                  = 0x879E
-	TEXTURE_TYPE_QCOM                                          = 0x8BD7
-	COMPRESSED_SRGB_ALPHA_S3TC_DXT5_NV                         = 0x8C4F
-	NUM_ACTIVE_VARIABLES                                       = 0x9304
-	PIXEL_MAP_I_TO_A_SIZE                                      = 0x0CB5
-	INTERNALFORMAT_ALPHA_SIZE                                  = 0x8274
-	TEXTURE_FILTER_CONTROL                                     = 0x8500
-	POINT_SPRITE_NV                                            = 0x8861
-	PACK_RESAMPLE_OML                                          = 0x8984
-	ALPHA_TEST_FUNC_QCOM                                       = 0x0BC1
-	REG_30_ATI                                                 = 0x893F
-	TEXTURE_1D_ARRAY_EXT                                       = 0x8C18
-	AMBIENT                                                    = 0x1200
-	UNSIGNED_INT_8_8_8_8_EXT                                   = 0x8035
-	COMPUTE_LOCAL_WORK_SIZE                                    = 0x8267
-	GL_2PASS_0_SGIS                                            = 0x80A2
-	SAMPLE_MASK_EXT                                            = 0x80A0
-	FRAGMENT_PROGRAM_ARB                                       = 0x8804
-	CON_11_ATI                                                 = 0x894C
-	READ_FRAMEBUFFER_NV                                        = 0x8CA8
-	MAP2_TEXTURE_COORD_4                                       = 0x0DB6
-	INTERNALFORMAT_BLUE_SIZE                                   = 0x8273
-	SWIZZLE_STQ_ATI                                            = 0x8977
-	RECIP_ADD_SIGNED_ALPHA_IMG                                 = 0x8C05
-	UNSIGNED_INT_SAMPLER_BUFFER_EXT                            = 0x8DD8
-	PRESENT_TIME_NV                                            = 0x8E2A
-	PACK_COMPRESSED_BLOCK_WIDTH                                = 0x912B
-	POST_COLOR_MATRIX_COLOR_TABLE_SGI                          = 0x80D2
-	DUAL_TEXTURE_SELECT_SGIS                                   = 0x8124
-	CLIENT_ACTIVE_TEXTURE                                      = 0x84E1
-	OBJECT_ACTIVE_ATTRIBUTE_MAX_LENGTH_ARB                     = 0x8B8A
-	TEXTURE_BUFFER_FORMAT_ARB                                  = 0x8C2E
-	UNSIGNED_INT_SAMPLER_BUFFER_AMD                            = 0x9003
-	PROGRAM_OUTPUT                                             = 0x92E4
-	MODELVIEW18_ARB                                            = 0x8732
-	EXT_cmyka                                                  = 1
-	FRAMEBUFFER_BARRIER_BIT                                    = 0x00000400
-	TRUE                                                       = 1
-	LINE_STRIP_ADJACENCY_ARB                                   = 0x000B
-	POST_COLOR_MATRIX_ALPHA_SCALE                              = 0x80B7
-	VIEWPORT_BOUNDS_RANGE                                      = 0x825D
-	WEIGHT_ARRAY_SIZE_ARB                                      = 0x86AB
-	DEPTH_TEXTURE_MODE_ARB                                     = 0x884B
-	TOP_LEVEL_ARRAY_SIZE                                       = 0x930C
-	REPLACEMENT_CODE_ARRAY_SUN                                 = 0x85C0
-	DRAW_BUFFER2_ARB                                           = 0x8827
-	REG_14_ATI                                                 = 0x892F
-	CON_2_ATI                                                  = 0x8943
-	CND0_ATI                                                   = 0x896B
-	RENDERBUFFER_COVERAGE_SAMPLES_NV                           = 0x8CAB
-	MAX_GEOMETRY_TOTAL_OUTPUT_COMPONENTS_EXT                   = 0x8DE1
-	UNSIGNED_INT_IMAGE_1D_ARRAY                                = 0x9068
-	TEXTURE7                                                   = 0x84C7
-	TEXTURE2_ARB                                               = 0x84C2
-	TEXTURE21_ARB                                              = 0x84D5
-	TEXTURE_MAX_LOD                                            = 0x813B
-	TEXTURE_COMPRESSED_IMAGE_SIZE_ARB                          = 0x86A0
-	COMPRESSED_RED_RGTC1                                       = 0x8DBB
-	S                                                          = 0x2000
-	ATTENUATION_EXT                                            = 0x834D
-	DOUBLE_MAT3x4                                              = 0x8F4C
-	HISTOGRAM_WIDTH                                            = 0x8026
-	POINT_SIZE_MIN                                             = 0x8126
-	UNSIGNED_INT_24_8                                          = 0x84FA
-	HALF_BIAS_NEGATE_NV                                        = 0x853B
-	UNSIGNED_INT64_VEC4_NV                                     = 0x8FF7
-	SRC_ALPHA                                                  = 0x0302
-	LUMINANCE_ALPHA                                            = 0x190A
-	DEPTH_COMPONENT24_OES                                      = 0x81A6
-	VARIABLE_E_NV                                              = 0x8527
-	OPERAND2_ALPHA_EXT                                         = 0x859A
-	ACCUM                                                      = 0x0100
-	MAX_RENDERBUFFER_SIZE                                      = 0x84E8
-	OUTPUT_TEXTURE_COORD9_EXT                                  = 0x87A6
-	COMPRESSED_RGBA_PVRTC_2BPPV1_IMG                           = 0x8C03
-	LUMINANCE8UI_EXT                                           = 0x8D80
-	SHADER_STORAGE_BUFFER_BINDING                              = 0x90D3
-	LIGHTING                                                   = 0x0B50
-	POINT_SIZE_MAX_EXT                                         = 0x8127
-	DEFORMATIONS_MASK_SGIX                                     = 0x8196
-	OBJECT_LINE_SGIS                                           = 0x81F7
-	DEBUG_SOURCE_API                                           = 0x8246
-	EVAL_VERTEX_ATTRIB12_NV                                    = 0x86D2
-	RGB16I_EXT                                                 = 0x8D89
-	LARGE_CCW_ARC_TO_NV                                        = 0x16
-	FULL_STIPPLE_HINT_PGI                                      = 0x1A219
-	LIGHTING_BIT                                               = 0x00000040
-	READ_BUFFER_NV                                             = 0x0C02
-	RGB8I                                                      = 0x8D8F
-	UNSIGNED_INT_SAMPLER_2D_ARRAY                              = 0x8DD7
-	TEXTURE_SWIZZLE_A                                          = 0x8E45
-	SGIX_interlace                                             = 1
-	DUAL_LUMINANCE_ALPHA4_SGIS                                 = 0x811C
-	MAX_PROGRAM_ATTRIB_COMPONENTS_NV                           = 0x8908
-	TEXTURE_BINDING_BUFFER_ARB                                 = 0x8C2C
-	COPY_READ_BUFFER                                           = 0x8F36
-	INT_IMAGE_1D                                               = 0x9057
-	SECONDARY_COLOR_ARRAY_LIST_IBM                             = 103077
-	GL_3D_COLOR                                                = 0x0602
-	DRAW_BUFFER10_ATI                                          = 0x882F
-	INDEX_BITS                                                 = 0x0D51
-	CONSTANT_ALPHA_EXT                                         = 0x8003
-	REG_7_ATI                                                  = 0x8928
-	UNPACK_COMPRESSED_BLOCK_WIDTH                              = 0x9127
-	PACK_LSB_FIRST                                             = 0x0D01
-	PROXY_TEXTURE_2D_EXT                                       = 0x8064
-	MULTISAMPLE_3DFX                                           = 0x86B2
-	VERSION_1_3                                                = 1
-	SGIX_blend_alpha_minmax                                    = 1
-	BLUE_BITS                                                  = 0x0D54
-	OFFSET_HILO_TEXTURE_RECTANGLE_NV                           = 0x8855
-	FLOAT_VEC4_ARB                                             = 0x8B52
-	INT_IMAGE_CUBE_EXT                                         = 0x905B
-	INTERLACE_SGIX                                             = 0x8094
-	R16UI                                                      = 0x8234
-	FILL                                                       = 0x1B02
-	PATH_DASH_ARRAY_COUNT_NV                                   = 0x909F
-	FRAGMENT_SUBROUTINE                                        = 0x92EC
-	TEXCOORD3_BIT_PGI                                          = 0x40000000
-	COLOR                                                      = 0x1800
-	FORMAT_SUBSAMPLE_24_24_OML                                 = 0x8982
-	TRANSPOSE_PROJECTION_MATRIX_ARB                            = 0x84E4
-	TEXTURE_CUBE_MAP_POSITIVE_X_ARB                            = 0x8515
-	MAX_PROGRAM_CALL_DEPTH_NV                                  = 0x88F5
-	INTENSITY8_SNORM                                           = 0x9017
-	TEXTURE_RED_SIZE_EXT                                       = 0x805C
-	R8I                                                        = 0x8231
-	REG_11_ATI                                                 = 0x892C
-	FLOAT_MAT3x4                                               = 0x8B68
-	FRAGMENT_SUBROUTINE_UNIFORM                                = 0x92F2
-	RGB2_EXT                                                   = 0x804E
-	TEXTURE_COMPRESSED_BLOCK_WIDTH                             = 0x82B1
-	MAX_SHININESS_NV                                           = 0x8504
-	TRIANGLE_MESH_SUN                                          = 0x8615
-	FLOAT_MAT4_ARB                                             = 0x8B5C
-	IMAGE_2D                                                   = 0x904D
-	MAX_NAME_LENGTH                                            = 0x92F6
-	COMBINER0_NV                                               = 0x8550
-	VERTEX_ATTRIB_ARRAY9_NV                                    = 0x8659
-	VERTEX_SHADER_INSTRUCTIONS_EXT                             = 0x87CF
-	MAX_DRAW_BUFFERS_ARB                                       = 0x8824
-	TRANSLATE_X_NV                                             = 0x908E
-	MAX_EVAL_ORDER                                             = 0x0D30
-	SAMPLE_MASK_VALUE_SGIS                                     = 0x80AA
-	SYNC_STATUS                                                = 0x9114
-	TEXTURE_FETCH_BARRIER_BIT_EXT                              = 0x00000008
-	T2F_C4F_N3F_V3F                                            = 0x2A2C
-	MAX_PROGRAM_TEXEL_OFFSET_NV                                = 0x8905
-	PROGRAM_PIPELINE_OBJECT_EXT                                = 0x8A4F
-	MAX_TRANSFORM_FEEDBACK_SEPARATE_COMPONENTS                 = 0x8C80
-	BUFFER_GPU_ADDRESS_NV                                      = 0x8F1D
-	GLYPH_WIDTH_BIT_NV                                         = 0x01
-	RED_BIAS                                                   = 0x0D15
-	UNPACK_SKIP_VOLUMES_SGIS                                   = 0x8132
-	MAP2_VERTEX_ATTRIB5_4_NV                                   = 0x8675
-	PROGRAM_TEX_INDIRECTIONS_ARB                               = 0x8807
-	RGB16F                                                     = 0x881B
-	MAX_PROGRAM_GENERIC_RESULTS_NV                             = 0x8DA6
-	DOUBLE_VEC3                                                = 0x8FFD
-	TANGENT_ARRAY_EXT                                          = 0x8439
-	OUTPUT_TEXTURE_COORD16_EXT                                 = 0x87AD
-	LUMINANCE_ALPHA_FLOAT32_APPLE                              = 0x8819
-	INDEX_ARRAY_BUFFER_BINDING                                 = 0x8899
-	TRANSFORM_FEEDBACK_BARRIER_BIT_EXT                         = 0x00000800
-	DT_SCALE_NV                                                = 0x8711
-	GEOMETRY_SUBROUTINE                                        = 0x92EB
-	CLIP_DISTANCE2                                             = 0x3002
-	SHADER_IMAGE_ATOMIC                                        = 0x82A6
-	INT64_VEC3_NV                                              = 0x8FEA
-	COMPRESSED_SRGB8_ALPHA8_ETC2_EAC                           = 0x9279
-	SWIZZLE_STR_DR_ATI                                         = 0x8978
-	ACTIVE_ATTRIBUTE_MAX_LENGTH                                = 0x8B8A
-	RGB9_E5_EXT                                                = 0x8C3D
-	FONT_Y_MAX_BOUNDS_BIT_NV                                   = 0x00080000
-	HISTOGRAM_LUMINANCE_SIZE_EXT                               = 0x802C
-	NORMAL_ARRAY_POINTER_EXT                                   = 0x808F
-	MAX_RENDERBUFFER_SIZE_EXT                                  = 0x84E8
-	MAX_PROGRAM_MATRIX_STACK_DEPTH_ARB                         = 0x862E
-	NUM_INPUT_INTERPOLATOR_COMPONENTS_ATI                      = 0x8973
-	POINT_SIZE_ARRAY_POINTER_OES                               = 0x898C
-	RGB32UI                                                    = 0x8D71
-	NUM_FILL_STREAMS_NV                                        = 0x8E29
-	GREEN_BIAS                                                 = 0x0D19
-	GL_4_BYTES                                                 = 0x1409
-	PROXY_HISTOGRAM                                            = 0x8025
-	POINT_SIZE_MIN_EXT                                         = 0x8126
-	FOG_OFFSET_SGIX                                            = 0x8198
-	TEXTURE_RECTANGLE_ARB                                      = 0x84F5
-	MAX_VERTEX_ARRAY_RANGE_ELEMENT_NV                          = 0x8520
-	MODELVIEW7_ARB                                             = 0x8727
-	PROGRAM_FORMAT_ASCII_ARB                                   = 0x8875
-	MAP2_TEXTURE_COORD_3                                       = 0x0DB5
-	VERTEX_ARRAY_TYPE                                          = 0x807B
-	TEXTURE_BORDER                                             = 0x1005
-	CLIP_DISTANCE4                                             = 0x3004
-	RGB4                                                       = 0x804F
-	COMPARE_R_TO_TEXTURE                                       = 0x884E
-	MATRIX29_ARB                                               = 0x88DD
-	TABLE_TOO_LARGE                                            = 0x8031
-	SAMPLES_ARB                                                = 0x80A9
-	MAX_ELEMENTS_INDICES                                       = 0x80E9
-	CALLIGRAPHIC_FRAGMENT_SGIX                                 = 0x8183
-	STREAM_READ                                                = 0x88E1
-	MAX_TRANSFORM_FEEDBACK_BUFFERS                             = 0x8E70
-	PATCH_DEFAULT_INNER_LEVEL                                  = 0x8E73
-	COLOR_TABLE_SCALE                                          = 0x80D6
-	TEXTURE_COORD_ARRAY_PARALLEL_POINTERS_INTEL                = 0x83F8
-	OPERAND2_RGB_EXT                                           = 0x8592
-	COMPRESSED_LUMINANCE_ALPHA_LATC2_EXT                       = 0x8C72
-	TEXCOORD2_BIT_PGI                                          = 0x20000000
-	SGIS_texture4D                                             = 1
-	BLEND_DST                                                  = 0x0BE0
-	INCR                                                       = 0x1E02
-	WEIGHT_ARRAY_ARB                                           = 0x86AD
-	DRAW_BUFFER3                                               = 0x8828
-	PIXEL_COUNTER_BITS_NV                                      = 0x8864
-	SCALED_RESOLVE_FASTEST_EXT                                 = 0x90BA
-	PIXEL_MAP_R_TO_R                                           = 0x0C76
-	CONVOLUTION_HINT_SGIX                                      = 0x8316
-	SRC0_RGB                                                   = 0x8580
-	PACK_SWAP_BYTES                                            = 0x0D00
-	INTERNALFORMAT_GREEN_SIZE                                  = 0x8272
-	MINMAX_SINK                                                = 0x8030
-	QUERY_RESULT_AVAILABLE_EXT                                 = 0x8867
-	SAMPLES_PASSED                                             = 0x8914
-	MAX_COMBINED_FRAGMENT_UNIFORM_COMPONENTS                   = 0x8A33
-	MAX_ELEMENT_INDEX                                          = 0x8D6B
-	REPEAT                                                     = 0x2901
-	VERTEX_ATTRIB_ARRAY15_NV                                   = 0x865F
-	MAX_PALETTE_MATRICES_OES                                   = 0x8842
-	RENDERBUFFER_SAMPLES_NV                                    = 0x8CAB
-	FONT_MAX_ADVANCE_HEIGHT_BIT_NV                             = 0x02000000
-	R1UI_N3F_V3F_SUN                                           = 0x85C7
-	TEXTURE_BUFFER_EXT                                         = 0x8C2A
-	UNSIGNED_INT_IMAGE_1D_ARRAY_EXT                            = 0x9068
-	TIME_ELAPSED                                               = 0x88BF
-	UNSIGNED_INT_8_8_8_8                                       = 0x8035
-	SAMPLE_MASK_VALUE_EXT                                      = 0x80AA
-	OP_SET_GE_EXT                                              = 0x878C
-	VARIANT_ARRAY_POINTER_EXT                                  = 0x87E9
-	SLUMINANCE_ALPHA_NV                                        = 0x8C44
-	COMPRESSED_SRGB8_ETC2                                      = 0x9275
-	EXT_texture3D                                              = 1
-	ASYNC_HISTOGRAM_SGIX                                       = 0x832C
-	OPERAND1_RGB_EXT                                           = 0x8591
-	VERSION_3_2                                                = 1
-	CLIENT_ALL_ATTRIB_BITS                                     = 0xFFFFFFFF
-	DUAL_INTENSITY12_SGIS                                      = 0x811A
-	UNPACK_IMAGE_DEPTH_SGIS                                    = 0x8133
-	REG_1_ATI                                                  = 0x8922
-	ACTIVE_SUBROUTINES                                         = 0x8DE5
-	DOUBLE_MAT4x3_EXT                                          = 0x8F4E
-	COLOR_TABLE_LUMINANCE_SIZE                                 = 0x80DE
-	SRC1_ALPHA                                                 = 0x8589
-	MAP1_VERTEX_ATTRIB0_4_NV                                   = 0x8660
-	EVAL_VERTEX_ATTRIB2_NV                                     = 0x86C8
-	RESAMPLE_DECIMATE_OML                                      = 0x8989
-	FLOAT_VEC2_ARB                                             = 0x8B50
-	LINK_STATUS                                                = 0x8B82
-	NORMAL_ARRAY_POINTER                                       = 0x808F
-	FEEDBACK                                                   = 0x1C01
-	TRANSPOSE_TEXTURE_MATRIX                                   = 0x84E5
-	VERTEX_ATTRIB_ARRAY1_NV                                    = 0x8651
-	WEIGHT_ARRAY_STRIDE_ARB                                    = 0x86AA
-	FLOAT_VEC3                                                 = 0x8B51
-	RGB12                                                      = 0x8053
-	LUMINANCE_ALPHA8I_EXT                                      = 0x8D93
-	LUMINANCE_ALPHA_INTEGER_EXT                                = 0x8D9D
-	FRAMEBUFFER_BARRIER_BIT_EXT                                = 0x00000400
-	INSTRUMENT_BUFFER_POINTER_SGIX                             = 0x8180
-	INTENSITY32F_ARB                                           = 0x8817
-	ADD_ATI                                                    = 0x8963
-	VERTEX_PROGRAM_CALLBACK_FUNC_MESA                          = 0x8BB6
-	COMPRESSED_SRGB8_ALPHA8_ASTC_5x5_KHR                       = 0x93D2
-	DEBUG_TYPE_DEPRECATED_BEHAVIOR                             = 0x824D
-	DRAW_BUFFER11                                              = 0x8830
-	IMAGE_PIXEL_TYPE                                           = 0x82AA
-	SECONDARY_COLOR_ARRAY_POINTER                              = 0x845D
-	COMBINER_CD_DOT_PRODUCT_NV                                 = 0x8546
-	MODELVIEW2_ARB                                             = 0x8722
-	SAMPLER_2D_ARRAY_SHADOW                                    = 0x8DC4
-	MAX_FRAMEBUFFER_SAMPLES                                    = 0x9318
-	VERTEX_CONSISTENT_HINT_PGI                                 = 0x1A22B
-	T2F_N3F_V3F                                                = 0x2A2B
-	CLIP_DISTANCE6                                             = 0x3006
-	POINT_FADE_THRESHOLD_SIZE                                  = 0x8128
-	IMAGE_CLASS_2_X_16                                         = 0x82BD
-	SPARE1_NV                                                  = 0x852F
-	VERTEX_PROGRAM_PARAMETER_BUFFER_NV                         = 0x8DA2
-	MAX_GEOMETRY_UNIFORM_COMPONENTS                            = 0x8DDF
-	VERTEX_ARRAY_ADDRESS_NV                                    = 0x8F21
-	LO_SCALE_NV                                                = 0x870F
-	TRANSFORM_FEEDBACK_VARYING_MAX_LENGTH_EXT                  = 0x8C76
-	RGBA8_SNORM                                                = 0x8F97
-	MAX_SHADER_STORAGE_BLOCK_SIZE                              = 0x90DE
-	C4UB_V3F                                                   = 0x2A23
-	BGR                                                        = 0x80E0
-	VIEWPORT_SUBPIXEL_BITS                                     = 0x825C
-	SPRITE_EYE_ALIGNED_SGIX                                    = 0x814E
-	IMPLEMENTATION_COLOR_READ_FORMAT                           = 0x8B9B
-	TEXTURE_FORMAT_QCOM                                        = 0x8BD6
-	LUMINANCE_ALPHA8UI_EXT                                     = 0x8D81
-	POLYGON_OFFSET_UNITS                                       = 0x2A00
-	ADD_SIGNED_EXT                                             = 0x8574
-	SIGNED_LUMINANCE8_ALPHA8_NV                                = 0x8704
-	MAX_OPTIMIZED_VERTEX_SHADER_LOCAL_CONSTANTS_EXT            = 0x87CC
-	MAX_3D_TEXTURE_SIZE_OES                                    = 0x8073
-	TEXTURE_VIEW_MIN_LAYER                                     = 0x82DD
-	VERTEX_PROGRAM_TWO_SIDE                                    = 0x8643
-	VERTEX_ATTRIB_ARRAY_POINTER_ARB                            = 0x8645
-	NUM_LOOPBACK_COMPONENTS_ATI                                = 0x8974
-	IMPLEMENTATION_COLOR_READ_FORMAT_OES                       = 0x8B9B
-	COLOR_ATTACHMENT13                                         = 0x8CED
-	UNSIGNED_INT_SAMPLER_2D_RECT_EXT                           = 0x8DD5
-	UNSIGNED_INT_IMAGE_2D_MULTISAMPLE_ARRAY                    = 0x906C
-	DEBUG_SEVERITY_HIGH_ARB                                    = 0x9146
-	LINE_TOKEN                                                 = 0x0702
-	MAX_PROJECTION_STACK_DEPTH                                 = 0x0D38
-	ALPHA                                                      = 0x1906
-	RGB10_EXT                                                  = 0x8052
-	TEXTURE_CUBE_MAP_POSITIVE_Y_ARB                            = 0x8517
-	MAX_PROGRAM_ENV_PARAMETERS_ARB                             = 0x88B5
-	PATH_TERMINAL_DASH_CAP_NV                                  = 0x907D
-	POST_COLOR_MATRIX_GREEN_BIAS                               = 0x80B9
-	MAX_VERTEX_TEXTURE_IMAGE_UNITS                             = 0x8B4C
-	INT_IMAGE_2D                                               = 0x9058
-	ATOMIC_COUNTER_BARRIER_BIT_EXT                             = 0x00001000
-	MODELVIEW30_ARB                                            = 0x873E
-	OFFSET_TEXTURE_2D_SCALE_NV                                 = 0x86E2
-	OP_RECIP_SQRT_EXT                                          = 0x8795
-	TEXTURE_MAX_LOD_SGIS                                       = 0x813B
-	SIMULTANEOUS_TEXTURE_AND_DEPTH_TEST                        = 0x82AC
-	TEXTURE13                                                  = 0x84CD
-	TRACE_PRIMITIVES_BIT_MESA                                  = 0x0002
-	SEPARATE_ATTRIBS                                           = 0x8C8D
-	COLOR_ATTACHMENT9_NV                                       = 0x8CE9
-	PATH_INITIAL_DASH_CAP_NV                                   = 0x907C
-	PATH_STENCIL_FUNC_NV                                       = 0x90B7
-	DEBUG_SEVERITY_MEDIUM_ARB                                  = 0x9147
-	QUERY                                                      = 0x82E3
-	BINORMAL_ARRAY_STRIDE_EXT                                  = 0x8441
-	PROXY_TEXTURE_RECTANGLE_NV                                 = 0x84F7
-	LUMINANCE_ALPHA_FLOAT16_ATI                                = 0x881F
-	VERTEX_ATTRIB_MAP2_DOMAIN_APPLE                            = 0x8A09
-	MAX_DEBUG_MESSAGE_LENGTH_ARB                               = 0x9143
-	GREEN_SCALE                                                = 0x0D18
-	RESET_NOTIFICATION_STRATEGY_ARB                            = 0x8256
-	MAX_COMPUTE_ATOMIC_COUNTERS                                = 0x8265
-	RGB9_E5                                                    = 0x8C3D
-	TRACE_OPERATIONS_BIT_MESA                                  = 0x0001
-	DOUBLE_MAT2x3_EXT                                          = 0x8F49
-	MAP1_GRID_SEGMENTS                                         = 0x0DD1
-	FEEDBACK_BUFFER_SIZE                                       = 0x0DF1
-	DETAIL_TEXTURE_2D_BINDING_SGIS                             = 0x8096
-	TEXTURE22_ARB                                              = 0x84D6
-	SOURCE1_RGB                                                = 0x8581
-	GEOMETRY_SHADER_INVOCATIONS                                = 0x887F
-	DEBUG_TYPE_UNDEFINED_BEHAVIOR_ARB                          = 0x824E
-	MAX_UNIFORM_LOCATIONS                                      = 0x826E
-	MAP2_VERTEX_ATTRIB1_4_NV                                   = 0x8671
-	RESAMPLE_DECIMATE_SGIX                                     = 0x8430
-	VERTEX_ARRAY_RANGE_APPLE                                   = 0x851D
-	NEGATIVE_Y_EXT                                             = 0x87DA
-	SAMPLER_2D_RECT_SHADOW_ARB                                 = 0x8B64
-	MIN_SAMPLE_SHADING_VALUE_ARB                               = 0x8C37
-	BOUNDING_BOX_NV                                            = 0x908D
-	COMPRESSED_RGBA_ASTC_8x5_KHR                               = 0x93B5
-	RG                                                         = 0x8227
-	MULTISAMPLE_FILTER_HINT_NV                                 = 0x8534
-	MATRIX0_NV                                                 = 0x8630
-	EDGE_FLAG_ARRAY_STRIDE_EXT                                 = 0x808C
-	HI_BIAS_NV                                                 = 0x8714
-	DRAW_BUFFER9_ARB                                           = 0x882E
-	COMPARE_REF_TO_TEXTURE                                     = 0x884E
-	R11F_G11F_B10F_EXT                                         = 0x8C3A
-	SHADER_STORAGE_BUFFER_SIZE                                 = 0x90D5
-	AUX_BUFFERS                                                = 0x0C00
-	LUMINANCE12_ALPHA12                                        = 0x8047
-	POST_CONVOLUTION_RED_SCALE_EXT                             = 0x801C
-	DSDT_MAG_INTENSITY_NV                                      = 0x86DC
-	UNIFORM_BARRIER_BIT                                        = 0x00000004
-	CURRENT_NORMAL                                             = 0x0B02
-	VERTEX_STREAM7_ATI                                         = 0x8773
-	MATRIX24_ARB                                               = 0x88D8
-	TEXTURE_BUFFER_DATA_STORE_BINDING_EXT                      = 0x8C2D
-	EXT_blend_logic_op                                         = 1
-	T                                                          = 0x2001
-	PIXEL_PACK_BUFFER_BINDING_EXT                              = 0x88ED
-	MAX_FRAGMENT_UNIFORM_COMPONENTS_ARB                        = 0x8B49
-	MAX_TESS_CONTROL_SHADER_STORAGE_BLOCKS                     = 0x90D8
-	RGBA8                                                      = 0x8058
-	LIGHT7                                                     = 0x4007
-	NUM_GENERAL_COMBINERS_NV                                   = 0x854E
-	ALPHA_MIN_CLAMP_INGR                                       = 0x8563
-	MAX_SAMPLES                                                = 0x8D57
-	ALPHA32UI_EXT                                              = 0x8D72
-	SAMPLER_CUBE_MAP_ARRAY                                     = 0x900C
-	INTENSITY8                                                 = 0x804B
-	MAP2_VERTEX_ATTRIB6_4_NV                                   = 0x8676
-	UNSIGNED_SHORT_1_5_5_5_REV                                 = 0x8366
-	COLOR_ATTACHMENT3_EXT                                      = 0x8CE3
-	MAX_SAMPLE_MASK_WORDS_NV                                   = 0x8E59
-	IMAGE_BINDING_LEVEL_EXT                                    = 0x8F3B
-	INT_IMAGE_2D_MULTISAMPLE_ARRAY_EXT                         = 0x9061
-	SGIX_scalebias_hint                                        = 1
-	MODELVIEW4_ARB                                             = 0x8724
-	NEGATIVE_X_EXT                                             = 0x87D9
-	CLAMP_VERTEX_COLOR                                         = 0x891A
-	UNIFORM_ATOMIC_COUNTER_BUFFER_INDEX                        = 0x92DA
-	TEXTURE_COORD_ARRAY_BUFFER_BINDING                         = 0x889A
-	PATH_GEN_COLOR_FORMAT_NV                                   = 0x90B2
-	TEXTURE_IMMUTABLE_LEVELS                                   = 0x82DF
-	FRAMEBUFFER_ATTACHMENT_TEXTURE_CUBE_MAP_FACE_OES           = 0x8CD3
-	SHADER_STORAGE_BUFFER_START                                = 0x90D4
-	SGIS_texture_border_clamp                                  = 1
-	POINT_SIZE_GRANULARITY                                     = 0x0B13
-	V3F                                                        = 0x2A21
-	FRAMEBUFFER_ATTACHMENT_TEXTURE_CUBE_MAP_FACE               = 0x8CD3
-	ALPHA8UI_EXT                                               = 0x8D7E
-	MODELVIEW1_ARB                                             = 0x850A
-	FRAMEBUFFER_INCOMPLETE_ATTACHMENT_OES                      = 0x8CD6
-	AUX3                                                       = 0x040C
-	MATRIX_PALETTE_OES                                         = 0x8840
-	EDGE_FLAG_ARRAY_BUFFER_BINDING_ARB                         = 0x889B
-	MATRIX28_ARB                                               = 0x88DC
-	MAX_TEXTURE_BUFFER_SIZE                                    = 0x8C2B
-	MAP_WRITE_BIT                                              = 0x0002
-	LAYOUT_LINEAR_CPU_CACHED_INTEL                             = 2
-	INTENSITY12_EXT                                            = 0x804C
-	COLOR_MATRIX                                               = 0x80B1
-	PIXEL_TILE_CACHE_INCREMENT_SGIX                            = 0x813F
-	INTENSITY_FLOAT32_APPLE                                    = 0x8817
-	ACTIVE_SUBROUTINE_UNIFORM_LOCATIONS                        = 0x8E47
-	MAX_PROGRAM_SUBROUTINE_PARAMETERS_NV                       = 0x8F44
-	LUMINANCE_ALPHA_SNORM                                      = 0x9012
-	SYNC_CONDITION                                             = 0x9113
-	MAX_TEXTURE_LOD_BIAS_EXT                                   = 0x84FD
-	ELEMENT_ARRAY_BUFFER_ARB                                   = 0x8893
-	REG_8_ATI                                                  = 0x8929
-	VERTEX_SHADER                                              = 0x8B31
-	MAX_TRANSFORM_FEEDBACK_INTERLEAVED_COMPONENTS              = 0x8C8A
-	DST_ALPHA                                                  = 0x0304
-	DRAW_BUFFER7                                               = 0x882C
-	ARRAY_BUFFER                                               = 0x8892
-	MAX_PROGRAM_EXEC_INSTRUCTIONS_NV                           = 0x88F4
-	UNIFORM_BUFFER                                             = 0x8A11
-	PATH_GEN_COMPONENTS_NV                                     = 0x90B3
-	FENCE_STATUS_NV                                            = 0x84F3
-	MODELVIEW24_ARB                                            = 0x8738
-	MAX_GEOMETRY_BINDABLE_UNIFORMS_EXT                         = 0x8DE4
-	GL_1PASS_EXT                                               = 0x80A1
-	POST_COLOR_MATRIX_ALPHA_BIAS                               = 0x80BB
-	IGNORE_BORDER_HP                                           = 0x8150
-	YCRCBA_SGIX                                                = 0x8319
-	IMAGE_BUFFER                                               = 0x9051
-	FRAMEBUFFER_DEFAULT                                        = 0x8218
-	MAX_ACTIVE_LIGHTS_SGIX                                     = 0x8405
-	COLOR_SUM_EXT                                              = 0x8458
-	DRAW_BUFFER14                                              = 0x8833
-	MATRIX_INDEX_ARRAY_POINTER_ARB                             = 0x8849
-	WRITE_DISCARD_NV                                           = 0x88BE
-	STATIC_READ_ARB                                            = 0x88E5
-	VERTEX_ATTRIB_MAP1_APPLE                                   = 0x8A00
-	IMAGE_CUBE_MAP_ARRAY                                       = 0x9054
-	VERSION_3_0                                                = 1
-	POINT                                                      = 0x1B00
-	LINEAR_SHARPEN_ALPHA_SGIS                                  = 0x80AE
-	PREVIOUS_ARB                                               = 0x8578
-	Z6Y10Z6CB10Z6A10Z6Y10Z6CR10Z6A10_4224_NV                   = 0x9034
-	DEPTH                                                      = 0x1801
-	LUMINANCE16_ALPHA16_EXT                                    = 0x8048
-	TEXTURE_3D_EXT                                             = 0x806F
-	SAMPLES_SGIS                                               = 0x80A9
-	TEXTURE_DEPTH_TYPE                                         = 0x8C16
-	POST_CONVOLUTION_RED_SCALE                                 = 0x801C
-	VERTEX_ARRAY_EXT                                           = 0x8074
-	EDGE_FLAG_ARRAY_COUNT_EXT                                  = 0x808D
-	FRAMEBUFFER_RENDERABLE                                     = 0x8289
-	SUBTRACT_ARB                                               = 0x84E7
-	DRAW_BUFFER8_ATI                                           = 0x882D
-	PIXEL_TILE_CACHE_SIZE_SGIX                                 = 0x8145
-	FOG_DISTANCE_MODE_NV                                       = 0x855A
-	RGB_SCALE_EXT                                              = 0x8573
-	MAX_MATRIX_PALETTE_STACK_DEPTH_ARB                         = 0x8841
-	MAX_TEXTURE_COORDS_ARB                                     = 0x8871
-	FIRST_VERTEX_CONVENTION                                    = 0x8E4D
-	CW                                                         = 0x0900
-	SIMULTANEOUS_TEXTURE_AND_STENCIL_WRITE                     = 0x82AF
-	SAMPLER                                                    = 0x82E6
-	TEXTURE26_ARB                                              = 0x84DA
-	DEPTH_STENCIL_NV                                           = 0x84F9
-	BUMP_ROT_MATRIX_ATI                                        = 0x8775
-	REG_22_ATI                                                 = 0x8937
-	TIMESTAMP                                                  = 0x8E28
-	MAX_FRAGMENT_INTERPOLATION_OFFSET                          = 0x8E5C
-	DRAW_INDIRECT_LENGTH_NV                                    = 0x8F42
-	CONVOLUTION_FILTER_BIAS_EXT                                = 0x8015
-	REPLACEMENT_CODE_ARRAY_TYPE_SUN                            = 0x85C1
-	MAX_RATIONAL_EVAL_ORDER_NV                                 = 0x86D7
-	CON_25_ATI                                                 = 0x895A
-	STENCIL_BACK_WRITEMASK                                     = 0x8CA5
-	RENDERBUFFER_COLOR_SAMPLES_NV                              = 0x8E10
-	LUMINANCE4_ALPHA4                                          = 0x8043
-	BLEND_EQUATION_EXT                                         = 0x8009
-	OUTPUT_TEXTURE_COORD17_EXT                                 = 0x87AE
-	RGB16UI                                                    = 0x8D77
-	GREEN_INTEGER_EXT                                          = 0x8D95
-	SHARPEN_TEXTURE_FUNC_POINTS_SGIS                           = 0x80B0
-	MIPMAP                                                     = 0x8293
-	RIGHT                                                      = 0x0407
-	MAP2_TEXTURE_COORD_2                                       = 0x0DB4
-	TEXTURE_FILTER_CONTROL_EXT                                 = 0x8500
-	FIRST_VERTEX_CONVENTION_EXT                                = 0x8E4D
-	VERTEX_STREAM4_ATI                                         = 0x8770
-	INDEX_ARRAY_BUFFER_BINDING_ARB                             = 0x8899
-	GPU_ADDRESS_NV                                             = 0x8F34
 	CLIP_VOLUME_CLIPPING_HINT_EXT                              = 0x80F0
 	REFLECTION_MAP_EXT                                         = 0x8512
 	ONE_EXT                                                    = 0x87DE
@@ -5000,11 +2652,2359 @@ const (
 	LAYER_NV                                                   = 0x8DAA
 	RENDER_DIRECT_TO_FRAMEBUFFER_QCOM                          = 0x8FB3
 	INT_IMAGE_3D                                               = 0x9059
+	FOG_BIT                                                    = 0x00000080
+	OUT_OF_MEMORY                                              = 0x0505
+	FILTER                                                     = 0x829A
+	UNSIGNED_INT_ATOMIC_COUNTER                                = 0x92DB
+	MAX_NUM_COMPATIBLE_SUBROUTINES                             = 0x92F8
+	SAMPLE_PATTERN_EXT                                         = 0x80AC
+	EYE_LINE_SGIS                                              = 0x81F6
+	GEOMETRY_VERTICES_OUT                                      = 0x8916
+	UNSIGNED_NORMALIZED                                        = 0x8C17
+	COLOR_ATTACHMENT11_NV                                      = 0x8CEB
+	UNSIGNED_INT_IMAGE_CUBE_EXT                                = 0x9066
+	SYNC_X11_FENCE_EXT                                         = 0x90E1
+	COMPRESSED_RGBA_ASTC_10x10_KHR                             = 0x93BB
+	COMMAND_BARRIER_BIT                                        = 0x00000040
+	FIXED                                                      = 0x140C
+	SPRITE_SGIX                                                = 0x8148
+	FRAMEBUFFER_ATTACHMENT_RED_SIZE                            = 0x8212
+	OP_CLAMP_EXT                                               = 0x878E
+	UNSIGNALED_APPLE                                           = 0x9118
+	PROJECTION_STACK_DEPTH                                     = 0x0BA4
+	GL_2PASS_0_EXT                                             = 0x80A2
+	TEXTURE_LOD_BIAS_R_SGIX                                    = 0x8190
+	SLIM8U_SGIX                                                = 0x831D
+	DEPTH_STENCIL_OES                                          = 0x84F9
+	ATOMIC_COUNTER_BUFFER_REFERENCED_BY_TESS_EVALUATION_SHADER = 0x92C9
+	POLYGON_OFFSET_FACTOR                                      = 0x8038
+	DEBUG_SOURCE_THIRD_PARTY                                   = 0x8249
+	CURRENT_RASTER_SECONDARY_COLOR                             = 0x845F
+	TEXTURE_RANGE_POINTER_APPLE                                = 0x85B8
+	CIRCULAR_CW_ARC_TO_NV                                      = 0xFA
+	DEBUG_CALLBACK_USER_PARAM_ARB                              = 0x8245
+	COLOR_COMPONENTS                                           = 0x8283
+	CURRENT_RASTER_TEXTURE_COORDS                              = 0x0B06
+	MAP2_GRID_DOMAIN                                           = 0x0DD2
+	PIXEL_SUBSAMPLE_4444_SGIX                                  = 0x85A2
+	FOG_COORDINATE_ARRAY_POINTER                               = 0x8456
+	AVERAGE_HP                                                 = 0x8160
+	TEXTURE_MAG_SIZE_NV                                        = 0x871F
+	BUFFER_ACCESS_OES                                          = 0x88BB
+	FRAMEBUFFER_DEFAULT_SAMPLES                                = 0x9313
+	SCISSOR_TEST                                               = 0x0C11
+	TEXTURE_BLUE_SIZE                                          = 0x805E
+	GENERATE_MIPMAP_SGIS                                       = 0x8191
+	SOURCE3_ALPHA_NV                                           = 0x858B
+	INT16_VEC3_NV                                              = 0x8FE6
+	EDGE_FLAG_ARRAY_POINTER_EXT                                = 0x8093
+	SAMPLES_EXT                                                = 0x80A9
+	INTERNALFORMAT_STENCIL_TYPE                                = 0x827D
+	SECONDARY_COLOR_ARRAY_TYPE                                 = 0x845B
+	DRAW_BUFFER15_NV                                           = 0x8834
+	MATRIX23_ARB                                               = 0x88D7
+	SAMPLER_3D_OES                                             = 0x8B5F
+	FRAGMENT_SHADER_DERIVATIVE_HINT_OES                        = 0x8B8B
+	TEXTURE_BUFFER_FORMAT_EXT                                  = 0x8C2E
+	DRAW_FRAMEBUFFER_NV                                        = 0x8CA9
+	ALPHA16I_EXT                                               = 0x8D8A
+	MAX_COMBINED_SHADER_STORAGE_BLOCKS                         = 0x90DC
+	FRAMEBUFFER_DEFAULT_HEIGHT                                 = 0x9311
+	RESAMPLE_REPLICATE_SGIX                                    = 0x842E
+	MAX_GEOMETRY_IMAGE_UNIFORMS                                = 0x90CD
+	TEXTURE7_ARB                                               = 0x84C7
+	VARIABLE_F_NV                                              = 0x8528
+	SHADER_STORAGE_BUFFER_OFFSET_ALIGNMENT                     = 0x90DF
+	VERTEX_ATTRIB_ARRAY7_NV                                    = 0x8657
+	DSDT8_MAG8_INTENSITY8_NV                                   = 0x870B
+	MAX_PROGRAM_TEMPORARIES_ARB                                = 0x88A5
+	PROXY_TEXTURE_2D_ARRAY_EXT                                 = 0x8C1B
+	READ_FRAMEBUFFER_BINDING_NV                                = 0x8CAA
+	POINT_SMOOTH                                               = 0x0B10
+	INDEX_ARRAY_TYPE_EXT                                       = 0x8085
+	OUTPUT_TEXTURE_COORD18_EXT                                 = 0x87AF
+	DUAL_LUMINANCE4_SGIS                                       = 0x8114
+	OPERAND0_RGB_ARB                                           = 0x8590
+	VERTEX_STREAM1_ATI                                         = 0x876D
+	MAX_BINDABLE_UNIFORM_SIZE_EXT                              = 0x8DED
+	FONT_HEIGHT_BIT_NV                                         = 0x00800000
+	DEBUG_SEVERITY_HIGH                                        = 0x9146
+	CONVOLUTION_FILTER_SCALE_EXT                               = 0x8014
+	GL_422_AVERAGE_EXT                                         = 0x80CE
+	QUERY_WAIT_NV                                              = 0x8E13
+	TEXTURE_BINDING_CUBE_MAP_ARRAY                             = 0x900A
+	COMPRESSED_RGBA_PVRTC_4BPPV2_IMG                           = 0x9138
+	MAX_SPARSE_ARRAY_TEXTURE_LAYERS                            = 0x919A
+	SCISSOR_BOX                                                = 0x0C10
+	POST_CONVOLUTION_RED_BIAS                                  = 0x8020
+	FRAGMENT_TEXTURE                                           = 0x829F
+	TEXTURE16_ARB                                              = 0x84D0
+	DRAW_BUFFER15                                              = 0x8834
+	CURRENT_MATRIX_INDEX_ARB                                   = 0x8845
+	BUFFER_USAGE                                               = 0x8765
+	BUFFER_MAPPED                                              = 0x88BC
+	MATRIX0_ARB                                                = 0x88C0
+	PROGRAM_OBJECT_ARB                                         = 0x8B40
+	POINT_SIZE_RANGE                                           = 0x0B12
+	TEXTURE_MATERIAL_FACE_EXT                                  = 0x8351
+	FRAGMENT_COLOR_MATERIAL_SGIX                               = 0x8401
+	COMPRESSED_TEXTURE_FORMATS                                 = 0x86A3
+	MAX_PROGRAM_PATCH_ATTRIBS_NV                               = 0x86D8
+	SAMPLER_CUBE                                               = 0x8B60
+	COLOR_ARRAY_SIZE_EXT                                       = 0x8081
+	OP_MULTIPLY_MATRIX_EXT                                     = 0x8798
+	POST_COLOR_MATRIX_GREEN_BIAS_SGI                           = 0x80B9
+	MAX_COMPUTE_ATOMIC_COUNTER_BUFFERS                         = 0x8264
+	BACK_SECONDARY_COLOR_NV                                    = 0x8C78
+	COLOR_ATTACHMENT2_NV                                       = 0x8CE2
+	QUADRATIC_ATTENUATION                                      = 0x1209
+	RGB5_A1                                                    = 0x8057
+	SAMPLE_ALPHA_TO_MASK_SGIS                                  = 0x809E
+	COMBINE_ALPHA_ARB                                          = 0x8572
+	CURRENT_MATRIX_ARB                                         = 0x8641
+	TRACE_PIXELS_BIT_MESA                                      = 0x0010
+	REG_15_ATI                                                 = 0x8930
+	ATOMIC_COUNTER_BUFFER_INDEX                                = 0x9301
+	TEXTURE_BINDING_CUBE_MAP                                   = 0x8514
+	TRACE_ERRORS_BIT_MESA                                      = 0x0020
+	MATRIX8_ARB                                                = 0x88C8
+	SRGB_EXT                                                   = 0x8C40
+	CLIENT_PIXEL_STORE_BIT                                     = 0x00000001
+	RGBA4_OES                                                  = 0x8056
+	COLOR_ARRAY_EXT                                            = 0x8076
+	SAMPLE_MASK_INVERT_EXT                                     = 0x80AB
+	STREAM_READ_ARB                                            = 0x88E1
+	SECONDARY_COLOR_ARRAY_SIZE                                 = 0x845A
+	REFLECTION_MAP_OES                                         = 0x8512
+	TEXTURE_INDEX_SIZE_EXT                                     = 0x80ED
+	PERTURB_EXT                                                = 0x85AE
+	BUMP_ENVMAP_ATI                                            = 0x877B
+	ALPHA8                                                     = 0x803C
+	PIXEL_TRANSFORM_2D_MATRIX_EXT                              = 0x8338
+	SPARE0_NV                                                  = 0x852E
+	OBJECT_BUFFER_USAGE_ATI                                    = 0x8765
+	TEXTURE_COORD_ARRAY_STRIDE_EXT                             = 0x808A
+	UNKNOWN_CONTEXT_RESET_ARB                                  = 0x8255
+	REGISTER_COMBINERS_NV                                      = 0x8522
+	NEGATE_BIT_ATI                                             = 0x00000004
+	COMPRESSED_LUMINANCE_LATC1_EXT                             = 0x8C70
+	UNIFORM_BLOCK                                              = 0x92E2
+	ONE_MINUS_CONSTANT_COLOR                                   = 0x8002
+	ATTRIB_ARRAY_STRIDE_NV                                     = 0x8624
+	IMAGE_CUBE                                                 = 0x9050
+	LUMINANCE16                                                = 0x8042
+	VIEWPORT_INDEX_PROVOKING_VERTEX                            = 0x825F
+	TEXTURE_RANGE_LENGTH_APPLE                                 = 0x85B7
+	POINT_SIZE_ARRAY_BUFFER_BINDING_OES                        = 0x8B9F
+	INT_IMAGE_CUBE_MAP_ARRAY_EXT                               = 0x905F
+	CONDITION_SATISFIED_APPLE                                  = 0x911C
+	COMPRESSED_RGBA_ASTC_10x5_KHR                              = 0x93B8
+	MODELVIEW_STACK_DEPTH                                      = 0x0BA3
+	SEPARATE_SPECULAR_COLOR                                    = 0x81FA
+	VIEW_CLASS_96_BITS                                         = 0x82C5
+	MAX_RECTANGLE_TEXTURE_SIZE_ARB                             = 0x84F8
+	CON_19_ATI                                                 = 0x8954
+	COLOR_ATTACHMENT7_NV                                       = 0x8CE7
+	PREFER_DOUBLEBUFFER_HINT_PGI                               = 0x1A1F8
+	UNSIGNED_BYTE_3_3_2_EXT                                    = 0x8032
+	POST_COLOR_MATRIX_BLUE_BIAS_SGI                            = 0x80BA
+	DEPTH_COMPONENT24_SGIX                                     = 0x81A6
+	TEXTURE_MAX_CLAMP_T_SGIX                                   = 0x836A
+	TEXTURE10_ARB                                              = 0x84CA
+	PROXY_POST_COLOR_MATRIX_COLOR_TABLE                        = 0x80D5
+	TEXTURE9_ARB                                               = 0x84C9
+	MAP2_VERTEX_ATTRIB10_4_NV                                  = 0x867A
+	OP_EXP_BASE_2_EXT                                          = 0x8791
+	REG_12_ATI                                                 = 0x892D
+	UNSIGNED_INT_SAMPLER_1D_ARRAY                              = 0x8DD6
+	INT_IMAGE_2D_RECT                                          = 0x905A
+	MAX_TESS_EVALUATION_OUTPUT_COMPONENTS                      = 0x8E86
+	TEXTURE18                                                  = 0x84D2
+	DOT3_RGBA_EXT                                              = 0x8741
+	CIRCULAR_CCW_ARC_TO_NV                                     = 0xF8
+	UNSIGNED_INT_8_8_8_8_REV_EXT                               = 0x8367
+	TEXTURE_LUMINANCE_TYPE_ARB                                 = 0x8C14
+	SKIP_COMPONENTS3_NV                                        = -4
+	CURRENT_TEXTURE_COORDS                                     = 0x0B03
+	SRC1_RGB                                                   = 0x8581
+	QUAD_MESH_SUN                                              = 0x8614
+	OFFSET_TEXTURE_SCALE_NV                                    = 0x86E2
+	SIGNED_RGBA8_NV                                            = 0x86FC
+	WRITEONLY_RENDERING_QCOM                                   = 0x8823
+	RENDERBUFFER_BINDING                                       = 0x8CA7
+	RENDERBUFFER_HEIGHT_EXT                                    = 0x8D43
+	RGB8UI                                                     = 0x8D7D
+	PIXEL_BUFFER_BARRIER_BIT_EXT                               = 0x00000080
+	TEXTURE_STENCIL_SIZE                                       = 0x88F1
+	REG_13_ATI                                                 = 0x892E
+	LUMINANCE16_ALPHA16_SNORM                                  = 0x901A
+	TEXTURE_BINDING_1D                                         = 0x8068
+	FOG_COORD_ARRAY_POINTER                                    = 0x8456
+	ALPHA_FLOAT16_ATI                                          = 0x881C
+	DRAW_BUFFER3_ATI                                           = 0x8828
+	FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER_OES                     = 0x8CDB
+	SHADER_STORAGE_BARRIER_BIT                                 = 0x00002000
+	DEBUG_OUTPUT_SYNCHRONOUS                                   = 0x8242
+	VARIABLE_D_NV                                              = 0x8526
+	BUFFER_MAPPED_ARB                                          = 0x88BC
+	COMPRESSED_SRGB_ALPHA_S3TC_DXT1_EXT                        = 0x8C4D
+	MAX_TRANSFORM_FEEDBACK_INTERLEAVED_COMPONENTS_NV           = 0x8C8A
+	TESS_CONTROL_SHADER                                        = 0x8E88
+	COMPRESSED_SRGB8_ALPHA8_ASTC_10x6_KHR                      = 0x93D9
+	POST_CONVOLUTION_COLOR_TABLE_SGI                           = 0x80D1
+	SOURCE2_ALPHA                                              = 0x858A
+	TEXTURE_1D_STACK_BINDING_MESAX                             = 0x875D
+	DEPTH24_STENCIL8_OES                                       = 0x88F0
+	RELEASED_APPLE                                             = 0x8A19
+	SGIS_texture_edge_clamp                                    = 1
+	CONVOLUTION_HEIGHT                                         = 0x8019
+	IMAGE_MAG_FILTER_HP                                        = 0x815C
+	IMAGE_CLASS_10_10_10_2                                     = 0x82C3
+	VERTEX_ATTRIB_ARRAY_UNIFIED_NV                             = 0x8F1E
+	R16                                                        = 0x822A
+	TEXTURE_CUBE_MAP_NEGATIVE_Z                                = 0x851A
+	EXPAND_NORMAL_NV                                           = 0x8538
+	PALETTE8_RGBA8_OES                                         = 0x8B96
+	COLOR_ATTACHMENT0                                          = 0x8CE0
+	PROGRAM_INPUT                                              = 0x92E3
+	REFERENCED_BY_COMPUTE_SHADER                               = 0x930B
+	ALL_SHADER_BITS                                            = 0xFFFFFFFF
+	PIXEL_UNPACK_BUFFER_BINDING_EXT                            = 0x88EF
+	UNSIGNED_INT_SAMPLER_3D_EXT                                = 0x8DD3
+	COMMAND_BARRIER_BIT_EXT                                    = 0x00000040
+	ALPHA_BITS                                                 = 0x0D55
+	DEPTH_COMPONENT32                                          = 0x81A7
+	FRAMEBUFFER                                                = 0x8D40
+	INT_SAMPLER_3D                                             = 0x8DCB
+	ALL_BARRIER_BITS_EXT                                       = 0xFFFFFFFF
+	TRIANGLES                                                  = 0x0004
+	UNSIGNED_BYTE_2_3_3_REV                                    = 0x8362
+	PATH_STENCIL_DEPTH_OFFSET_UNITS_NV                         = 0x90BE
+	ALPHA12                                                    = 0x803D
+	UNSIGNED_SHORT_5_6_5                                       = 0x8363
+	TEXTURE_BLUE_SIZE_EXT                                      = 0x805E
+	SMOOTH_LINE_WIDTH_GRANULARITY                              = 0x0B23
+	VERTEX_STREAM6_ATI                                         = 0x8772
+	DRAW_BUFFER13                                              = 0x8832
+	MAX_DRAW_BUFFERS_NV                                        = 0x8824
+	UNIFORM_BLOCK_NAME_LENGTH                                  = 0x8A41
+	MAX_PROGRAM_OUTPUT_VERTICES_NV                             = 0x8C27
+	POLYGON_STIPPLE                                            = 0x0B42
+	COLOR_EXT                                                  = 0x1800
+	MINMAX                                                     = 0x802E
+	TEXTURE_CONSTANT_DATA_SUNX                                 = 0x81D6
+	SIGNED_RGB8_NV                                             = 0x86FF
+	WEIGHT_ARRAY_BUFFER_BINDING                                = 0x889E
+	CON_6_ATI                                                  = 0x8947
+	TEXTURE_SWIZZLE_RGBA_EXT                                   = 0x8E46
+	DISPATCH_INDIRECT_BUFFER_BINDING                           = 0x90EF
+	TEXTURE_GREEN_SIZE                                         = 0x805D
+	DEPTH_COMPONENT24                                          = 0x81A6
+	PROGRAM_NATIVE_PARAMETERS_ARB                              = 0x88AA
+	FRAGMENT_PROGRAM_CALLBACK_FUNC_MESA                        = 0x8BB2
+	COMPRESSED_RED_RGTC1_EXT                                   = 0x8DBB
+	TEXTURE_COMPARE_MODE_ARB                                   = 0x884C
+	FLOAT_RGB32_NV                                             = 0x8889
+	TRIANGLE_STRIP_ADJACENCY_ARB                               = 0x000D
+	SAMPLE_COVERAGE_ARB                                        = 0x80A0
+	INDEX_WRITEMASK                                            = 0x0C21
+	VERTEX_BINDING_STRIDE                                      = 0x82D8
+	RGBA4_DXT5_S3TC                                            = 0x83A5
+	COMBINER2_NV                                               = 0x8552
+	ONE_MINUS_SRC1_ALPHA                                       = 0x88FB
+	UNSIGNED_INT_IMAGE_2D_RECT                                 = 0x9065
+	CUBIC_CURVE_TO_NV                                          = 0x0C
+	COMPRESSED_RGB_FXT1_3DFX                                   = 0x86B0
+	TEXTURE_BUFFER_DATA_STORE_BINDING_ARB                      = 0x8C2D
+	MIN_MAP_BUFFER_ALIGNMENT                                   = 0x90BC
+	EXT_point_parameters                                       = 1
+	MAP_READ_BIT                                               = 0x0001
+	DSDT8_NV                                                   = 0x8709
+	MAD_ATI                                                    = 0x8968
+	COMPRESSED_SIGNED_LUMINANCE_ALPHA_LATC2_EXT                = 0x8C73
+	INT_SAMPLER_1D_ARRAY                                       = 0x8DCE
+	UNSIGNED_INT16_VEC4_NV                                     = 0x8FF3
+	PATH_END_CAPS_NV                                           = 0x9076
+	OP_FLOOR_EXT                                               = 0x878F
+	MAX_SAMPLES_EXT                                            = 0x8D57
+	MAX_VERTEX_UNIFORM_VECTORS                                 = 0x8DFB
+	TEXTURE_STORAGE_SPARSE_BIT_AMD                             = 0x00000001
+	TEXTURE_MAG_FILTER                                         = 0x2800
+	HISTOGRAM_FORMAT_EXT                                       = 0x8027
+	PALETTE8_R5_G6_B5_OES                                      = 0x8B97
+	ITALIC_BIT_NV                                              = 0x02
+	CLAMP_TO_BORDER_SGIS                                       = 0x812D
+	MAX_COMPUTE_IMAGE_UNIFORMS                                 = 0x91BD
+	PROGRAM_PIPELINE_BINDING_EXT                               = 0x825A
+	GEOMETRY_TEXTURE                                           = 0x829E
+	TEXTURE_COMPRESSED_ARB                                     = 0x86A1
+	SWIZZLE_STRQ_DQ_ATI                                        = 0x897B
+	FLOAT_VEC2                                                 = 0x8B50
+	TRANSFORM_FEEDBACK_BUFFER_BINDING_EXT                      = 0x8C8F
+	NORMAL_ARRAY_TYPE                                          = 0x807E
+	LIGHT4                                                     = 0x4004
+	UNPACK_CONSTANT_DATA_SUNX                                  = 0x81D5
+	PRIMITIVE_RESTART_INDEX_NV                                 = 0x8559
+	MAX_OPTIMIZED_VERTEX_SHADER_INSTRUCTIONS_EXT               = 0x87CA
+	HIGH_FLOAT                                                 = 0x8DF2
+	CURRENT_FOG_COORDINATE_EXT                                 = 0x8453
+	COLOR_ATTACHMENT5_NV                                       = 0x8CE5
+	VIDEO_CAPTURE_SURFACE_ORIGIN_NV                            = 0x903C
+	STENCIL_REF                                                = 0x0B97
+	TEXTURE_COORD_ARRAY_TYPE                                   = 0x8089
+	COMBINER_AB_DOT_PRODUCT_NV                                 = 0x8545
+	MAX_FRAGMENT_PROGRAM_LOCAL_PARAMETERS_NV                   = 0x8868
+	INT_SAMPLER_2D_ARRAY_EXT                                   = 0x8DCF
+	INT8_VEC2_NV                                               = 0x8FE1
+	BLEND_DST_RGB                                              = 0x80C8
+	VIEW_CLASS_S3TC_DXT1_RGB                                   = 0x82CC
+	TEXTURE_COMPARE_FUNC                                       = 0x884D
+	FORCE_BLUE_TO_ONE_NV                                       = 0x8860
+	COMPRESSED_SRGB_ALPHA                                      = 0x8C49
+	LUMINANCE_ALPHA32I_EXT                                     = 0x8D87
+	LAST_VIDEO_CAPTURE_STATUS_NV                               = 0x9027
+	BLEND_EQUATION_RGB_OES                                     = 0x8009
+	POST_CONVOLUTION_GREEN_BIAS                                = 0x8021
+	VERTEX_ARRAY_POINTER_EXT                                   = 0x808E
+	FOG_COORDINATE_ARRAY_TYPE_EXT                              = 0x8454
+	MAP1_VERTEX_ATTRIB5_4_NV                                   = 0x8665
+	HILO8_NV                                                   = 0x885E
+	RENDERBUFFER_HEIGHT_OES                                    = 0x8D43
+	INT_SAMPLER_1D                                             = 0x8DC9
+	PIXEL_TEX_GEN_Q_CEILING_SGIX                               = 0x8184
+	MAP2_VERTEX_ATTRIB14_4_NV                                  = 0x867E
+	DOT3_RGB_ARB                                               = 0x86AE
+	MAX_PROGRAM_LOOP_DEPTH_NV                                  = 0x88F7
+	TEXTURE14                                                  = 0x84CE
+	Z400_BINARY_AMD                                            = 0x8740
+	TEXTURE_DEPTH_SIZE                                         = 0x884A
+	MAP2_INDEX                                                 = 0x0DB1
+	PACK_SKIP_IMAGES                                           = 0x806B
+	FRAGMENT_SHADER_ATI                                        = 0x8920
+	PRIMITIVES_GENERATED_EXT                                   = 0x8C87
+	QUERY_NO_WAIT                                              = 0x8E14
+	SRC_ALPHA_SATURATE                                         = 0x0308
+	TEXTURE_ALPHA_SIZE                                         = 0x805F
+	RG_EXT                                                     = 0x8227
+	COMPRESSED_RGBA_S3TC_DXT5_EXT                              = 0x83F3
+	UNSIGNED_INT_8_24_REV_MESA                                 = 0x8752
+	GLYPH_VERTICAL_BEARING_Y_BIT_NV                            = 0x40
+	NO_ERROR                                                   = 0
+	SHADER_OBJECT_ARB                                          = 0x8B48
+	PERCENTAGE_AMD                                             = 0x8BC3
+	REG_0_ATI                                                  = 0x8921
+	FRAMEBUFFER_UNSUPPORTED_OES                                = 0x8CDD
+	VIDEO_CAPTURE_FRAME_WIDTH_NV                               = 0x9038
+	MAX_DEFORMATION_ORDER_SGIX                                 = 0x8197
+	DEBUG_PRINT_MESA                                           = 0x875A
+	RGBA_INTEGER_EXT                                           = 0x8D99
+	MAX_SHADER_STORAGE_BUFFER_BINDINGS                         = 0x90DD
+	ARRAY_SIZE                                                 = 0x92FB
+	COLOR_ARRAY_LIST_STRIDE_IBM                                = 103082
+	TEXTURE25                                                  = 0x84D9
+	X_EXT                                                      = 0x87D5
+	FRAGMENT_SHADER_ARB                                        = 0x8B30
+	CLIENT_ATTRIB_STACK_DEPTH                                  = 0x0BB1
+	INDEX_MODE                                                 = 0x0C30
+	DEPTH_SCALE                                                = 0x0D1E
+	RGB8_EXT                                                   = 0x8051
+	SCALE_BY_FOUR_NV                                           = 0x853F
+	WRITE_PIXEL_DATA_RANGE_LENGTH_NV                           = 0x887A
+	RENDERBUFFER_GREEN_SIZE_EXT                                = 0x8D51
+	COLOR_ATTACHMENT0_OES                                      = 0x8CE0
+	UNSIGNED_INT_IMAGE_2D_EXT                                  = 0x9063
+	COMPRESSED_SRGB8_ALPHA8_ASTC_10x10_KHR                     = 0x93DB
+	TEXTURE                                                    = 0x1702
+	UNSIGNED_BYTE_2_3_3_REV_EXT                                = 0x8362
+	DISTANCE_ATTENUATION_SGIS                                  = 0x8129
+	CURRENT_WEIGHT_ARB                                         = 0x86A8
+	MODELVIEW29_ARB                                            = 0x873D
+	BUMP_TARGET_ATI                                            = 0x877C
+	QUERY_RESULT                                               = 0x8866
+	RGBA16_SNORM                                               = 0x8F9B
+	INT8_VEC4_NV                                               = 0x8FE3
+	DOUBLE_VEC4_EXT                                            = 0x8FFE
+	DRAW_BUFFER12                                              = 0x8831
+	Z4Y12Z4CB12Z4A12Z4Y12Z4CR12Z4A12_4224_NV                   = 0x9036
+	PATH_DASH_OFFSET_NV                                        = 0x907E
+	SGIS_generate_mipmap                                       = 1
+	COLOR_TABLE_BIAS_SGI                                       = 0x80D7
+	LUMINANCE_ALPHA_FLOAT32_ATI                                = 0x8819
+	COPY_READ_BUFFER_BINDING                                   = 0x8F36
+	FRAMEBUFFER_ATTACHMENT_OBJECT_TYPE_EXT                     = 0x8CD0
+	INTENSITY8UI_EXT                                           = 0x8D7F
+	DOMAIN                                                     = 0x0A02
+	COLOR_ARRAY_COUNT_EXT                                      = 0x8084
+	SINGLE_COLOR                                               = 0x81F9
+	MAX_COMBINED_DIMENSIONS                                    = 0x8282
+	TEXTURE_BLUE_TYPE_ARB                                      = 0x8C12
+	UNSIGNED_INT_IMAGE_BUFFER_EXT                              = 0x9067
+	DUAL_INTENSITY4_SGIS                                       = 0x8118
+	TEXTURE_RECTANGLE_NV                                       = 0x84F5
+	UNIFORM_BUFFER_OFFSET_ALIGNMENT                            = 0x8A34
+	NORMAL_MAP_EXT                                             = 0x8511
+	UNSIGNED_INT16_NV                                          = 0x8FF0
+	COUNT_UP_NV                                                = 0x9088
+	QUAD_INTENSITY8_SGIS                                       = 0x8123
+	PROXY_POST_IMAGE_TRANSFORM_COLOR_TABLE_HP                  = 0x8163
+	YCRCB_SGIX                                                 = 0x8318
+	VERTEX_ATTRIB_ARRAY11_NV                                   = 0x865B
+	TEXTURE_BORDER_VALUES_NV                                   = 0x871A
+	PROXY_TEXTURE_1D_STACK_MESAX                               = 0x875B
+	PN_TRIANGLES_TESSELATION_LEVEL_ATI                         = 0x87F4
+	DYNAMIC_READ_ARB                                           = 0x88E9
+	CON_13_ATI                                                 = 0x894E
+	COLOR_ATTACHMENT0_EXT                                      = 0x8CE0
+	MAP_UNSYNCHRONIZED_BIT_EXT                                 = 0x0020
+	PIXEL_MAP_I_TO_G_SIZE                                      = 0x0CB3
+	BLEND_EQUATION_RGB                                         = 0x8009
+	DUAL_ALPHA4_SGIS                                           = 0x8110
+	PIXEL_TILE_HEIGHT_SGIX                                     = 0x8141
+	WRITE_ONLY_ARB                                             = 0x88B9
+	AFFINE_3D_NV                                               = 0x9094
+	ONE_MINUS_SRC_ALPHA                                        = 0x0303
+	VERTEX_PRECLIP_SGIX                                        = 0x83EE
+	FLOAT_VEC3_ARB                                             = 0x8B51
+	RGBA16I_EXT                                                = 0x8D88
+	DEPTH32F_STENCIL8_NV                                       = 0x8DAC
+	VERTEX_ARRAY_OBJECT_EXT                                    = 0x9154
+	SGIX_pixel_tiles                                           = 1
+	KEEP                                                       = 0x1E00
+	RGB_FLOAT32_ATI                                            = 0x8815
+	POINT_SIZE_MIN_SGIS                                        = 0x8126
+	MVP_MATRIX_EXT                                             = 0x87E3
+	SRGB8_EXT                                                  = 0x8C41
+	BACK_PRIMARY_COLOR_NV                                      = 0x8C77
+	COMPRESSED_RG_RGTC2                                        = 0x8DBD
+	IMAGE_CUBE_MAP_ARRAY_EXT                                   = 0x9054
+	SGIX_instruments                                           = 1
+	CLAMP_TO_BORDER_NV                                         = 0x812D
+	LINE_STRIP_ADJACENCY                                       = 0x000B
+	RGBA_S3TC                                                  = 0x83A2
+	SMOOTH_POINT_SIZE_GRANULARITY                              = 0x0B13
+	TEXTURE_BUFFER_OFFSET_ALIGNMENT                            = 0x919F
+	T2F_IUI_N3F_V2F_EXT                                        = 0x81B3
+	CURRENT_RASTER_NORMAL_SGIX                                 = 0x8406
+	MAP1_BINORMAL_EXT                                          = 0x8446
+	PROXY_TEXTURE_1D_ARRAY_EXT                                 = 0x8C19
+	AUX1                                                       = 0x040A
+	CURRENT_RASTER_POSITION_VALID                              = 0x0B08
+	COLOR_TABLE_ALPHA_SIZE                                     = 0x80DD
+	DEPTH24_STENCIL8                                           = 0x88F0
+	RGBA32UI_EXT                                               = 0x8D70
+	MAT_DIFFUSE_BIT_PGI                                        = 0x00400000
+	TEXTURE_COMPONENTS                                         = 0x1003
+	TEXTURE_COMPARE_FAIL_VALUE_ARB                             = 0x80BF
+	TEXTURE_BASE_LEVEL                                         = 0x813C
+	VARIANT_ARRAY_EXT                                          = 0x87E8
+	PATH_CLIENT_LENGTH_NV                                      = 0x907F
+	MAX_TESS_CONTROL_ATOMIC_COUNTERS                           = 0x92D3
+	RGB16                                                      = 0x8054
+	FULL_SUPPORT                                               = 0x82B7
+	VERTEX_STREAM5_ATI                                         = 0x8771
+	OP_LOG_BASE_2_EXT                                          = 0x8792
+	INDEX_ARRAY_ADDRESS_NV                                     = 0x8F24
+	SPRITE_OBJECT_ALIGNED_SGIX                                 = 0x814D
+	TEXTURE16                                                  = 0x84D0
+	UNSIGNED_INT64_VEC2_NV                                     = 0x8FF5
+	BUFFER_BINDING                                             = 0x9302
+	CMYK_EXT                                                   = 0x800C
+	PIXEL_TILE_GRID_WIDTH_SGIX                                 = 0x8142
+	DEBUG_CATEGORY_OTHER_AMD                                   = 0x9150
+	TEXTURE_LOD_BIAS_EXT                                       = 0x8501
+	TRANSPOSE_AFFINE_2D_NV                                     = 0x9096
+	STENCIL_CLEAR_VALUE                                        = 0x0B91
+	EYE_RADIAL_NV                                              = 0x855B
+	ACTIVE_PROGRAM_EXT                                         = 0x8B8D
+	TEXTURE_2D_MULTISAMPLE                                     = 0x9100
+	DEBUG_LOGGED_MESSAGES_ARB                                  = 0x9145
+	MAP_READ_BIT_EXT                                           = 0x0001
+	ACCUM_CLEAR_VALUE                                          = 0x0B80
+	INDEX_ARRAY_STRIDE_EXT                                     = 0x8086
+	DEBUG_SOURCE_OTHER_ARB                                     = 0x824B
+	READ_PIXEL_DATA_RANGE_LENGTH_NV                            = 0x887B
+	PROXY_TEXTURE_1D_ARRAY                                     = 0x8C19
+	MAX_GEOMETRY_TEXTURE_IMAGE_UNITS_ARB                       = 0x8C29
+	VERTEX_ATTRIB_MAP1_COEFF_APPLE                             = 0x8A03
+	SAMPLER_2D_ARRAY_EXT                                       = 0x8DC1
+	VIDEO_COLOR_CONVERSION_MATRIX_NV                           = 0x9029
+	MAP_WRITE_BIT_EXT                                          = 0x0002
+	R                                                          = 0x2002
+	UNSIGNED_SHORT_4_4_4_4                                     = 0x8033
+	INT_SAMPLER_CUBE_EXT                                       = 0x8DCC
+	UNSIGNED_INT_10_10_10_2_OES                                = 0x8DF6
+	VERTICAL_LINE_TO_NV                                        = 0x08
+	TEXTURE_DEFORMATION_BIT_SGIX                               = 0x00000001
+	SELECT                                                     = 0x1C02
+	TEXTURE_PRIORITY_EXT                                       = 0x8066
+	DEPENDENT_RGB_TEXTURE_CUBE_MAP_NV                          = 0x885A
+	PROGRAM_ERROR_STRING_ARB                                   = 0x8874
+	COMPRESSED_SRGB_S3TC_DXT1_NV                               = 0x8C4C
+	UNIFORM_BUFFER_BINDING_EXT                                 = 0x8DEF
+	TEXTURE_CUBE_MAP_ARRAY                                     = 0x9009
+	SRGB_READ                                                  = 0x8297
+	LUMINANCE16F_ARB                                           = 0x881E
+	REG_2_ATI                                                  = 0x8923
+	INT_10_10_10_2_OES                                         = 0x8DF7
+	OFFSET                                                     = 0x92FC
+	POLYGON_STIPPLE_BIT                                        = 0x00000010
+	STENCIL_EXT                                                = 0x1802
+	WEIGHT_SUM_UNITY_ARB                                       = 0x86A6
+	CON_24_ATI                                                 = 0x8959
+	TEXTURE_WIDTH_QCOM                                         = 0x8BD2
+	RENDERBUFFER_RED_SIZE                                      = 0x8D50
+	RGB32UI_EXT                                                = 0x8D71
+	MAX_CLIPMAP_DEPTH_SGIX                                     = 0x8177
+	FRAMEBUFFER_RENDERABLE_LAYERED                             = 0x828A
+	CURRENT_QUERY_ARB                                          = 0x8865
+	RASTERIZER_DISCARD_EXT                                     = 0x8C89
+	SAMPLER_CUBE_SHADOW_EXT                                    = 0x8DC5
+	ATOMIC_COUNTER_BUFFER_REFERENCED_BY_FRAGMENT_SHADER        = 0x92CB
+	VERTEX_ARRAY_LIST_IBM                                      = 103070
+	ALPHA16                                                    = 0x803E
+	INTENSITY_FLOAT16_APPLE                                    = 0x881D
+	TEXTURE_COORD_ARRAY_TYPE_EXT                               = 0x8089
+	COLOR_INDEX8_EXT                                           = 0x80E5
+	INDEX_TEST_FUNC_EXT                                        = 0x81B6
+	UNSIGNED_INT_SAMPLER_CUBE                                  = 0x8DD4
+	DOUBLE_MAT2_EXT                                            = 0x8F46
+	RGBA_SNORM                                                 = 0x8F93
+	PATH_INITIAL_END_CAP_NV                                    = 0x9077
+	DRAW_BUFFER                                                = 0x0C01
+	SIGNED_LUMINANCE_NV                                        = 0x8701
+	TEXTURE_LUMINANCE_TYPE                                     = 0x8C14
+	QUERY_WAIT                                                 = 0x8E13
+	PIXEL_TEXTURE_SGIS                                         = 0x8353
+	FRAGMENT_LIGHT_MODEL_LOCAL_VIEWER_SGIX                     = 0x8408
+	VERTEX_PROGRAM_TWO_SIDE_NV                                 = 0x8643
+	EXT_blend_color                                            = 1
+	MAGNITUDE_BIAS_NV                                          = 0x8718
+	TRANSFORM_FEEDBACK_BUFFER_START_NV                         = 0x8C84
+	TRANSLATE_3D_NV                                            = 0x9091
+	MAX_DEBUG_MESSAGE_LENGTH                                   = 0x9143
+	NAME_STACK_DEPTH                                           = 0x0D70
+	MATRIX11_ARB                                               = 0x88CB
+	TEXTURE_COORD_ARRAY_LIST_IBM                               = 103074
+	EVAL_BIT                                                   = 0x00010000
+	PIXEL_MAP_A_TO_A                                           = 0x0C79
+	COMPRESSED_LUMINANCE_ALPHA                                 = 0x84EB
+	MAX_PROGRAM_NATIVE_ATTRIBS_ARB                             = 0x88AF
+	PROGRAM_ATTRIB_COMPONENTS_NV                               = 0x8906
+	UNSIGNED_INT_SAMPLER_CUBE_EXT                              = 0x8DD4
+	VERTEX_ATTRIB_ARRAY_LENGTH_NV                              = 0x8F2A
+	EDGEFLAG_BIT_PGI                                           = 0x00040000
+	SAMPLE_COVERAGE_INVERT_ARB                                 = 0x80AB
+	INVERSE_TRANSPOSE_NV                                       = 0x862D
+	OUTPUT_TEXTURE_COORD2_EXT                                  = 0x879F
+	GEOMETRY_OUTPUT_TYPE_ARB                                   = 0x8DDC
+	INTERLEAVED_ATTRIBS                                        = 0x8C8C
+	LUMINANCE_INTEGER_EXT                                      = 0x8D9C
+	VERTEX_ARRAY_LENGTH_NV                                     = 0x8F2B
+	COMPRESSED_SRGB8_ALPHA8_ASTC_6x5_KHR                       = 0x93D3
+	SUBPIXEL_BITS                                              = 0x0D50
+	BLEND_DST_RGB_OES                                          = 0x80C8
+	TEXTURE_DEFORMATION_SGIX                                   = 0x8195
+	INTERNALFORMAT_DEPTH_SIZE                                  = 0x8275
+	DEPENDENT_GB_TEXTURE_2D_NV                                 = 0x86EA
+	TEXTURE_FREE_MEMORY_ATI                                    = 0x87FC
+	VERTEX_ATTRIB_ARRAY_NORMALIZED_ARB                         = 0x886A
+	REG_3_ATI                                                  = 0x8924
+	VERSION_2_1                                                = 1
+	COPY_PIXEL_TOKEN                                           = 0x0706
+	VERTEX_SHADER_OPTIMIZED_EXT                                = 0x87D4
+	FRAGMENT_PROGRAM_CALLBACK_MESA                             = 0x8BB1
+	TRANSFORM_FEEDBACK_BUFFER_PAUSED_NV                        = 0x8E23
+	MAX_CONVOLUTION_WIDTH                                      = 0x801A
+	COLOR_ARRAY_POINTER_EXT                                    = 0x8090
+	PACK_SKIP_VOLUMES_SGIS                                     = 0x8130
+	CONST_EYE_NV                                               = 0x86E5
+	FLOAT_R32_NV                                               = 0x8885
+	DEPTH_BOUNDS_TEST_EXT                                      = 0x8890
+	FRAMEBUFFER_INCOMPLETE_LAYER_COUNT_ARB                     = 0x8DA9
+	GL_4D_COLOR_TEXTURE                                        = 0x0604
+	NEAREST                                                    = 0x2600
+	POST_CONVOLUTION_ALPHA_SCALE                               = 0x801F
+	COLOR_ARRAY_STRIDE_EXT                                     = 0x8083
+	SWIZZLE_STRQ_ATI                                           = 0x897A
+	INT_SAMPLER_2D_ARRAY                                       = 0x8DCF
+	ELEMENT_ARRAY_LENGTH_NV                                    = 0x8F33
+	CONDITION_SATISFIED                                        = 0x911C
+	ONE_MINUS_SRC_COLOR                                        = 0x0301
+	COLOR_TABLE                                                = 0x80D0
+	FRAMEBUFFER_INCOMPLETE_DIMENSIONS_EXT                      = 0x8CD9
+	INT_IMAGE_2D_MULTISAMPLE_EXT                               = 0x9060
+	MULTISAMPLE_BIT_3DFX                                       = 0x20000000
+	UNPACK_SKIP_ROWS                                           = 0x0CF3
+	INDEX_ARRAY_COUNT_EXT                                      = 0x8087
+	SAMPLE_PATTERN_SGIS                                        = 0x80AC
+	TEXTURE_COMPARE_OPERATOR_SGIX                              = 0x819B
+	TEXTURE_ALPHA_TYPE                                         = 0x8C13
+	MAX_COLOR_ATTACHMENTS_EXT                                  = 0x8CDF
+	COPY_WRITE_BUFFER_BINDING                                  = 0x8F37
+	DOUBLE_MAT2x4                                              = 0x8F4A
+	DEBUG_CATEGORY_DEPRECATION_AMD                             = 0x914B
+	TEXTURE4_ARB                                               = 0x84C4
+	MATRIX_PALETTE_ARB                                         = 0x8840
+	SGIX_texture_add_env                                       = 1
+	HISTOGRAM_ALPHA_SIZE                                       = 0x802B
+	FRAGMENT_LIGHT2_SGIX                                       = 0x840E
+	WEIGHT_ARRAY_POINTER_OES                                   = 0x86AC
+	UNSIGNED_INT_SAMPLER_1D_ARRAY_EXT                          = 0x8DD6
+	EXT_texture_object                                         = 1
+	HISTOGRAM_ALPHA_SIZE_EXT                                   = 0x802B
+	VERSION_1_2                                                = 1
+	INDEX_ARRAY_EXT                                            = 0x8077
+	TEXTURE_HI_SIZE_NV                                         = 0x871B
+	MAX_TEXTURE_IMAGE_UNITS                                    = 0x8872
+	BIAS_BIT_ATI                                               = 0x00000008
+	TESS_CONTROL_SUBROUTINE_UNIFORM                            = 0x92EF
+	PIXEL_MAP_G_TO_G                                           = 0x0C77
+	TEXTURE_VIEW_NUM_LEVELS                                    = 0x82DC
+	TEXTURE_COMPRESSED_IMAGE_SIZE                              = 0x86A0
+	COMPRESSED_SIGNED_RED_RGTC1                                = 0x8DBC
+	MINMAX_SINK_EXT                                            = 0x8030
+	RGBA2_EXT                                                  = 0x8055
+	TEXTURE_ALPHA_SIZE_EXT                                     = 0x805F
+	CURRENT_MATRIX_STACK_DEPTH_NV                              = 0x8640
+	READ_PIXEL_DATA_RANGE_POINTER_NV                           = 0x887D
+	TEXTURE_LIGHTING_MODE_HP                                   = 0x8167
+	INTERLACE_READ_INGR                                        = 0x8568
+	SRC2_ALPHA                                                 = 0x858A
+	PROGRAM_ATTRIBS_ARB                                        = 0x88AC
+	MAX_ASYNC_READ_PIXELS_SGIX                                 = 0x8361
+	DOT4_ATI                                                   = 0x8967
+	COMPRESSED_SLUMINANCE_EXT                                  = 0x8C4A
+	COMPRESSED_SRGB_ALPHA_S3TC_DXT3_EXT                        = 0x8C4E
+	VERTEX_ATTRIB_ARRAY_BARRIER_BIT_EXT                        = 0x00000001
+	RGBA12_EXT                                                 = 0x805A
+	INDEX                                                      = 0x8222
+	MAX_LABEL_LENGTH                                           = 0x82E8
+	MAX_TRACK_MATRICES_NV                                      = 0x862F
+	COLOR_ATTACHMENT0_NV                                       = 0x8CE0
+	DRAW_INDIRECT_UNIFIED_NV                                   = 0x8F40
+	STRICT_DEPTHFUNC_HINT_PGI                                  = 0x1A216
+	SGIS_multisample                                           = 1
+	MODELVIEW13_ARB                                            = 0x872D
+	COLOR_ATTACHMENT6_EXT                                      = 0x8CE6
+	SCISSOR_BIT                                                = 0x00080000
+	BLEND                                                      = 0x0BE2
+	MAX_FRAGMENT_UNIFORM_COMPONENTS                            = 0x8B49
+	TEXTURE_BINDING_BUFFER                                     = 0x8C2C
+	RENDERBUFFER_WIDTH_OES                                     = 0x8D42
+	DOUBLE                                                     = 0x140A
+	R32UI                                                      = 0x8236
+	CURRENT_MATRIX_STACK_DEPTH_ARB                             = 0x8640
+	ALPHA_FLOAT16_APPLE                                        = 0x881C
+	MATRIX_INDEX_ARRAY_ARB                                     = 0x8844
+	CONTEXT_CORE_PROFILE_BIT                                   = 0x00000001
+	UNSIGNED_INVERT_NV                                         = 0x8537
+	COMPRESSED_SRGB_ALPHA_BPTC_UNORM_ARB                       = 0x8E8D
+	INDEX_ARRAY_POINTER_EXT                                    = 0x8091
+	COMBINER7_NV                                               = 0x8557
+	UNSIGNED_INT_8_8_S8_S8_REV_NV                              = 0x86DB
+	CULL_MODES_NV                                              = 0x86E0
+	MAX_FRAGMENT_BINDABLE_UNIFORMS_EXT                         = 0x8DE3
+	PN_TRIANGLES_NORMAL_MODE_QUADRATIC_ATI                     = 0x87F8
+	MAX_VERTEX_TEXTURE_IMAGE_UNITS_ARB                         = 0x8B4C
+	DEPTH_COMPONENT16                                          = 0x81A5
+	IMAGE_CLASS_1_X_16                                         = 0x82BE
+	TEXTURE3_ARB                                               = 0x84C3
+	GEOMETRY_SHADER_ARB                                        = 0x8DD9
+	FRAME_NV                                                   = 0x8E26
+	LUMINANCE4_EXT                                             = 0x803F
+	VIEW_CLASS_S3TC_DXT3_RGBA                                  = 0x82CE
+	OP_INDEX_EXT                                               = 0x8782
+	RGB8UI_EXT                                                 = 0x8D7D
+	MAX_COMBINED_IMAGE_UNITS_AND_FRAGMENT_OUTPUTS_EXT          = 0x8F39
+	MAX_SERVER_WAIT_TIMEOUT                                    = 0x9111
+	DRAW_BUFFER5_ATI                                           = 0x882A
+	STENCIL_TAG_BITS_EXT                                       = 0x88F2
+	TABLE_TOO_LARGE_EXT                                        = 0x8031
+	FRAGMENT_LIGHT5_SGIX                                       = 0x8411
+	DRAW_BUFFER14_ARB                                          = 0x8833
+	SLUMINANCE_ALPHA                                           = 0x8C44
+	COMPRESSED_SRGB_ALPHA_EXT                                  = 0x8C49
+	TRANSFORM_FEEDBACK_ACTIVE                                  = 0x8E24
+	SYNC_GPU_COMMANDS_COMPLETE_APPLE                           = 0x9117
+	INVALID_FRAMEBUFFER_OPERATION_OES                          = 0x0506
+	ALPHA8_EXT                                                 = 0x803C
+	DEBUG_SOURCE_WINDOW_SYSTEM                                 = 0x8247
+	UNSIGNED_INT64_AMD                                         = 0x8BC2
+	CURRENT_TIME_NV                                            = 0x8E28
+	DEBUG_CALLBACK_USER_PARAM                                  = 0x8245
+	IMAGE_CLASS_4_X_16                                         = 0x82BC
+	TEXTURE_LIGHT_EXT                                          = 0x8350
+	MAX_SPOT_EXPONENT_NV                                       = 0x8505
+	MATRIX5_NV                                                 = 0x8635
+	MODELVIEW0_MATRIX_EXT                                      = 0x0BA6
+	T4F_C4F_N3F_V4F                                            = 0x2A2D
+	MAX_GEOMETRY_OUTPUT_VERTICES_EXT                           = 0x8DE0
+	MAX_MULTISAMPLE_COVERAGE_MODES_NV                          = 0x8E11
+	LINEAR_SHARPEN_SGIS                                        = 0x80AD
+	IMAGE_ROTATE_ORIGIN_Y_HP                                   = 0x815B
+	STORAGE_SHARED_APPLE                                       = 0x85BF
+	FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER_EXT                     = 0x8CDB
+	RGB16I                                                     = 0x8D89
+	NUM_SHADER_BINARY_FORMATS                                  = 0x8DF9
+	FIRST_TO_REST_NV                                           = 0x90AF
+	SGIS_fog_function                                          = 1
+	VIEW_CLASS_128_BITS                                        = 0x82C4
+	COMPRESSED_RGBA_FXT1_3DFX                                  = 0x86B1
+	FONT_UNDERLINE_THICKNESS_BIT_NV                            = 0x08000000
+	TEXTURE_2D_MULTISAMPLE_ARRAY                               = 0x9102
+	INDEX_LOGIC_OP                                             = 0x0BF1
+	SAMPLE_BUFFERS_SGIS                                        = 0x80A8
+	INDEX_ARRAY_LENGTH_NV                                      = 0x8F2E
+	HISTOGRAM_BLUE_SIZE                                        = 0x802A
+	TEXTURE19                                                  = 0x84D3
+	MAP1_VERTEX_ATTRIB14_4_NV                                  = 0x866E
+	MAX_IMAGE_SAMPLES_EXT                                      = 0x906D
+	TEXTURE24                                                  = 0x84D8
+	VERTEX_ATTRIB_MAP1_DOMAIN_APPLE                            = 0x8A05
+	DEBUG_SEVERITY_LOW_ARB                                     = 0x9148
+	CONSTANT_ALPHA                                             = 0x8003
+	VERTEX_ARRAY_RANGE_NV                                      = 0x851D
+	CURRENT_VERTEX_ATTRIB_ARB                                  = 0x8626
+	TEXTURE_DT_SIZE_NV                                         = 0x871E
+	REPLACE_VALUE_AMD                                          = 0x874B
+	OUTPUT_TEXTURE_COORD31_EXT                                 = 0x87BC
+	INT_SAMPLER_2D_RECT_EXT                                    = 0x8DCD
+	SHADER_BINARY_FORMATS                                      = 0x8DF8
+	TEXTURE_SWIZZLE_R_EXT                                      = 0x8E42
+	BUFFER_UPDATE_BARRIER_BIT_EXT                              = 0x00000200
+	LIGHT5                                                     = 0x4005
+	VERTEX_STREAM0_ATI                                         = 0x876C
+	LUMINANCE_FLOAT16_ATI                                      = 0x881E
+	NATIVE_GRAPHICS_HANDLE_PGI                                 = 0x1A202
+	CCW                                                        = 0x0901
+	TEXTURE_LUMINANCE_SIZE                                     = 0x8060
+	SOURCE1_RGB_ARB                                            = 0x8581
+	MATRIX_INDEX_ARRAY_STRIDE_ARB                              = 0x8848
+	FLOAT_RG32_NV                                              = 0x8887
+	RASTERIZER_DISCARD_NV                                      = 0x8C89
+	FRAMEBUFFER_BINDING_EXT                                    = 0x8CA6
+	NUM_SAMPLE_COUNTS                                          = 0x9380
+	PIXEL_MAP_R_TO_R_SIZE                                      = 0x0CB6
+	TEXTURE_BORDER_COLOR                                       = 0x1004
+	TEXTURE11                                                  = 0x84CB
+	LUMINANCE_FLOAT16_APPLE                                    = 0x881E
+	SECONDARY_COLOR_ARRAY_BUFFER_BINDING                       = 0x889C
+	NUM_INSTRUCTIONS_TOTAL_ATI                                 = 0x8972
+	PATCH_DEFAULT_OUTER_LEVEL                                  = 0x8E74
+	UNSIGNED_INT_IMAGE_CUBE_MAP_ARRAY                          = 0x906A
+	EXT_vertex_array                                           = 1
+	PASS_THROUGH_TOKEN                                         = 0x0700
+	FOG_COLOR                                                  = 0x0B66
+	FRAMEBUFFER_ATTACHMENT_OBJECT_NAME                         = 0x8CD1
+	ALPHA16UI_EXT                                              = 0x8D78
+	INT_SAMPLER_CUBE                                           = 0x8DCC
+	FOG_COORD_ARRAY_ADDRESS_NV                                 = 0x8F28
+	MAP1_VERTEX_3                                              = 0x0D97
+	DRAW_BUFFER5_NV                                            = 0x882A
+	MATRIX10_ARB                                               = 0x88CA
+	ATOMIC_COUNTER_BUFFER_SIZE                                 = 0x92C3
+	LIGHT_MODEL_TWO_SIDE                                       = 0x0B52
+	MAX_OPTIMIZED_VERTEX_SHADER_INVARIANTS_EXT                 = 0x87CD
+	CONSTANT_ATTENUATION                                       = 0x1207
+	HILO_NV                                                    = 0x86F4
+	WRITE_PIXEL_DATA_RANGE_POINTER_NV                          = 0x887C
+	FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT_EXT              = 0x8CD7
+	RELATIVE_SMOOTH_QUADRATIC_CURVE_TO_NV                      = 0x0F
+	MAX_TESS_EVALUATION_IMAGE_UNIFORMS                         = 0x90CC
+	COLOR_ARRAY_LIST_IBM                                       = 103072
+	NATIVE_GRAPHICS_BEGIN_HINT_PGI                             = 0x1A203
+	MODELVIEW27_ARB                                            = 0x873B
+	COVERAGE_COMPONENT_NV                                      = 0x8ED0
+	INT_IMAGE_1D_EXT                                           = 0x9057
+	INTERNALFORMAT_STENCIL_SIZE                                = 0x8276
+	VERTEX_PROGRAM_NV                                          = 0x8620
+	INT_SAMPLER_2D_EXT                                         = 0x8DCA
+	CULL_VERTEX_EXT                                            = 0x81AA
+	OPERAND3_RGB_NV                                            = 0x8593
+	DOT_PRODUCT_CONST_EYE_REFLECT_CUBE_MAP_NV                  = 0x86F3
+	PROGRAM_BINARY_FORMATS                                     = 0x87FF
+	IMAGE_1D_ARRAY_EXT                                         = 0x9052
+	SAMPLE_ALPHA_TO_COVERAGE                                   = 0x809E
+	OFFSET_TEXTURE_RECTANGLE_SCALE_NV                          = 0x864D
+	FRAMEBUFFER_INCOMPLETE_FORMATS_EXT                         = 0x8CDA
+	PARTIAL_SUCCESS_NV                                         = 0x902E
+	SYNC_FLUSH_COMMANDS_BIT_APPLE                              = 0x00000001
+	TEXTURE_GEN_S                                              = 0x0C60
+	LINEAR_ATTENUATION                                         = 0x1208
+	PIXEL_TILE_BEST_ALIGNMENT_SGIX                             = 0x813E
+	POST_TEXTURE_FILTER_BIAS_RANGE_SGIX                        = 0x817B
+	TEXTURE_COMPRESSED_BLOCK_SIZE                              = 0x82B3
+	CONSTANT_ARB                                               = 0x8576
+	SHADER_COMPILER                                            = 0x8DFA
+	CLOSE_PATH_NV                                              = 0x00
+	RGBA16                                                     = 0x805B
+	RGB_SCALE                                                  = 0x8573
+	PACK_SUBSAMPLE_RATE_SGIX                                   = 0x85A0
+	SGIX_calligraphic_fragment                                 = 1
+	GL_3DC_XY_AMD                                              = 0x87FA
+	FRACTIONAL_ODD                                             = 0x8E7B
+	COMPRESSED_SIGNED_RG11_EAC                                 = 0x9273
+	DEBUG_OUTPUT                                               = 0x92E0
+	ARRAY_STRIDE                                               = 0x92FE
+	HISTOGRAM                                                  = 0x8024
+	TEXTURE21                                                  = 0x84D5
+	MAX_VERTEX_UNITS_ARB                                       = 0x86A4
+	SGIX_subsample                                             = 1
+	TEXTURE_COMPRESSION_HINT                                   = 0x84EF
+	EVAL_VERTEX_ATTRIB3_NV                                     = 0x86C9
+	LUMINANCE_ALPHA16I_EXT                                     = 0x8D8D
+	UNSIGNED_INT_IMAGE_2D_MULTISAMPLE                          = 0x906B
+	STENCIL_PASS_DEPTH_PASS                                    = 0x0B96
+	TEXTURE9                                                   = 0x84C9
+	LUMINANCE_ALPHA_FLOAT16_APPLE                              = 0x881F
+	SHADER_OBJECT_EXT                                          = 0x8B48
+	TRANSFORM_FEEDBACK_BUFFER_BINDING                          = 0x8C8F
+	SYNC_GPU_COMMANDS_COMPLETE                                 = 0x9117
+	LIST_BASE                                                  = 0x0B32
+	COMPRESSED_RGBA_S3TC_DXT3_EXT                              = 0x83F2
+	RELATIVE_SMOOTH_CUBIC_CURVE_TO_NV                          = 0x11
+	TRIANGLE_FAN                                               = 0x0006
+	RG8I                                                       = 0x8237
+	VERTEX_PROGRAM_ARB                                         = 0x8620
+	SAMPLER_1D_ARRAY_SHADOW                                    = 0x8DC3
+	SAMPLER_CUBE_SHADOW                                        = 0x8DC5
+	UNSIGNED_SHORT_8_8_REV_APPLE                               = 0x85BB
+	PROGRAM_POINT_SIZE                                         = 0x8642
+	MAX_PROGRAM_RESULT_COMPONENTS_NV                           = 0x8909
+	INT64_NV                                                   = 0x140E
+	TEXTURE28_ARB                                              = 0x84DC
+	COMBINER6_NV                                               = 0x8556
+	MAX_VERTEX_SHADER_INSTRUCTIONS_EXT                         = 0x87C5
+	DYNAMIC_READ                                               = 0x88E9
+	GEOMETRY_OUTPUT_TYPE                                       = 0x8918
+	RGBA16I                                                    = 0x8D88
+	TESS_GEN_SPACING                                           = 0x8E77
+	REFERENCED_BY_GEOMETRY_SHADER                              = 0x9309
+	DUAL_INTENSITY8_SGIS                                       = 0x8119
+	TRANSPOSE_COLOR_MATRIX_ARB                                 = 0x84E6
+	UNSIGNED_INT_24_8_NV                                       = 0x84FA
+	TEXTURE_CUBE_MAP_POSITIVE_Y_EXT                            = 0x8517
+	FIELDS_NV                                                  = 0x8E27
+	FONT_DESCENDER_BIT_NV                                      = 0x00400000
+	LINE_WIDTH_GRANULARITY                                     = 0x0B23
+	LUMINANCE12_EXT                                            = 0x8041
+	POST_COLOR_MATRIX_BLUE_BIAS                                = 0x80BA
+	TEXTURE_LOD_BIAS_S_SGIX                                    = 0x818E
+	SEPARATE_SPECULAR_COLOR_EXT                                = 0x81FA
+	DRAW_BUFFER10_ARB                                          = 0x882F
+	MAX_VARYING_COMPONENTS_EXT                                 = 0x8B4B
+	MAX_OPTIMIZED_VERTEX_SHADER_VARIANTS_EXT                   = 0x87CB
+	DRAW_BUFFER8_ARB                                           = 0x882D
+	FRAMEBUFFER_INCOMPLETE_LAYER_TARGETS                       = 0x8DA8
+	MAX_FRAGMENT_INTERPOLATION_OFFSET_NV                       = 0x8E5C
+	FRAMEBUFFER_DEFAULT_FIXED_SAMPLE_LOCATIONS                 = 0x9314
+	COLOR_INDEX2_EXT                                           = 0x80E3
+	SPRITE_TRANSLATION_SGIX                                    = 0x814B
+	COLOR_ENCODING                                             = 0x8296
+	TEXTURE_BINDING_RECTANGLE_NV                               = 0x84F6
+	RENDERBUFFER_DEPTH_SIZE_OES                                = 0x8D54
+	UNSIGNED_INT_IMAGE_BUFFER                                  = 0x9067
+	WAIT_FAILED_APPLE                                          = 0x911D
+	SGI_texture_color_table                                    = 1
+	NICEST                                                     = 0x1102
+	ASYNC_TEX_IMAGE_SGIX                                       = 0x835C
+	COLOR_LOGIC_OP                                             = 0x0BF2
+	R32I                                                       = 0x8235
+	FOG_COORD_ARRAY_TYPE                                       = 0x8454
+	PIXEL_COUNT_AVAILABLE_NV                                   = 0x8867
+	RENDER_MODE                                                = 0x0C40
+	COMPRESSED_RED                                             = 0x8225
+	DRAW_BUFFER8_NV                                            = 0x882D
+	COLOR_ATTACHMENT14_NV                                      = 0x8CEE
+	VERSION_1_4                                                = 1
+	SGIX_vertex_preclip                                        = 1
+	IMAGE_CLASS_2_X_8                                          = 0x82C0
+	STENCIL_INDEX1_OES                                         = 0x8D46
+	FRAGMENT_PROGRAM_PARAMETER_BUFFER_NV                       = 0x8DA4
+	POST_COLOR_MATRIX_BLUE_SCALE_SGI                           = 0x80B6
+	DUAL_LUMINANCE8_SGIS                                       = 0x8115
+	DRAW_BUFFER0_ARB                                           = 0x8825
+	COLOR_ATTACHMENT4_EXT                                      = 0x8CE4
+	PACK_SKIP_IMAGES_EXT                                       = 0x806B
+	SLUMINANCE8_ALPHA8                                         = 0x8C45
+	FRAMEBUFFER_COMPLETE_OES                                   = 0x8CD5
+	FONT_UNITS_PER_EM_BIT_NV                                   = 0x00100000
+	MAX_ATTRIB_STACK_DEPTH                                     = 0x0D35
+	C3F_V3F                                                    = 0x2A24
+	FENCE_CONDITION_NV                                         = 0x84F4
+	NUM_PROGRAM_BINARY_FORMATS                                 = 0x87FE
+	FRAGMENT_PROGRAM_NV                                        = 0x8870
+	IMAGE_2D_ARRAY_EXT                                         = 0x9053
+	INT_IMAGE_2D_RECT_EXT                                      = 0x905A
+	PATH_STENCIL_VALUE_MASK_NV                                 = 0x90B9
+	MAX_FRAGMENT_IMAGE_UNIFORMS                                = 0x90CE
+	UNPACK_COMPRESSED_BLOCK_SIZE                               = 0x912A
+	ONE_MINUS_DST_ALPHA                                        = 0x0305
+	DOT_PRODUCT_DEPTH_REPLACE_NV                               = 0x86ED
+	VERTEX_ATTRIB_ARRAY_DIVISOR                                = 0x88FE
+	NORMAL_ARRAY_ADDRESS_NV                                    = 0x8F22
+	MAX_COMPUTE_WORK_GROUP_SIZE                                = 0x91BF
+	DEBUG_SEVERITY_NOTIFICATION                                = 0x826B
+	DOT_PRODUCT_DIFFUSE_CUBE_MAP_NV                            = 0x86F1
+	SIGNED_ALPHA8_NV                                           = 0x8706
+	MAX_GEOMETRY_INPUT_COMPONENTS                              = 0x9123
+	FRAGMENT_LIGHT1_SGIX                                       = 0x840D
+	DISCARD_NV                                                 = 0x8530
+	LIGHT_MODEL_SPECULAR_VECTOR_APPLE                          = 0x85B0
+	FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER                         = 0x8CDB
+	UNSIGNED_INT_SAMPLER_2D_MULTISAMPLE                        = 0x910A
+	LIGHT_ENV_MODE_SGIX                                        = 0x8407
+	VARIABLE_A_NV                                              = 0x8523
+	SIGNED_RGB_UNSIGNED_ALPHA_NV                               = 0x870C
+	DUDV_ATI                                                   = 0x8779
+	ATC_RGBA_INTERPOLATED_ALPHA_AMD                            = 0x87EE
+	REG_4_ATI                                                  = 0x8925
+	COLOR_ATTACHMENT2                                          = 0x8CE2
+	CURRENT_RASTER_INDEX                                       = 0x0B05
+	MAX_CUBE_MAP_TEXTURE_SIZE_EXT                              = 0x851C
+	RGBA_FLOAT32_APPLE                                         = 0x8814
+	FALSE                                                      = 0
+	ZOOM_X                                                     = 0x0D16
+	POST_COLOR_MATRIX_ALPHA_SCALE_SGI                          = 0x80B7
+	OBJECT_ACTIVE_UNIFORM_MAX_LENGTH_ARB                       = 0x8B87
+	MINOR_VERSION                                              = 0x821C
+	CULL_FRAGMENT_NV                                           = 0x86E7
+	UNSIGNED_INT16_VEC2_NV                                     = 0x8FF1
+	CURRENT_BIT                                                = 0x00000001
+	LUMINANCE                                                  = 0x1909
+	QUAD_LUMINANCE4_SGIS                                       = 0x8120
+	FRAMEBUFFER_ATTACHMENT_COMPONENT_TYPE                      = 0x8211
+	MODELVIEW26_ARB                                            = 0x873A
+	MOV_ATI                                                    = 0x8961
+	RGBA8UI_EXT                                                = 0x8D7C
+	VERTEX_ATTRIB_ARRAY_ADDRESS_NV                             = 0x8F20
+	FACTOR_MAX_AMD                                             = 0x901D
+	GL_3D                                                      = 0x0601
+	R3_G3_B2                                                   = 0x2A10
+	INTENSITY16_EXT                                            = 0x804D
+	UNIFORM_BUFFER_SIZE                                        = 0x8A2A
+	SGIS_detail_texture                                        = 1
+	AUX0                                                       = 0x0409
+	TEXTURE8_ARB                                               = 0x84C8
+	TEXTURE_BINDING_CUBE_MAP_ARB                               = 0x8514
+	RENDERBUFFER_SAMPLES_EXT                                   = 0x8CAB
+	COLOR_TABLE_FORMAT                                         = 0x80D8
+	PHONG_HINT_WIN                                             = 0x80EB
+	MAX_VIEWPORTS                                              = 0x825B
+	NORMAL_ARRAY_BUFFER_BINDING                                = 0x8897
+	TESS_EVALUATION_SUBROUTINE_UNIFORM                         = 0x92F0
+	RGBA8I                                                     = 0x8D8E
+	UNPACK_SKIP_IMAGES                                         = 0x806D
+	FOG_COORDINATE_ARRAY_TYPE                                  = 0x8454
+	HALF_BIAS_NORMAL_NV                                        = 0x853A
+	ELEMENT_ARRAY_BUFFER_BINDING_ARB                           = 0x8895
+	PROGRAM_TEMPORARIES_ARB                                    = 0x88A4
+	PIXEL_PACK_BUFFER_BINDING                                  = 0x88ED
+	FRAGMENT_SHADER_DERIVATIVE_HINT_ARB                        = 0x8B8B
+	TEXTURE_BINDING_1D_ARRAY_EXT                               = 0x8C1C
+	FRAMEBUFFER_ATTACHMENT_LAYERED_EXT                         = 0x8DA7
+	LOCATION_INDEX                                             = 0x930F
+	TEXTURE_INTENSITY_SIZE                                     = 0x8061
+	LIGHT0                                                     = 0x4000
+	MAX_VERTEX_ATTRIB_RELATIVE_OFFSET                          = 0x82D9
+	MODELVIEW14_ARB                                            = 0x872E
+	MODELVIEW25_ARB                                            = 0x8739
+	DOT2_ADD_ATI                                               = 0x896C
+	STENCIL_WRITEMASK                                          = 0x0B98
+	SAMPLE_COVERAGE                                            = 0x80A0
+	COLOR_BUFFER_BIT                                           = 0x00004000
+	PROXY_POST_COLOR_MATRIX_COLOR_TABLE_SGI                    = 0x80D5
+	TEXTURE_VIEW                                               = 0x82B5
+	DOT3_RGBA                                                  = 0x86AF
+	ACTIVE_UNIFORM_MAX_LENGTH                                  = 0x8B87
+	DOUBLE_MAT4                                                = 0x8F48
+	FOG_COORDINATE_ARRAY_LIST_STRIDE_IBM                       = 103086
+	FOG_SPECULAR_TEXTURE_WIN                                   = 0x80EC
+	TEXTURE11_ARB                                              = 0x84CB
+	MAX_TEXTURE_MAX_ANISOTROPY_EXT                             = 0x84FF
+	OPERAND2_ALPHA_ARB                                         = 0x859A
+	VERTEX_ATTRIB_ARRAY_SIZE                                   = 0x8623
+	DRAW_BUFFER11_ATI                                          = 0x8830
+	PROXY_TEXTURE_2D_ARRAY                                     = 0x8C1B
+	HISTOGRAM_EXT                                              = 0x8024
+	SAMPLE_ALPHA_TO_COVERAGE_ARB                               = 0x809E
+	DUAL_LUMINANCE16_SGIS                                      = 0x8117
+	DEPTH_PASS_INSTRUMENT_MAX_SGIX                             = 0x8312
+	MATRIX12_ARB                                               = 0x88CC
+	OBJECT_TYPE_ARB                                            = 0x8B4E
+	BLUE_INTEGER                                               = 0x8D96
+	MAX_CLIPMAP_VIRTUAL_DEPTH_SGIX                             = 0x8178
+	DEBUG_NEXT_LOGGED_MESSAGE_LENGTH_ARB                       = 0x8243
+	WEIGHT_ARRAY_OES                                           = 0x86AD
+	FRAMEBUFFER_ATTACHMENT_OBJECT_TYPE_OES                     = 0x8CD0
+	STATIC_DRAW                                                = 0x88E4
+	FLOAT_VEC4                                                 = 0x8B52
+	PROGRAM_NATIVE_ADDRESS_REGISTERS_ARB                       = 0x88B2
+	MUL_ATI                                                    = 0x8964
+	FUNC_SUBTRACT_EXT                                          = 0x800A
+	DRAW_BUFFER2                                               = 0x8827
+	PIXEL_COUNT_NV                                             = 0x8866
+	FRAMEBUFFER_ATTACHMENT_TEXTURE_LEVEL                       = 0x8CD2
+	RGB8I_EXT                                                  = 0x8D8F
+	TIMEOUT_EXPIRED_APPLE                                      = 0x911B
+	PACK_SKIP_PIXELS                                           = 0x0D04
+	MAP1_NORMAL                                                = 0x0D92
+	MIRRORED_REPEAT_IBM                                        = 0x8370
+	MAX_PROGRAM_TEX_INDIRECTIONS_ARB                           = 0x880D
+	VERTEX_ATTRIB_ARRAY_INTEGER                                = 0x88FD
+	EDGE_FLAG_ARRAY_ADDRESS_NV                                 = 0x8F26
+	EXT_blend_subtract                                         = 1
+	NAND                                                       = 0x150E
+	BINORMAL_ARRAY_TYPE_EXT                                    = 0x8440
+	TEXTURE20                                                  = 0x84D4
+	SAMPLES_3DFX                                               = 0x86B4
+	RENDERBUFFER_ALPHA_SIZE_EXT                                = 0x8D53
+	UNSIGNED_INT_VEC3                                          = 0x8DC7
+	ACTIVE_RESOURCES                                           = 0x92F5
+	ALPHA_TEST_REF_QCOM                                        = 0x0BC2
+	FRAGMENT_LIGHT_MODEL_NORMAL_INTERPOLATION_SGIX             = 0x840B
+	COMBINER_BIAS_NV                                           = 0x8549
+	OP_MADD_EXT                                                = 0x8788
+	NORMAL_ARRAY_STRIDE_EXT                                    = 0x807F
+	VERTEX_ATTRIB_ARRAY0_NV                                    = 0x8650
+	MAX_VERTEX_UNIFORM_COMPONENTS                              = 0x8B4A
+	IMAGE_BINDING_ACCESS_EXT                                   = 0x8F3E
+	ELEMENT_ARRAY_BARRIER_BIT                                  = 0x00000002
+	CLIP_PLANE5                                                = 0x3005
+	OP_CROSS_PRODUCT_EXT                                       = 0x8797
+	SAMPLE_MASK_VALUE_NV                                       = 0x8E52
+	VIEWPORT_BIT                                               = 0x00000800
+	POINT_DISTANCE_ATTENUATION_ARB                             = 0x8129
+	TRANSPOSE_PROJECTION_MATRIX                                = 0x84E4
+	FLOAT_RG_NV                                                = 0x8881
+	SAMPLER_1D_SHADOW_ARB                                      = 0x8B61
+	RENDERBUFFER_BLUE_SIZE_EXT                                 = 0x8D52
+	FLOAT16_VEC4_NV                                            = 0x8FFB
+	BLUE_SCALE                                                 = 0x0D1A
+	IR_INSTRUMENT1_SGIX                                        = 0x817F
+	UNSIGNED_INT16_VEC3_NV                                     = 0x8FF2
+	BUFFER_DATA_SIZE                                           = 0x9303
+	TEXTURE_USAGE_ANGLE                                        = 0x93A2
+	LUMINANCE8_EXT                                             = 0x8040
+	SMOOTH_LINE_WIDTH_RANGE                                    = 0x0B22
+	EVAL_TRIANGULAR_2D_NV                                      = 0x86C1
+	TRANSFORM_FEEDBACK_BUFFER_ACTIVE_NV                        = 0x8E24
+	VIEWPORT                                                   = 0x0BA2
+	ARRAY_ELEMENT_LOCK_FIRST_EXT                               = 0x81A8
+	INTERNALFORMAT_SHARED_SIZE                                 = 0x8277
+	MANUAL_GENERATE_MIPMAP                                     = 0x8294
+	COMPARE_REF_DEPTH_TO_TEXTURE_EXT                           = 0x884E
+	BGR_INTEGER_EXT                                            = 0x8D9A
+	Z4Y12Z4CB12Z4Y12Z4CR12_422_NV                              = 0x9035
+	GL_2D                                                      = 0x0600
+	TEXTURE_BINDING_2D                                         = 0x8069
+	TEXTURE_BUFFER_ARB                                         = 0x8C2A
+	ASYNC_MARKER_SGIX                                          = 0x8329
+	PROXY_TEXTURE_RECTANGLE                                    = 0x84F7
+	MAX_CUBE_MAP_TEXTURE_SIZE_ARB                              = 0x851C
+	SGIS_texture_select                                        = 1
+	FRAMEBUFFER_ATTACHMENT_STENCIL_SIZE                        = 0x8217
+	RG16UI                                                     = 0x823A
+	FRAGMENT_DEPTH_EXT                                         = 0x8452
+	QUERY_BY_REGION_NO_WAIT_NV                                 = 0x8E16
+	CONTEXT_PROFILE_MASK                                       = 0x9126
+	COLOR_MATERIAL_FACE                                        = 0x0B55
+	HISTOGRAM_RED_SIZE_EXT                                     = 0x8028
+	BUFFER_SIZE                                                = 0x8764
+	REG_16_ATI                                                 = 0x8931
+	R11F_G11F_B10F                                             = 0x8C3A
+	ALPHA8I_EXT                                                = 0x8D90
+	PATH_FORMAT_PS_NV                                          = 0x9071
+	SHORT                                                      = 0x1402
+	TEXTURE6                                                   = 0x84C6
+	ELEMENT_ARRAY_ADDRESS_NV                                   = 0x8F29
+	ACTIVE_TEXTURE_ARB                                         = 0x84E0
+	MATRIX_EXT                                                 = 0x87C0
+	BGR_INTEGER                                                = 0x8D9A
+	TRIANGLE_STRIP                                             = 0x0005
+	TANGENT_ARRAY_STRIDE_EXT                                   = 0x843F
+	OPERAND1_ALPHA                                             = 0x8599
+	ADD_SIGNED_ARB                                             = 0x8574
+	UTF8_NV                                                    = 0x909A
+	DEBUG_SEVERITY_LOW                                         = 0x9148
+	PIXEL_MAP_S_TO_S_SIZE                                      = 0x0CB1
+	STENCIL_BITS                                               = 0x0D57
+	DEBUG_TYPE_ERROR_ARB                                       = 0x824C
+	SIGNED_IDENTITY_NV                                         = 0x853C
+	CLAMP_VERTEX_COLOR_ARB                                     = 0x891A
+	UNSIGNED_INT_VEC3_EXT                                      = 0x8DC7
+	MAP2_COLOR_4                                               = 0x0DB0
+	AND_INVERTED                                               = 0x1504
+	POST_CONVOLUTION_RED_BIAS_EXT                              = 0x8020
+	CAVEAT_SUPPORT                                             = 0x82B8
+	DECR_WRAP                                                  = 0x8508
+	VERTEX_ARRAY_RANGE_VALID_NV                                = 0x851F
+	MATRIX7_NV                                                 = 0x8637
+	MAX_DUAL_SOURCE_DRAW_BUFFERS                               = 0x88FC
+	SGIX_list_priority                                         = 1
+	UNSIGNED_SHORT_1_5_5_5_REV_EXT                             = 0x8366
+	RESCALE_NORMAL_EXT                                         = 0x803A
+	COMBINER_INPUT_NV                                          = 0x8542
+	READ_FRAMEBUFFER_BINDING_EXT                               = 0x8CAA
+	VIDEO_BUFFER_PITCH_NV                                      = 0x9028
+	TEXTURE_COVERAGE_SAMPLES_NV                                = 0x9045
+	NORMAL_ARRAY_STRIDE                                        = 0x807F
+	HISTOGRAM_FORMAT                                           = 0x8027
+	FRAGMENT_COLOR_MATERIAL_FACE_SGIX                          = 0x8402
+	OP_SUB_EXT                                                 = 0x8796
+	PRIMITIVES_GENERATED_NV                                    = 0x8C87
+	MAX_SAMPLES_ANGLE                                          = 0x8D57
+	INT_SAMPLER_3D_EXT                                         = 0x8DCB
+	GLYPH_HORIZONTAL_BEARING_ADVANCE_BIT_NV                    = 0x10
+	VERTEX_ATTRIB_BINDING                                      = 0x82D4
+	FRAMEBUFFER_OES                                            = 0x8D40
+	VERTEX_SHADER_BIT                                          = 0x00000001
+	TEXTURE_MATRIX                                             = 0x0BA8
+	CONVOLUTION_1D                                             = 0x8010
+	REPLACE_EXT                                                = 0x8062
+	DRAW_BUFFER4_ATI                                           = 0x8829
+	EXT_copy_texture                                           = 1
+	SAMPLE_COVERAGE_INVERT                                     = 0x80AB
+	TEXTURE_MULTI_BUFFER_HINT_SGIX                             = 0x812E
+	DRAW_BUFFER1_ATI                                           = 0x8826
+	FOG_COORD_ARRAY_BUFFER_BINDING                             = 0x889D
+	TEXTURE_GREEN_TYPE                                         = 0x8C11
+	SGIX_async_histogram                                       = 1
+	ETC1_SRGB8_NV                                              = 0x88EE
+	FRAMEBUFFER_ATTACHMENT_TEXTURE_LEVEL_OES                   = 0x8CD2
+	T2F_C4UB_V3F                                               = 0x2A29
+	MAX_CONVOLUTION_HEIGHT_EXT                                 = 0x801B
+	DUAL_ALPHA8_SGIS                                           = 0x8111
+	VERTEX_ATTRIB_ARRAY_LONG                                   = 0x874E
+	RENDERBUFFER_FREE_MEMORY_ATI                               = 0x87FD
+	DRAW_BUFFER1_NV                                            = 0x8826
+	INTENSITY8I_EXT                                            = 0x8D91
+	RED_SNORM                                                  = 0x8F90
+	QUERY_OBJECT_AMD                                           = 0x9153
+	LIGHT2                                                     = 0x4002
+	ZOOM_Y                                                     = 0x0D17
+	TEXTURE_BINDING_3D                                         = 0x806A
+	TEXTURE_2D_STACK_MESAX                                     = 0x875A
+	VERTEX_SHADER_LOCALS_EXT                                   = 0x87D3
+	PN_TRIANGLES_NORMAL_MODE_ATI                               = 0x87F3
+	VERTEX_ARRAY_BUFFER_BINDING                                = 0x8896
+	PRIMITIVE_ID_NV                                            = 0x8C7C
+	MAX_COMBINED_IMAGE_UNITS_AND_FRAGMENT_OUTPUTS              = 0x8F39
+	ALREADY_SIGNALED_APPLE                                     = 0x911A
+	RGBA_MODE                                                  = 0x0C31
+	NEGATIVE_ONE_EXT                                           = 0x87DF
+	MAX_PROGRAM_ADDRESS_REGISTERS_ARB                          = 0x88B1
+	RENDERBUFFER_RED_SIZE_EXT                                  = 0x8D50
+	BGR_EXT                                                    = 0x80E0
+	OBJECT_POINT_SGIS                                          = 0x81F5
+	OUTPUT_TEXTURE_COORD22_EXT                                 = 0x87B3
+	REG_25_ATI                                                 = 0x893A
+	FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT_OES              = 0x8CD7
+	PATH_OBJECT_BOUNDING_BOX_NV                                = 0x908A
+	VERTEX_ATTRIB_ARRAY_ENABLED                                = 0x8622
+	EVAL_2D_NV                                                 = 0x86C0
+	ALPHA32F_ARB                                               = 0x8816
+	BOOL_VEC2                                                  = 0x8B57
+	SLUMINANCE8_EXT                                            = 0x8C47
+	RASTERIZER_DISCARD                                         = 0x8C89
+	IMAGE_FORMAT_COMPATIBILITY_BY_SIZE                         = 0x90C8
+	DEPTH_CLEAR_VALUE                                          = 0x0B73
+	MAX_PROGRAM_ALU_INSTRUCTIONS_ARB                           = 0x880B
+	GL_4X_BIT_ATI                                              = 0x00000002
+	UNDEFINED_APPLE                                            = 0x8A1C
+	FLOAT_MAT3x2                                               = 0x8B67
+	TRANSFORM_FEEDBACK_BUFFER_EXT                              = 0x8C8E
+	FRAMEBUFFER_INCOMPLETE_FORMATS_OES                         = 0x8CDA
+	UNSIGNED_INT_SAMPLER_2D                                    = 0x8DD2
+	HISTOGRAM_SINK                                             = 0x802D
+	MATRIX3_NV                                                 = 0x8633
+	INTERPOLATE                                                = 0x8575
+	OPERAND1_ALPHA_EXT                                         = 0x8599
+	VERTEX_ATTRIB_ARRAY_ENABLED_ARB                            = 0x8622
+	DRAW_BUFFER6                                               = 0x882B
+	TRANSFORM_FEEDBACK_BUFFER_MODE_NV                          = 0x8C7F
+	TEXTURE_BORDER_COLOR_NV                                    = 0x1004
+	FRAGMENT_LIGHT0_SGIX                                       = 0x840C
+	MAP1_VERTEX_ATTRIB15_4_NV                                  = 0x866F
+	SLUMINANCE_NV                                              = 0x8C46
+	FRAMEBUFFER_EXT                                            = 0x8D40
+	AFFINE_2D_NV                                               = 0x9092
+	BUFFER_MAP_OFFSET                                          = 0x9121
+	STEREO                                                     = 0x0C33
+	TEXTURE_2D_BINDING_EXT                                     = 0x8069
+	R16F                                                       = 0x822D
+	DRAW_BUFFER13_ARB                                          = 0x8832
+	DEPTH_RANGE                                                = 0x0B70
+	FRAMEBUFFER_ATTACHMENT_GREEN_SIZE                          = 0x8213
+	VERTEX_PRECLIP_HINT_SGIX                                   = 0x83EF
+	LIST_MODE                                                  = 0x0B30
+	MIRRORED_REPEAT_ARB                                        = 0x8370
+	SLUMINANCE8_ALPHA8_EXT                                     = 0x8C45
+	POST_CONVOLUTION_GREEN_SCALE_EXT                           = 0x801D
+	PIXEL_SUBSAMPLE_4242_SGIX                                  = 0x85A4
+	GREEN_BIT_ATI                                              = 0x00000002
+	DRAW_FRAMEBUFFER_BINDING                                   = 0x8CA6
+	RG_SNORM                                                   = 0x8F91
+	MAX_TESS_EVALUATION_ATOMIC_COUNTERS                        = 0x92D4
+	POST_CONVOLUTION_GREEN_BIAS_EXT                            = 0x8021
+	FOG_FUNC_SGIS                                              = 0x812A
+	TEXTURE_BINDING_CUBE_MAP_OES                               = 0x8514
+	OPERAND0_RGB                                               = 0x8590
+	RGB10_A2UI                                                 = 0x906F
+	DEBUG_SEVERITY_MEDIUM_AMD                                  = 0x9147
+	COMPRESSED_R11_EAC                                         = 0x9270
+	WEIGHT_ARRAY_SIZE_OES                                      = 0x86AB
+	VERTEX_PROGRAM_POSITION_MESA                               = 0x8BB4
+	MAX_GEOMETRY_UNIFORM_COMPONENTS_EXT                        = 0x8DDF
+	NEXT_VIDEO_CAPTURE_BUFFER_STATUS_NV                        = 0x9025
+	DEBUG_SOURCE_SHADER_COMPILER                               = 0x8248
+	VIEW_CLASS_RGTC1_RED                                       = 0x82D0
+	UNPACK_RESAMPLE_SGIX                                       = 0x842D
+	TEXTURE0_ARB                                               = 0x84C0
+	UNSIGNED_INT_SAMPLER_1D_EXT                                = 0x8DD1
+	TRANSFORM_FEEDBACK_NV                                      = 0x8E22
+	FUNC_SUBTRACT                                              = 0x800A
+	RGBA4_S3TC                                                 = 0x83A3
+	UNPACK_ROW_BYTES_APPLE                                     = 0x8A16
+	COLOR_ATTACHMENT7                                          = 0x8CE7
+	ACTIVE_SUBROUTINE_UNIFORM_MAX_LENGTH                       = 0x8E49
+	SGX_PROGRAM_BINARY_IMG                                     = 0x9130
+	READ_BUFFER_EXT                                            = 0x0C02
+	NEAREST_CLIPMAP_NEAREST_SGIX                               = 0x844D
+	TESS_EVALUATION_TEXTURE                                    = 0x829D
+	REG_28_ATI                                                 = 0x893D
+	FOG_COORDINATE_EXT                                         = 0x8451
+	MATRIX19_ARB                                               = 0x88D3
+	RGB_422_APPLE                                              = 0x8A1F
+	SAMPLER_3D                                                 = 0x8B5F
+	FRAGMENT_PROGRAM_POSITION_MESA                             = 0x8BB0
+	INT_SAMPLER_RENDERBUFFER_NV                                = 0x8E57
+	PATH_COMPUTED_LENGTH_NV                                    = 0x90A0
+	FRAMEBUFFER_ATTACHMENT_COMPONENT_TYPE_EXT                  = 0x8211
+	SOURCE2_ALPHA_EXT                                          = 0x858A
+	FLOAT_CLEAR_COLOR_VALUE_NV                                 = 0x888D
+	ANY_SAMPLES_PASSED                                         = 0x8C2F
+	READ_FRAMEBUFFER                                           = 0x8CA8
+	POLYGON_SMOOTH_HINT                                        = 0x0C53
+	TEXTURE_COORD_ARRAY_COUNT_EXT                              = 0x808B
+	MAX_VERTEX_VARYING_COMPONENTS_EXT                          = 0x8DDE
+	LUMINANCE8_SNORM                                           = 0x9015
+	EDGE_FLAG                                                  = 0x0B43
+	COLOR_TABLE_SCALE_SGI                                      = 0x80D6
+	PROXY_TEXTURE_CUBE_MAP_EXT                                 = 0x851B
+	MAX_PROGRAM_TEX_INSTRUCTIONS_ARB                           = 0x880C
+	MATRIX21_ARB                                               = 0x88D5
+	HALF_FLOAT_NV                                              = 0x140B
+	TEXTURE_CLIPMAP_LOD_OFFSET_SGIX                            = 0x8175
+	VERTEX_ATTRIB_ARRAY8_NV                                    = 0x8658
+	SIGNED_RGB_NV                                              = 0x86FE
+	LOCAL_CONSTANT_EXT                                         = 0x87C3
+	MATRIX26_ARB                                               = 0x88DA
+	TESS_EVALUATION_PROGRAM_PARAMETER_BUFFER_NV                = 0x8C75
+	QUERY_RESULT_AVAILABLE_ARB                                 = 0x8867
+	MATRIX7_ARB                                                = 0x88C7
+	MAX_UNIFORM_BLOCK_SIZE                                     = 0x8A30
+	TRANSFORM_FEEDBACK_VARYINGS                                = 0x8C83
+	RGBA16F_EXT                                                = 0x881A
+	VERTEX_ATTRIB_ARRAY_INTEGER_NV                             = 0x88FD
+	RGBA_INTEGER                                               = 0x8D99
+	VIRTUAL_PAGE_SIZE_X_AMD                                    = 0x9195
+	COMBINE_ARB                                                = 0x8570
+	MODELVIEW28_ARB                                            = 0x873C
+	DRAW_BUFFER2_NV                                            = 0x8827
+	PALETTE4_RGB8_OES                                          = 0x8B90
+	RGB_INTEGER                                                = 0x8D98
+	COMPRESSED_SRGB8_ALPHA8_ASTC_10x8_KHR                      = 0x93DA
+	POLYGON_OFFSET_FACTOR_EXT                                  = 0x8038
+	VERTEX_ARRAY_STRIDE_EXT                                    = 0x807C
+	COMBINER3_NV                                               = 0x8553
+	MAP1_VERTEX_ATTRIB1_4_NV                                   = 0x8661
+	MAP2_VERTEX_ATTRIB2_4_NV                                   = 0x8672
+	DOT_PRODUCT_NV                                             = 0x86EC
+	MAX_VERTEX_STREAMS_ATI                                     = 0x876B
+	DU8DV8_ATI                                                 = 0x877A
+	DRAW_BUFFER9_NV                                            = 0x882E
+	CON_5_ATI                                                  = 0x8946
+	COMPRESSED_SRGB8_ALPHA8_ASTC_6x6_KHR                       = 0x93D4
+	LINE_LOOP                                                  = 0x0002
+	CLAMP                                                      = 0x2900
+	TEXTURE_GEQUAL_R_SGIX                                      = 0x819D
+	NORMAL_MAP_OES                                             = 0x8511
+	UNSIGNED_INT_24_8_OES                                      = 0x84FA
+	EXPAND_NEGATE_NV                                           = 0x8539
+	TEXTURE_BLUE_TYPE                                          = 0x8C12
+	FILE_NAME_NV                                               = 0x9074
+	COMPRESSED_RGB_S3TC_DXT1_EXT                               = 0x83F0
+	FRAMEBUFFER_ATTACHMENT_TEXTURE_LEVEL_EXT                   = 0x8CD2
+	MAX_TESS_EVALUATION_SHADER_STORAGE_BLOCKS                  = 0x90D9
+	PIXEL_MAP_S_TO_S                                           = 0x0C71
+	DEBUG_TYPE_UNDEFINED_BEHAVIOR                              = 0x824E
+	TEXTURE_MAX_CLAMP_S_SGIX                                   = 0x8369
+	EYE_PLANE_ABSOLUTE_NV                                      = 0x855C
+	CURRENT_VERTEX_ATTRIB                                      = 0x8626
+	ADD                                                        = 0x0104
+	SECONDARY_COLOR_ARRAY_EXT                                  = 0x845E
+	SRGB8                                                      = 0x8C41
+	AUX2                                                       = 0x040B
+	YCRCB_422_SGIX                                             = 0x81BB
+	COLOR_SUM                                                  = 0x8458
+	DELETE_STATUS                                              = 0x8B80
+	MAX_GEOMETRY_TEXTURE_IMAGE_UNITS_EXT                       = 0x8C29
+	TRANSFORM_FEEDBACK_BUFFER                                  = 0x8C8E
+	STENCIL_ATTACHMENT                                         = 0x8D20
+	UNSIGNED_INT64_VEC3_NV                                     = 0x8FF6
+	LOAD                                                       = 0x0101
+	EXTENSIONS                                                 = 0x1F03
+	AUX_DEPTH_STENCIL_APPLE                                    = 0x8A14
+	INTENSITY16UI_EXT                                          = 0x8D79
+	TRANSLATE_Y_NV                                             = 0x908F
+	QUERY_BUFFER_AMD                                           = 0x9192
+	QUADS                                                      = 0x0007
+	DEPTH_FUNC                                                 = 0x0B74
+	PIXEL_MAP_A_TO_A_SIZE                                      = 0x0CB9
+	PROGRAM_ERROR_POSITION_NV                                  = 0x864B
+	OUTPUT_TEXTURE_COORD25_EXT                                 = 0x87B6
+	PROGRAM_UNDER_NATIVE_LIMITS_ARB                            = 0x88B6
+	STENCIL_CLEAR_TAG_VALUE_EXT                                = 0x88F3
+	FRAMEBUFFER_BINDING_ANGLE                                  = 0x8CA6
+	RG16F                                                      = 0x822F
+	SRGB_WRITE                                                 = 0x8298
+	LUMINANCE8                                                 = 0x8040
+	MAX_COMBINED_COMPUTE_UNIFORM_COMPONENTS                    = 0x8266
+	IMAGE_CLASS_1_X_8                                          = 0x82C1
+	PN_TRIANGLES_NORMAL_MODE_LINEAR_ATI                        = 0x87F7
+	PATH_FOG_GEN_MODE_NV                                       = 0x90AC
+	WIDE_LINE_HINT_PGI                                         = 0x1A222
+	RGB_S3TC                                                   = 0x83A0
+	CON_22_ATI                                                 = 0x8957
+	MAX_DEBUG_LOGGED_MESSAGES_AMD                              = 0x9144
+	SPOT_EXPONENT                                              = 0x1205
+	CON_15_ATI                                                 = 0x8950
+	FONT_Y_MIN_BOUNDS_BIT_NV                                   = 0x00020000
+	TEXTURE0                                                   = 0x84C0
+	MAX_CLIENT_ATTRIB_STACK_DEPTH                              = 0x0D3B
+	EMBOSS_CONSTANT_NV                                         = 0x855E
+	WRITE_ONLY_OES                                             = 0x88B9
+	FRAMEBUFFER_INCOMPLETE_LAYER_TARGETS_ARB                   = 0x8DA8
+	TESS_CONTROL_OUTPUT_VERTICES                               = 0x8E75
+	RASTER_POSITION_UNCLIPPED_IBM                              = 0x19262
+	LINEAR_DETAIL_ALPHA_SGIS                                   = 0x8098
+	RGB4_S3TC                                                  = 0x83A1
+	DEPTH_CLAMP                                                = 0x864F
+	INVALID_OPERATION                                          = 0x0502
+	VERTEX_ARRAY_PARALLEL_POINTERS_INTEL                       = 0x83F5
+	TEXTURE_CUBE_MAP_POSITIVE_Y_OES                            = 0x8517
+	TRANSFORM_FEEDBACK_BINDING_NV                              = 0x8E25
+	UNSIGNED_INT_SAMPLER_CUBE_MAP_ARRAY                        = 0x900F
+	Z6Y10Z6CB10Z6Y10Z6CR10_422_NV                              = 0x9033
+	TEXTURE_COORD_ARRAY_LIST_STRIDE_IBM                        = 103084
+	DUAL_ALPHA16_SGIS                                          = 0x8113
+	YCRCB_444_SGIX                                             = 0x81BC
+	DEPTH_STENCIL                                              = 0x84F9
+	E_TIMES_F_NV                                               = 0x8531
+	N3F_V3F                                                    = 0x2A25
+	FUNC_SUBTRACT_OES                                          = 0x800A
+	SAMPLES_PASSED_ARB                                         = 0x8914
+	FRAMEBUFFER_INCOMPLETE_LAYER_TARGETS_EXT                   = 0x8DA8
+	PATH_DASH_CAPS_NV                                          = 0x907B
+	EQUIV                                                      = 0x1509
+	REG_6_ATI                                                  = 0x8927
+	DOT3_ATI                                                   = 0x8966
+	FRONT_AND_BACK                                             = 0x0408
+	ALPHA_SCALE                                                = 0x0D1C
+	COLOR_TABLE_GREEN_SIZE                                     = 0x80DB
+	SWIZZLE_STQ_DQ_ATI                                         = 0x8979
+	MAX_VERTEX_SHADER_STORAGE_BLOCKS                           = 0x90D6
+	CURRENT_SECONDARY_COLOR_EXT                                = 0x8459
+	TEXTURE30                                                  = 0x84DE
+	VERTEX_ATTRIB_ARRAY_POINTER                                = 0x8645
+	MAX_DRAW_BUFFERS_ATI                                       = 0x8824
+	STREAM_DRAW_ARB                                            = 0x88E0
+	COLOR_ATTACHMENT13_NV                                      = 0x8CED
+	RGB5_A1_EXT                                                = 0x8057
+	FRAGMENTS_INSTRUMENT_MAX_SGIX                              = 0x8315
+	YCBCR_422_APPLE                                            = 0x85B9
+	COMPUTE_SHADER                                             = 0x91B9
+	LINES_ADJACENCY_ARB                                        = 0x000A
+	OR_REVERSE                                                 = 0x150B
+	QUAD_LUMINANCE8_SGIS                                       = 0x8121
+	TRACK_MATRIX_NV                                            = 0x8648
+	PROGRAM_STRING_ARB                                         = 0x8628
+	TEXTURE_LO_SIZE_NV                                         = 0x871C
+	TEXTURE_LOD_BIAS_T_SGIX                                    = 0x818F
+	FOG_OFFSET_VALUE_SGIX                                      = 0x8199
+	RG16F_EXT                                                  = 0x822F
+	SHADER_IMAGE_LOAD                                          = 0x82A4
+	SECONDARY_COLOR_ARRAY                                      = 0x845E
+	OPERAND2_RGB                                               = 0x8592
+	OUTPUT_TEXTURE_COORD15_EXT                                 = 0x87AC
+	STATIC_DRAW_ARB                                            = 0x88E4
+	SAMPLER_CUBE_MAP_ARRAY_SHADOW                              = 0x900D
+	NORMAL_ARRAY                                               = 0x8075
+	AND_REVERSE                                                = 0x1502
+	PROXY_TEXTURE_1D                                           = 0x8063
+	PROGRAM_PIPELINE                                           = 0x82E4
+	ACCUM_ADJACENT_PAIRS_NV                                    = 0x90AD
+	UNSIGNED_SHORT_5_5_5_1_EXT                                 = 0x8034
+	SRGB8_ALPHA8_EXT                                           = 0x8C43
+	TEXCOORD4_BIT_PGI                                          = 0x80000000
+	BLEND_SRC_RGB                                              = 0x80C9
+	FILTER4_SGIS                                               = 0x8146
+	NUM_INSTRUCTIONS_PER_PASS_ATI                              = 0x8971
+	MAX_GEOMETRY_TEXTURE_IMAGE_UNITS                           = 0x8C29
+	MOVE_TO_RESETS_NV                                          = 0x90B5
+	ARC_TO_NV                                                  = 0xFE
+	EXT_abgr                                                   = 1
+	LINE_STIPPLE                                               = 0x0B24
+	PROGRAM_LENGTH_NV                                          = 0x8627
+	UNPACK_CMYK_HINT_EXT                                       = 0x800F
+	TEXTURE_WRAP_R_EXT                                         = 0x8072
+	COMPRESSED_RGBA_PVRTC_2BPPV2_IMG                           = 0x9137
+	MAX_GEOMETRY_ATOMIC_COUNTERS                               = 0x92D5
+	INTENSITY8_EXT                                             = 0x804B
+	PROGRAM_PIPELINE_BINDING                                   = 0x825A
+	TRANSPOSE_MODELVIEW_MATRIX_ARB                             = 0x84E3
+	DEPTH_COMPONENT32F_NV                                      = 0x8DAB
+	MAX_COMBINED_IMAGE_UNIFORMS                                = 0x90CF
+	MAX_FRAMEBUFFER_HEIGHT                                     = 0x9316
+	SHADOW_ATTENUATION_EXT                                     = 0x834E
+	MIRROR_CLAMP_EXT                                           = 0x8742
+	RELATIVE_ARC_TO_NV                                         = 0xFF
+	REFERENCED_BY_FRAGMENT_SHADER                              = 0x930A
+	CONSERVE_MEMORY_HINT_PGI                                   = 0x1A1FD
+	MULT                                                       = 0x0103
+	IMAGE_CLASS_4_X_32                                         = 0x82B9
+	SLIM10U_SGIX                                               = 0x831E
+	LUMINANCE_ALPHA32F_ARB                                     = 0x8819
+	STENCIL_INDEX4_OES                                         = 0x8D47
+	POLYGON_OFFSET_POINT                                       = 0x2A01
+	RENDERBUFFER_INTERNAL_FORMAT_EXT                           = 0x8D44
+	IMAGE_BINDING_LAYERED                                      = 0x8F3C
+	COMPRESSED_RGBA_ASTC_10x6_KHR                              = 0x93B9
+	TEXTURE17_ARB                                              = 0x84D1
+	SOURCE2_RGB_EXT                                            = 0x8582
+	ELEMENT_ARRAY_BUFFER_BINDING                               = 0x8895
+	CND_ATI                                                    = 0x896A
+	PATH_ERROR_POSITION_NV                                     = 0x90AB
+	SIGNALED                                                   = 0x9119
+	HISTOGRAM_GREEN_SIZE_EXT                                   = 0x8029
+	POINT_SIZE_MAX                                             = 0x8127
+	DS_BIAS_NV                                                 = 0x8716
+	LUMINANCE32F_ARB                                           = 0x8818
+	STENCIL_INDEX8                                             = 0x8D48
+	MAX_TESS_CONTROL_ATOMIC_COUNTER_BUFFERS                    = 0x92CD
+	NAME_LENGTH                                                = 0x92F9
+	RGB8                                                       = 0x8051
+	CONVOLUTION_1D_EXT                                         = 0x8010
+	TRANSFORM_FEEDBACK_BUFFER_MODE                             = 0x8C7F
+	IMAGE_BINDING_LEVEL                                        = 0x8F3B
+	ATOMIC_COUNTER_BUFFER_ACTIVE_ATOMIC_COUNTER_INDICES        = 0x92C6
+	INTENSITY                                                  = 0x8049
+	FRAMEBUFFER_ATTACHMENT_ALPHA_SIZE                          = 0x8215
+	TESS_CONTROL_TEXTURE                                       = 0x829C
+	MAX_PROGRAM_NATIVE_PARAMETERS_ARB                          = 0x88AB
+	SAMPLER_1D_ARRAY_EXT                                       = 0x8DC0
+	DOUBLE_VEC2_EXT                                            = 0x8FFC
+	IMAGE_CUBIC_WEIGHT_HP                                      = 0x815E
+	SOURCE1_ALPHA                                              = 0x8589
+	VERTEX_ATTRIB_ARRAY2_NV                                    = 0x8652
+	MATRIX9_ARB                                                = 0x88C9
+	CON_20_ATI                                                 = 0x8955
+	BOOL_VEC4                                                  = 0x8B59
+	TEXTURE_HEIGHT_QCOM                                        = 0x8BD3
+	RGBA16UI_EXT                                               = 0x8D76
+	PERFMON_GLOBAL_MODE_QCOM                                   = 0x8FA0
+	YCBYCR8_422_NV                                             = 0x9031
+	SYNC_STATUS_APPLE                                          = 0x9114
+	ALLOW_DRAW_OBJ_HINT_PGI                                    = 0x1A20E
+	INTERNALFORMAT_PREFERRED                                   = 0x8270
+	SLUMINANCE8                                                = 0x8C47
+	DEBUG_CATEGORY_UNDEFINED_BEHAVIOR_AMD                      = 0x914C
+	MODELVIEW                                                  = 0x1700
+	INDEX_TEST_REF_EXT                                         = 0x81B7
+	DEBUG_NEXT_LOGGED_MESSAGE_LENGTH                           = 0x8243
+	GET_TEXTURE_IMAGE_TYPE                                     = 0x8292
+	OPERAND0_ALPHA_ARB                                         = 0x8598
+	CURRENT_ATTRIB_NV                                          = 0x8626
+	FRAMEZOOM_FACTOR_SGIX                                      = 0x818C
+	REFLECTION_MAP                                             = 0x8512
+	MAX_TEXTURE_IMAGE_UNITS_ARB                                = 0x8872
+	OBJECT_SHADER_SOURCE_LENGTH_ARB                            = 0x8B88
+	VERTEX_PROGRAM_CALLBACK_DATA_MESA                          = 0x8BB7
+	UNSIGNED_INT_SAMPLER_BUFFER                                = 0x8DD8
+	DIFFUSE                                                    = 0x1201
+	PACK_CMYK_HINT_EXT                                         = 0x800E
+	STREAM_COPY                                                = 0x88E2
+	TEXTURE_RED_TYPE                                           = 0x8C10
+	INT_IMAGE_1D_ARRAY_EXT                                     = 0x905D
+	GEOMETRY_DEFORMATION_BIT_SGIX                              = 0x00000002
+	MAX_TEXTURE_UNITS                                          = 0x84E2
+	OP_DOT4_EXT                                                = 0x8785
+	VBO_FREE_MEMORY_ATI                                        = 0x87FB
+	EXP2                                                       = 0x0801
+	SOURCE0_RGB_EXT                                            = 0x8580
+	OFFSET_TEXTURE_MATRIX_NV                                   = 0x86E1
+	ZERO                                                       = 0
+	MAX_VIEWPORT_DIMS                                          = 0x0D3A
+	SYNC_CL_EVENT_COMPLETE_ARB                                 = 0x8241
+	PROGRAM_BINARY_FORMATS_OES                                 = 0x87FF
+	MATRIX_INDEX_ARRAY_TYPE_OES                                = 0x8847
+	BOUNDING_BOX_OF_BOUNDING_BOXES_NV                          = 0x909C
+	MAX_SERVER_WAIT_TIMEOUT_APPLE                              = 0x9111
+	ELEMENT_ARRAY_APPLE                                        = 0x8A0C
+	INTERLEAVED_ATTRIBS_EXT                                    = 0x8C8C
+	PROXY_TEXTURE_2D_MULTISAMPLE                               = 0x9101
+	RED                                                        = 0x1903
+	UNSIGNED_SHORT_8_8_APPLE                                   = 0x85BA
+	ALPHA16F_ARB                                               = 0x881C
+	UNSIGNED_INT_SAMPLER_RENDERBUFFER_NV                       = 0x8E58
+	COLOR_TABLE_FORMAT_SGI                                     = 0x80D8
+	DEPTH_COMPONENT32_ARB                                      = 0x81A7
+	VERTEX_ATTRIB_ARRAY14_NV                                   = 0x865E
+	UNSIGNED_SHORT_1_15_REV_MESA                               = 0x8754
+	COMPRESSED_RGB_BPTC_SIGNED_FLOAT_ARB                       = 0x8E8E
+	SMOOTH_CUBIC_CURVE_TO_NV                                   = 0x10
+	ACTIVE_PROGRAM                                             = 0x8259
+	TEXTURE12                                                  = 0x84CC
+	TESS_GEN_POINT_MODE                                        = 0x8E79
+	SLICE_ACCUM_SUN                                            = 0x85CC
+	FRAMEBUFFER_BINDING_OES                                    = 0x8CA6
+	ALPHA_SNORM                                                = 0x9010
+	MAP1_VERTEX_ATTRIB10_4_NV                                  = 0x866A
+	SPOT_CUTOFF                                                = 0x1206
+	IUI_N3F_V3F_EXT                                            = 0x81B0
+	INT_SAMPLER_2D_RECT                                        = 0x8DCD
+	HISTOGRAM_WIDTH_EXT                                        = 0x8026
+	MAP1_VERTEX_ATTRIB4_4_NV                                   = 0x8664
+	COMPARE_R_TO_TEXTURE_ARB                                   = 0x884E
+	PIXEL_UNPACK_BUFFER_BINDING_ARB                            = 0x88EF
+	ANY_SAMPLES_PASSED_CONSERVATIVE                            = 0x8D6A
+	NEXT_BUFFER_NV                                             = -2
+	UNSIGNALED                                                 = 0x9118
+	CURRENT_RASTER_POSITION                                    = 0x0B07
+	PROGRAM_BINARY_RETRIEVABLE_HINT                            = 0x8257
+	COMPRESSED_LUMINANCE                                       = 0x84EA
+	COMPRESSED_RGB_BPTC_UNSIGNED_FLOAT_ARB                     = 0x8E8F
+	NUM_VIDEO_CAPTURE_STREAMS_NV                               = 0x9024
+	PIXEL_TEX_GEN_Q_FLOOR_SGIX                                 = 0x8186
+	TEXTURE15_ARB                                              = 0x84CF
+	MAX_PROGRAM_TEXEL_OFFSET                                   = 0x8905
+	FACTOR_ALPHA_MODULATE_IMG                                  = 0x8C07
+	UNSIGNED_INT8_VEC3_NV                                      = 0x8FEE
+	COMPRESSED_RGBA_ASTC_12x10_KHR                             = 0x93BC
+	FOG_DENSITY                                                = 0x0B62
+	TRANSPOSE_MODELVIEW_MATRIX                                 = 0x84E3
+	SAMPLE_MASK_NV                                             = 0x8E51
+	MAX_RENDERBUFFER_SIZE_OES                                  = 0x84E8
+	DRAW_BUFFER0                                               = 0x8825
+	DEPTH_TEXTURE_MODE                                         = 0x884B
+	UNSIGNED_NORMALIZED_ARB                                    = 0x8C17
+	UNSIGNED_INT_2_10_10_10_REV                                = 0x8368
+	FOG_COORDINATE_ARRAY_STRIDE                                = 0x8455
+	TEXTURE26                                                  = 0x84DA
+	MAX_PROGRAM_LOOP_COUNT_NV                                  = 0x88F8
+	EXT_texture                                                = 1
+	LUMINANCE12_ALPHA4                                         = 0x8046
+	LUMINANCE16_ALPHA16                                        = 0x8048
+	PIXEL_FRAGMENT_RGB_SOURCE_SGIS                             = 0x8354
+	SCALE_BY_TWO_NV                                            = 0x853E
+	OPERAND1_RGB_ARB                                           = 0x8591
+	FRAMEBUFFER_SRGB_CAPABLE_EXT                               = 0x8DBA
+	MAT_COLOR_INDEXES_BIT_PGI                                  = 0x01000000
+	CONTEXT_FLAG_ROBUST_ACCESS_BIT_ARB                         = 0x00000004
+	TEXTURE_MIN_LOD                                            = 0x813A
+	MATRIX_INDEX_ARRAY_OES                                     = 0x8844
+	GENERIC_ATTRIB_NV                                          = 0x8C7D
+	FRAMEBUFFER_SRGB_EXT                                       = 0x8DB9
+	TEXTURE_SWIZZLE_B_EXT                                      = 0x8E44
+	SHADER_BINARY_VIV                                          = 0x8FC4
+	MODELVIEW0_STACK_DEPTH_EXT                                 = 0x0BA3
+	TEXTURE_MIN_LOD_SGIS                                       = 0x813A
+	EVAL_VERTEX_ATTRIB7_NV                                     = 0x86CD
+	OUTPUT_TEXTURE_COORD13_EXT                                 = 0x87AA
+	RGBA_FLOAT32_ATI                                           = 0x8814
+	PALETTE8_RGBA4_OES                                         = 0x8B98
+	BGRA                                                       = 0x80E1
+	MAX_ELEMENTS_INDICES_EXT                                   = 0x80E9
+	CONSTANT_BORDER                                            = 0x8151
+	INCR_WRAP_EXT                                              = 0x8507
+	INVERSE_NV                                                 = 0x862B
+	MAP2_VERTEX_ATTRIB3_4_NV                                   = 0x8673
+	UNSIGNED_INT_S8_S8_8_8_NV                                  = 0x86DA
+	SECONDARY_INTERPOLATOR_ATI                                 = 0x896D
+	IMAGE_FORMAT_COMPATIBILITY_BY_CLASS                        = 0x90C9
+	FRONT                                                      = 0x0404
+	CONVOLUTION_BORDER_MODE_EXT                                = 0x8013
+	UNSIGNED_SHORT_4_4_4_4_REV_EXT                             = 0x8365
+	COLOR_MATRIX_STACK_DEPTH_SGI                               = 0x80B2
+	BLEND_SRC_ALPHA                                            = 0x80CB
+	VERTEX_ARRAY_RANGE_POINTER_APPLE                           = 0x8521
+	COMBINER_MUX_SUM_NV                                        = 0x8547
+	TRACE_NAME_MESA                                            = 0x8756
+	EYE_LINEAR                                                 = 0x2400
+	OP_MUL_EXT                                                 = 0x8786
+	OUTPUT_TEXTURE_COORD0_EXT                                  = 0x879D
+	TEXTURE_GREEN_TYPE_ARB                                     = 0x8C11
+	RESAMPLE_REPLICATE_OML                                     = 0x8986
+	TRIANGLES_ADJACENCY                                        = 0x000C
+	LINEAR_DETAIL_SGIS                                         = 0x8097
+	DOT_PRODUCT_TEXTURE_CUBE_MAP_NV                            = 0x86F0
+	MAP_INVALIDATE_BUFFER_BIT                                  = 0x0008
+	ACTIVE_UNIFORMS                                            = 0x8B86
+	COVERAGE_BUFFER_BIT_NV                                     = 0x00008000
+	ATOMIC_COUNTER_BUFFER_START                                = 0x92C2
+	OFFSET_TEXTURE_BIAS_NV                                     = 0x86E3
+	DRAW_BUFFER4                                               = 0x8829
+	MAX_COMBINED_UNIFORM_BLOCKS                                = 0x8A2E
+	BUFFER_UPDATE_BARRIER_BIT                                  = 0x00000200
+	PROXY_POST_CONVOLUTION_COLOR_TABLE                         = 0x80D4
+	ACTIVE_SUBROUTINE_MAX_LENGTH                               = 0x8E48
+	UNSIGNED_INT_IMAGE_3D                                      = 0x9064
+	LEFT                                                       = 0x0406
+	PROGRAM_STRING_NV                                          = 0x8628
+	DOT3_RGB_EXT                                               = 0x8740
+	CON_18_ATI                                                 = 0x8953
+	DOUBLE_MAT3x4_EXT                                          = 0x8F4C
+	INT64_VEC4_NV                                              = 0x8FEB
+	ATOMIC_COUNTER_BUFFER_DATA_SIZE                            = 0x92C4
+	MAX_FRAMEBUFFER_WIDTH                                      = 0x9315
+	PIXEL_TEX_GEN_MODE_SGIX                                    = 0x832B
+	CURRENT_QUERY                                              = 0x8865
+	PROGRAM_OBJECT_EXT                                         = 0x8B40
+	COMPRESSED_SRGB8_ALPHA8_ASTC_12x10_KHR                     = 0x93DC
+	STRICT_SCISSOR_HINT_PGI                                    = 0x1A218
+	RGBA2                                                      = 0x8055
+	POST_CONVOLUTION_COLOR_TABLE                               = 0x80D1
+	TEXTURE_LOD_BIAS                                           = 0x8501
+	SOURCE0_ALPHA_ARB                                          = 0x8588
+	MAX_PROGRAM_TEXTURE_GATHER_OFFSET_ARB                      = 0x8E5F
+	WAIT_FAILED                                                = 0x911D
+	EXTERNAL_VIRTUAL_MEMORY_BUFFER_AMD                         = 0x9160
+	RGB_FLOAT16_ATI                                            = 0x881B
+	MAX_PROGRAM_INSTRUCTIONS_ARB                               = 0x88A1
+	TRANSLATED_SHADER_SOURCE_LENGTH_ANGLE                      = 0x93A0
+	DEBUG_TYPE_OTHER                                           = 0x8251
+	NORMAL_MAP_NV                                              = 0x8511
+	MODELVIEW_PROJECTION_NV                                    = 0x8629
+	MAX_IMAGE_SAMPLES                                          = 0x906D
+	MAP1_COLOR_4                                               = 0x0D90
+	IMAGE_ROTATE_ORIGIN_X_HP                                   = 0x815A
+	MAX_PALETTE_MATRICES_ARB                                   = 0x8842
+	DEPTH_CLAMP_FAR_AMD                                        = 0x901F
+	ALREADY_SIGNALED                                           = 0x911A
+	QUAD_STRIP                                                 = 0x0008
+	MODELVIEW1_STACK_DEPTH_EXT                                 = 0x8502
+	PROGRAM_NATIVE_TEMPORARIES_ARB                             = 0x88A6
+	MAX_GEOMETRY_SHADER_INVOCATIONS                            = 0x8E5A
+	DEBUG_CATEGORY_SHADER_COMPILER_AMD                         = 0x914E
+	STENCIL_INDEX                                              = 0x1901
+	SRC1_COLOR                                                 = 0x88F9
+	DEBUG_SOURCE_APPLICATION                                   = 0x824A
+	FRAGMENT_DEPTH                                             = 0x8452
+	SHADER_OPERATION_NV                                        = 0x86DF
+	VIBRANCE_SCALE_NV                                          = 0x8713
+	UNSIGNED_INT_24_8_MESA                                     = 0x8751
+	WEIGHT_ARRAY_BUFFER_BINDING_OES                            = 0x889E
+	FLAT                                                       = 0x1D00
+	GL_4PASS_1_EXT                                             = 0x80A5
+	CLAMP_READ_COLOR_ARB                                       = 0x891C
+	MAX_COMBINED_SHADER_OUTPUT_RESOURCES                       = 0x8F39
+	LIST_PRIORITY_SGIX                                         = 0x8182
+	GL_2_BYTES                                                 = 0x1407
+	TEXTURE_MATERIAL_PARAMETER_EXT                             = 0x8352
+	TEXTURE_CUBE_MAP_ARB                                       = 0x8513
+	WEIGHT_ARRAY_TYPE_OES                                      = 0x86A9
+	LUMINANCE_FLOAT32_APPLE                                    = 0x8818
+	DRAW_BUFFER7_NV                                            = 0x882C
+	QUERY_COUNTER_BITS_ARB                                     = 0x8864
+	ARRAY_BUFFER_BINDING_ARB                                   = 0x8894
+	COMPRESSED_RGB_PVRTC_2BPPV1_IMG                            = 0x8C01
+	ACTIVE_VARYINGS_NV                                         = 0x8C81
+	COMPRESSED_RGBA_S3TC_DXT1_EXT                              = 0x83F1
+	VERTEX_ARRAY_RANGE_LENGTH_NV                               = 0x851E
+	PIXEL_PACK_BUFFER_BINDING_ARB                              = 0x88ED
+	RGBA32I_EXT                                                = 0x8D82
+	POLYGON_TOKEN                                              = 0x0703
+	RETAINED_APPLE                                             = 0x8A1B
+	RENDERBUFFER_DEPTH_SIZE_EXT                                = 0x8D54
+	TEXCOORD1_BIT_PGI                                          = 0x10000000
+	MAP_FLUSH_EXPLICIT_BIT                                     = 0x0010
+	LIGHT_MODEL_AMBIENT                                        = 0x0B53
+	QUAD_ALPHA8_SGIS                                           = 0x811F
+	SINGLE_COLOR_EXT                                           = 0x81F9
+	R8                                                         = 0x8229
+	DEBUG_SOURCE_API_ARB                                       = 0x8246
+	FOG_COORDINATE                                             = 0x8451
+	TEXTURE_COMPARE_FUNC_ARB                                   = 0x884D
+	MAX_VERTEX_OUTPUT_COMPONENTS                               = 0x9122
+	INDEX_ARRAY_POINTER                                        = 0x8091
+	RED_BITS                                                   = 0x0D52
+	MATRIX3_ARB                                                = 0x88C3
+	SAMPLE_POSITION_NV                                         = 0x8E50
+	MIN_SPARSE_LEVEL_AMD                                       = 0x919B
+	COLOR_ARRAY                                                = 0x8076
+	SHADER_SOURCE_LENGTH                                       = 0x8B88
+	DEBUG_CATEGORY_PERFORMANCE_AMD                             = 0x914D
+	CLIP_DISTANCE0                                             = 0x3000
+	RG8                                                        = 0x822B
+	OPERAND1_ALPHA_ARB                                         = 0x8599
+	CURRENT_VERTEX_WEIGHT_EXT                                  = 0x850B
+	SOURCE0_ALPHA                                              = 0x8588
+	MODELVIEW21_ARB                                            = 0x8735
+	DYNAMIC_COPY                                               = 0x88EA
+	TESS_CONTROL_SUBROUTINE                                    = 0x92E9
+	DEPTH_STENCIL_TO_BGRA_NV                                   = 0x886F
+	STENCIL_ATTACHMENT_EXT                                     = 0x8D20
+	UNSIGNED_INT_VEC2                                          = 0x8DC6
+	DEPTH_BUFFER_BIT                                           = 0x00000100
+	POST_TEXTURE_FILTER_SCALE_RANGE_SGIX                       = 0x817C
+	COMPRESSED_RG11_EAC                                        = 0x9272
+	LUMINANCE4                                                 = 0x803F
+	FRAGMENTS_INSTRUMENT_COUNTERS_SGIX                         = 0x8314
+	COLOR_ATTACHMENT2_EXT                                      = 0x8CE2
+	TEXTURE30_ARB                                              = 0x84DE
+	COMPRESSED_RGBA_BPTC_UNORM_ARB                             = 0x8E8C
+	UNSIGNED_INT8_VEC4_NV                                      = 0x8FEF
+	AND                                                        = 0x1501
+	COMBINER_CD_OUTPUT_NV                                      = 0x854B
+	PATH_STENCIL_DEPTH_OFFSET_FACTOR_NV                        = 0x90BD
+	COMPUTE_PROGRAM_NV                                         = 0x90FB
+	FRAMEBUFFER_INCOMPLETE_MULTISAMPLE_IMG                     = 0x9134
+	INTENSITY12                                                = 0x804C
+	SAMPLE_ALPHA_TO_MASK_EXT                                   = 0x809E
+	MAX_TESS_CONTROL_TEXTURE_IMAGE_UNITS                       = 0x8E81
+	MAX_CONVOLUTION_WIDTH_EXT                                  = 0x801A
+	DRAW_BUFFER15_ATI                                          = 0x8834
+	QUERY_COUNTER_BITS                                         = 0x8864
+	SAMPLER_1D_ARB                                             = 0x8B5D
+	HALF_FLOAT_ARB                                             = 0x140B
+	COMPRESSED_RGBA_ASTC_5x5_KHR                               = 0x93B2
+	FLOAT                                                      = 0x1406
+	POST_COLOR_MATRIX_RED_SCALE_SGI                            = 0x80B4
+	PRIMITIVE_RESTART_NV                                       = 0x8558
+	TEXTURE_TARGET_QCOM                                        = 0x8BDA
+	COLOR_ATTACHMENT10                                         = 0x8CEA
+	CPU_OPTIMIZED_QCOM                                         = 0x8FB1
+	TEXTURE_WIDTH                                              = 0x1000
+	INTENSITY16F_ARB                                           = 0x881D
+	QUERY_RESULT_ARB                                           = 0x8866
+	COMPRESSED_RED_GREEN_RGTC2_EXT                             = 0x8DBD
+	MAX_GEOMETRY_ATOMIC_COUNTER_BUFFERS                        = 0x92CF
+	DRAW_BUFFER10_NV                                           = 0x882F
+	FOG_COORD_ARRAY_STRIDE                                     = 0x8455
+	RGB_SCALE_ARB                                              = 0x8573
+	ATC_RGB_AMD                                                = 0x8C92
+	TYPE                                                       = 0x92FA
+	BLEND_DST_ALPHA_OES                                        = 0x80CA
+	MODELVIEW20_ARB                                            = 0x8734
+	TEXTURE_NUM_LEVELS_QCOM                                    = 0x8BD9
+	PATH_TERMINAL_END_CAP_NV                                   = 0x9078
+	MAX_CLIP_DISTANCES                                         = 0x0D32
+	SPRITE_MODE_SGIX                                           = 0x8149
+	SEPARATE_ATTRIBS_EXT                                       = 0x8C8D
+	RGBA8I_EXT                                                 = 0x8D8E
+	RG8_SNORM                                                  = 0x8F95
+	CONVOLUTION_BORDER_COLOR                                   = 0x8154
+	READ_WRITE                                                 = 0x88BA
+	SHADING_LANGUAGE_VERSION_ARB                               = 0x8B8C
+	MAX_IMAGE_UNITS                                            = 0x8F38
+	SIGNED_LUMINANCE_ALPHA_NV                                  = 0x8703
+	STENCIL_BACK_FUNC_ATI                                      = 0x8800
+	INTENSITY_FLOAT32_ATI                                      = 0x8817
+	MAX_PROGRAM_TOTAL_OUTPUT_COMPONENTS_NV                     = 0x8C28
+	COLOR_ATTACHMENT10_NV                                      = 0x8CEA
+	UNSIGNED_INT_SAMPLER_2D_RECT                               = 0x8DD5
+	ISOLINES                                                   = 0x8E7A
+	UNSIGNED_INT_IMAGE_2D_MULTISAMPLE_ARRAY_EXT                = 0x906C
+	VIRTUAL_PAGE_SIZE_Y_AMD                                    = 0x9196
+	BLEND_DST_RGB_EXT                                          = 0x80C8
+	MAX_COMPUTE_TEXTURE_IMAGE_UNITS                            = 0x91BC
+	NOTEQUAL                                                   = 0x0205
+	RGB5                                                       = 0x8050
+	CONVOLUTION_FORMAT                                         = 0x8017
+	POST_CONVOLUTION_ALPHA_SCALE_EXT                           = 0x801F
+	POINT_DISTANCE_ATTENUATION                                 = 0x8129
+	TEXTURE_STORAGE_HINT_APPLE                                 = 0x85BC
+	MODELVIEW6_ARB                                             = 0x8726
+	SECONDARY_COLOR_ARRAY_LIST_STRIDE_IBM                      = 103087
+	CONSTANT_COLOR                                             = 0x8001
+	FRAGMENTS_INSTRUMENT_SGIX                                  = 0x8313
+	ATC_RGBA_EXPLICIT_ALPHA_AMD                                = 0x8C93
+	MAX_SUBROUTINE_UNIFORM_LOCATIONS                           = 0x8DE8
+	MAX_SPARSE_3D_TEXTURE_SIZE_AMD                             = 0x9199
+	TEXTURE_ENV_COLOR                                          = 0x2201
+	COLOR_ARRAY_PARALLEL_POINTERS_INTEL                        = 0x83F7
+	SOURCE3_RGB_NV                                             = 0x8583
+	MAP2_VERTEX_ATTRIB12_4_NV                                  = 0x867C
+	CON_31_ATI                                                 = 0x8960
+	RENDERBUFFER_BINDING_EXT                                   = 0x8CA7
+	IMAGE_1D_EXT                                               = 0x904C
+	RELATIVE_QUADRATIC_CURVE_TO_NV                             = 0x0B
+	FONT_X_MAX_BOUNDS_BIT_NV                                   = 0x00040000
+	MAX_GEOMETRY_OUTPUT_COMPONENTS                             = 0x9124
+	ALLOW_DRAW_WIN_HINT_PGI                                    = 0x1A20F
+	SAMPLER_2D_RECT                                            = 0x8B63
+	DOUBLE_MAT3                                                = 0x8F47
+	MAX_FRAMEBUFFER_LAYERS                                     = 0x9317
+	SKIP_COMPONENTS2_NV                                        = -5
+	LIST_INDEX                                                 = 0x0B33
+	DETAIL_TEXTURE_2D_SGIS                                     = 0x8095
+	TEXTURE_2D_ARRAY_EXT                                       = 0x8C1A
+	TEXTURE_COORD_ARRAY_SIZE_EXT                               = 0x8088
+	PIXEL_TEX_GEN_SGIX                                         = 0x8139
+	SHARED_TEXTURE_PALETTE_EXT                                 = 0x81FB
+	CLIENT_ACTIVE_TEXTURE_ARB                                  = 0x84E1
+	LUMINANCE_FLOAT32_ATI                                      = 0x8818
+	STENCIL_INDEX1                                             = 0x8D46
+	MIN_PROGRAM_TEXTURE_GATHER_OFFSET                          = 0x8E5E
+	LUMINANCE8_ALPHA8                                          = 0x8045
+	SRGB_DECODE_ARB                                            = 0x8299
+	FRAGMENT_LIGHT6_SGIX                                       = 0x8412
+	CONVOLUTION_BORDER_COLOR_HP                                = 0x8154
+	IMAGE_TRANSFORM_2D_HP                                      = 0x8161
+	PERFMON_RESULT_SIZE_AMD                                    = 0x8BC5
+	READ_FRAMEBUFFER_ANGLE                                     = 0x8CA8
+	INTENSITY32UI_EXT                                          = 0x8D73
+	MAX_GEOMETRY_TOTAL_OUTPUT_COMPONENTS                       = 0x8DE1
+	INDEX_ARRAY_LIST_STRIDE_IBM                                = 103083
+	MAP1_TEXTURE_COORD_2                                       = 0x0D94
+	TEXTURE_1D_BINDING_EXT                                     = 0x8068
+	MULTISAMPLE_EXT                                            = 0x809D
+	IMAGE_TEXEL_SIZE                                           = 0x82A7
+	PROGRAM_NATIVE_TEX_INDIRECTIONS_ARB                        = 0x880A
+	TEXTURE_BUFFER                                             = 0x8C2A
+	OP_MAX_EXT                                                 = 0x878A
+	DRAW_BUFFER13_NV                                           = 0x8832
+	SYNC_CONDITION_APPLE                                       = 0x9113
+	LUMINANCE_ALPHA32UI_EXT                                    = 0x8D75
+	UNPACK_COMPRESSED_SIZE_SGIX                                = 0x831A
+	SPARE0_PLUS_SECONDARY_COLOR_NV                             = 0x8532
+	VARIANT_EXT                                                = 0x87C1
+	GL_3DC_X_AMD                                               = 0x87F9
+	MATRIX2_ARB                                                = 0x88C2
+	FONT_HAS_KERNING_BIT_NV                                    = 0x10000000
+	BACK_NORMALS_HINT_PGI                                      = 0x1A223
+	OUTPUT_TEXTURE_COORD1_EXT                                  = 0x879E
+	TEXTURE_TYPE_QCOM                                          = 0x8BD7
+	COMPRESSED_SRGB_ALPHA_S3TC_DXT5_NV                         = 0x8C4F
+	NUM_ACTIVE_VARIABLES                                       = 0x9304
+	PIXEL_MAP_I_TO_A_SIZE                                      = 0x0CB5
+	INTERNALFORMAT_ALPHA_SIZE                                  = 0x8274
+	TEXTURE_FILTER_CONTROL                                     = 0x8500
+	POINT_SPRITE_NV                                            = 0x8861
+	PACK_RESAMPLE_OML                                          = 0x8984
+	ALPHA_TEST_FUNC_QCOM                                       = 0x0BC1
+	REG_30_ATI                                                 = 0x893F
+	TEXTURE_1D_ARRAY_EXT                                       = 0x8C18
+	AMBIENT                                                    = 0x1200
+	UNSIGNED_INT_8_8_8_8_EXT                                   = 0x8035
+	COMPUTE_LOCAL_WORK_SIZE                                    = 0x8267
+	GL_2PASS_0_SGIS                                            = 0x80A2
+	SAMPLE_MASK_EXT                                            = 0x80A0
+	FRAGMENT_PROGRAM_ARB                                       = 0x8804
+	CON_11_ATI                                                 = 0x894C
+	READ_FRAMEBUFFER_NV                                        = 0x8CA8
+	MAP2_TEXTURE_COORD_4                                       = 0x0DB6
+	INTERNALFORMAT_BLUE_SIZE                                   = 0x8273
+	SWIZZLE_STQ_ATI                                            = 0x8977
+	RECIP_ADD_SIGNED_ALPHA_IMG                                 = 0x8C05
+	UNSIGNED_INT_SAMPLER_BUFFER_EXT                            = 0x8DD8
+	PRESENT_TIME_NV                                            = 0x8E2A
+	PACK_COMPRESSED_BLOCK_WIDTH                                = 0x912B
+	POST_COLOR_MATRIX_COLOR_TABLE_SGI                          = 0x80D2
+	DUAL_TEXTURE_SELECT_SGIS                                   = 0x8124
+	CLIENT_ACTIVE_TEXTURE                                      = 0x84E1
+	OBJECT_ACTIVE_ATTRIBUTE_MAX_LENGTH_ARB                     = 0x8B8A
+	TEXTURE_BUFFER_FORMAT_ARB                                  = 0x8C2E
+	UNSIGNED_INT_SAMPLER_BUFFER_AMD                            = 0x9003
+	PROGRAM_OUTPUT                                             = 0x92E4
+	MODELVIEW18_ARB                                            = 0x8732
+	EXT_cmyka                                                  = 1
+	FRAMEBUFFER_BARRIER_BIT                                    = 0x00000400
+	TRUE                                                       = 1
+	LINE_STRIP_ADJACENCY_ARB                                   = 0x000B
+	POST_COLOR_MATRIX_ALPHA_SCALE                              = 0x80B7
+	VIEWPORT_BOUNDS_RANGE                                      = 0x825D
+	WEIGHT_ARRAY_SIZE_ARB                                      = 0x86AB
+	DEPTH_TEXTURE_MODE_ARB                                     = 0x884B
+	TOP_LEVEL_ARRAY_SIZE                                       = 0x930C
+	REPLACEMENT_CODE_ARRAY_SUN                                 = 0x85C0
+	DRAW_BUFFER2_ARB                                           = 0x8827
+	REG_14_ATI                                                 = 0x892F
+	CON_2_ATI                                                  = 0x8943
+	CND0_ATI                                                   = 0x896B
+	RENDERBUFFER_COVERAGE_SAMPLES_NV                           = 0x8CAB
+	MAX_GEOMETRY_TOTAL_OUTPUT_COMPONENTS_EXT                   = 0x8DE1
+	UNSIGNED_INT_IMAGE_1D_ARRAY                                = 0x9068
+	TEXTURE7                                                   = 0x84C7
+	TEXTURE2_ARB                                               = 0x84C2
+	TEXTURE21_ARB                                              = 0x84D5
+	TEXTURE_MAX_LOD                                            = 0x813B
+	TEXTURE_COMPRESSED_IMAGE_SIZE_ARB                          = 0x86A0
+	COMPRESSED_RED_RGTC1                                       = 0x8DBB
+	S                                                          = 0x2000
+	ATTENUATION_EXT                                            = 0x834D
+	DOUBLE_MAT3x4                                              = 0x8F4C
+	HISTOGRAM_WIDTH                                            = 0x8026
+	POINT_SIZE_MIN                                             = 0x8126
+	UNSIGNED_INT_24_8                                          = 0x84FA
+	HALF_BIAS_NEGATE_NV                                        = 0x853B
+	UNSIGNED_INT64_VEC4_NV                                     = 0x8FF7
+	SRC_ALPHA                                                  = 0x0302
+	LUMINANCE_ALPHA                                            = 0x190A
+	DEPTH_COMPONENT24_OES                                      = 0x81A6
+	VARIABLE_E_NV                                              = 0x8527
+	OPERAND2_ALPHA_EXT                                         = 0x859A
+	ACCUM                                                      = 0x0100
+	MAX_RENDERBUFFER_SIZE                                      = 0x84E8
+	OUTPUT_TEXTURE_COORD9_EXT                                  = 0x87A6
+	COMPRESSED_RGBA_PVRTC_2BPPV1_IMG                           = 0x8C03
+	LUMINANCE8UI_EXT                                           = 0x8D80
+	SHADER_STORAGE_BUFFER_BINDING                              = 0x90D3
+	LIGHTING                                                   = 0x0B50
+	POINT_SIZE_MAX_EXT                                         = 0x8127
+	DEFORMATIONS_MASK_SGIX                                     = 0x8196
+	OBJECT_LINE_SGIS                                           = 0x81F7
+	DEBUG_SOURCE_API                                           = 0x8246
+	EVAL_VERTEX_ATTRIB12_NV                                    = 0x86D2
+	RGB16I_EXT                                                 = 0x8D89
+	LARGE_CCW_ARC_TO_NV                                        = 0x16
+	FULL_STIPPLE_HINT_PGI                                      = 0x1A219
+	LIGHTING_BIT                                               = 0x00000040
+	READ_BUFFER_NV                                             = 0x0C02
+	RGB8I                                                      = 0x8D8F
+	UNSIGNED_INT_SAMPLER_2D_ARRAY                              = 0x8DD7
+	TEXTURE_SWIZZLE_A                                          = 0x8E45
+	SGIX_interlace                                             = 1
+	DUAL_LUMINANCE_ALPHA4_SGIS                                 = 0x811C
+	MAX_PROGRAM_ATTRIB_COMPONENTS_NV                           = 0x8908
+	TEXTURE_BINDING_BUFFER_ARB                                 = 0x8C2C
+	COPY_READ_BUFFER                                           = 0x8F36
+	INT_IMAGE_1D                                               = 0x9057
+	SECONDARY_COLOR_ARRAY_LIST_IBM                             = 103077
+	GL_3D_COLOR                                                = 0x0602
+	DRAW_BUFFER10_ATI                                          = 0x882F
+	INDEX_BITS                                                 = 0x0D51
+	CONSTANT_ALPHA_EXT                                         = 0x8003
+	REG_7_ATI                                                  = 0x8928
+	UNPACK_COMPRESSED_BLOCK_WIDTH                              = 0x9127
+	PACK_LSB_FIRST                                             = 0x0D01
+	PROXY_TEXTURE_2D_EXT                                       = 0x8064
+	MULTISAMPLE_3DFX                                           = 0x86B2
+	VERSION_1_3                                                = 1
+	SGIX_blend_alpha_minmax                                    = 1
+	BLUE_BITS                                                  = 0x0D54
+	OFFSET_HILO_TEXTURE_RECTANGLE_NV                           = 0x8855
+	FLOAT_VEC4_ARB                                             = 0x8B52
+	INT_IMAGE_CUBE_EXT                                         = 0x905B
+	INTERLACE_SGIX                                             = 0x8094
+	R16UI                                                      = 0x8234
+	FILL                                                       = 0x1B02
+	PATH_DASH_ARRAY_COUNT_NV                                   = 0x909F
+	FRAGMENT_SUBROUTINE                                        = 0x92EC
+	TEXCOORD3_BIT_PGI                                          = 0x40000000
+	COLOR                                                      = 0x1800
+	FORMAT_SUBSAMPLE_24_24_OML                                 = 0x8982
+	TRANSPOSE_PROJECTION_MATRIX_ARB                            = 0x84E4
+	TEXTURE_CUBE_MAP_POSITIVE_X_ARB                            = 0x8515
+	MAX_PROGRAM_CALL_DEPTH_NV                                  = 0x88F5
+	INTENSITY8_SNORM                                           = 0x9017
+	TEXTURE_RED_SIZE_EXT                                       = 0x805C
+	R8I                                                        = 0x8231
+	REG_11_ATI                                                 = 0x892C
+	FLOAT_MAT3x4                                               = 0x8B68
+	FRAGMENT_SUBROUTINE_UNIFORM                                = 0x92F2
+	RGB2_EXT                                                   = 0x804E
+	TEXTURE_COMPRESSED_BLOCK_WIDTH                             = 0x82B1
+	MAX_SHININESS_NV                                           = 0x8504
+	TRIANGLE_MESH_SUN                                          = 0x8615
+	FLOAT_MAT4_ARB                                             = 0x8B5C
+	IMAGE_2D                                                   = 0x904D
+	MAX_NAME_LENGTH                                            = 0x92F6
+	COMBINER0_NV                                               = 0x8550
+	VERTEX_ATTRIB_ARRAY9_NV                                    = 0x8659
+	VERTEX_SHADER_INSTRUCTIONS_EXT                             = 0x87CF
+	MAX_DRAW_BUFFERS_ARB                                       = 0x8824
+	TRANSLATE_X_NV                                             = 0x908E
+	MAX_EVAL_ORDER                                             = 0x0D30
+	SAMPLE_MASK_VALUE_SGIS                                     = 0x80AA
+	SYNC_STATUS                                                = 0x9114
+	TEXTURE_FETCH_BARRIER_BIT_EXT                              = 0x00000008
+	T2F_C4F_N3F_V3F                                            = 0x2A2C
+	MAX_PROGRAM_TEXEL_OFFSET_NV                                = 0x8905
+	PROGRAM_PIPELINE_OBJECT_EXT                                = 0x8A4F
+	MAX_TRANSFORM_FEEDBACK_SEPARATE_COMPONENTS                 = 0x8C80
+	BUFFER_GPU_ADDRESS_NV                                      = 0x8F1D
+	GLYPH_WIDTH_BIT_NV                                         = 0x01
+	RED_BIAS                                                   = 0x0D15
+	UNPACK_SKIP_VOLUMES_SGIS                                   = 0x8132
+	MAP2_VERTEX_ATTRIB5_4_NV                                   = 0x8675
+	PROGRAM_TEX_INDIRECTIONS_ARB                               = 0x8807
+	RGB16F                                                     = 0x881B
+	MAX_PROGRAM_GENERIC_RESULTS_NV                             = 0x8DA6
+	DOUBLE_VEC3                                                = 0x8FFD
+	TANGENT_ARRAY_EXT                                          = 0x8439
+	OUTPUT_TEXTURE_COORD16_EXT                                 = 0x87AD
+	LUMINANCE_ALPHA_FLOAT32_APPLE                              = 0x8819
+	INDEX_ARRAY_BUFFER_BINDING                                 = 0x8899
+	TRANSFORM_FEEDBACK_BARRIER_BIT_EXT                         = 0x00000800
+	DT_SCALE_NV                                                = 0x8711
+	GEOMETRY_SUBROUTINE                                        = 0x92EB
+	CLIP_DISTANCE2                                             = 0x3002
+	SHADER_IMAGE_ATOMIC                                        = 0x82A6
+	INT64_VEC3_NV                                              = 0x8FEA
+	COMPRESSED_SRGB8_ALPHA8_ETC2_EAC                           = 0x9279
+	SWIZZLE_STR_DR_ATI                                         = 0x8978
+	ACTIVE_ATTRIBUTE_MAX_LENGTH                                = 0x8B8A
+	RGB9_E5_EXT                                                = 0x8C3D
+	FONT_Y_MAX_BOUNDS_BIT_NV                                   = 0x00080000
+	HISTOGRAM_LUMINANCE_SIZE_EXT                               = 0x802C
+	NORMAL_ARRAY_POINTER_EXT                                   = 0x808F
+	MAX_RENDERBUFFER_SIZE_EXT                                  = 0x84E8
+	MAX_PROGRAM_MATRIX_STACK_DEPTH_ARB                         = 0x862E
+	NUM_INPUT_INTERPOLATOR_COMPONENTS_ATI                      = 0x8973
+	POINT_SIZE_ARRAY_POINTER_OES                               = 0x898C
+	RGB32UI                                                    = 0x8D71
+	NUM_FILL_STREAMS_NV                                        = 0x8E29
+	GREEN_BIAS                                                 = 0x0D19
+	GL_4_BYTES                                                 = 0x1409
+	PROXY_HISTOGRAM                                            = 0x8025
+	POINT_SIZE_MIN_EXT                                         = 0x8126
+	FOG_OFFSET_SGIX                                            = 0x8198
+	TEXTURE_RECTANGLE_ARB                                      = 0x84F5
+	MAX_VERTEX_ARRAY_RANGE_ELEMENT_NV                          = 0x8520
+	MODELVIEW7_ARB                                             = 0x8727
+	PROGRAM_FORMAT_ASCII_ARB                                   = 0x8875
+	MAP2_TEXTURE_COORD_3                                       = 0x0DB5
+	VERTEX_ARRAY_TYPE                                          = 0x807B
+	TEXTURE_BORDER                                             = 0x1005
+	CLIP_DISTANCE4                                             = 0x3004
+	RGB4                                                       = 0x804F
+	COMPARE_R_TO_TEXTURE                                       = 0x884E
+	MATRIX29_ARB                                               = 0x88DD
+	TABLE_TOO_LARGE                                            = 0x8031
+	SAMPLES_ARB                                                = 0x80A9
+	MAX_ELEMENTS_INDICES                                       = 0x80E9
+	CALLIGRAPHIC_FRAGMENT_SGIX                                 = 0x8183
+	STREAM_READ                                                = 0x88E1
+	MAX_TRANSFORM_FEEDBACK_BUFFERS                             = 0x8E70
+	PATCH_DEFAULT_INNER_LEVEL                                  = 0x8E73
+	COLOR_TABLE_SCALE                                          = 0x80D6
+	TEXTURE_COORD_ARRAY_PARALLEL_POINTERS_INTEL                = 0x83F8
+	OPERAND2_RGB_EXT                                           = 0x8592
+	COMPRESSED_LUMINANCE_ALPHA_LATC2_EXT                       = 0x8C72
+	TEXCOORD2_BIT_PGI                                          = 0x20000000
+	SGIS_texture4D                                             = 1
+	BLEND_DST                                                  = 0x0BE0
+	INCR                                                       = 0x1E02
+	WEIGHT_ARRAY_ARB                                           = 0x86AD
+	DRAW_BUFFER3                                               = 0x8828
+	PIXEL_COUNTER_BITS_NV                                      = 0x8864
+	SCALED_RESOLVE_FASTEST_EXT                                 = 0x90BA
+	PIXEL_MAP_R_TO_R                                           = 0x0C76
+	CONVOLUTION_HINT_SGIX                                      = 0x8316
+	SRC0_RGB                                                   = 0x8580
+	PACK_SWAP_BYTES                                            = 0x0D00
+	INTERNALFORMAT_GREEN_SIZE                                  = 0x8272
+	MINMAX_SINK                                                = 0x8030
+	QUERY_RESULT_AVAILABLE_EXT                                 = 0x8867
+	SAMPLES_PASSED                                             = 0x8914
+	MAX_COMBINED_FRAGMENT_UNIFORM_COMPONENTS                   = 0x8A33
+	MAX_ELEMENT_INDEX                                          = 0x8D6B
+	REPEAT                                                     = 0x2901
+	VERTEX_ATTRIB_ARRAY15_NV                                   = 0x865F
+	MAX_PALETTE_MATRICES_OES                                   = 0x8842
+	RENDERBUFFER_SAMPLES_NV                                    = 0x8CAB
+	FONT_MAX_ADVANCE_HEIGHT_BIT_NV                             = 0x02000000
+	R1UI_N3F_V3F_SUN                                           = 0x85C7
+	TEXTURE_BUFFER_EXT                                         = 0x8C2A
+	UNSIGNED_INT_IMAGE_1D_ARRAY_EXT                            = 0x9068
+	TIME_ELAPSED                                               = 0x88BF
+	UNSIGNED_INT_8_8_8_8                                       = 0x8035
+	SAMPLE_MASK_VALUE_EXT                                      = 0x80AA
+	OP_SET_GE_EXT                                              = 0x878C
+	VARIANT_ARRAY_POINTER_EXT                                  = 0x87E9
+	SLUMINANCE_ALPHA_NV                                        = 0x8C44
+	COMPRESSED_SRGB8_ETC2                                      = 0x9275
+	EXT_texture3D                                              = 1
+	ASYNC_HISTOGRAM_SGIX                                       = 0x832C
+	OPERAND1_RGB_EXT                                           = 0x8591
+	VERSION_3_2                                                = 1
+	CLIENT_ALL_ATTRIB_BITS                                     = 0xFFFFFFFF
+	DUAL_INTENSITY12_SGIS                                      = 0x811A
+	UNPACK_IMAGE_DEPTH_SGIS                                    = 0x8133
+	REG_1_ATI                                                  = 0x8922
+	ACTIVE_SUBROUTINES                                         = 0x8DE5
+	DOUBLE_MAT4x3_EXT                                          = 0x8F4E
+	COLOR_TABLE_LUMINANCE_SIZE                                 = 0x80DE
+	SRC1_ALPHA                                                 = 0x8589
+	MAP1_VERTEX_ATTRIB0_4_NV                                   = 0x8660
+	EVAL_VERTEX_ATTRIB2_NV                                     = 0x86C8
+	RESAMPLE_DECIMATE_OML                                      = 0x8989
+	FLOAT_VEC2_ARB                                             = 0x8B50
+	LINK_STATUS                                                = 0x8B82
+	NORMAL_ARRAY_POINTER                                       = 0x808F
+	FEEDBACK                                                   = 0x1C01
+	TRANSPOSE_TEXTURE_MATRIX                                   = 0x84E5
+	VERTEX_ATTRIB_ARRAY1_NV                                    = 0x8651
+	WEIGHT_ARRAY_STRIDE_ARB                                    = 0x86AA
+	FLOAT_VEC3                                                 = 0x8B51
+	RGB12                                                      = 0x8053
+	LUMINANCE_ALPHA8I_EXT                                      = 0x8D93
+	LUMINANCE_ALPHA_INTEGER_EXT                                = 0x8D9D
+	FRAMEBUFFER_BARRIER_BIT_EXT                                = 0x00000400
+	INSTRUMENT_BUFFER_POINTER_SGIX                             = 0x8180
+	INTENSITY32F_ARB                                           = 0x8817
+	ADD_ATI                                                    = 0x8963
+	VERTEX_PROGRAM_CALLBACK_FUNC_MESA                          = 0x8BB6
+	COMPRESSED_SRGB8_ALPHA8_ASTC_5x5_KHR                       = 0x93D2
+	DEBUG_TYPE_DEPRECATED_BEHAVIOR                             = 0x824D
+	DRAW_BUFFER11                                              = 0x8830
+	IMAGE_PIXEL_TYPE                                           = 0x82AA
+	SECONDARY_COLOR_ARRAY_POINTER                              = 0x845D
+	COMBINER_CD_DOT_PRODUCT_NV                                 = 0x8546
+	MODELVIEW2_ARB                                             = 0x8722
+	SAMPLER_2D_ARRAY_SHADOW                                    = 0x8DC4
+	MAX_FRAMEBUFFER_SAMPLES                                    = 0x9318
+	VERTEX_CONSISTENT_HINT_PGI                                 = 0x1A22B
+	T2F_N3F_V3F                                                = 0x2A2B
+	CLIP_DISTANCE6                                             = 0x3006
+	POINT_FADE_THRESHOLD_SIZE                                  = 0x8128
+	IMAGE_CLASS_2_X_16                                         = 0x82BD
+	SPARE1_NV                                                  = 0x852F
+	VERTEX_PROGRAM_PARAMETER_BUFFER_NV                         = 0x8DA2
+	MAX_GEOMETRY_UNIFORM_COMPONENTS                            = 0x8DDF
+	VERTEX_ARRAY_ADDRESS_NV                                    = 0x8F21
+	LO_SCALE_NV                                                = 0x870F
+	TRANSFORM_FEEDBACK_VARYING_MAX_LENGTH_EXT                  = 0x8C76
+	RGBA8_SNORM                                                = 0x8F97
+	MAX_SHADER_STORAGE_BLOCK_SIZE                              = 0x90DE
+	C4UB_V3F                                                   = 0x2A23
+	BGR                                                        = 0x80E0
+	VIEWPORT_SUBPIXEL_BITS                                     = 0x825C
+	SPRITE_EYE_ALIGNED_SGIX                                    = 0x814E
+	IMPLEMENTATION_COLOR_READ_FORMAT                           = 0x8B9B
+	TEXTURE_FORMAT_QCOM                                        = 0x8BD6
+	LUMINANCE_ALPHA8UI_EXT                                     = 0x8D81
+	POLYGON_OFFSET_UNITS                                       = 0x2A00
+	ADD_SIGNED_EXT                                             = 0x8574
+	SIGNED_LUMINANCE8_ALPHA8_NV                                = 0x8704
+	MAX_OPTIMIZED_VERTEX_SHADER_LOCAL_CONSTANTS_EXT            = 0x87CC
+	MAX_3D_TEXTURE_SIZE_OES                                    = 0x8073
+	TEXTURE_VIEW_MIN_LAYER                                     = 0x82DD
+	VERTEX_PROGRAM_TWO_SIDE                                    = 0x8643
+	VERTEX_ATTRIB_ARRAY_POINTER_ARB                            = 0x8645
+	NUM_LOOPBACK_COMPONENTS_ATI                                = 0x8974
+	IMPLEMENTATION_COLOR_READ_FORMAT_OES                       = 0x8B9B
+	COLOR_ATTACHMENT13                                         = 0x8CED
+	UNSIGNED_INT_SAMPLER_2D_RECT_EXT                           = 0x8DD5
+	UNSIGNED_INT_IMAGE_2D_MULTISAMPLE_ARRAY                    = 0x906C
+	DEBUG_SEVERITY_HIGH_ARB                                    = 0x9146
+	LINE_TOKEN                                                 = 0x0702
+	MAX_PROJECTION_STACK_DEPTH                                 = 0x0D38
+	ALPHA                                                      = 0x1906
+	RGB10_EXT                                                  = 0x8052
+	TEXTURE_CUBE_MAP_POSITIVE_Y_ARB                            = 0x8517
+	MAX_PROGRAM_ENV_PARAMETERS_ARB                             = 0x88B5
+	PATH_TERMINAL_DASH_CAP_NV                                  = 0x907D
+	POST_COLOR_MATRIX_GREEN_BIAS                               = 0x80B9
+	MAX_VERTEX_TEXTURE_IMAGE_UNITS                             = 0x8B4C
+	INT_IMAGE_2D                                               = 0x9058
+	ATOMIC_COUNTER_BARRIER_BIT_EXT                             = 0x00001000
+	MODELVIEW30_ARB                                            = 0x873E
+	OFFSET_TEXTURE_2D_SCALE_NV                                 = 0x86E2
+	OP_RECIP_SQRT_EXT                                          = 0x8795
+	TEXTURE_MAX_LOD_SGIS                                       = 0x813B
+	SIMULTANEOUS_TEXTURE_AND_DEPTH_TEST                        = 0x82AC
+	TEXTURE13                                                  = 0x84CD
+	TRACE_PRIMITIVES_BIT_MESA                                  = 0x0002
+	SEPARATE_ATTRIBS                                           = 0x8C8D
+	COLOR_ATTACHMENT9_NV                                       = 0x8CE9
+	PATH_INITIAL_DASH_CAP_NV                                   = 0x907C
+	PATH_STENCIL_FUNC_NV                                       = 0x90B7
+	DEBUG_SEVERITY_MEDIUM_ARB                                  = 0x9147
+	QUERY                                                      = 0x82E3
+	BINORMAL_ARRAY_STRIDE_EXT                                  = 0x8441
+	PROXY_TEXTURE_RECTANGLE_NV                                 = 0x84F7
+	LUMINANCE_ALPHA_FLOAT16_ATI                                = 0x881F
+	VERTEX_ATTRIB_MAP2_DOMAIN_APPLE                            = 0x8A09
+	MAX_DEBUG_MESSAGE_LENGTH_ARB                               = 0x9143
+	GREEN_SCALE                                                = 0x0D18
+	RESET_NOTIFICATION_STRATEGY_ARB                            = 0x8256
+	MAX_COMPUTE_ATOMIC_COUNTERS                                = 0x8265
+	RGB9_E5                                                    = 0x8C3D
+	TRACE_OPERATIONS_BIT_MESA                                  = 0x0001
+	DOUBLE_MAT2x3_EXT                                          = 0x8F49
+	MAP1_GRID_SEGMENTS                                         = 0x0DD1
+	FEEDBACK_BUFFER_SIZE                                       = 0x0DF1
+	DETAIL_TEXTURE_2D_BINDING_SGIS                             = 0x8096
+	TEXTURE22_ARB                                              = 0x84D6
+	SOURCE1_RGB                                                = 0x8581
+	GEOMETRY_SHADER_INVOCATIONS                                = 0x887F
+	DEBUG_TYPE_UNDEFINED_BEHAVIOR_ARB                          = 0x824E
+	MAX_UNIFORM_LOCATIONS                                      = 0x826E
+	MAP2_VERTEX_ATTRIB1_4_NV                                   = 0x8671
+	RESAMPLE_DECIMATE_SGIX                                     = 0x8430
+	VERTEX_ARRAY_RANGE_APPLE                                   = 0x851D
+	NEGATIVE_Y_EXT                                             = 0x87DA
+	SAMPLER_2D_RECT_SHADOW_ARB                                 = 0x8B64
+	MIN_SAMPLE_SHADING_VALUE_ARB                               = 0x8C37
+	BOUNDING_BOX_NV                                            = 0x908D
+	COMPRESSED_RGBA_ASTC_8x5_KHR                               = 0x93B5
+	RG                                                         = 0x8227
+	MULTISAMPLE_FILTER_HINT_NV                                 = 0x8534
+	MATRIX0_NV                                                 = 0x8630
+	EDGE_FLAG_ARRAY_STRIDE_EXT                                 = 0x808C
+	HI_BIAS_NV                                                 = 0x8714
+	DRAW_BUFFER9_ARB                                           = 0x882E
+	COMPARE_REF_TO_TEXTURE                                     = 0x884E
+	R11F_G11F_B10F_EXT                                         = 0x8C3A
+	SHADER_STORAGE_BUFFER_SIZE                                 = 0x90D5
+	AUX_BUFFERS                                                = 0x0C00
+	LUMINANCE12_ALPHA12                                        = 0x8047
+	POST_CONVOLUTION_RED_SCALE_EXT                             = 0x801C
+	DSDT_MAG_INTENSITY_NV                                      = 0x86DC
+	UNIFORM_BARRIER_BIT                                        = 0x00000004
+	CURRENT_NORMAL                                             = 0x0B02
+	VERTEX_STREAM7_ATI                                         = 0x8773
+	MATRIX24_ARB                                               = 0x88D8
+	TEXTURE_BUFFER_DATA_STORE_BINDING_EXT                      = 0x8C2D
+	EXT_blend_logic_op                                         = 1
+	T                                                          = 0x2001
+	PIXEL_PACK_BUFFER_BINDING_EXT                              = 0x88ED
+	MAX_FRAGMENT_UNIFORM_COMPONENTS_ARB                        = 0x8B49
+	MAX_TESS_CONTROL_SHADER_STORAGE_BLOCKS                     = 0x90D8
+	RGBA8                                                      = 0x8058
+	LIGHT7                                                     = 0x4007
+	NUM_GENERAL_COMBINERS_NV                                   = 0x854E
+	ALPHA_MIN_CLAMP_INGR                                       = 0x8563
+	MAX_SAMPLES                                                = 0x8D57
+	ALPHA32UI_EXT                                              = 0x8D72
+	SAMPLER_CUBE_MAP_ARRAY                                     = 0x900C
+	INTENSITY8                                                 = 0x804B
+	MAP2_VERTEX_ATTRIB6_4_NV                                   = 0x8676
+	UNSIGNED_SHORT_1_5_5_5_REV                                 = 0x8366
+	COLOR_ATTACHMENT3_EXT                                      = 0x8CE3
+	MAX_SAMPLE_MASK_WORDS_NV                                   = 0x8E59
+	IMAGE_BINDING_LEVEL_EXT                                    = 0x8F3B
+	INT_IMAGE_2D_MULTISAMPLE_ARRAY_EXT                         = 0x9061
+	SGIX_scalebias_hint                                        = 1
+	MODELVIEW4_ARB                                             = 0x8724
+	NEGATIVE_X_EXT                                             = 0x87D9
+	CLAMP_VERTEX_COLOR                                         = 0x891A
+	UNIFORM_ATOMIC_COUNTER_BUFFER_INDEX                        = 0x92DA
+	TEXTURE_COORD_ARRAY_BUFFER_BINDING                         = 0x889A
+	PATH_GEN_COLOR_FORMAT_NV                                   = 0x90B2
+	TEXTURE_IMMUTABLE_LEVELS                                   = 0x82DF
+	FRAMEBUFFER_ATTACHMENT_TEXTURE_CUBE_MAP_FACE_OES           = 0x8CD3
+	SHADER_STORAGE_BUFFER_START                                = 0x90D4
+	SGIS_texture_border_clamp                                  = 1
+	POINT_SIZE_GRANULARITY                                     = 0x0B13
+	V3F                                                        = 0x2A21
+	FRAMEBUFFER_ATTACHMENT_TEXTURE_CUBE_MAP_FACE               = 0x8CD3
+	ALPHA8UI_EXT                                               = 0x8D7E
+	MODELVIEW1_ARB                                             = 0x850A
+	FRAMEBUFFER_INCOMPLETE_ATTACHMENT_OES                      = 0x8CD6
+	AUX3                                                       = 0x040C
+	MATRIX_PALETTE_OES                                         = 0x8840
+	EDGE_FLAG_ARRAY_BUFFER_BINDING_ARB                         = 0x889B
+	MATRIX28_ARB                                               = 0x88DC
+	MAX_TEXTURE_BUFFER_SIZE                                    = 0x8C2B
+	MAP_WRITE_BIT                                              = 0x0002
+	LAYOUT_LINEAR_CPU_CACHED_INTEL                             = 2
+	INTENSITY12_EXT                                            = 0x804C
+	COLOR_MATRIX                                               = 0x80B1
+	PIXEL_TILE_CACHE_INCREMENT_SGIX                            = 0x813F
+	INTENSITY_FLOAT32_APPLE                                    = 0x8817
+	ACTIVE_SUBROUTINE_UNIFORM_LOCATIONS                        = 0x8E47
+	MAX_PROGRAM_SUBROUTINE_PARAMETERS_NV                       = 0x8F44
+	LUMINANCE_ALPHA_SNORM                                      = 0x9012
+	SYNC_CONDITION                                             = 0x9113
+	MAX_TEXTURE_LOD_BIAS_EXT                                   = 0x84FD
+	ELEMENT_ARRAY_BUFFER_ARB                                   = 0x8893
+	REG_8_ATI                                                  = 0x8929
+	VERTEX_SHADER                                              = 0x8B31
+	MAX_TRANSFORM_FEEDBACK_INTERLEAVED_COMPONENTS              = 0x8C8A
+	DST_ALPHA                                                  = 0x0304
+	DRAW_BUFFER7                                               = 0x882C
+	ARRAY_BUFFER                                               = 0x8892
+	MAX_PROGRAM_EXEC_INSTRUCTIONS_NV                           = 0x88F4
+	UNIFORM_BUFFER                                             = 0x8A11
+	PATH_GEN_COMPONENTS_NV                                     = 0x90B3
+	FENCE_STATUS_NV                                            = 0x84F3
+	MODELVIEW24_ARB                                            = 0x8738
+	MAX_GEOMETRY_BINDABLE_UNIFORMS_EXT                         = 0x8DE4
+	GL_1PASS_EXT                                               = 0x80A1
+	POST_COLOR_MATRIX_ALPHA_BIAS                               = 0x80BB
+	IGNORE_BORDER_HP                                           = 0x8150
+	YCRCBA_SGIX                                                = 0x8319
+	IMAGE_BUFFER                                               = 0x9051
+	FRAMEBUFFER_DEFAULT                                        = 0x8218
+	MAX_ACTIVE_LIGHTS_SGIX                                     = 0x8405
+	COLOR_SUM_EXT                                              = 0x8458
+	DRAW_BUFFER14                                              = 0x8833
+	MATRIX_INDEX_ARRAY_POINTER_ARB                             = 0x8849
+	WRITE_DISCARD_NV                                           = 0x88BE
+	STATIC_READ_ARB                                            = 0x88E5
+	VERTEX_ATTRIB_MAP1_APPLE                                   = 0x8A00
+	IMAGE_CUBE_MAP_ARRAY                                       = 0x9054
+	VERSION_3_0                                                = 1
+	POINT                                                      = 0x1B00
+	LINEAR_SHARPEN_ALPHA_SGIS                                  = 0x80AE
+	PREVIOUS_ARB                                               = 0x8578
+	Z6Y10Z6CB10Z6A10Z6Y10Z6CR10Z6A10_4224_NV                   = 0x9034
+	DEPTH                                                      = 0x1801
+	LUMINANCE16_ALPHA16_EXT                                    = 0x8048
+	TEXTURE_3D_EXT                                             = 0x806F
+	SAMPLES_SGIS                                               = 0x80A9
+	TEXTURE_DEPTH_TYPE                                         = 0x8C16
+	POST_CONVOLUTION_RED_SCALE                                 = 0x801C
+	VERTEX_ARRAY_EXT                                           = 0x8074
+	EDGE_FLAG_ARRAY_COUNT_EXT                                  = 0x808D
+	FRAMEBUFFER_RENDERABLE                                     = 0x8289
+	SUBTRACT_ARB                                               = 0x84E7
+	DRAW_BUFFER8_ATI                                           = 0x882D
+	PIXEL_TILE_CACHE_SIZE_SGIX                                 = 0x8145
+	FOG_DISTANCE_MODE_NV                                       = 0x855A
+	RGB_SCALE_EXT                                              = 0x8573
+	MAX_MATRIX_PALETTE_STACK_DEPTH_ARB                         = 0x8841
+	MAX_TEXTURE_COORDS_ARB                                     = 0x8871
+	FIRST_VERTEX_CONVENTION                                    = 0x8E4D
+	CW                                                         = 0x0900
+	SIMULTANEOUS_TEXTURE_AND_STENCIL_WRITE                     = 0x82AF
+	SAMPLER                                                    = 0x82E6
+	TEXTURE26_ARB                                              = 0x84DA
+	DEPTH_STENCIL_NV                                           = 0x84F9
+	BUMP_ROT_MATRIX_ATI                                        = 0x8775
+	REG_22_ATI                                                 = 0x8937
+	TIMESTAMP                                                  = 0x8E28
+	MAX_FRAGMENT_INTERPOLATION_OFFSET                          = 0x8E5C
+	DRAW_INDIRECT_LENGTH_NV                                    = 0x8F42
+	CONVOLUTION_FILTER_BIAS_EXT                                = 0x8015
+	REPLACEMENT_CODE_ARRAY_TYPE_SUN                            = 0x85C1
+	MAX_RATIONAL_EVAL_ORDER_NV                                 = 0x86D7
+	CON_25_ATI                                                 = 0x895A
+	STENCIL_BACK_WRITEMASK                                     = 0x8CA5
+	RENDERBUFFER_COLOR_SAMPLES_NV                              = 0x8E10
+	LUMINANCE4_ALPHA4                                          = 0x8043
+	BLEND_EQUATION_EXT                                         = 0x8009
+	OUTPUT_TEXTURE_COORD17_EXT                                 = 0x87AE
+	RGB16UI                                                    = 0x8D77
+	GREEN_INTEGER_EXT                                          = 0x8D95
+	SHARPEN_TEXTURE_FUNC_POINTS_SGIS                           = 0x80B0
+	MIPMAP                                                     = 0x8293
+	RIGHT                                                      = 0x0407
+	MAP2_TEXTURE_COORD_2                                       = 0x0DB4
+	TEXTURE_FILTER_CONTROL_EXT                                 = 0x8500
+	FIRST_VERTEX_CONVENTION_EXT                                = 0x8E4D
+	VERTEX_STREAM4_ATI                                         = 0x8770
+	INDEX_ARRAY_BUFFER_BINDING_ARB                             = 0x8899
+	GPU_ADDRESS_NV                                             = 0x8F34
 )
 
 type Context struct {
 	access                    sync.Mutex
-	context                   *C.gl30Context
+	context                   *C.gl20Context
 	extensions                map[string]bool
 	inBeginEnd                bool
 	traceback                 []string
@@ -5583,1208 +5583,1506 @@ type Context struct {
 
 func New() *Context {
 	glc := new(Context)
-	glc.context = C.gl30NewContext()
+	glc.context = C.gl20NewContext()
 
 	glc.Accum = func(op uint32, value float32) {
-		C.gl30Accum(glc.context, C.GLenum(op), C.GLfloat(value))
+		defer glc.trace("Accum")
+		C.gl20Accum(glc.context, C.GLenum(op), C.GLfloat(value))
 	}
 
 	glc.AlphaFunc = func(Func uint32, ref float32) {
-		C.gl30AlphaFunc(glc.context, C.GLenum(Func), C.GLclampf(ref))
+		defer glc.trace("AlphaFunc")
+		C.gl20AlphaFunc(glc.context, C.GLenum(Func), C.GLclampf(ref))
 	}
 
 	glc.Begin = func(mode uint32) {
+		defer glc.trace("Begin")
 		glc.inBeginEnd = true
-		C.gl30Begin(glc.context, C.GLenum(mode))
+		C.gl20Begin(glc.context, C.GLenum(mode))
 		return
 	}
 
 	glc.End = func() {
-		C.gl30End(glc.context)
+		defer glc.trace("End")
+		C.gl20End(glc.context)
 		glc.inBeginEnd = false
 		return
 	}
 
 	glc.Bitmap = func(width, height int32, xorig, yorig, xmove, ymove float32, bitmap *uint8) {
-		C.gl30Bitmap(glc.context, C.GLsizei(width), C.GLsizei(height), C.GLfloat(xorig), C.GLfloat(yorig), C.GLfloat(xmove), C.GLfloat(ymove), (*C.GLubyte)(unsafe.Pointer(bitmap)))
+		defer glc.trace("Bitmap")
+		C.gl20Bitmap(glc.context, C.GLsizei(width), C.GLsizei(height), C.GLfloat(xorig), C.GLfloat(yorig), C.GLfloat(xmove), C.GLfloat(ymove), (*C.GLubyte)(unsafe.Pointer(bitmap)))
 	}
 
 	glc.BlendFunc = func(sfactor, dfactor uint32) {
-		C.gl30BlendFunc(glc.context, C.GLenum(sfactor), C.GLenum(dfactor))
+		defer glc.trace("BlendFunc")
+		C.gl20BlendFunc(glc.context, C.GLenum(sfactor), C.GLenum(dfactor))
 	}
 
 	glc.CallList = func(list uint32) {
-		C.gl30CallList(glc.context, C.GLuint(list))
+		defer glc.trace("CallList")
+		C.gl20CallList(glc.context, C.GLuint(list))
 	}
 
 	glc.CallLists = func(n int32, Type uint32, lists unsafe.Pointer) {
-		C.gl30CallLists(glc.context, C.GLsizei(n), C.GLenum(Type), lists)
+		defer glc.trace("CallLists")
+		C.gl20CallLists(glc.context, C.GLsizei(n), C.GLenum(Type), lists)
 	}
 
 	glc.Clear = func(mask uint32) {
-		C.gl30Clear(glc.context, C.GLbitfield(mask))
+		defer glc.trace("Clear")
+		C.gl20Clear(glc.context, C.GLbitfield(mask))
 	}
 
 	glc.ClearAccum = func(red, green, blue, alpha float32) {
-		C.gl30ClearAccum(glc.context, C.GLfloat(red), C.GLfloat(green), C.GLfloat(blue), C.GLfloat(alpha))
+		defer glc.trace("ClearAccum")
+		C.gl20ClearAccum(glc.context, C.GLfloat(red), C.GLfloat(green), C.GLfloat(blue), C.GLfloat(alpha))
 	}
 
 	glc.ClearColor = func(red, green, blue, alpha float32) {
-		C.gl30ClearColor(glc.context, C.GLclampf(red), C.GLclampf(green), C.GLclampf(blue), C.GLclampf(alpha))
+		defer glc.trace("ClearColor")
+		C.gl20ClearColor(glc.context, C.GLclampf(red), C.GLclampf(green), C.GLclampf(blue), C.GLclampf(alpha))
 	}
 
 	glc.ClearDepth = func(depth float64) {
-		C.gl30ClearDepth(glc.context, C.GLclampd(depth))
+		defer glc.trace("ClearDepth")
+		C.gl20ClearDepth(glc.context, C.GLclampd(depth))
 	}
 
 	glc.ClearIndex = func(c float32) {
-		C.gl30ClearIndex(glc.context, C.GLfloat(c))
+		defer glc.trace("ClearIndex")
+		C.gl20ClearIndex(glc.context, C.GLfloat(c))
 	}
 
 	glc.ClearStencil = func(s int32) {
-		C.gl30ClearStencil(glc.context, C.GLint(s))
+		defer glc.trace("ClearStencil")
+		C.gl20ClearStencil(glc.context, C.GLint(s))
 	}
 
 	glc.ClipPlane = func(plane uint32, equation *float64) {
-		C.gl30ClipPlane(glc.context, C.GLenum(plane), (*C.GLdouble)(unsafe.Pointer(equation)))
+		defer glc.trace("ClipPlane")
+		C.gl20ClipPlane(glc.context, C.GLenum(plane), (*C.GLdouble)(unsafe.Pointer(equation)))
 	}
 
 	glc.Color3b = func(red, green, blue int8) {
-		C.gl30Color3b(glc.context, C.GLbyte(red), C.GLbyte(green), C.GLbyte(blue))
+		defer glc.trace("Color3b")
+		C.gl20Color3b(glc.context, C.GLbyte(red), C.GLbyte(green), C.GLbyte(blue))
 	}
 
 	glc.Color3d = func(red, green, blue float64) {
-		C.gl30Color3d(glc.context, C.GLdouble(red), C.GLdouble(green), C.GLdouble(blue))
+		defer glc.trace("Color3d")
+		C.gl20Color3d(glc.context, C.GLdouble(red), C.GLdouble(green), C.GLdouble(blue))
 	}
 
 	glc.Color3f = func(red, green, blue float32) {
-		C.gl30Color3f(glc.context, C.GLfloat(red), C.GLfloat(green), C.GLfloat(blue))
+		defer glc.trace("Color3f")
+		C.gl20Color3f(glc.context, C.GLfloat(red), C.GLfloat(green), C.GLfloat(blue))
 	}
 
 	glc.Color3i = func(red, green, blue int32) {
-		C.gl30Color3i(glc.context, C.GLint(red), C.GLint(green), C.GLint(blue))
+		defer glc.trace("Color3i")
+		C.gl20Color3i(glc.context, C.GLint(red), C.GLint(green), C.GLint(blue))
 	}
 
 	glc.Color3s = func(red, green, blue int16) {
-		C.gl30Color3s(glc.context, C.GLshort(red), C.GLshort(green), C.GLshort(blue))
+		defer glc.trace("Color3s")
+		C.gl20Color3s(glc.context, C.GLshort(red), C.GLshort(green), C.GLshort(blue))
 	}
 
 	glc.Color3ub = func(red, green, blue uint8) {
-		C.gl30Color3ub(glc.context, C.GLubyte(red), C.GLubyte(green), C.GLubyte(blue))
+		defer glc.trace("Color3ub")
+		C.gl20Color3ub(glc.context, C.GLubyte(red), C.GLubyte(green), C.GLubyte(blue))
 	}
 
 	glc.Color3ui = func(red, green, blue uint32) {
-		C.gl30Color3ui(glc.context, C.GLuint(red), C.GLuint(green), C.GLuint(blue))
+		defer glc.trace("Color3ui")
+		C.gl20Color3ui(glc.context, C.GLuint(red), C.GLuint(green), C.GLuint(blue))
 	}
 
 	glc.Color3us = func(red, green, blue uint16) {
-		C.gl30Color3us(glc.context, C.GLushort(red), C.GLushort(green), C.GLushort(blue))
+		defer glc.trace("Color3us")
+		C.gl20Color3us(glc.context, C.GLushort(red), C.GLushort(green), C.GLushort(blue))
 	}
 
 	glc.Color4b = func(red, green, blue, alpha int8) {
-		C.gl30Color4b(glc.context, C.GLbyte(red), C.GLbyte(green), C.GLbyte(blue), C.GLbyte(alpha))
+		defer glc.trace("Color4b")
+		C.gl20Color4b(glc.context, C.GLbyte(red), C.GLbyte(green), C.GLbyte(blue), C.GLbyte(alpha))
 	}
 
 	glc.Color4d = func(red, green, blue, alpha float64) {
-		C.gl30Color4d(glc.context, C.GLdouble(red), C.GLdouble(green), C.GLdouble(blue), C.GLdouble(alpha))
+		defer glc.trace("Color4d")
+		C.gl20Color4d(glc.context, C.GLdouble(red), C.GLdouble(green), C.GLdouble(blue), C.GLdouble(alpha))
 	}
 
 	glc.Color4f = func(red, green, blue, alpha float32) {
-		C.gl30Color4f(glc.context, C.GLfloat(red), C.GLfloat(green), C.GLfloat(blue), C.GLfloat(alpha))
+		defer glc.trace("Color4f")
+		C.gl20Color4f(glc.context, C.GLfloat(red), C.GLfloat(green), C.GLfloat(blue), C.GLfloat(alpha))
 	}
 
 	glc.Color4i = func(red, green, blue, alpha int32) {
-		C.gl30Color4i(glc.context, C.GLint(red), C.GLint(green), C.GLint(blue), C.GLint(alpha))
+		defer glc.trace("Color4i")
+		C.gl20Color4i(glc.context, C.GLint(red), C.GLint(green), C.GLint(blue), C.GLint(alpha))
 	}
 
 	glc.Color4s = func(red, green, blue, alpha int16) {
-		C.gl30Color4s(glc.context, C.GLshort(red), C.GLshort(green), C.GLshort(blue), C.GLshort(alpha))
+		defer glc.trace("Color4s")
+		C.gl20Color4s(glc.context, C.GLshort(red), C.GLshort(green), C.GLshort(blue), C.GLshort(alpha))
 	}
 
 	glc.Color4ub = func(red, green, blue, alpha uint8) {
-		C.gl30Color4ub(glc.context, C.GLubyte(red), C.GLubyte(green), C.GLubyte(blue), C.GLubyte(alpha))
+		defer glc.trace("Color4ub")
+		C.gl20Color4ub(glc.context, C.GLubyte(red), C.GLubyte(green), C.GLubyte(blue), C.GLubyte(alpha))
 	}
 
 	glc.Color4ui = func(red, green, blue, alpha uint32) {
-		C.gl30Color4ui(glc.context, C.GLuint(red), C.GLuint(green), C.GLuint(blue), C.GLuint(alpha))
+		defer glc.trace("Color4ui")
+		C.gl20Color4ui(glc.context, C.GLuint(red), C.GLuint(green), C.GLuint(blue), C.GLuint(alpha))
 	}
 
 	glc.Color4us = func(red, green, blue, alpha uint16) {
-		C.gl30Color4us(glc.context, C.GLushort(red), C.GLushort(green), C.GLushort(blue), C.GLushort(alpha))
+		defer glc.trace("Color4us")
+		C.gl20Color4us(glc.context, C.GLushort(red), C.GLushort(green), C.GLushort(blue), C.GLushort(alpha))
 	}
 
 	glc.Color3bv = func(v *int8) {
-		C.gl30Color3bv(glc.context, (*C.GLbyte)(unsafe.Pointer(v)))
+		defer glc.trace("Color3bv")
+		C.gl20Color3bv(glc.context, (*C.GLbyte)(unsafe.Pointer(v)))
 	}
 
 	glc.Color3dv = func(v *float64) {
-		C.gl30Color3dv(glc.context, (*C.GLdouble)(unsafe.Pointer(v)))
+		defer glc.trace("Color3dv")
+		C.gl20Color3dv(glc.context, (*C.GLdouble)(unsafe.Pointer(v)))
 	}
 
 	glc.Color3fv = func(v *float32) {
-		C.gl30Color3fv(glc.context, (*C.GLfloat)(unsafe.Pointer(v)))
+		defer glc.trace("Color3fv")
+		C.gl20Color3fv(glc.context, (*C.GLfloat)(unsafe.Pointer(v)))
 	}
 
 	glc.Color3iv = func(v *int32) {
-		C.gl30Color3iv(glc.context, (*C.GLint)(unsafe.Pointer(v)))
+		defer glc.trace("Color3iv")
+		C.gl20Color3iv(glc.context, (*C.GLint)(unsafe.Pointer(v)))
 	}
 
 	glc.Color3sv = func(v *int16) {
-		C.gl30Color3sv(glc.context, (*C.GLshort)(unsafe.Pointer(v)))
+		defer glc.trace("Color3sv")
+		C.gl20Color3sv(glc.context, (*C.GLshort)(unsafe.Pointer(v)))
 	}
 
 	glc.Color3ubv = func(v *uint8) {
-		C.gl30Color3ubv(glc.context, (*C.GLubyte)(unsafe.Pointer(v)))
+		defer glc.trace("Color3ubv")
+		C.gl20Color3ubv(glc.context, (*C.GLubyte)(unsafe.Pointer(v)))
 	}
 
 	glc.Color3uiv = func(v *uint32) {
-		C.gl30Color3uiv(glc.context, (*C.GLuint)(unsafe.Pointer(v)))
+		defer glc.trace("Color3uiv")
+		C.gl20Color3uiv(glc.context, (*C.GLuint)(unsafe.Pointer(v)))
 	}
 
 	glc.Color3usv = func(v *uint16) {
-		C.gl30Color3usv(glc.context, (*C.GLushort)(unsafe.Pointer(v)))
+		defer glc.trace("Color3usv")
+		C.gl20Color3usv(glc.context, (*C.GLushort)(unsafe.Pointer(v)))
 	}
 
 	glc.Color4bv = func(v *int8) {
-		C.gl30Color4bv(glc.context, (*C.GLbyte)(unsafe.Pointer(v)))
+		defer glc.trace("Color4bv")
+		C.gl20Color4bv(glc.context, (*C.GLbyte)(unsafe.Pointer(v)))
 	}
 
 	glc.Color4dv = func(v *float64) {
-		C.gl30Color4dv(glc.context, (*C.GLdouble)(unsafe.Pointer(v)))
+		defer glc.trace("Color4dv")
+		C.gl20Color4dv(glc.context, (*C.GLdouble)(unsafe.Pointer(v)))
 	}
 
 	glc.Color4fv = func(v *float32) {
-		C.gl30Color4fv(glc.context, (*C.GLfloat)(unsafe.Pointer(v)))
+		defer glc.trace("Color4fv")
+		C.gl20Color4fv(glc.context, (*C.GLfloat)(unsafe.Pointer(v)))
 	}
 
 	glc.Color4iv = func(v *int32) {
-		C.gl30Color4iv(glc.context, (*C.GLint)(unsafe.Pointer(v)))
+		defer glc.trace("Color4iv")
+		C.gl20Color4iv(glc.context, (*C.GLint)(unsafe.Pointer(v)))
 	}
 
 	glc.Color4sv = func(v *int16) {
-		C.gl30Color4sv(glc.context, (*C.GLshort)(unsafe.Pointer(v)))
+		defer glc.trace("Color4sv")
+		C.gl20Color4sv(glc.context, (*C.GLshort)(unsafe.Pointer(v)))
 	}
 
 	glc.Color4ubv = func(v *uint8) {
-		C.gl30Color4ubv(glc.context, (*C.GLubyte)(unsafe.Pointer(v)))
+		defer glc.trace("Color4ubv")
+		C.gl20Color4ubv(glc.context, (*C.GLubyte)(unsafe.Pointer(v)))
 	}
 
 	glc.Color4uiv = func(v *uint32) {
-		C.gl30Color4uiv(glc.context, (*C.GLuint)(unsafe.Pointer(v)))
+		defer glc.trace("Color4uiv")
+		C.gl20Color4uiv(glc.context, (*C.GLuint)(unsafe.Pointer(v)))
 	}
 
 	glc.Color4usv = func(v *uint16) {
-		C.gl30Color4usv(glc.context, (*C.GLushort)(unsafe.Pointer(v)))
+		defer glc.trace("Color4usv")
+		C.gl20Color4usv(glc.context, (*C.GLushort)(unsafe.Pointer(v)))
 	}
 
 	glc.ColorMask = func(red, green, blue, alpha bool) {
-		C.gl30ColorMask(glc.context, boolToGL(red), boolToGL(green), boolToGL(blue), boolToGL(alpha))
+		defer glc.trace("ColorMask")
+		C.gl20ColorMask(glc.context, boolToGL(red), boolToGL(green), boolToGL(blue), boolToGL(alpha))
 	}
 
 	glc.ColorMaterial = func(face, mode uint32) {
-		C.gl30ColorMaterial(glc.context, C.GLenum(face), C.GLenum(mode))
+		defer glc.trace("ColorMaterial")
+		C.gl20ColorMaterial(glc.context, C.GLenum(face), C.GLenum(mode))
 	}
 
 	glc.CopyPixels = func(x, y int32, width, height int32, Type uint32) {
-		C.gl30CopyPixels(glc.context, C.GLint(x), C.GLint(y), C.GLsizei(width), C.GLsizei(height), C.GLenum(Type))
+		defer glc.trace("CopyPixels")
+		C.gl20CopyPixels(glc.context, C.GLint(x), C.GLint(y), C.GLsizei(width), C.GLsizei(height), C.GLenum(Type))
 	}
 
 	glc.CullFace = func(mode uint32) {
-		C.gl30CullFace(glc.context, C.GLenum(mode))
+		defer glc.trace("CullFace")
+		C.gl20CullFace(glc.context, C.GLenum(mode))
 	}
 
 	glc.DeleteLists = func(list uint32, Range int32) {
-		C.gl30DeleteLists(glc.context, C.GLuint(list), C.GLsizei(Range))
+		defer glc.trace("DeleteLists")
+		C.gl20DeleteLists(glc.context, C.GLuint(list), C.GLsizei(Range))
 	}
 
 	glc.DepthFunc = func(Func uint32) {
-		C.gl30DepthFunc(glc.context, C.GLenum(Func))
+		defer glc.trace("DepthFunc")
+		C.gl20DepthFunc(glc.context, C.GLenum(Func))
 	}
 
 	glc.DepthMask = func(flag bool) {
-		C.gl30DepthMask(glc.context, boolToGL(flag))
+		defer glc.trace("DepthMask")
+		C.gl20DepthMask(glc.context, boolToGL(flag))
 	}
 
 	glc.DepthRange = func(zNear, zFar float64) {
-		C.gl30DepthRange(glc.context, C.GLclampd(zNear), C.GLclampd(zFar))
+		defer glc.trace("DepthRange")
+		C.gl20DepthRange(glc.context, C.GLclampd(zNear), C.GLclampd(zFar))
 	}
 
 	glc.Enable = func(cap uint32) {
-		C.gl30Enable(glc.context, C.GLenum(cap))
+		defer glc.trace("Enable")
+		C.gl20Enable(glc.context, C.GLenum(cap))
 	}
 
 	glc.Disable = func(cap uint32) {
-		C.gl30Disable(glc.context, C.GLenum(cap))
+		defer glc.trace("Disable")
+		C.gl20Disable(glc.context, C.GLenum(cap))
 	}
 
 	glc.DrawBuffer = func(mode uint32) {
-		C.gl30DrawBuffer(glc.context, C.GLenum(mode))
+		defer glc.trace("DrawBuffer")
+		C.gl20DrawBuffer(glc.context, C.GLenum(mode))
 	}
 
 	glc.DrawPixels = func(width, height int32, format, Type uint32, data unsafe.Pointer) {
-		C.gl30DrawPixels(glc.context, C.GLsizei(width), C.GLsizei(height), C.GLenum(format), C.GLenum(Type), data)
+		defer glc.trace("DrawPixels")
+		C.gl20DrawPixels(glc.context, C.GLsizei(width), C.GLsizei(height), C.GLenum(format), C.GLenum(Type), data)
 	}
 
 	glc.EdgeFlag = func(flag bool) {
-		C.gl30EdgeFlag(glc.context, boolToGL(flag))
+		defer glc.trace("EdgeFlag")
+		C.gl20EdgeFlag(glc.context, boolToGL(flag))
 	}
 
 	glc.EdgeFlagv = func(flag *bool) {
-		C.gl30EdgeFlagv(glc.context, (*C.GLboolean)(unsafe.Pointer(flag)))
+		defer glc.trace("EdgeFlagv")
+		C.gl20EdgeFlagv(glc.context, (*C.GLboolean)(unsafe.Pointer(flag)))
 	}
 
 	glc.EdgeFlagPointer = func(stride int32, pointer unsafe.Pointer) {
-		C.gl30EdgeFlagPointer(glc.context, C.GLsizei(stride), pointer)
+		defer glc.trace("EdgeFlagPointer")
+		C.gl20EdgeFlagPointer(glc.context, C.GLsizei(stride), pointer)
 	}
 
 	glc.EvalCoord1d = func(u float64) {
-		C.gl30EvalCoord1d(glc.context, C.GLdouble(u))
+		defer glc.trace("EvalCoord1d")
+		C.gl20EvalCoord1d(glc.context, C.GLdouble(u))
 	}
 
 	glc.EvalCoord1f = func(u float32) {
-		C.gl30EvalCoord1f(glc.context, C.GLfloat(u))
+		defer glc.trace("EvalCoord1f")
+		C.gl20EvalCoord1f(glc.context, C.GLfloat(u))
 	}
 
 	glc.EvalCoord2d = func(u, v float64) {
-		C.gl30EvalCoord2d(glc.context, C.GLdouble(u), C.GLdouble(v))
+		defer glc.trace("EvalCoord2d")
+		C.gl20EvalCoord2d(glc.context, C.GLdouble(u), C.GLdouble(v))
 	}
 
 	glc.EvalCoord2f = func(u, v float32) {
-		C.gl30EvalCoord2f(glc.context, C.GLfloat(u), C.GLfloat(v))
+		defer glc.trace("EvalCoord2f")
+		C.gl20EvalCoord2f(glc.context, C.GLfloat(u), C.GLfloat(v))
 	}
 
 	glc.EvalCoord1dv = func(u *float64) {
-		C.gl30EvalCoord1dv(glc.context, (*C.GLdouble)(unsafe.Pointer(u)))
+		defer glc.trace("EvalCoord1dv")
+		C.gl20EvalCoord1dv(glc.context, (*C.GLdouble)(unsafe.Pointer(u)))
 	}
 
 	glc.EvalCoord1fv = func(u *float32) {
-		C.gl30EvalCoord1fv(glc.context, (*C.GLfloat)(unsafe.Pointer(u)))
+		defer glc.trace("EvalCoord1fv")
+		C.gl20EvalCoord1fv(glc.context, (*C.GLfloat)(unsafe.Pointer(u)))
 	}
 
 	glc.EvalCoord2dv = func(u *float64) {
-		C.gl30EvalCoord2dv(glc.context, (*C.GLdouble)(unsafe.Pointer(u)))
+		defer glc.trace("EvalCoord2dv")
+		C.gl20EvalCoord2dv(glc.context, (*C.GLdouble)(unsafe.Pointer(u)))
 	}
 
 	glc.EvalCoord2fv = func(u *float32) {
-		C.gl30EvalCoord2fv(glc.context, (*C.GLfloat)(unsafe.Pointer(u)))
+		defer glc.trace("EvalCoord2fv")
+		C.gl20EvalCoord2fv(glc.context, (*C.GLfloat)(unsafe.Pointer(u)))
 	}
 
 	glc.EvalMesh1 = func(mode uint32, i1, i2 int32) {
-		C.gl30EvalMesh1(glc.context, C.GLenum(mode), C.GLint(i1), C.GLint(i2))
+		defer glc.trace("EvalMesh1")
+		C.gl20EvalMesh1(glc.context, C.GLenum(mode), C.GLint(i1), C.GLint(i2))
 	}
 
 	glc.EvalMesh2 = func(mode uint32, i1, i2, j1, j2 int32) {
-		C.gl30EvalMesh2(glc.context, C.GLenum(mode), C.GLint(i1), C.GLint(i2), C.GLint(j1), C.GLint(j2))
+		defer glc.trace("EvalMesh2")
+		C.gl20EvalMesh2(glc.context, C.GLenum(mode), C.GLint(i1), C.GLint(i2), C.GLint(j1), C.GLint(j2))
 	}
 
 	glc.EvalPoint1 = func(i int32) {
-		C.gl30EvalPoint1(glc.context, C.GLint(i))
+		defer glc.trace("EvalPoint1")
+		C.gl20EvalPoint1(glc.context, C.GLint(i))
 	}
 
 	glc.EvalPoint2 = func(i, j int32) {
-		C.gl30EvalPoint2(glc.context, C.GLint(i), C.GLint(j))
+		defer glc.trace("EvalPoint2")
+		C.gl20EvalPoint2(glc.context, C.GLint(i), C.GLint(j))
 	}
 
 	glc.FeedbackBuffer = func(size int32, Type uint32, buffer *float32) {
-		C.gl30FeedbackBuffer(glc.context, C.GLsizei(size), C.GLenum(Type), (*C.GLfloat)(unsafe.Pointer(buffer)))
+		defer glc.trace("FeedbackBuffer")
+		C.gl20FeedbackBuffer(glc.context, C.GLsizei(size), C.GLenum(Type), (*C.GLfloat)(unsafe.Pointer(buffer)))
 	}
 
 	glc.Finish = func() {
-		C.gl30Finish(glc.context)
+		defer glc.trace("Finish")
+		C.gl20Finish(glc.context)
 	}
 
 	glc.Flush = func() {
-		C.gl30Flush(glc.context)
+		defer glc.trace("Flush")
+		C.gl20Flush(glc.context)
 	}
 
 	glc.Fogf = func(pname uint32, param float32) {
-		C.gl30Fogf(glc.context, C.GLenum(pname), C.GLfloat(param))
+		defer glc.trace("Fogf")
+		C.gl20Fogf(glc.context, C.GLenum(pname), C.GLfloat(param))
 	}
 
 	glc.Fogi = func(pname uint32, param int32) {
-		C.gl30Fogi(glc.context, C.GLenum(pname), C.GLint(param))
+		defer glc.trace("Fogi")
+		C.gl20Fogi(glc.context, C.GLenum(pname), C.GLint(param))
 	}
 
 	glc.Fogfv = func(pname uint32, params *float32) {
-		C.gl30Fogfv(glc.context, C.GLenum(pname), (*C.GLfloat)(unsafe.Pointer(params)))
+		defer glc.trace("Fogfv")
+		C.gl20Fogfv(glc.context, C.GLenum(pname), (*C.GLfloat)(unsafe.Pointer(params)))
 	}
 
 	glc.Fogiv = func(pname uint32, params *int32) {
-		C.gl30Fogiv(glc.context, C.GLenum(pname), (*C.GLint)(unsafe.Pointer(params)))
+		defer glc.trace("Fogiv")
+		C.gl20Fogiv(glc.context, C.GLenum(pname), (*C.GLint)(unsafe.Pointer(params)))
 	}
 
 	glc.FrontFace = func(mode uint32) {
-		C.gl30FrontFace(glc.context, C.GLenum(mode))
+		defer glc.trace("FrontFace")
+		C.gl20FrontFace(glc.context, C.GLenum(mode))
 	}
 
 	glc.Frustum = func(left, right, bottom, top, zNear, zFar float64) {
-		C.gl30Frustum(glc.context, C.GLdouble(left), C.GLdouble(right), C.GLdouble(bottom), C.GLdouble(top), C.GLdouble(zNear), C.GLdouble(zFar))
+		defer glc.trace("Frustum")
+		C.gl20Frustum(glc.context, C.GLdouble(left), C.GLdouble(right), C.GLdouble(bottom), C.GLdouble(top), C.GLdouble(zNear), C.GLdouble(zFar))
 	}
 
 	glc.GenLists = func(Range int32) uint32 {
-		return uint32(C.gl30GenLists(glc.context, C.GLsizei(Range)))
+		defer glc.trace("GenLists")
+		return uint32(C.gl20GenLists(glc.context, C.GLsizei(Range)))
 	}
 
 	glc.GetBooleanv = func(pname uint32, params *bool) {
-		C.gl30GetBooleanv(glc.context, C.GLenum(pname), (*C.GLboolean)(unsafe.Pointer(params)))
+		defer glc.trace("GetBooleanv")
+		C.gl20GetBooleanv(glc.context, C.GLenum(pname), (*C.GLboolean)(unsafe.Pointer(params)))
 	}
 
 	glc.GetDoublev = func(pname uint32, params *float64) {
-		C.gl30GetDoublev(glc.context, C.GLenum(pname), (*C.GLdouble)(unsafe.Pointer(params)))
+		defer glc.trace("GetDoublev")
+		C.gl20GetDoublev(glc.context, C.GLenum(pname), (*C.GLdouble)(unsafe.Pointer(params)))
 	}
 
 	glc.GetFloatv = func(pname uint32, params *float32) {
-		C.gl30GetFloatv(glc.context, C.GLenum(pname), (*C.GLfloat)(unsafe.Pointer(params)))
+		defer glc.trace("GetFloatv")
+		C.gl20GetFloatv(glc.context, C.GLenum(pname), (*C.GLfloat)(unsafe.Pointer(params)))
 	}
 
 	glc.GetIntegerv = func(pname uint32, params *int32) {
-		C.gl30GetIntegerv(glc.context, C.GLenum(pname), (*C.GLint)(unsafe.Pointer(params)))
+		defer glc.trace("GetIntegerv")
+		C.gl20GetIntegerv(glc.context, C.GLenum(pname), (*C.GLint)(unsafe.Pointer(params)))
 	}
 
 	glc.GetClipPlane = func(plane uint32, equation *float64) {
-		C.gl30GetClipPlane(glc.context, C.GLenum(plane), (*C.GLdouble)(unsafe.Pointer(equation)))
+		defer glc.trace("GetClipPlane")
+		C.gl20GetClipPlane(glc.context, C.GLenum(plane), (*C.GLdouble)(unsafe.Pointer(equation)))
 	}
 
 	glc.GetError = func() uint32 {
-		return uint32(C.gl30GetError(glc.context))
+		return uint32(C.gl20GetError(glc.context))
 	}
 
 	glc.GetLightfv = func(light, pname uint32, params *float32) {
-		C.gl30GetLightfv(glc.context, C.GLenum(light), C.GLenum(pname), (*C.GLfloat)(unsafe.Pointer(params)))
+		defer glc.trace("GetLightfv")
+		C.gl20GetLightfv(glc.context, C.GLenum(light), C.GLenum(pname), (*C.GLfloat)(unsafe.Pointer(params)))
 	}
 
 	glc.GetLightiv = func(light, pname uint32, params *int32) {
-		C.gl30GetLightiv(glc.context, C.GLenum(light), C.GLenum(pname), (*C.GLint)(unsafe.Pointer(params)))
+		defer glc.trace("GetLightiv")
+		C.gl20GetLightiv(glc.context, C.GLenum(light), C.GLenum(pname), (*C.GLint)(unsafe.Pointer(params)))
 	}
 
 	glc.GetMapdv = func(target, query uint32, v *float64) {
-		C.gl30GetMapdv(glc.context, C.GLenum(target), C.GLenum(query), (*C.GLdouble)(unsafe.Pointer(v)))
+		defer glc.trace("GetMapdv")
+		C.gl20GetMapdv(glc.context, C.GLenum(target), C.GLenum(query), (*C.GLdouble)(unsafe.Pointer(v)))
 	}
 
 	glc.GetMapfv = func(target, query uint32, v *float32) {
-		C.gl30GetMapfv(glc.context, C.GLenum(target), C.GLenum(query), (*C.GLfloat)(unsafe.Pointer(v)))
+		defer glc.trace("GetMapfv")
+		C.gl20GetMapfv(glc.context, C.GLenum(target), C.GLenum(query), (*C.GLfloat)(unsafe.Pointer(v)))
 	}
 
 	glc.GetMapiv = func(target, query uint32, v *int32) {
-		C.gl30GetMapiv(glc.context, C.GLenum(target), C.GLenum(query), (*C.GLint)(unsafe.Pointer(v)))
+		defer glc.trace("GetMapiv")
+		C.gl20GetMapiv(glc.context, C.GLenum(target), C.GLenum(query), (*C.GLint)(unsafe.Pointer(v)))
 	}
 
 	glc.GetMaterialfv = func(face, pname uint32, params *float32) {
-		C.gl30GetMaterialfv(glc.context, C.GLenum(face), C.GLenum(pname), (*C.GLfloat)(unsafe.Pointer(params)))
+		defer glc.trace("GetMaterialfv")
+		C.gl20GetMaterialfv(glc.context, C.GLenum(face), C.GLenum(pname), (*C.GLfloat)(unsafe.Pointer(params)))
 	}
 
 	glc.GetMaterialiv = func(face, pname uint32, params *int32) {
-		C.gl30GetMaterialiv(glc.context, C.GLenum(face), C.GLenum(pname), (*C.GLint)(unsafe.Pointer(params)))
+		defer glc.trace("GetMaterialiv")
+		C.gl20GetMaterialiv(glc.context, C.GLenum(face), C.GLenum(pname), (*C.GLint)(unsafe.Pointer(params)))
 	}
 
 	glc.GetPixelMapfv = func(Map uint32, values *float32) {
-		C.gl30GetPixelMapfv(glc.context, C.GLenum(Map), (*C.GLfloat)(unsafe.Pointer(values)))
+		defer glc.trace("GetPixelMapfv")
+		C.gl20GetPixelMapfv(glc.context, C.GLenum(Map), (*C.GLfloat)(unsafe.Pointer(values)))
 	}
 
 	glc.GetPixelMapuiv = func(Map uint32, values *uint32) {
-		C.gl30GetPixelMapuiv(glc.context, C.GLenum(Map), (*C.GLuint)(unsafe.Pointer(values)))
+		defer glc.trace("GetPixelMapuiv")
+		C.gl20GetPixelMapuiv(glc.context, C.GLenum(Map), (*C.GLuint)(unsafe.Pointer(values)))
 	}
 
 	glc.GetPixelMapusv = func(Map uint32, values *uint16) {
-		C.gl30GetPixelMapusv(glc.context, C.GLenum(Map), (*C.GLushort)(unsafe.Pointer(values)))
+		defer glc.trace("GetPixelMapusv")
+		C.gl20GetPixelMapusv(glc.context, C.GLenum(Map), (*C.GLushort)(unsafe.Pointer(values)))
 	}
 
 	glc.GetPolygonStipple = func(pattern *uint8) {
-		C.gl30GetPolygonStipple(glc.context, (*C.GLubyte)(unsafe.Pointer(pattern)))
+		defer glc.trace("GetPolygonStipple")
+		C.gl20GetPolygonStipple(glc.context, (*C.GLubyte)(unsafe.Pointer(pattern)))
 	}
 
 	glc.GetString = func(name uint32) string {
-		cstr := C.gl30GetString(glc.context, C.GLenum(name))
+		defer glc.trace("GetString")
+		cstr := C.gl20GetString(glc.context, C.GLenum(name))
 		return C.GoString((*C.char)(unsafe.Pointer(cstr)))
 	}
 
 	glc.GetTexEnvfv = func(target, pname uint32, params *float32) {
-		C.gl30GetTexEnvfv(glc.context, C.GLenum(target), C.GLenum(pname), (*C.GLfloat)(unsafe.Pointer(params)))
+		defer glc.trace("GetTexEnvfv")
+		C.gl20GetTexEnvfv(glc.context, C.GLenum(target), C.GLenum(pname), (*C.GLfloat)(unsafe.Pointer(params)))
 	}
 
 	glc.GetTexEnviv = func(target, pname uint32, params *int32) {
-		C.gl30GetTexEnviv(glc.context, C.GLenum(target), C.GLenum(pname), (*C.GLint)(unsafe.Pointer(params)))
+		defer glc.trace("GetTexEnviv")
+		C.gl20GetTexEnviv(glc.context, C.GLenum(target), C.GLenum(pname), (*C.GLint)(unsafe.Pointer(params)))
 	}
 
 	glc.GetTexGendv = func(coord, pname uint32, params *float64) {
-		C.gl30GetTexGendv(glc.context, C.GLenum(coord), C.GLenum(pname), (*C.GLdouble)(unsafe.Pointer(params)))
+		defer glc.trace("GetTexGendv")
+		C.gl20GetTexGendv(glc.context, C.GLenum(coord), C.GLenum(pname), (*C.GLdouble)(unsafe.Pointer(params)))
 	}
 
 	glc.GetTexGenfv = func(coord, pname uint32, params *float32) {
-		C.gl30GetTexGenfv(glc.context, C.GLenum(coord), C.GLenum(pname), (*C.GLfloat)(unsafe.Pointer(params)))
+		defer glc.trace("GetTexGenfv")
+		C.gl20GetTexGenfv(glc.context, C.GLenum(coord), C.GLenum(pname), (*C.GLfloat)(unsafe.Pointer(params)))
 	}
 
 	glc.GetTexGeniv = func(coord, pname uint32, params *int32) {
-		C.gl30GetTexGeniv(glc.context, C.GLenum(coord), C.GLenum(pname), (*C.GLint)(unsafe.Pointer(params)))
+		defer glc.trace("GetTexGeniv")
+		C.gl20GetTexGeniv(glc.context, C.GLenum(coord), C.GLenum(pname), (*C.GLint)(unsafe.Pointer(params)))
 	}
 
 	glc.GetTexImage = func(target uint32, level int32, format, Type uint32, pixels unsafe.Pointer) {
-		C.gl30GetTexImage(glc.context, C.GLenum(target), C.GLint(level), C.GLenum(format), C.GLenum(Type), pixels)
+		defer glc.trace("GetTexImage")
+		C.gl20GetTexImage(glc.context, C.GLenum(target), C.GLint(level), C.GLenum(format), C.GLenum(Type), pixels)
 	}
 
 	glc.GetTexLevelParameterfv = func(target uint32, level int32, pname uint32, params *float32) {
-		C.gl30GetTexLevelParameterfv(glc.context, C.GLenum(target), C.GLint(level), C.GLenum(pname), (*C.GLfloat)(unsafe.Pointer(params)))
+		defer glc.trace("GetTexLevelParameterfv")
+		C.gl20GetTexLevelParameterfv(glc.context, C.GLenum(target), C.GLint(level), C.GLenum(pname), (*C.GLfloat)(unsafe.Pointer(params)))
 	}
 
 	glc.GetTexLevelParameteriv = func(target uint32, level int32, pname uint32, params *int32) {
-		C.gl30GetTexLevelParameteriv(glc.context, C.GLenum(target), C.GLint(level), C.GLenum(pname), (*C.GLint)(unsafe.Pointer(params)))
+		defer glc.trace("GetTexLevelParameteriv")
+		C.gl20GetTexLevelParameteriv(glc.context, C.GLenum(target), C.GLint(level), C.GLenum(pname), (*C.GLint)(unsafe.Pointer(params)))
 	}
 
 	glc.GetTexParameterfv = func(target, pname uint32, params *float32) {
-		C.gl30GetTexParameterfv(glc.context, C.GLenum(target), C.GLenum(pname), (*C.GLfloat)(unsafe.Pointer(params)))
+		defer glc.trace("GetTexParameterfv")
+		C.gl20GetTexParameterfv(glc.context, C.GLenum(target), C.GLenum(pname), (*C.GLfloat)(unsafe.Pointer(params)))
 	}
 
 	glc.GetTexParameteriv = func(target, pname uint32, params *int32) {
-		C.gl30GetTexParameteriv(glc.context, C.GLenum(target), C.GLenum(pname), (*C.GLint)(unsafe.Pointer(params)))
+		defer glc.trace("GetTexParameteriv")
+		C.gl20GetTexParameteriv(glc.context, C.GLenum(target), C.GLenum(pname), (*C.GLint)(unsafe.Pointer(params)))
 	}
 
 	glc.Hint = func(target, mode uint32) {
-		C.gl30Hint(glc.context, C.GLenum(target), C.GLenum(mode))
+		defer glc.trace("Hint")
+		C.gl20Hint(glc.context, C.GLenum(target), C.GLenum(mode))
 	}
 
 	glc.Indexd = func(c float64) {
-		C.gl30Indexd(glc.context, C.GLdouble(c))
+		defer glc.trace("Indexd")
+		C.gl20Indexd(glc.context, C.GLdouble(c))
 	}
 
 	glc.Indexf = func(c float32) {
-		C.gl30Indexf(glc.context, C.GLfloat(c))
+		defer glc.trace("Indexf")
+		C.gl20Indexf(glc.context, C.GLfloat(c))
 	}
 
 	glc.Indexi = func(c int32) {
-		C.gl30Indexi(glc.context, C.GLint(c))
+		defer glc.trace("Indexi")
+		C.gl20Indexi(glc.context, C.GLint(c))
 	}
 
 	glc.Indexs = func(c int16) {
-		C.gl30Indexs(glc.context, C.GLshort(c))
+		defer glc.trace("Indexs")
+		C.gl20Indexs(glc.context, C.GLshort(c))
 	}
 
 	glc.Indexdv = func(c *float64) {
-		C.gl30Indexdv(glc.context, (*C.GLdouble)(unsafe.Pointer(c)))
+		defer glc.trace("Indexdv")
+		C.gl20Indexdv(glc.context, (*C.GLdouble)(unsafe.Pointer(c)))
 	}
 
 	glc.Indexfv = func(c *float32) {
-		C.gl30Indexfv(glc.context, (*C.GLfloat)(unsafe.Pointer(c)))
+		defer glc.trace("Indexfv")
+		C.gl20Indexfv(glc.context, (*C.GLfloat)(unsafe.Pointer(c)))
 	}
 
 	glc.Indexiv = func(c *int32) {
-		C.gl30Indexiv(glc.context, (*C.GLint)(unsafe.Pointer(c)))
+		defer glc.trace("Indexiv")
+		C.gl20Indexiv(glc.context, (*C.GLint)(unsafe.Pointer(c)))
 	}
 
 	glc.Indexsv = func(c *int16) {
-		C.gl30Indexsv(glc.context, (*C.GLshort)(unsafe.Pointer(c)))
+		defer glc.trace("Indexsv")
+		C.gl20Indexsv(glc.context, (*C.GLshort)(unsafe.Pointer(c)))
 	}
 
 	glc.IndexMask = func(mask uint32) {
-		C.gl30IndexMask(glc.context, C.GLuint(mask))
+		defer glc.trace("IndexMask")
+		C.gl20IndexMask(glc.context, C.GLuint(mask))
 	}
 
 	glc.IndexPointer = func(Type uint32, stride int32, pointer unsafe.Pointer) {
-		C.gl30IndexPointer(glc.context, C.GLenum(Type), C.GLsizei(stride), pointer)
+		defer glc.trace("IndexPointer")
+		C.gl20IndexPointer(glc.context, C.GLenum(Type), C.GLsizei(stride), pointer)
 	}
 
 	glc.InitNames = func() {
-		C.gl30InitNames(glc.context)
+		defer glc.trace("InitNames")
+		C.gl20InitNames(glc.context)
 	}
 
 	glc.IsEnabled = func(cap uint32) {
-		C.gl30IsEnabled(glc.context, C.GLenum(cap))
+		defer glc.trace("IsEnabled")
+		C.gl20IsEnabled(glc.context, C.GLenum(cap))
 	}
 
 	glc.IsList = func(list uint32) bool {
-		return C.gl30IsList(glc.context, C.GLuint(list)) != 0
+		defer glc.trace("IsList")
+		return C.gl20IsList(glc.context, C.GLuint(list)) != 0
 	}
 
 	glc.Lightf = func(light, pname uint32, param float32) {
-		C.gl30Lightf(glc.context, C.GLenum(light), C.GLenum(pname), C.GLfloat(param))
+		defer glc.trace("Lightf")
+		C.gl20Lightf(glc.context, C.GLenum(light), C.GLenum(pname), C.GLfloat(param))
 	}
 
 	glc.Lighti = func(light, pname uint32, param int32) {
-		C.gl30Lighti(glc.context, C.GLenum(light), C.GLenum(pname), C.GLint(param))
+		defer glc.trace("Lighti")
+		C.gl20Lighti(glc.context, C.GLenum(light), C.GLenum(pname), C.GLint(param))
 	}
 
 	glc.Lightfv = func(light, pname uint32, params *float32) {
-		C.gl30Lightfv(glc.context, C.GLenum(light), C.GLenum(pname), (*C.GLfloat)(unsafe.Pointer(params)))
+		defer glc.trace("Lightfv")
+		C.gl20Lightfv(glc.context, C.GLenum(light), C.GLenum(pname), (*C.GLfloat)(unsafe.Pointer(params)))
 	}
 
 	glc.Lightiv = func(light, pname uint32, params *int32) {
-		C.gl30Lightiv(glc.context, C.GLenum(light), C.GLenum(pname), (*C.GLint)(unsafe.Pointer(params)))
+		defer glc.trace("Lightiv")
+		C.gl20Lightiv(glc.context, C.GLenum(light), C.GLenum(pname), (*C.GLint)(unsafe.Pointer(params)))
 	}
 
 	glc.LightModelf = func(pname uint32, param float32) {
-		C.gl30LightModelf(glc.context, C.GLenum(pname), C.GLfloat(param))
+		defer glc.trace("LightModelf")
+		C.gl20LightModelf(glc.context, C.GLenum(pname), C.GLfloat(param))
 	}
 
 	glc.LightModeli = func(pname uint32, param int32) {
-		C.gl30LightModeli(glc.context, C.GLenum(pname), C.GLint(param))
+		defer glc.trace("LightModeli")
+		C.gl20LightModeli(glc.context, C.GLenum(pname), C.GLint(param))
 	}
 
 	glc.LightModelfv = func(pname uint32, params *float32) {
-		C.gl30LightModelfv(glc.context, C.GLenum(pname), (*C.GLfloat)(unsafe.Pointer(params)))
+		defer glc.trace("LightModelfv")
+		C.gl20LightModelfv(glc.context, C.GLenum(pname), (*C.GLfloat)(unsafe.Pointer(params)))
 	}
 
 	glc.LightModeliv = func(pname uint32, params *int32) {
-		C.gl30LightModeliv(glc.context, C.GLenum(pname), (*C.GLint)(unsafe.Pointer(params)))
+		defer glc.trace("LightModeliv")
+		C.gl20LightModeliv(glc.context, C.GLenum(pname), (*C.GLint)(unsafe.Pointer(params)))
 	}
 
 	glc.LineStipple = func(factor int32, pattern uint16) {
-		C.gl30LineStipple(glc.context, C.GLint(factor), C.GLushort(pattern))
+		defer glc.trace("LineStipple")
+		C.gl20LineStipple(glc.context, C.GLint(factor), C.GLushort(pattern))
 	}
 
 	glc.LineWidth = func(width float32) {
-		C.gl30LineWidth(glc.context, C.GLfloat(width))
+		defer glc.trace("LineWidth")
+		C.gl20LineWidth(glc.context, C.GLfloat(width))
 	}
 
 	glc.ListBase = func(base uint32) {
-		C.gl30ListBase(glc.context, C.GLuint(base))
+		defer glc.trace("ListBase")
+		C.gl20ListBase(glc.context, C.GLuint(base))
 	}
 
 	glc.LoadIdentity = func() {
-		C.gl30LoadIdentity(glc.context)
+		defer glc.trace("LoadIdentity")
+		C.gl20LoadIdentity(glc.context)
 	}
 
 	glc.LoadMatrixd = func(m *float64) {
-		C.gl30LoadMatrixd(glc.context, (*C.GLdouble)(unsafe.Pointer(m)))
+		defer glc.trace("LoadMatrixd")
+		C.gl20LoadMatrixd(glc.context, (*C.GLdouble)(unsafe.Pointer(m)))
 	}
 
 	glc.LoadMatrixf = func(m *float32) {
-		C.gl30LoadMatrixf(glc.context, (*C.GLfloat)(unsafe.Pointer(m)))
+		defer glc.trace("LoadMatrixf")
+		C.gl20LoadMatrixf(glc.context, (*C.GLfloat)(unsafe.Pointer(m)))
 	}
 
 	glc.LoadName = func(name uint32) {
-		C.gl30LoadName(glc.context, C.GLuint(name))
+		defer glc.trace("LoadName")
+		C.gl20LoadName(glc.context, C.GLuint(name))
 	}
 
 	glc.LogicOp = func(opcode uint32) {
-		C.gl30LogicOp(glc.context, C.GLenum(opcode))
+		defer glc.trace("LogicOp")
+		C.gl20LogicOp(glc.context, C.GLenum(opcode))
 	}
 
 	glc.Map1d = func(target uint32, u1, u2 float64, stride, order int32, points *float64) {
-		C.gl30Map1d(glc.context, C.GLenum(target), C.GLdouble(u1), C.GLdouble(u2), C.GLint(stride), C.GLint(order), (*C.GLdouble)(unsafe.Pointer(points)))
+		defer glc.trace("Map1d")
+		C.gl20Map1d(glc.context, C.GLenum(target), C.GLdouble(u1), C.GLdouble(u2), C.GLint(stride), C.GLint(order), (*C.GLdouble)(unsafe.Pointer(points)))
 	}
 
 	glc.Map1f = func(target uint32, u1, u2 float32, stride, order int32, points *float32) {
-		C.gl30Map1f(glc.context, C.GLenum(target), C.GLfloat(u1), C.GLfloat(u2), C.GLint(stride), C.GLint(order), (*C.GLfloat)(unsafe.Pointer(points)))
+		defer glc.trace("Map1f")
+		C.gl20Map1f(glc.context, C.GLenum(target), C.GLfloat(u1), C.GLfloat(u2), C.GLint(stride), C.GLint(order), (*C.GLfloat)(unsafe.Pointer(points)))
 	}
 
 	glc.Map2d = func(target uint32, u1, u2 float64, ustride, uorder int32, v1, v2 float64, vstride, vorder int32, points *float64) {
-		C.gl30Map2d(glc.context, C.GLenum(target), C.GLdouble(u1), C.GLdouble(u2), C.GLint(ustride), C.GLint(uorder), C.GLdouble(v1), C.GLdouble(v2), C.GLint(vstride), C.GLint(vorder), (*C.GLdouble)(unsafe.Pointer(points)))
+		defer glc.trace("Map2d")
+		C.gl20Map2d(glc.context, C.GLenum(target), C.GLdouble(u1), C.GLdouble(u2), C.GLint(ustride), C.GLint(uorder), C.GLdouble(v1), C.GLdouble(v2), C.GLint(vstride), C.GLint(vorder), (*C.GLdouble)(unsafe.Pointer(points)))
 	}
 
 	glc.Map2f = func(target uint32, u1, u2 float32, ustride, uorder int32, v1, v2 float32, vstride, vorder int32, points *float32) {
-		C.gl30Map2f(glc.context, C.GLenum(target), C.GLfloat(u1), C.GLfloat(u2), C.GLint(ustride), C.GLint(uorder), C.GLfloat(v1), C.GLfloat(v2), C.GLint(vstride), C.GLint(vorder), (*C.GLfloat)(unsafe.Pointer(points)))
+		defer glc.trace("Map2f")
+		C.gl20Map2f(glc.context, C.GLenum(target), C.GLfloat(u1), C.GLfloat(u2), C.GLint(ustride), C.GLint(uorder), C.GLfloat(v1), C.GLfloat(v2), C.GLint(vstride), C.GLint(vorder), (*C.GLfloat)(unsafe.Pointer(points)))
 	}
 
 	glc.MapGrid1d = func(un int32, u1, u2 float64) {
-		C.gl30MapGrid1d(glc.context, C.GLint(un), C.GLdouble(u1), C.GLdouble(u2))
+		defer glc.trace("MapGrid1d")
+		C.gl20MapGrid1d(glc.context, C.GLint(un), C.GLdouble(u1), C.GLdouble(u2))
 	}
 
 	glc.MapGrid1f = func(un int32, u1, u2 float32) {
-		C.gl30MapGrid1f(glc.context, C.GLint(un), C.GLfloat(u1), C.GLfloat(u2))
+		defer glc.trace("MapGrid1f")
+		C.gl20MapGrid1f(glc.context, C.GLint(un), C.GLfloat(u1), C.GLfloat(u2))
 	}
 
 	glc.MapGrid2d = func(un int32, u1, u2 float64, vn int32, v1, v2 float64) {
-		C.gl30MapGrid2d(glc.context, C.GLint(un), C.GLdouble(u1), C.GLdouble(u2), C.GLint(vn), C.GLdouble(v1), C.GLdouble(v2))
+		defer glc.trace("MapGrid2d")
+		C.gl20MapGrid2d(glc.context, C.GLint(un), C.GLdouble(u1), C.GLdouble(u2), C.GLint(vn), C.GLdouble(v1), C.GLdouble(v2))
 	}
 
 	glc.MapGrid2f = func(un int32, u1, u2 float32, vn int32, v1, v2 float32) {
-		C.gl30MapGrid2f(glc.context, C.GLint(un), C.GLfloat(u1), C.GLfloat(u2), C.GLint(vn), C.GLfloat(v1), C.GLfloat(v2))
+		defer glc.trace("MapGrid2f")
+		C.gl20MapGrid2f(glc.context, C.GLint(un), C.GLfloat(u1), C.GLfloat(u2), C.GLint(vn), C.GLfloat(v1), C.GLfloat(v2))
 	}
 
 	glc.Materialf = func(face, pname uint32, param float32) {
-		C.gl30Materialf(glc.context, C.GLenum(face), C.GLenum(pname), C.GLfloat(param))
+		defer glc.trace("Materialf")
+		C.gl20Materialf(glc.context, C.GLenum(face), C.GLenum(pname), C.GLfloat(param))
 	}
 
 	glc.Materiali = func(face, pname uint32, param int32) {
-		C.gl30Materiali(glc.context, C.GLenum(face), C.GLenum(pname), C.GLint(param))
+		defer glc.trace("Materiali")
+		C.gl20Materiali(glc.context, C.GLenum(face), C.GLenum(pname), C.GLint(param))
 	}
 
 	glc.Materialfv = func(face, pname uint32, params *float32) {
-		C.gl30Materialfv(glc.context, C.GLenum(face), C.GLenum(pname), (*C.GLfloat)(unsafe.Pointer(params)))
+		defer glc.trace("Materialfv")
+		C.gl20Materialfv(glc.context, C.GLenum(face), C.GLenum(pname), (*C.GLfloat)(unsafe.Pointer(params)))
 	}
 
 	glc.Materialiv = func(face, pname uint32, params *int32) {
-		C.gl30Materialiv(glc.context, C.GLenum(face), C.GLenum(pname), (*C.GLint)(unsafe.Pointer(params)))
+		defer glc.trace("Materialiv")
+		C.gl20Materialiv(glc.context, C.GLenum(face), C.GLenum(pname), (*C.GLint)(unsafe.Pointer(params)))
 	}
 
 	glc.MatrixMode = func(mode uint32) {
-		C.gl30MatrixMode(glc.context, C.GLenum(mode))
+		defer glc.trace("MatrixMode")
+		C.gl20MatrixMode(glc.context, C.GLenum(mode))
 	}
 
 	glc.MultMatrixd = func(m *float64) {
-		C.gl30MultMatrixd(glc.context, (*C.GLdouble)(unsafe.Pointer(m)))
+		defer glc.trace("MultMatrixd")
+		C.gl20MultMatrixd(glc.context, (*C.GLdouble)(unsafe.Pointer(m)))
 	}
 
 	glc.MultMatrixf = func(m *float32) {
-		C.gl30MultMatrixf(glc.context, (*C.GLfloat)(unsafe.Pointer(m)))
+		defer glc.trace("MultMatrixf")
+		C.gl20MultMatrixf(glc.context, (*C.GLfloat)(unsafe.Pointer(m)))
 	}
 
 	glc.NewList = func(list uint32, mode uint32) {
-		C.gl30NewList(glc.context, C.GLuint(list), C.GLenum(mode))
+		defer glc.trace("NewList")
+		C.gl20NewList(glc.context, C.GLuint(list), C.GLenum(mode))
 	}
 
 	glc.EndList = func() {
-		C.gl30EndList(glc.context)
+		defer glc.trace("EndList")
+		C.gl20EndList(glc.context)
 	}
 
 	glc.Normal3b = func(nx, ny, nz int8) {
-		C.gl30Normal3b(glc.context, C.GLbyte(nx), C.GLbyte(ny), C.GLbyte(nz))
+		defer glc.trace("Normal3b")
+		C.gl20Normal3b(glc.context, C.GLbyte(nx), C.GLbyte(ny), C.GLbyte(nz))
 	}
 
 	glc.Normal3d = func(nx, ny, nz float64) {
-		C.gl30Normal3d(glc.context, C.GLdouble(nx), C.GLdouble(ny), C.GLdouble(nz))
+		defer glc.trace("Normal3d")
+		C.gl20Normal3d(glc.context, C.GLdouble(nx), C.GLdouble(ny), C.GLdouble(nz))
 	}
 
 	glc.Normal3f = func(nx, ny, nz float32) {
-		C.gl30Normal3f(glc.context, C.GLfloat(nx), C.GLfloat(ny), C.GLfloat(nz))
+		defer glc.trace("Normal3f")
+		C.gl20Normal3f(glc.context, C.GLfloat(nx), C.GLfloat(ny), C.GLfloat(nz))
 	}
 
 	glc.Normal3i = func(nx, ny, nz int32) {
-		C.gl30Normal3i(glc.context, C.GLint(nx), C.GLint(ny), C.GLint(nz))
+		defer glc.trace("Normal3i")
+		C.gl20Normal3i(glc.context, C.GLint(nx), C.GLint(ny), C.GLint(nz))
 	}
 
 	glc.Normal3s = func(nx, ny, nz int16) {
-		C.gl30Normal3s(glc.context, C.GLshort(nx), C.GLshort(ny), C.GLshort(nz))
+		defer glc.trace("Normal3s")
+		C.gl20Normal3s(glc.context, C.GLshort(nx), C.GLshort(ny), C.GLshort(nz))
 	}
 
 	glc.Normal3bv = func(v *int8) {
-		C.gl30Normal3bv(glc.context, (*C.GLbyte)(unsafe.Pointer(v)))
+		defer glc.trace("Normal3bv")
+		C.gl20Normal3bv(glc.context, (*C.GLbyte)(unsafe.Pointer(v)))
 	}
 
 	glc.Normal3dv = func(v *float64) {
-		C.gl30Normal3dv(glc.context, (*C.GLdouble)(unsafe.Pointer(v)))
+		defer glc.trace("Normal3dv")
+		C.gl20Normal3dv(glc.context, (*C.GLdouble)(unsafe.Pointer(v)))
 	}
 
 	glc.Normal3fv = func(v *float32) {
-		C.gl30Normal3fv(glc.context, (*C.GLfloat)(unsafe.Pointer(v)))
+		defer glc.trace("Normal3fv")
+		C.gl20Normal3fv(glc.context, (*C.GLfloat)(unsafe.Pointer(v)))
 	}
 
 	glc.Normal3iv = func(v *int32) {
-		C.gl30Normal3iv(glc.context, (*C.GLint)(unsafe.Pointer(v)))
+		defer glc.trace("Normal3iv")
+		C.gl20Normal3iv(glc.context, (*C.GLint)(unsafe.Pointer(v)))
 	}
 
 	glc.Normal3sv = func(v *int16) {
-		C.gl30Normal3sv(glc.context, (*C.GLshort)(unsafe.Pointer(v)))
+		defer glc.trace("Normal3sv")
+		C.gl20Normal3sv(glc.context, (*C.GLshort)(unsafe.Pointer(v)))
 	}
 
 	glc.Ortho = func(left, right, bottom, top, zNear, zfar float64) {
-		C.gl30Ortho(glc.context, C.GLdouble(left), C.GLdouble(right), C.GLdouble(bottom), C.GLdouble(top), C.GLdouble(zNear), C.GLdouble(zfar))
+		defer glc.trace("Ortho")
+		C.gl20Ortho(glc.context, C.GLdouble(left), C.GLdouble(right), C.GLdouble(bottom), C.GLdouble(top), C.GLdouble(zNear), C.GLdouble(zfar))
 	}
 
 	glc.PassThrough = func(token float32) {
-		C.gl30PassThrough(glc.context, C.GLfloat(token))
+		defer glc.trace("PassThrough")
+		C.gl20PassThrough(glc.context, C.GLfloat(token))
 	}
 
 	glc.PixelMapfv = func(Map uint32, mapsize int32, values *float32) {
-		C.gl30PixelMapfv(glc.context, C.GLenum(Map), C.GLsizei(mapsize), (*C.GLfloat)(unsafe.Pointer(values)))
+		defer glc.trace("PixelMapfv")
+		C.gl20PixelMapfv(glc.context, C.GLenum(Map), C.GLsizei(mapsize), (*C.GLfloat)(unsafe.Pointer(values)))
 	}
 
 	glc.PixelMapuiv = func(Map uint32, mapsize int32, values *uint32) {
-		C.gl30PixelMapuiv(glc.context, C.GLenum(Map), C.GLsizei(mapsize), (*C.GLuint)(unsafe.Pointer(values)))
+		defer glc.trace("PixelMapuiv")
+		C.gl20PixelMapuiv(glc.context, C.GLenum(Map), C.GLsizei(mapsize), (*C.GLuint)(unsafe.Pointer(values)))
 	}
 
 	glc.PixelMapusv = func(Map uint32, mapsize int32, values *uint16) {
-		C.gl30PixelMapusv(glc.context, C.GLenum(Map), C.GLsizei(mapsize), (*C.GLushort)(unsafe.Pointer(values)))
+		defer glc.trace("PixelMapusv")
+		C.gl20PixelMapusv(glc.context, C.GLenum(Map), C.GLsizei(mapsize), (*C.GLushort)(unsafe.Pointer(values)))
 	}
 
 	glc.PixelStoref = func(pname uint32, param float32) {
-		C.gl30PixelStoref(glc.context, C.GLenum(pname), C.GLfloat(param))
+		defer glc.trace("PixelStoref")
+		C.gl20PixelStoref(glc.context, C.GLenum(pname), C.GLfloat(param))
 	}
 
 	glc.PixelStorei = func(pname uint32, param int32) {
-		C.gl30PixelStorei(glc.context, C.GLenum(pname), C.GLint(param))
+		defer glc.trace("PixelStorei")
+		C.gl20PixelStorei(glc.context, C.GLenum(pname), C.GLint(param))
 	}
 
 	glc.PixelTransferf = func(pname uint32, param float32) {
-		C.gl30PixelTransferf(glc.context, C.GLenum(pname), C.GLfloat(param))
+		defer glc.trace("PixelTransferf")
+		C.gl20PixelTransferf(glc.context, C.GLenum(pname), C.GLfloat(param))
 	}
 
 	glc.PixelTransferi = func(pname uint32, param int32) {
-		C.gl30PixelTransferi(glc.context, C.GLenum(pname), C.GLint(param))
+		defer glc.trace("PixelTransferi")
+		C.gl20PixelTransferi(glc.context, C.GLenum(pname), C.GLint(param))
 	}
 
 	glc.PixelZoom = func(xfactor, yfactor float32) {
-		C.gl30PixelZoom(glc.context, C.GLfloat(xfactor), C.GLfloat(yfactor))
+		defer glc.trace("PixelZoom")
+		C.gl20PixelZoom(glc.context, C.GLfloat(xfactor), C.GLfloat(yfactor))
 	}
 
 	glc.PointSize = func(size float32) {
-		C.gl30PointSize(glc.context, C.GLfloat(size))
+		defer glc.trace("PointSize")
+		C.gl20PointSize(glc.context, C.GLfloat(size))
 	}
 
 	glc.PolygonMode = func(face, mode uint32) {
-		C.gl30PolygonMode(glc.context, C.GLenum(face), C.GLenum(mode))
+		defer glc.trace("PolygonMode")
+		C.gl20PolygonMode(glc.context, C.GLenum(face), C.GLenum(mode))
 	}
 
 	glc.PolygonStipple = func(mask *uint8) {
-		C.gl30PolygonStipple(glc.context, (*C.GLubyte)(unsafe.Pointer(mask)))
+		defer glc.trace("PolygonStipple")
+		C.gl20PolygonStipple(glc.context, (*C.GLubyte)(unsafe.Pointer(mask)))
 	}
 
 	glc.PushAttrib = func(mask uint32) {
-		C.gl30PushAttrib(glc.context, C.GLbitfield(mask))
+		defer glc.trace("PushAttrib")
+		C.gl20PushAttrib(glc.context, C.GLbitfield(mask))
 	}
 
 	glc.PopAttrib = func() {
-		C.gl30PopAttrib(glc.context)
+		defer glc.trace("PopAttrib")
+		C.gl20PopAttrib(glc.context)
 	}
 
 	glc.PushMatrix = func() {
-		C.gl30PushMatrix(glc.context)
+		defer glc.trace("PushMatrix")
+		C.gl20PushMatrix(glc.context)
 	}
 
 	glc.PopMatrix = func() {
-		C.gl30PopMatrix(glc.context)
+		defer glc.trace("PopMatrix")
+		C.gl20PopMatrix(glc.context)
 	}
 
 	glc.PushName = func(name uint32) {
-		C.gl30PushName(glc.context, C.GLuint(name))
+		defer glc.trace("PushName")
+		C.gl20PushName(glc.context, C.GLuint(name))
 	}
 
 	glc.PopName = func() {
-		C.gl30PopName(glc.context)
+		defer glc.trace("PopName")
+		C.gl20PopName(glc.context)
 	}
 
 	glc.RasterPos2d = func(x, y float64) {
-		C.gl30RasterPos2d(glc.context, C.GLdouble(x), C.GLdouble(y))
+		defer glc.trace("RasterPos2d")
+		C.gl20RasterPos2d(glc.context, C.GLdouble(x), C.GLdouble(y))
 	}
 
 	glc.RasterPos2f = func(x, y float32) {
-		C.gl30RasterPos2f(glc.context, C.GLfloat(x), C.GLfloat(y))
+		defer glc.trace("RasterPos2f")
+		C.gl20RasterPos2f(glc.context, C.GLfloat(x), C.GLfloat(y))
 	}
 
 	glc.RasterPos2i = func(x, y int32) {
-		C.gl30RasterPos2i(glc.context, C.GLint(x), C.GLint(y))
+		defer glc.trace("RasterPos2i")
+		C.gl20RasterPos2i(glc.context, C.GLint(x), C.GLint(y))
 	}
 
 	glc.RasterPos2s = func(x, y int16) {
-		C.gl30RasterPos2s(glc.context, C.GLshort(x), C.GLshort(y))
+		defer glc.trace("RasterPos2s")
+		C.gl20RasterPos2s(glc.context, C.GLshort(x), C.GLshort(y))
 	}
 
 	glc.RasterPos3d = func(x, y, z float64) {
-		C.gl30RasterPos3d(glc.context, C.GLdouble(x), C.GLdouble(y), C.GLdouble(z))
+		defer glc.trace("RasterPos3d")
+		C.gl20RasterPos3d(glc.context, C.GLdouble(x), C.GLdouble(y), C.GLdouble(z))
 	}
 
 	glc.RasterPos3f = func(x, y, z float32) {
-		C.gl30RasterPos3f(glc.context, C.GLfloat(x), C.GLfloat(y), C.GLfloat(z))
+		defer glc.trace("RasterPos3f")
+		C.gl20RasterPos3f(glc.context, C.GLfloat(x), C.GLfloat(y), C.GLfloat(z))
 	}
 
 	glc.RasterPos3i = func(x, y, z int32) {
-		C.gl30RasterPos3i(glc.context, C.GLint(x), C.GLint(y), C.GLint(z))
+		defer glc.trace("RasterPos3i")
+		C.gl20RasterPos3i(glc.context, C.GLint(x), C.GLint(y), C.GLint(z))
 	}
 
 	glc.RasterPos3s = func(x, y, z int16) {
-		C.gl30RasterPos3s(glc.context, C.GLshort(x), C.GLshort(y), C.GLshort(z))
+		defer glc.trace("RasterPos3s")
+		C.gl20RasterPos3s(glc.context, C.GLshort(x), C.GLshort(y), C.GLshort(z))
 	}
 
 	glc.RasterPos4d = func(x, y, z, w float64) {
-		C.gl30RasterPos4d(glc.context, C.GLdouble(x), C.GLdouble(y), C.GLdouble(z), C.GLdouble(w))
+		defer glc.trace("RasterPos4d")
+		C.gl20RasterPos4d(glc.context, C.GLdouble(x), C.GLdouble(y), C.GLdouble(z), C.GLdouble(w))
 	}
 
 	glc.RasterPos4f = func(x, y, z, w float32) {
-		C.gl30RasterPos4f(glc.context, C.GLfloat(x), C.GLfloat(y), C.GLfloat(z), C.GLfloat(w))
+		defer glc.trace("RasterPos4f")
+		C.gl20RasterPos4f(glc.context, C.GLfloat(x), C.GLfloat(y), C.GLfloat(z), C.GLfloat(w))
 	}
 
 	glc.RasterPos4i = func(x, y, z, w int32) {
-		C.gl30RasterPos4i(glc.context, C.GLint(x), C.GLint(y), C.GLint(z), C.GLint(w))
+		defer glc.trace("RasterPos4i")
+		C.gl20RasterPos4i(glc.context, C.GLint(x), C.GLint(y), C.GLint(z), C.GLint(w))
 	}
 
 	glc.RasterPos4s = func(x, y, z, w int16) {
-		C.gl30RasterPos4s(glc.context, C.GLshort(x), C.GLshort(y), C.GLshort(z), C.GLshort(w))
+		defer glc.trace("RasterPos4s")
+		C.gl20RasterPos4s(glc.context, C.GLshort(x), C.GLshort(y), C.GLshort(z), C.GLshort(w))
 	}
 
 	glc.RasterPos2dv = func(v *float64) {
-		C.gl30RasterPos2dv(glc.context, (*C.GLdouble)(unsafe.Pointer(v)))
+		defer glc.trace("RasterPos2dv")
+		C.gl20RasterPos2dv(glc.context, (*C.GLdouble)(unsafe.Pointer(v)))
 	}
 
 	glc.RasterPos2fv = func(v *float32) {
-		C.gl30RasterPos2fv(glc.context, (*C.GLfloat)(unsafe.Pointer(v)))
+		defer glc.trace("RasterPos2fv")
+		C.gl20RasterPos2fv(glc.context, (*C.GLfloat)(unsafe.Pointer(v)))
 	}
 
 	glc.RasterPos2iv = func(v *int32) {
-		C.gl30RasterPos2iv(glc.context, (*C.GLint)(unsafe.Pointer(v)))
+		defer glc.trace("RasterPos2iv")
+		C.gl20RasterPos2iv(glc.context, (*C.GLint)(unsafe.Pointer(v)))
 	}
 
 	glc.RasterPos2sv = func(v *int16) {
-		C.gl30RasterPos2sv(glc.context, (*C.GLshort)(unsafe.Pointer(v)))
+		defer glc.trace("RasterPos2sv")
+		C.gl20RasterPos2sv(glc.context, (*C.GLshort)(unsafe.Pointer(v)))
 	}
 
 	glc.RasterPos3dv = func(v *float64) {
-		C.gl30RasterPos3dv(glc.context, (*C.GLdouble)(unsafe.Pointer(v)))
+		defer glc.trace("RasterPos3dv")
+		C.gl20RasterPos3dv(glc.context, (*C.GLdouble)(unsafe.Pointer(v)))
 	}
 
 	glc.RasterPos3fv = func(v *float32) {
-		C.gl30RasterPos3fv(glc.context, (*C.GLfloat)(unsafe.Pointer(v)))
+		defer glc.trace("RasterPos3fv")
+		C.gl20RasterPos3fv(glc.context, (*C.GLfloat)(unsafe.Pointer(v)))
 	}
 
 	glc.RasterPos3iv = func(v *int32) {
-		C.gl30RasterPos3iv(glc.context, (*C.GLint)(unsafe.Pointer(v)))
+		defer glc.trace("RasterPos3iv")
+		C.gl20RasterPos3iv(glc.context, (*C.GLint)(unsafe.Pointer(v)))
 	}
 
 	glc.RasterPos3sv = func(v *int16) {
-		C.gl30RasterPos3sv(glc.context, (*C.GLshort)(unsafe.Pointer(v)))
+		defer glc.trace("RasterPos3sv")
+		C.gl20RasterPos3sv(glc.context, (*C.GLshort)(unsafe.Pointer(v)))
 	}
 
 	glc.RasterPos4dv = func(v *float64) {
-		C.gl30RasterPos4dv(glc.context, (*C.GLdouble)(unsafe.Pointer(v)))
+		defer glc.trace("RasterPos4dv")
+		C.gl20RasterPos4dv(glc.context, (*C.GLdouble)(unsafe.Pointer(v)))
 	}
 
 	glc.RasterPos4fv = func(v *float32) {
-		C.gl30RasterPos4fv(glc.context, (*C.GLfloat)(unsafe.Pointer(v)))
+		defer glc.trace("RasterPos4fv")
+		C.gl20RasterPos4fv(glc.context, (*C.GLfloat)(unsafe.Pointer(v)))
 	}
 
 	glc.RasterPos4iv = func(v *int32) {
-		C.gl30RasterPos4iv(glc.context, (*C.GLint)(unsafe.Pointer(v)))
+		defer glc.trace("RasterPos4iv")
+		C.gl20RasterPos4iv(glc.context, (*C.GLint)(unsafe.Pointer(v)))
 	}
 
 	glc.RasterPos4sv = func(v *int16) {
-		C.gl30RasterPos4sv(glc.context, (*C.GLshort)(unsafe.Pointer(v)))
+		defer glc.trace("RasterPos4sv")
+		C.gl20RasterPos4sv(glc.context, (*C.GLshort)(unsafe.Pointer(v)))
 	}
 
 	glc.ReadBuffer = func(mode uint32) {
-		C.gl30ReadBuffer(glc.context, C.GLenum(mode))
+		defer glc.trace("ReadBuffer")
+		C.gl20ReadBuffer(glc.context, C.GLenum(mode))
 	}
 
 	glc.ReadPixels = func(x, y int32, width, height int32, format, Type uint32, pixels unsafe.Pointer) {
-		C.gl30ReadPixels(glc.context, C.GLint(x), C.GLint(y), C.GLsizei(width), C.GLsizei(height), C.GLenum(format), C.GLenum(Type), pixels)
+		defer glc.trace("ReadPixels")
+		C.gl20ReadPixels(glc.context, C.GLint(x), C.GLint(y), C.GLsizei(width), C.GLsizei(height), C.GLenum(format), C.GLenum(Type), pixels)
 	}
 
 	glc.Rectd = func(x1, y1, x2, y2 float64) {
-		C.gl30Rectd(glc.context, C.GLdouble(x1), C.GLdouble(y1), C.GLdouble(x2), C.GLdouble(y2))
+		defer glc.trace("Rectd")
+		C.gl20Rectd(glc.context, C.GLdouble(x1), C.GLdouble(y1), C.GLdouble(x2), C.GLdouble(y2))
 	}
 
 	glc.Rectf = func(x1, y1, x2, y2 float32) {
-		C.gl30Rectf(glc.context, C.GLfloat(x1), C.GLfloat(y1), C.GLfloat(x2), C.GLfloat(y2))
+		defer glc.trace("Rectf")
+		C.gl20Rectf(glc.context, C.GLfloat(x1), C.GLfloat(y1), C.GLfloat(x2), C.GLfloat(y2))
 	}
 
 	glc.Recti = func(x1, y1, x2, y2 int32) {
-		C.gl30Recti(glc.context, C.GLint(x1), C.GLint(y1), C.GLint(x2), C.GLint(y2))
+		defer glc.trace("Recti")
+		C.gl20Recti(glc.context, C.GLint(x1), C.GLint(y1), C.GLint(x2), C.GLint(y2))
 	}
 
 	glc.Rects = func(x1, y1, x2, y2 int16) {
-		C.gl30Rects(glc.context, C.GLshort(x1), C.GLshort(y1), C.GLshort(x2), C.GLshort(y2))
+		defer glc.trace("Rects")
+		C.gl20Rects(glc.context, C.GLshort(x1), C.GLshort(y1), C.GLshort(x2), C.GLshort(y2))
 	}
 
 	glc.Rectdv = func(v1, v2 *float64) {
-		C.gl30Rectdv(glc.context, (*C.GLdouble)(unsafe.Pointer(v1)), (*C.GLdouble)(unsafe.Pointer(v2)))
+		defer glc.trace("Rectdv")
+		C.gl20Rectdv(glc.context, (*C.GLdouble)(unsafe.Pointer(v1)), (*C.GLdouble)(unsafe.Pointer(v2)))
 	}
 
 	glc.Rectfv = func(v1, v2 *float32) {
-		C.gl30Rectfv(glc.context, (*C.GLfloat)(unsafe.Pointer(v1)), (*C.GLfloat)(unsafe.Pointer(v2)))
+		defer glc.trace("Rectfv")
+		C.gl20Rectfv(glc.context, (*C.GLfloat)(unsafe.Pointer(v1)), (*C.GLfloat)(unsafe.Pointer(v2)))
 	}
 
 	glc.Rectiv = func(v1, v2 *int32) {
-		C.gl30Rectiv(glc.context, (*C.GLint)(unsafe.Pointer(v1)), (*C.GLint)(unsafe.Pointer(v2)))
+		defer glc.trace("Rectiv")
+		C.gl20Rectiv(glc.context, (*C.GLint)(unsafe.Pointer(v1)), (*C.GLint)(unsafe.Pointer(v2)))
 	}
 
 	glc.Rectsv = func(v1, v2 *int16) {
-		C.gl30Rectsv(glc.context, (*C.GLshort)(unsafe.Pointer(v1)), (*C.GLshort)(unsafe.Pointer(v2)))
+		defer glc.trace("Rectsv")
+		C.gl20Rectsv(glc.context, (*C.GLshort)(unsafe.Pointer(v1)), (*C.GLshort)(unsafe.Pointer(v2)))
 	}
 
 	glc.RenderMode = func(mode uint32) int32 {
-		return int32(C.gl30RenderMode(glc.context, C.GLenum(mode)))
+		defer glc.trace("RenderMode")
+		return int32(C.gl20RenderMode(glc.context, C.GLenum(mode)))
 	}
 
 	glc.Rotated = func(angle, x, y, z float64) {
-		C.gl30Rotated(glc.context, C.GLdouble(angle), C.GLdouble(x), C.GLdouble(y), C.GLdouble(z))
+		defer glc.trace("Rotated")
+		C.gl20Rotated(glc.context, C.GLdouble(angle), C.GLdouble(x), C.GLdouble(y), C.GLdouble(z))
 	}
 
 	glc.Rotatef = func(angle, x, y, z float32) {
-		C.gl30Rotatef(glc.context, C.GLfloat(angle), C.GLfloat(x), C.GLfloat(y), C.GLfloat(z))
+		defer glc.trace("Rotatef")
+		C.gl20Rotatef(glc.context, C.GLfloat(angle), C.GLfloat(x), C.GLfloat(y), C.GLfloat(z))
 	}
 
 	glc.Scaled = func(x, y, z float64) {
-		C.gl30Scaled(glc.context, C.GLdouble(x), C.GLdouble(y), C.GLdouble(z))
+		defer glc.trace("Scaled")
+		C.gl20Scaled(glc.context, C.GLdouble(x), C.GLdouble(y), C.GLdouble(z))
 	}
 
 	glc.Scalef = func(x, y, z float32) {
-		C.gl30Scalef(glc.context, C.GLfloat(x), C.GLfloat(y), C.GLfloat(z))
+		defer glc.trace("Scalef")
+		C.gl20Scalef(glc.context, C.GLfloat(x), C.GLfloat(y), C.GLfloat(z))
 	}
 
 	glc.Scissor = func(x, y int32, width, height int32) {
-		C.gl30Scissor(glc.context, C.GLint(x), C.GLint(y), C.GLsizei(width), C.GLsizei(height))
+		defer glc.trace("Scissor")
+		C.gl20Scissor(glc.context, C.GLint(x), C.GLint(y), C.GLsizei(width), C.GLsizei(height))
 	}
 
 	glc.SelectBuffer = func(size int32, buffer *uint32) {
-		C.gl30SelectBuffer(glc.context, C.GLsizei(size), (*C.GLuint)(unsafe.Pointer(buffer)))
+		defer glc.trace("SelectBuffer")
+		C.gl20SelectBuffer(glc.context, C.GLsizei(size), (*C.GLuint)(unsafe.Pointer(buffer)))
 	}
 
 	glc.ShadeModel = func(mode uint32) {
-		C.gl30ShadeModel(glc.context, C.GLenum(mode))
+		defer glc.trace("ShadeModel")
+		C.gl20ShadeModel(glc.context, C.GLenum(mode))
 	}
 
 	glc.StencilFunc = func(Func uint32, ref int32, mask uint32) {
-		C.gl30StencilFunc(glc.context, C.GLenum(Func), C.GLint(ref), C.GLuint(mask))
+		defer glc.trace("StencilFunc")
+		C.gl20StencilFunc(glc.context, C.GLenum(Func), C.GLint(ref), C.GLuint(mask))
 	}
 
 	glc.StencilMask = func(mask uint32) {
-		C.gl30StencilMask(glc.context, C.GLuint(mask))
+		defer glc.trace("StencilMask")
+		C.gl20StencilMask(glc.context, C.GLuint(mask))
 	}
 
 	glc.StencilOp = func(fail, zfail, zpass uint32) {
-		C.gl30StencilOp(glc.context, C.GLenum(fail), C.GLenum(zfail), C.GLenum(zpass))
+		defer glc.trace("StencilOp")
+		C.gl20StencilOp(glc.context, C.GLenum(fail), C.GLenum(zfail), C.GLenum(zpass))
 	}
 
 	glc.TexCoord1d = func(s float64) {
-		C.gl30TexCoord1d(glc.context, C.GLdouble(s))
+		defer glc.trace("TexCoord1d")
+		C.gl20TexCoord1d(glc.context, C.GLdouble(s))
 	}
 
 	glc.TexCoord1f = func(s float32) {
-		C.gl30TexCoord1f(glc.context, C.GLfloat(s))
+		defer glc.trace("TexCoord1f")
+		C.gl20TexCoord1f(glc.context, C.GLfloat(s))
 	}
 
 	glc.TexCoord1i = func(s int32) {
-		C.gl30TexCoord1i(glc.context, C.GLint(s))
+		defer glc.trace("TexCoord1i")
+		C.gl20TexCoord1i(glc.context, C.GLint(s))
 	}
 
 	glc.TexCoord1s = func(s int16) {
-		C.gl30TexCoord1s(glc.context, C.GLshort(s))
+		defer glc.trace("TexCoord1s")
+		C.gl20TexCoord1s(glc.context, C.GLshort(s))
 	}
 
 	glc.TexCoord2d = func(s, t float64) {
-		C.gl30TexCoord2d(glc.context, C.GLdouble(s), C.GLdouble(t))
+		defer glc.trace("TexCoord2d")
+		C.gl20TexCoord2d(glc.context, C.GLdouble(s), C.GLdouble(t))
 	}
 
 	glc.TexCoord2f = func(s, t float32) {
-		C.gl30TexCoord2f(glc.context, C.GLfloat(s), C.GLfloat(t))
+		defer glc.trace("TexCoord2f")
+		C.gl20TexCoord2f(glc.context, C.GLfloat(s), C.GLfloat(t))
 	}
 
 	glc.TexCoord2i = func(s, t int32) {
-		C.gl30TexCoord2i(glc.context, C.GLint(s), C.GLint(t))
+		defer glc.trace("TexCoord2i")
+		C.gl20TexCoord2i(glc.context, C.GLint(s), C.GLint(t))
 	}
 
 	glc.TexCoord2s = func(s, t int16) {
-		C.gl30TexCoord2s(glc.context, C.GLshort(s), C.GLshort(t))
+		defer glc.trace("TexCoord2s")
+		C.gl20TexCoord2s(glc.context, C.GLshort(s), C.GLshort(t))
 	}
 
 	glc.TexCoord3d = func(s, t, r float64) {
-		C.gl30TexCoord3d(glc.context, C.GLdouble(s), C.GLdouble(t), C.GLdouble(r))
+		defer glc.trace("TexCoord3d")
+		C.gl20TexCoord3d(glc.context, C.GLdouble(s), C.GLdouble(t), C.GLdouble(r))
 	}
 
 	glc.TexCoord3f = func(s, t, r float32) {
-		C.gl30TexCoord3f(glc.context, C.GLfloat(s), C.GLfloat(t), C.GLfloat(r))
+		defer glc.trace("TexCoord3f")
+		C.gl20TexCoord3f(glc.context, C.GLfloat(s), C.GLfloat(t), C.GLfloat(r))
 	}
 
 	glc.TexCoord3i = func(s, t, r int32) {
-		C.gl30TexCoord3i(glc.context, C.GLint(s), C.GLint(t), C.GLint(r))
+		defer glc.trace("TexCoord3i")
+		C.gl20TexCoord3i(glc.context, C.GLint(s), C.GLint(t), C.GLint(r))
 	}
 
 	glc.TexCoord3s = func(s, t, r int16) {
-		C.gl30TexCoord3s(glc.context, C.GLshort(s), C.GLshort(t), C.GLshort(r))
+		defer glc.trace("TexCoord3s")
+		C.gl20TexCoord3s(glc.context, C.GLshort(s), C.GLshort(t), C.GLshort(r))
 	}
 
 	glc.TexCoord4d = func(s, t, r, q float64) {
-		C.gl30TexCoord4d(glc.context, C.GLdouble(s), C.GLdouble(t), C.GLdouble(r), C.GLdouble(q))
+		defer glc.trace("TexCoord4d")
+		C.gl20TexCoord4d(glc.context, C.GLdouble(s), C.GLdouble(t), C.GLdouble(r), C.GLdouble(q))
 	}
 
 	glc.TexCoord4f = func(s, t, r, q float32) {
-		C.gl30TexCoord4f(glc.context, C.GLfloat(s), C.GLfloat(t), C.GLfloat(r), C.GLfloat(q))
+		defer glc.trace("TexCoord4f")
+		C.gl20TexCoord4f(glc.context, C.GLfloat(s), C.GLfloat(t), C.GLfloat(r), C.GLfloat(q))
 	}
 
 	glc.TexCoord4i = func(s, t, r, q int32) {
-		C.gl30TexCoord4i(glc.context, C.GLint(s), C.GLint(t), C.GLint(r), C.GLint(q))
+		defer glc.trace("TexCoord4i")
+		C.gl20TexCoord4i(glc.context, C.GLint(s), C.GLint(t), C.GLint(r), C.GLint(q))
 	}
 
 	glc.TexCoord4s = func(s, t, r, q int16) {
-		C.gl30TexCoord4s(glc.context, C.GLshort(s), C.GLshort(t), C.GLshort(r), C.GLshort(q))
+		defer glc.trace("TexCoord4s")
+		C.gl20TexCoord4s(glc.context, C.GLshort(s), C.GLshort(t), C.GLshort(r), C.GLshort(q))
 	}
 
 	glc.TexCoord1dv = func(v *float64) {
-		C.gl30TexCoord1dv(glc.context, (*C.GLdouble)(unsafe.Pointer(v)))
+		defer glc.trace("TexCoord1dv")
+		C.gl20TexCoord1dv(glc.context, (*C.GLdouble)(unsafe.Pointer(v)))
 	}
 
 	glc.TexCoord1fv = func(v *float32) {
-		C.gl30TexCoord1fv(glc.context, (*C.GLfloat)(unsafe.Pointer(v)))
+		defer glc.trace("TexCoord1fv")
+		C.gl20TexCoord1fv(glc.context, (*C.GLfloat)(unsafe.Pointer(v)))
 	}
 
 	glc.TexCoord1iv = func(v *int32) {
-		C.gl30TexCoord1iv(glc.context, (*C.GLint)(unsafe.Pointer(v)))
+		defer glc.trace("TexCoord1iv")
+		C.gl20TexCoord1iv(glc.context, (*C.GLint)(unsafe.Pointer(v)))
 	}
 
 	glc.TexCoord1sv = func(v *int16) {
-		C.gl30TexCoord1sv(glc.context, (*C.GLshort)(unsafe.Pointer(v)))
+		defer glc.trace("TexCoord1sv")
+		C.gl20TexCoord1sv(glc.context, (*C.GLshort)(unsafe.Pointer(v)))
 	}
 
 	glc.TexCoord2dv = func(v *float64) {
-		C.gl30TexCoord2dv(glc.context, (*C.GLdouble)(unsafe.Pointer(v)))
+		defer glc.trace("TexCoord2dv")
+		C.gl20TexCoord2dv(glc.context, (*C.GLdouble)(unsafe.Pointer(v)))
 	}
 
 	glc.TexCoord2fv = func(v *float32) {
-		C.gl30TexCoord2fv(glc.context, (*C.GLfloat)(unsafe.Pointer(v)))
+		defer glc.trace("TexCoord2fv")
+		C.gl20TexCoord2fv(glc.context, (*C.GLfloat)(unsafe.Pointer(v)))
 	}
 
 	glc.TexCoord2iv = func(v *int32) {
-		C.gl30TexCoord2iv(glc.context, (*C.GLint)(unsafe.Pointer(v)))
+		defer glc.trace("TexCoord2iv")
+		C.gl20TexCoord2iv(glc.context, (*C.GLint)(unsafe.Pointer(v)))
 	}
 
 	glc.TexCoord2sv = func(v *int16) {
-		C.gl30TexCoord2sv(glc.context, (*C.GLshort)(unsafe.Pointer(v)))
+		defer glc.trace("TexCoord2sv")
+		C.gl20TexCoord2sv(glc.context, (*C.GLshort)(unsafe.Pointer(v)))
 	}
 
 	glc.TexCoord3dv = func(v *float64) {
-		C.gl30TexCoord3dv(glc.context, (*C.GLdouble)(unsafe.Pointer(v)))
+		defer glc.trace("TexCoord3dv")
+		C.gl20TexCoord3dv(glc.context, (*C.GLdouble)(unsafe.Pointer(v)))
 	}
 
 	glc.TexCoord3fv = func(v *float32) {
-		C.gl30TexCoord3fv(glc.context, (*C.GLfloat)(unsafe.Pointer(v)))
+		defer glc.trace("TexCoord3fv")
+		C.gl20TexCoord3fv(glc.context, (*C.GLfloat)(unsafe.Pointer(v)))
 	}
 
 	glc.TexCoord3iv = func(v *int32) {
-		C.gl30TexCoord3iv(glc.context, (*C.GLint)(unsafe.Pointer(v)))
+		defer glc.trace("TexCoord3iv")
+		C.gl20TexCoord3iv(glc.context, (*C.GLint)(unsafe.Pointer(v)))
 	}
 
 	glc.TexCoord3sv = func(v *int16) {
-		C.gl30TexCoord3sv(glc.context, (*C.GLshort)(unsafe.Pointer(v)))
+		defer glc.trace("TexCoord3sv")
+		C.gl20TexCoord3sv(glc.context, (*C.GLshort)(unsafe.Pointer(v)))
 	}
 
 	glc.TexCoord4dv = func(v *float64) {
-		C.gl30TexCoord4dv(glc.context, (*C.GLdouble)(unsafe.Pointer(v)))
+		defer glc.trace("TexCoord4dv")
+		C.gl20TexCoord4dv(glc.context, (*C.GLdouble)(unsafe.Pointer(v)))
 	}
 
 	glc.TexCoord4fv = func(v *float32) {
-		C.gl30TexCoord4fv(glc.context, (*C.GLfloat)(unsafe.Pointer(v)))
+		defer glc.trace("TexCoord4fv")
+		C.gl20TexCoord4fv(glc.context, (*C.GLfloat)(unsafe.Pointer(v)))
 	}
 
 	glc.TexCoord4iv = func(v *int32) {
-		C.gl30TexCoord4iv(glc.context, (*C.GLint)(unsafe.Pointer(v)))
+		defer glc.trace("TexCoord4iv")
+		C.gl20TexCoord4iv(glc.context, (*C.GLint)(unsafe.Pointer(v)))
 	}
 
 	glc.TexCoord4sv = func(v *int16) {
-		C.gl30TexCoord4sv(glc.context, (*C.GLshort)(unsafe.Pointer(v)))
+		defer glc.trace("TexCoord4sv")
+		C.gl20TexCoord4sv(glc.context, (*C.GLshort)(unsafe.Pointer(v)))
 	}
 
 	glc.TexEnvf = func(target, pname uint32, param float32) {
-		C.gl30TexEnvf(glc.context, C.GLenum(target), C.GLenum(pname), C.GLfloat(param))
+		defer glc.trace("TexEnvf")
+		C.gl20TexEnvf(glc.context, C.GLenum(target), C.GLenum(pname), C.GLfloat(param))
 	}
 
 	glc.TexEnvi = func(target, pname uint32, param int32) {
-		C.gl30TexEnvi(glc.context, C.GLenum(target), C.GLenum(pname), C.GLint(param))
+		defer glc.trace("TexEnvi")
+		C.gl20TexEnvi(glc.context, C.GLenum(target), C.GLenum(pname), C.GLint(param))
 	}
 
 	glc.TexEnvfv = func(target, pname uint32, params *float32) {
-		C.gl30TexEnvfv(glc.context, C.GLenum(target), C.GLenum(pname), (*C.GLfloat)(unsafe.Pointer(params)))
+		defer glc.trace("TexEnvfv")
+		C.gl20TexEnvfv(glc.context, C.GLenum(target), C.GLenum(pname), (*C.GLfloat)(unsafe.Pointer(params)))
 	}
 
 	glc.TexEnviv = func(target, pname uint32, params *int32) {
-		C.gl30TexEnviv(glc.context, C.GLenum(target), C.GLenum(pname), (*C.GLint)(unsafe.Pointer(params)))
+		defer glc.trace("TexEnviv")
+		C.gl20TexEnviv(glc.context, C.GLenum(target), C.GLenum(pname), (*C.GLint)(unsafe.Pointer(params)))
 	}
 
 	glc.TexGend = func(coord, pname uint32, param float64) {
-		C.gl30TexGend(glc.context, C.GLenum(coord), C.GLenum(pname), C.GLdouble(param))
+		defer glc.trace("TexGend")
+		C.gl20TexGend(glc.context, C.GLenum(coord), C.GLenum(pname), C.GLdouble(param))
 	}
 
 	glc.TexGenf = func(coord, pname uint32, param float32) {
-		C.gl30TexGenf(glc.context, C.GLenum(coord), C.GLenum(pname), C.GLfloat(param))
+		defer glc.trace("TexGenf")
+		C.gl20TexGenf(glc.context, C.GLenum(coord), C.GLenum(pname), C.GLfloat(param))
 	}
 
 	glc.TexGeni = func(coord, pname uint32, param int32) {
-		C.gl30TexGeni(glc.context, C.GLenum(coord), C.GLenum(pname), C.GLint(param))
+		defer glc.trace("TexGeni")
+		C.gl20TexGeni(glc.context, C.GLenum(coord), C.GLenum(pname), C.GLint(param))
 	}
 
 	glc.TexGendv = func(coord, pname uint32, params *float64) {
-		C.gl30TexGendv(glc.context, C.GLenum(coord), C.GLenum(pname), (*C.GLdouble)(unsafe.Pointer(params)))
+		defer glc.trace("TexGendv")
+		C.gl20TexGendv(glc.context, C.GLenum(coord), C.GLenum(pname), (*C.GLdouble)(unsafe.Pointer(params)))
 	}
 
 	glc.TexGenfv = func(coord, pname uint32, params *float32) {
-		C.gl30TexGenfv(glc.context, C.GLenum(coord), C.GLenum(pname), (*C.GLfloat)(unsafe.Pointer(params)))
+		defer glc.trace("TexGenfv")
+		C.gl20TexGenfv(glc.context, C.GLenum(coord), C.GLenum(pname), (*C.GLfloat)(unsafe.Pointer(params)))
 	}
 
 	glc.TexGeniv = func(coord, pname uint32, params *int32) {
-		C.gl30TexGeniv(glc.context, C.GLenum(coord), C.GLenum(pname), (*C.GLint)(unsafe.Pointer(params)))
+		defer glc.trace("TexGeniv")
+		C.gl20TexGeniv(glc.context, C.GLenum(coord), C.GLenum(pname), (*C.GLint)(unsafe.Pointer(params)))
 	}
 
 	glc.TexImage1D = func(target uint32, level, internalformat int32, width int32, border int32, format, Type uint32, pixels unsafe.Pointer) {
-		C.gl30TexImage1D(glc.context, C.GLenum(target), C.GLint(level), C.GLint(internalformat), C.GLsizei(width), C.GLint(border), C.GLenum(format), C.GLenum(Type), pixels)
+		defer glc.trace("TexImage1D")
+		C.gl20TexImage1D(glc.context, C.GLenum(target), C.GLint(level), C.GLint(internalformat), C.GLsizei(width), C.GLint(border), C.GLenum(format), C.GLenum(Type), pixels)
 	}
 
 	glc.TexImage2D = func(target uint32, level, internalformat int32, width, height int32, border int32, format, Type uint32, pixels unsafe.Pointer) {
-		C.gl30TexImage2D(glc.context, C.GLenum(target), C.GLint(level), C.GLint(internalformat), C.GLsizei(width), C.GLsizei(height), C.GLint(border), C.GLenum(format), C.GLenum(Type), pixels)
+		defer glc.trace("TexImage2D")
+		C.gl20TexImage2D(glc.context, C.GLenum(target), C.GLint(level), C.GLint(internalformat), C.GLsizei(width), C.GLsizei(height), C.GLint(border), C.GLenum(format), C.GLenum(Type), pixels)
 	}
 
 	glc.TexParameterf = func(target, pname uint32, param float32) {
-		C.gl30TexParameterf(glc.context, C.GLenum(target), C.GLenum(pname), C.GLfloat(param))
+		defer glc.trace("TexParameterf")
+		C.gl20TexParameterf(glc.context, C.GLenum(target), C.GLenum(pname), C.GLfloat(param))
 	}
 
 	glc.TexParameteri = func(target, pname uint32, param int32) {
-		C.gl30TexParameteri(glc.context, C.GLenum(target), C.GLenum(pname), C.GLint(param))
+		defer glc.trace("TexParameteri")
+		C.gl20TexParameteri(glc.context, C.GLenum(target), C.GLenum(pname), C.GLint(param))
 	}
 
 	glc.TexParameterfv = func(target, pname uint32, params *float32) {
-		C.gl30TexParameterfv(glc.context, C.GLenum(target), C.GLenum(pname), (*C.GLfloat)(unsafe.Pointer(params)))
+		defer glc.trace("TexParameterfv")
+		C.gl20TexParameterfv(glc.context, C.GLenum(target), C.GLenum(pname), (*C.GLfloat)(unsafe.Pointer(params)))
 	}
 
 	glc.TexParameteriv = func(target, pname uint32, params *int32) {
-		C.gl30TexParameteriv(glc.context, C.GLenum(target), C.GLenum(pname), (*C.GLint)(unsafe.Pointer(params)))
+		defer glc.trace("TexParameteriv")
+		C.gl20TexParameteriv(glc.context, C.GLenum(target), C.GLenum(pname), (*C.GLint)(unsafe.Pointer(params)))
 	}
 
 	glc.Translated = func(x, y, z float64) {
-		C.gl30Translated(glc.context, C.GLdouble(x), C.GLdouble(y), C.GLdouble(z))
+		defer glc.trace("Translated")
+		C.gl20Translated(glc.context, C.GLdouble(x), C.GLdouble(y), C.GLdouble(z))
 	}
 
 	glc.Translatef = func(x, y, z float32) {
-		C.gl30Translatef(glc.context, C.GLfloat(x), C.GLfloat(y), C.GLfloat(z))
+		defer glc.trace("Translatef")
+		C.gl20Translatef(glc.context, C.GLfloat(x), C.GLfloat(y), C.GLfloat(z))
 	}
 
 	glc.Vertex2s = func(x, y int16) {
-		C.gl30Vertex2s(glc.context, C.GLshort(x), C.GLshort(y))
+		defer glc.trace("Vertex2s")
+		C.gl20Vertex2s(glc.context, C.GLshort(x), C.GLshort(y))
 	}
 
 	glc.Vertex2i = func(x, y int32) {
-		C.gl30Vertex2i(glc.context, C.GLint(x), C.GLint(y))
+		defer glc.trace("Vertex2i")
+		C.gl20Vertex2i(glc.context, C.GLint(x), C.GLint(y))
 	}
 
 	glc.Vertex2f = func(x, y float32) {
-		C.gl30Vertex2f(glc.context, C.GLfloat(x), C.GLfloat(y))
+		defer glc.trace("Vertex2f")
+		C.gl20Vertex2f(glc.context, C.GLfloat(x), C.GLfloat(y))
 	}
 
 	glc.Vertex2d = func(x, y float64) {
-		C.gl30Vertex2d(glc.context, C.GLdouble(x), C.GLdouble(y))
+		defer glc.trace("Vertex2d")
+		C.gl20Vertex2d(glc.context, C.GLdouble(x), C.GLdouble(y))
 	}
 
 	glc.Vertex3s = func(x, y, z int16) {
-		C.gl30Vertex3s(glc.context, C.GLshort(x), C.GLshort(y), C.GLshort(z))
+		defer glc.trace("Vertex3s")
+		C.gl20Vertex3s(glc.context, C.GLshort(x), C.GLshort(y), C.GLshort(z))
 	}
 
 	glc.Vertex3i = func(x, y, z int32) {
-		C.gl30Vertex3i(glc.context, C.GLint(x), C.GLint(y), C.GLint(z))
+		defer glc.trace("Vertex3i")
+		C.gl20Vertex3i(glc.context, C.GLint(x), C.GLint(y), C.GLint(z))
 	}
 
 	glc.Vertex3f = func(x, y, z float32) {
-		C.gl30Vertex3f(glc.context, C.GLfloat(x), C.GLfloat(y), C.GLfloat(z))
+		defer glc.trace("Vertex3f")
+		C.gl20Vertex3f(glc.context, C.GLfloat(x), C.GLfloat(y), C.GLfloat(z))
 	}
 
 	glc.Vertex3d = func(x, y, z float64) {
-		C.gl30Vertex3d(glc.context, C.GLdouble(x), C.GLdouble(y), C.GLdouble(z))
+		defer glc.trace("Vertex3d")
+		C.gl20Vertex3d(glc.context, C.GLdouble(x), C.GLdouble(y), C.GLdouble(z))
 	}
 
 	glc.Vertex4s = func(x, y, z, w int16) {
-		C.gl30Vertex4s(glc.context, C.GLshort(x), C.GLshort(y), C.GLshort(z), C.GLshort(w))
+		defer glc.trace("Vertex4s")
+		C.gl20Vertex4s(glc.context, C.GLshort(x), C.GLshort(y), C.GLshort(z), C.GLshort(w))
 	}
 
 	glc.Vertex4i = func(x, y, z, w int32) {
-		C.gl30Vertex4i(glc.context, C.GLint(x), C.GLint(y), C.GLint(z), C.GLint(w))
+		defer glc.trace("Vertex4i")
+		C.gl20Vertex4i(glc.context, C.GLint(x), C.GLint(y), C.GLint(z), C.GLint(w))
 	}
 
 	glc.Vertex4f = func(x, y, z, w float32) {
-		C.gl30Vertex4f(glc.context, C.GLfloat(x), C.GLfloat(y), C.GLfloat(z), C.GLfloat(w))
+		defer glc.trace("Vertex4f")
+		C.gl20Vertex4f(glc.context, C.GLfloat(x), C.GLfloat(y), C.GLfloat(z), C.GLfloat(w))
 	}
 
 	glc.Vertex4d = func(x, y, z, w float64) {
-		C.gl30Vertex4d(glc.context, C.GLdouble(x), C.GLdouble(y), C.GLdouble(z), C.GLdouble(w))
+		defer glc.trace("Vertex4d")
+		C.gl20Vertex4d(glc.context, C.GLdouble(x), C.GLdouble(y), C.GLdouble(z), C.GLdouble(w))
 	}
 
 	glc.Viewport = func(x, y int32, width, height int32) {
-		C.gl30Viewport(glc.context, C.GLint(x), C.GLint(y), C.GLsizei(width), C.GLsizei(height))
+		defer glc.trace("Viewport")
+		C.gl20Viewport(glc.context, C.GLint(x), C.GLint(y), C.GLsizei(width), C.GLsizei(height))
 	}
 
 	glc.GetConvolutionParameterfv = func(target, pname uint32, params *float32) {
-		C.gl30GetConvolutionParameterfv(glc.context, C.GLenum(target), C.GLenum(pname), (*C.GLfloat)(unsafe.Pointer(params)))
+		defer glc.trace("GetConvolutionParameterfv")
+		C.gl20GetConvolutionParameterfv(glc.context, C.GLenum(target), C.GLenum(pname), (*C.GLfloat)(unsafe.Pointer(params)))
 	}
 
 	glc.GetConvolutionParameteriv = func(target, pname uint32, params *int32) {
-		C.gl30GetConvolutionParameteriv(glc.context, C.GLenum(target), C.GLenum(pname), (*C.GLint)(unsafe.Pointer(params)))
+		defer glc.trace("GetConvolutionParameteriv")
+		C.gl20GetConvolutionParameteriv(glc.context, C.GLenum(target), C.GLenum(pname), (*C.GLint)(unsafe.Pointer(params)))
 	}
 
 	glc.AreTexturesResident = func(textures []uint32) (status bool, residencies []bool) {
+		defer glc.trace("AreTexturesResident")
 		var cRes *C.GLboolean
-		status = C.gl30AreTexturesResident(glc.context, C.GLsizei(len(textures)), (*C.GLuint)(unsafe.Pointer(&textures[0])), cRes) != 0
+		status = C.gl20AreTexturesResident(glc.context, C.GLsizei(len(textures)), (*C.GLuint)(unsafe.Pointer(&textures[0])), cRes) != 0
 		residencies = make([]bool, len(textures))
 		for i := 0; i < len(textures); i++ {
 			residencies[i] = (*(*C.GLboolean)(unsafe.Pointer(uintptr(unsafe.Pointer(cRes)) + uintptr(i)))) != 0
@@ -6793,1099 +7091,1371 @@ func New() *Context {
 	}
 
 	glc.ArrayElement = func(i int32) {
-		C.gl30ArrayElement(glc.context, C.GLint(i))
+		defer glc.trace("ArrayElement")
+		C.gl20ArrayElement(glc.context, C.GLint(i))
 	}
 
 	glc.DrawArrays = func(mode uint32, first int32, count int32) {
-		C.gl30DrawArrays(glc.context, C.GLenum(mode), C.GLint(first), C.GLsizei(count))
+		defer glc.trace("DrawArrays")
+		C.gl20DrawArrays(glc.context, C.GLenum(mode), C.GLint(first), C.GLsizei(count))
 	}
 
 	glc.DrawElements = func(mode uint32, count int32, Type uint32, indices unsafe.Pointer) {
-		C.gl30DrawElements(glc.context, C.GLenum(mode), C.GLsizei(count), C.GLenum(Type), indices)
+		defer glc.trace("DrawElements")
+		C.gl20DrawElements(glc.context, C.GLenum(mode), C.GLsizei(count), C.GLenum(Type), indices)
 	}
 
 	glc.GetPointerv = func(pname uint32, params unsafe.Pointer) {
-		C.gl30GetPointerv(glc.context, C.GLenum(pname), params)
+		defer glc.trace("GetPointerv")
+		C.gl20GetPointerv(glc.context, C.GLenum(pname), params)
 	}
 
 	glc.PolygonOffset = func(factor, units float32) {
-		C.gl30PolygonOffset(glc.context, C.GLfloat(factor), C.GLfloat(units))
+		defer glc.trace("PolygonOffset")
+		C.gl20PolygonOffset(glc.context, C.GLfloat(factor), C.GLfloat(units))
 	}
 
 	glc.CopyTexImage1D = func(target uint32, level int32, internalFormat uint32, x, y int32, width int32, border int32) {
-		C.gl30CopyTexImage1D(glc.context, C.GLenum(target), C.GLint(level), C.GLenum(internalFormat), C.GLint(x), C.GLint(y), C.GLsizei(width), C.GLint(border))
+		defer glc.trace("CopyTexImage1D")
+		C.gl20CopyTexImage1D(glc.context, C.GLenum(target), C.GLint(level), C.GLenum(internalFormat), C.GLint(x), C.GLint(y), C.GLsizei(width), C.GLint(border))
 	}
 
 	glc.CopyTexImage2D = func(target uint32, level int32, internalFormat uint32, x, y int32, width, height int32, border int32) {
-		C.gl30CopyTexImage2D(glc.context, C.GLenum(target), C.GLint(level), C.GLenum(internalFormat), C.GLint(x), C.GLint(y), C.GLsizei(width), C.GLsizei(height), C.GLint(border))
+		defer glc.trace("CopyTexImage2D")
+		C.gl20CopyTexImage2D(glc.context, C.GLenum(target), C.GLint(level), C.GLenum(internalFormat), C.GLint(x), C.GLint(y), C.GLsizei(width), C.GLsizei(height), C.GLint(border))
 	}
 
 	glc.CopyTexSubImage1D = func(target uint32, level, xoffset, x, y int32, width int32) {
-		C.gl30CopyTexSubImage1D(glc.context, C.GLenum(target), C.GLint(level), C.GLint(xoffset), C.GLint(x), C.GLint(y), C.GLsizei(width))
+		defer glc.trace("CopyTexSubImage1D")
+		C.gl20CopyTexSubImage1D(glc.context, C.GLenum(target), C.GLint(level), C.GLint(xoffset), C.GLint(x), C.GLint(y), C.GLsizei(width))
 	}
 
 	glc.CopyTexSubImage2D = func(target uint32, level, xoffset, yoffset, x, y int32, width, height int32) {
-		C.gl30CopyTexSubImage2D(glc.context, C.GLenum(target), C.GLint(level), C.GLint(xoffset), C.GLint(yoffset), C.GLint(x), C.GLint(y), C.GLsizei(width), C.GLsizei(height))
+		defer glc.trace("CopyTexSubImage2D")
+		C.gl20CopyTexSubImage2D(glc.context, C.GLenum(target), C.GLint(level), C.GLint(xoffset), C.GLint(yoffset), C.GLint(x), C.GLint(y), C.GLsizei(width), C.GLsizei(height))
 	}
 
 	glc.BindTexture = func(target uint32, texture uint32) {
-		C.gl30BindTexture(glc.context, C.GLenum(target), C.GLuint(texture))
+		defer glc.trace("BindTexture")
+		C.gl20BindTexture(glc.context, C.GLenum(target), C.GLuint(texture))
 	}
 
 	glc.DeleteTextures = func(n int32, textures *uint32) {
-		C.gl30DeleteTextures(glc.context, C.GLsizei(n), (*C.GLuint)(unsafe.Pointer(textures)))
+		defer glc.trace("DeleteTextures")
+		C.gl20DeleteTextures(glc.context, C.GLsizei(n), (*C.GLuint)(unsafe.Pointer(textures)))
 	}
 
 	glc.GenTextures = func(n int32, textures *uint32) {
-		C.gl30GenTextures(glc.context, C.GLsizei(n), (*C.GLuint)(unsafe.Pointer(textures)))
+		defer glc.trace("GenTextures")
+		C.gl20GenTextures(glc.context, C.GLsizei(n), (*C.GLuint)(unsafe.Pointer(textures)))
 	}
 
 	glc.IsTexture = func(texture uint32) bool {
-		return C.gl30IsTexture(glc.context, C.GLuint(texture)) != 0
+		defer glc.trace("IsTexture")
+		return C.gl20IsTexture(glc.context, C.GLuint(texture)) != 0
 	}
 
 	glc.ColorPointer = func(size int32, Type uint32, stride int32, pointer unsafe.Pointer) {
-		C.gl30ColorPointer(glc.context, C.GLint(size), C.GLenum(Type), C.GLsizei(stride), pointer)
+		defer glc.trace("ColorPointer")
+		C.gl20ColorPointer(glc.context, C.GLint(size), C.GLenum(Type), C.GLsizei(stride), pointer)
 	}
 
 	glc.EnableClientState = func(cap uint32) {
-		C.gl30EnableClientState(glc.context, C.GLenum(cap))
+		defer glc.trace("EnableClientState")
+		C.gl20EnableClientState(glc.context, C.GLenum(cap))
 	}
 
 	glc.DisableClientState = func(cap uint32) {
-		C.gl30DisableClientState(glc.context, C.GLenum(cap))
+		defer glc.trace("DisableClientState")
+		C.gl20DisableClientState(glc.context, C.GLenum(cap))
 	}
 
 	glc.Indexub = func(c uint8) {
-		C.gl30Indexub(glc.context, C.GLubyte(c))
+		defer glc.trace("Indexub")
+		C.gl20Indexub(glc.context, C.GLubyte(c))
 	}
 
 	glc.Indexubv = func(c *uint8) {
-		C.gl30Indexubv(glc.context, (*C.GLubyte)(unsafe.Pointer(c)))
+		defer glc.trace("Indexubv")
+		C.gl20Indexubv(glc.context, (*C.GLubyte)(unsafe.Pointer(c)))
 	}
 
 	glc.InterleavedArrays = func(format uint32, stride int32, pointer unsafe.Pointer) {
-		C.gl30InterleavedArrays(glc.context, C.GLenum(format), C.GLsizei(stride), pointer)
+		defer glc.trace("InterleavedArrays")
+		C.gl20InterleavedArrays(glc.context, C.GLenum(format), C.GLsizei(stride), pointer)
 	}
 
 	glc.NormalPointer = func(Type uint32, stride int32, pointer unsafe.Pointer) {
-		C.gl30NormalPointer(glc.context, C.GLenum(Type), C.GLsizei(stride), pointer)
+		defer glc.trace("NormalPointer")
+		C.gl20NormalPointer(glc.context, C.GLenum(Type), C.GLsizei(stride), pointer)
 	}
 
 	glc.PushClientAttrib = func(mask uint32) {
-		C.gl30PushClientAttrib(glc.context, C.GLbitfield(mask))
+		defer glc.trace("PushClientAttrib")
+		C.gl20PushClientAttrib(glc.context, C.GLbitfield(mask))
 	}
 
 	glc.PrioritizeTextures = func(n int32, textures *uint32, priorities *float32) {
-		C.gl30PrioritizeTextures(glc.context, C.GLsizei(n), (*C.GLuint)(unsafe.Pointer(textures)), (*C.GLclampf)(unsafe.Pointer(priorities)))
+		defer glc.trace("PrioritizeTextures")
+		C.gl20PrioritizeTextures(glc.context, C.GLsizei(n), (*C.GLuint)(unsafe.Pointer(textures)), (*C.GLclampf)(unsafe.Pointer(priorities)))
 	}
 
 	glc.PopClientAttrib = func() {
-		C.gl30PopClientAttrib(glc.context)
+		defer glc.trace("PopClientAttrib")
+		C.gl20PopClientAttrib(glc.context)
 	}
 
 	glc.TexCoordPointer = func(size int32, Type uint32, stride int32, pointer unsafe.Pointer) {
-		C.gl30TexCoordPointer(glc.context, C.GLint(size), C.GLenum(Type), C.GLsizei(stride), pointer)
+		defer glc.trace("TexCoordPointer")
+		C.gl20TexCoordPointer(glc.context, C.GLint(size), C.GLenum(Type), C.GLsizei(stride), pointer)
 	}
 
 	glc.TexSubImage1D = func(target uint32, level, xoffset int32, width int32, format, Type uint32, pixels unsafe.Pointer) {
-		C.gl30TexSubImage1D(glc.context, C.GLenum(target), C.GLint(level), C.GLint(xoffset), C.GLsizei(width), C.GLenum(format), C.GLenum(Type), pixels)
+		defer glc.trace("TexSubImage1D")
+		C.gl20TexSubImage1D(glc.context, C.GLenum(target), C.GLint(level), C.GLint(xoffset), C.GLsizei(width), C.GLenum(format), C.GLenum(Type), pixels)
 	}
 
 	glc.TexSubImage2D = func(target uint32, level, xoffset, yoffset int32, width, height int32, format, Type uint32, pixels unsafe.Pointer) {
-		C.gl30TexSubImage2D(glc.context, C.GLenum(target), C.GLint(level), C.GLint(xoffset), C.GLint(yoffset), C.GLsizei(width), C.GLsizei(height), C.GLenum(format), C.GLenum(Type), pixels)
+		defer glc.trace("TexSubImage2D")
+		C.gl20TexSubImage2D(glc.context, C.GLenum(target), C.GLint(level), C.GLint(xoffset), C.GLint(yoffset), C.GLsizei(width), C.GLsizei(height), C.GLenum(format), C.GLenum(Type), pixels)
 	}
 
 	glc.VertexPointer = func(size int32, Type uint32, stride int32, pointer unsafe.Pointer) {
-		C.gl30VertexPointer(glc.context, C.GLint(size), C.GLenum(Type), C.GLsizei(stride), pointer)
+		defer glc.trace("VertexPointer")
+		C.gl20VertexPointer(glc.context, C.GLint(size), C.GLenum(Type), C.GLsizei(stride), pointer)
 	}
 
 	glc.ColorTable = func(target, internalformat uint32, width int32, format, Type uint32, data unsafe.Pointer) {
-		C.gl30ColorTable(glc.context, C.GLenum(target), C.GLenum(internalformat), C.GLsizei(width), C.GLenum(format), C.GLenum(Type), data)
+		defer glc.trace("ColorTable")
+		C.gl20ColorTable(glc.context, C.GLenum(target), C.GLenum(internalformat), C.GLsizei(width), C.GLenum(format), C.GLenum(Type), data)
 	}
 
 	glc.ColorTableParameterfv = func(target, pname uint32, params *float32) {
-		C.gl30ColorTableParameterfv(glc.context, C.GLenum(target), C.GLenum(pname), (*C.GLfloat)(unsafe.Pointer(params)))
+		defer glc.trace("ColorTableParameterfv")
+		C.gl20ColorTableParameterfv(glc.context, C.GLenum(target), C.GLenum(pname), (*C.GLfloat)(unsafe.Pointer(params)))
 	}
 
 	glc.ColorTableParameteriv = func(target, pname uint32, params *int32) {
-		C.gl30ColorTableParameteriv(glc.context, C.GLenum(target), C.GLenum(pname), (*C.GLint)(unsafe.Pointer(params)))
+		defer glc.trace("ColorTableParameteriv")
+		C.gl20ColorTableParameteriv(glc.context, C.GLenum(target), C.GLenum(pname), (*C.GLint)(unsafe.Pointer(params)))
 	}
 
 	glc.ColorSubTable = func(target uint32, start, count int32, format, Type uint32, data unsafe.Pointer) {
-		C.gl30ColorSubTable(glc.context, C.GLenum(target), C.GLsizei(start), C.GLsizei(count), C.GLenum(format), C.GLenum(Type), data)
+		defer glc.trace("ColorSubTable")
+		C.gl20ColorSubTable(glc.context, C.GLenum(target), C.GLsizei(start), C.GLsizei(count), C.GLenum(format), C.GLenum(Type), data)
 	}
 
 	glc.ConvolutionFilter1D = func(target, internalformat uint32, width int32, format, Type uint32, data unsafe.Pointer) {
-		C.gl30ConvolutionFilter1D(glc.context, C.GLenum(target), C.GLenum(internalformat), C.GLsizei(width), C.GLenum(format), C.GLenum(Type), data)
+		defer glc.trace("ConvolutionFilter1D")
+		C.gl20ConvolutionFilter1D(glc.context, C.GLenum(target), C.GLenum(internalformat), C.GLsizei(width), C.GLenum(format), C.GLenum(Type), data)
 	}
 
 	glc.ConvolutionFilter2D = func(target, internalformat uint32, width, height int32, format, Type uint32, data unsafe.Pointer) {
-		C.gl30ConvolutionFilter2D(glc.context, C.GLenum(target), C.GLenum(internalformat), C.GLsizei(width), C.GLsizei(height), C.GLenum(format), C.GLenum(Type), data)
+		defer glc.trace("ConvolutionFilter2D")
+		C.gl20ConvolutionFilter2D(glc.context, C.GLenum(target), C.GLenum(internalformat), C.GLsizei(width), C.GLsizei(height), C.GLenum(format), C.GLenum(Type), data)
 	}
 
 	glc.ConvolutionParameterf = func(target, pname uint32, params float32) {
-		C.gl30ConvolutionParameterf(glc.context, C.GLenum(target), C.GLenum(pname), C.GLfloat(params))
+		defer glc.trace("ConvolutionParameterf")
+		C.gl20ConvolutionParameterf(glc.context, C.GLenum(target), C.GLenum(pname), C.GLfloat(params))
 	}
 
 	glc.ConvolutionParameteri = func(target, pname uint32, params int32) {
-		C.gl30ConvolutionParameteri(glc.context, C.GLenum(target), C.GLenum(pname), C.GLint(params))
+		defer glc.trace("ConvolutionParameteri")
+		C.gl20ConvolutionParameteri(glc.context, C.GLenum(target), C.GLenum(pname), C.GLint(params))
 	}
 
 	glc.CopyColorTable = func(target, internalformat uint32, x, y int32, width int32) {
-		C.gl30CopyColorTable(glc.context, C.GLenum(target), C.GLenum(internalformat), C.GLint(x), C.GLint(y), C.GLsizei(width))
+		defer glc.trace("CopyColorTable")
+		C.gl20CopyColorTable(glc.context, C.GLenum(target), C.GLenum(internalformat), C.GLint(x), C.GLint(y), C.GLsizei(width))
 	}
 
 	glc.CopyColorSubTable = func(target uint32, start int32, x, y int32, width int32) {
-		C.gl30CopyColorSubTable(glc.context, C.GLenum(target), C.GLsizei(start), C.GLint(x), C.GLint(y), C.GLsizei(width))
+		defer glc.trace("CopyColorSubTable")
+		C.gl20CopyColorSubTable(glc.context, C.GLenum(target), C.GLsizei(start), C.GLint(x), C.GLint(y), C.GLsizei(width))
 	}
 
 	glc.CopyConvolutionFilter1D = func(target, internalformat uint32, x, y int32, width int32) {
-		C.gl30CopyConvolutionFilter1D(glc.context, C.GLenum(target), C.GLenum(internalformat), C.GLint(x), C.GLint(y), C.GLsizei(width))
+		defer glc.trace("CopyConvolutionFilter1D")
+		C.gl20CopyConvolutionFilter1D(glc.context, C.GLenum(target), C.GLenum(internalformat), C.GLint(x), C.GLint(y), C.GLsizei(width))
 	}
 
 	glc.CopyConvolutionFilter2D = func(target, internalformat uint32, x, y int32, width, height int32) {
-		C.gl30CopyConvolutionFilter2D(glc.context, C.GLenum(target), C.GLenum(internalformat), C.GLint(x), C.GLint(y), C.GLsizei(width), C.GLsizei(height))
+		defer glc.trace("CopyConvolutionFilter2D")
+		C.gl20CopyConvolutionFilter2D(glc.context, C.GLenum(target), C.GLenum(internalformat), C.GLint(x), C.GLint(y), C.GLsizei(width), C.GLsizei(height))
 	}
 
 	glc.GetColorTable = func(target, format, Type uint32, table unsafe.Pointer) {
-		C.gl30GetColorTable(glc.context, C.GLenum(target), C.GLenum(format), C.GLenum(Type), table)
+		defer glc.trace("GetColorTable")
+		C.gl20GetColorTable(glc.context, C.GLenum(target), C.GLenum(format), C.GLenum(Type), table)
 	}
 
 	glc.GetColorTableParameterfv = func(target, pname uint32, params *float32) {
-		C.gl30GetColorTableParameterfv(glc.context, C.GLenum(target), C.GLenum(pname), (*C.GLfloat)(unsafe.Pointer(params)))
+		defer glc.trace("GetColorTableParameterfv")
+		C.gl20GetColorTableParameterfv(glc.context, C.GLenum(target), C.GLenum(pname), (*C.GLfloat)(unsafe.Pointer(params)))
 	}
 
 	glc.GetColorTableParameteriv = func(target, pname uint32, params *int32) {
-		C.gl30GetColorTableParameteriv(glc.context, C.GLenum(target), C.GLenum(pname), (*C.GLint)(unsafe.Pointer(params)))
+		defer glc.trace("GetColorTableParameteriv")
+		C.gl20GetColorTableParameteriv(glc.context, C.GLenum(target), C.GLenum(pname), (*C.GLint)(unsafe.Pointer(params)))
 	}
 
 	glc.GetConvolutionFilter = func(target, format, Type uint32, image unsafe.Pointer) {
-		C.gl30GetConvolutionFilter(glc.context, C.GLenum(target), C.GLenum(format), C.GLenum(Type), image)
+		defer glc.trace("GetConvolutionFilter")
+		C.gl20GetConvolutionFilter(glc.context, C.GLenum(target), C.GLenum(format), C.GLenum(Type), image)
 	}
 
 	glc.GetHistogram = func(target uint32, reset bool, format, Type uint32, values unsafe.Pointer) {
-		C.gl30GetHistogram(glc.context, C.GLenum(target), boolToGL(reset), C.GLenum(format), C.GLenum(Type), values)
+		defer glc.trace("GetHistogram")
+		C.gl20GetHistogram(glc.context, C.GLenum(target), boolToGL(reset), C.GLenum(format), C.GLenum(Type), values)
 	}
 
 	glc.GetHistogramParameterfv = func(target, pname uint32, params *float32) {
-		C.gl30GetHistogramParameterfv(glc.context, C.GLenum(target), C.GLenum(pname), (*C.GLfloat)(unsafe.Pointer(params)))
+		defer glc.trace("GetHistogramParameterfv")
+		C.gl20GetHistogramParameterfv(glc.context, C.GLenum(target), C.GLenum(pname), (*C.GLfloat)(unsafe.Pointer(params)))
 	}
 
 	glc.GetHistogramParameteriv = func(target, pname uint32, params *int32) {
-		C.gl30GetHistogramParameteriv(glc.context, C.GLenum(target), C.GLenum(pname), (*C.GLint)(unsafe.Pointer(params)))
+		defer glc.trace("GetHistogramParameteriv")
+		C.gl20GetHistogramParameteriv(glc.context, C.GLenum(target), C.GLenum(pname), (*C.GLint)(unsafe.Pointer(params)))
 	}
 
 	glc.GetSeparableFilter = func(target, format, Type uint32, row, column, span unsafe.Pointer) {
-		C.gl30GetSeparableFilter(glc.context, C.GLenum(target), C.GLenum(format), C.GLenum(Type), row, column, span)
+		defer glc.trace("GetSeparableFilter")
+		C.gl20GetSeparableFilter(glc.context, C.GLenum(target), C.GLenum(format), C.GLenum(Type), row, column, span)
 	}
 
 	glc.Histogram = func(target uint32, width int32, internalformat uint32, sink bool) {
-		C.gl30Histogram(glc.context, C.GLenum(target), C.GLsizei(width), C.GLenum(internalformat), boolToGL(sink))
+		defer glc.trace("Histogram")
+		C.gl20Histogram(glc.context, C.GLenum(target), C.GLsizei(width), C.GLenum(internalformat), boolToGL(sink))
 	}
 
 	glc.Minmax = func(target, internalformat uint32, sink bool) {
-		C.gl30Minmax(glc.context, C.GLenum(target), C.GLenum(internalformat), boolToGL(sink))
+		defer glc.trace("Minmax")
+		C.gl20Minmax(glc.context, C.GLenum(target), C.GLenum(internalformat), boolToGL(sink))
 	}
 
 	glc.MultiTexCoord1s = func(target uint32, s int16) {
-		C.gl30MultiTexCoord1s(glc.context, C.GLenum(target), C.GLshort(s))
+		defer glc.trace("MultiTexCoord1s")
+		C.gl20MultiTexCoord1s(glc.context, C.GLenum(target), C.GLshort(s))
 	}
 
 	glc.MultiTexCoord1i = func(target uint32, s int32) {
-		C.gl30MultiTexCoord1i(glc.context, C.GLenum(target), C.GLint(s))
+		defer glc.trace("MultiTexCoord1i")
+		C.gl20MultiTexCoord1i(glc.context, C.GLenum(target), C.GLint(s))
 	}
 
 	glc.MultiTexCoord1f = func(target uint32, s float32) {
-		C.gl30MultiTexCoord1f(glc.context, C.GLenum(target), C.GLfloat(s))
+		defer glc.trace("MultiTexCoord1f")
+		C.gl20MultiTexCoord1f(glc.context, C.GLenum(target), C.GLfloat(s))
 	}
 
 	glc.MultiTexCoord1d = func(target uint32, s float64) {
-		C.gl30MultiTexCoord1d(glc.context, C.GLenum(target), C.GLdouble(s))
+		defer glc.trace("MultiTexCoord1d")
+		C.gl20MultiTexCoord1d(glc.context, C.GLenum(target), C.GLdouble(s))
 	}
 
 	glc.MultiTexCoord2s = func(target uint32, s, t int16) {
-		C.gl30MultiTexCoord2s(glc.context, C.GLenum(target), C.GLshort(s), C.GLshort(t))
+		defer glc.trace("MultiTexCoord2s")
+		C.gl20MultiTexCoord2s(glc.context, C.GLenum(target), C.GLshort(s), C.GLshort(t))
 	}
 
 	glc.MultiTexCoord2i = func(target uint32, s, t int32) {
-		C.gl30MultiTexCoord2i(glc.context, C.GLenum(target), C.GLint(s), C.GLint(t))
+		defer glc.trace("MultiTexCoord2i")
+		C.gl20MultiTexCoord2i(glc.context, C.GLenum(target), C.GLint(s), C.GLint(t))
 	}
 
 	glc.MultiTexCoord2f = func(target uint32, s, t float32) {
-		C.gl30MultiTexCoord2f(glc.context, C.GLenum(target), C.GLfloat(s), C.GLfloat(t))
+		defer glc.trace("MultiTexCoord2f")
+		C.gl20MultiTexCoord2f(glc.context, C.GLenum(target), C.GLfloat(s), C.GLfloat(t))
 	}
 
 	glc.MultiTexCoord2d = func(target uint32, s, t float64) {
-		C.gl30MultiTexCoord2d(glc.context, C.GLenum(target), C.GLdouble(s), C.GLdouble(t))
+		defer glc.trace("MultiTexCoord2d")
+		C.gl20MultiTexCoord2d(glc.context, C.GLenum(target), C.GLdouble(s), C.GLdouble(t))
 	}
 
 	glc.MultiTexCoord3s = func(target uint32, s, t, r int16) {
-		C.gl30MultiTexCoord3s(glc.context, C.GLenum(target), C.GLshort(s), C.GLshort(t), C.GLshort(r))
+		defer glc.trace("MultiTexCoord3s")
+		C.gl20MultiTexCoord3s(glc.context, C.GLenum(target), C.GLshort(s), C.GLshort(t), C.GLshort(r))
 	}
 
 	glc.MultiTexCoord3i = func(target uint32, s, t, r int32) {
-		C.gl30MultiTexCoord3i(glc.context, C.GLenum(target), C.GLint(s), C.GLint(t), C.GLint(r))
+		defer glc.trace("MultiTexCoord3i")
+		C.gl20MultiTexCoord3i(glc.context, C.GLenum(target), C.GLint(s), C.GLint(t), C.GLint(r))
 	}
 
 	glc.MultiTexCoord3f = func(target uint32, s, t, r float32) {
-		C.gl30MultiTexCoord3f(glc.context, C.GLenum(target), C.GLfloat(s), C.GLfloat(t), C.GLfloat(r))
+		defer glc.trace("MultiTexCoord3f")
+		C.gl20MultiTexCoord3f(glc.context, C.GLenum(target), C.GLfloat(s), C.GLfloat(t), C.GLfloat(r))
 	}
 
 	glc.MultiTexCoord3d = func(target uint32, s, t, r float64) {
-		C.gl30MultiTexCoord3d(glc.context, C.GLenum(target), C.GLdouble(s), C.GLdouble(t), C.GLdouble(r))
+		defer glc.trace("MultiTexCoord3d")
+		C.gl20MultiTexCoord3d(glc.context, C.GLenum(target), C.GLdouble(s), C.GLdouble(t), C.GLdouble(r))
 	}
 
 	glc.MultiTexCoord4s = func(target uint32, s, t, r, q int16) {
-		C.gl30MultiTexCoord4s(glc.context, C.GLenum(target), C.GLshort(s), C.GLshort(t), C.GLshort(r), C.GLshort(q))
+		defer glc.trace("MultiTexCoord4s")
+		C.gl20MultiTexCoord4s(glc.context, C.GLenum(target), C.GLshort(s), C.GLshort(t), C.GLshort(r), C.GLshort(q))
 	}
 
 	glc.MultiTexCoord4i = func(target uint32, s, t, r, q int32) {
-		C.gl30MultiTexCoord4i(glc.context, C.GLenum(target), C.GLint(s), C.GLint(t), C.GLint(r), C.GLint(q))
+		defer glc.trace("MultiTexCoord4i")
+		C.gl20MultiTexCoord4i(glc.context, C.GLenum(target), C.GLint(s), C.GLint(t), C.GLint(r), C.GLint(q))
 	}
 
 	glc.MultiTexCoord4f = func(target uint32, s, t, r, q float32) {
-		C.gl30MultiTexCoord4f(glc.context, C.GLenum(target), C.GLfloat(s), C.GLfloat(t), C.GLfloat(r), C.GLfloat(q))
+		defer glc.trace("MultiTexCoord4f")
+		C.gl20MultiTexCoord4f(glc.context, C.GLenum(target), C.GLfloat(s), C.GLfloat(t), C.GLfloat(r), C.GLfloat(q))
 	}
 
 	glc.MultiTexCoord4d = func(target uint32, s, t, r, q float64) {
-		C.gl30MultiTexCoord4d(glc.context, C.GLenum(target), C.GLdouble(s), C.GLdouble(t), C.GLdouble(r), C.GLdouble(q))
+		defer glc.trace("MultiTexCoord4d")
+		C.gl20MultiTexCoord4d(glc.context, C.GLenum(target), C.GLdouble(s), C.GLdouble(t), C.GLdouble(r), C.GLdouble(q))
 	}
 
 	glc.MultiTexCoord1sv = func(target uint32, v *int16) {
-		C.gl30MultiTexCoord1sv(glc.context, C.GLenum(target), (*C.GLshort)(unsafe.Pointer(v)))
+		defer glc.trace("MultiTexCoord1sv")
+		C.gl20MultiTexCoord1sv(glc.context, C.GLenum(target), (*C.GLshort)(unsafe.Pointer(v)))
 	}
 
 	glc.MultiTexCoord1iv = func(target uint32, v *int32) {
-		C.gl30MultiTexCoord1iv(glc.context, C.GLenum(target), (*C.GLint)(unsafe.Pointer(v)))
+		defer glc.trace("MultiTexCoord1iv")
+		C.gl20MultiTexCoord1iv(glc.context, C.GLenum(target), (*C.GLint)(unsafe.Pointer(v)))
 	}
 
 	glc.MultiTexCoord1fv = func(target uint32, v *float32) {
-		C.gl30MultiTexCoord1fv(glc.context, C.GLenum(target), (*C.GLfloat)(unsafe.Pointer(v)))
+		defer glc.trace("MultiTexCoord1fv")
+		C.gl20MultiTexCoord1fv(glc.context, C.GLenum(target), (*C.GLfloat)(unsafe.Pointer(v)))
 	}
 
 	glc.MultiTexCoord1dv = func(target uint32, v *float64) {
-		C.gl30MultiTexCoord1dv(glc.context, C.GLenum(target), (*C.GLdouble)(unsafe.Pointer(v)))
+		defer glc.trace("MultiTexCoord1dv")
+		C.gl20MultiTexCoord1dv(glc.context, C.GLenum(target), (*C.GLdouble)(unsafe.Pointer(v)))
 	}
 
 	glc.MultiTexCoord2sv = func(target uint32, v *int16) {
-		C.gl30MultiTexCoord2sv(glc.context, C.GLenum(target), (*C.GLshort)(unsafe.Pointer(v)))
+		defer glc.trace("MultiTexCoord2sv")
+		C.gl20MultiTexCoord2sv(glc.context, C.GLenum(target), (*C.GLshort)(unsafe.Pointer(v)))
 	}
 
 	glc.MultiTexCoord2iv = func(target uint32, v *int32) {
-		C.gl30MultiTexCoord2iv(glc.context, C.GLenum(target), (*C.GLint)(unsafe.Pointer(v)))
+		defer glc.trace("MultiTexCoord2iv")
+		C.gl20MultiTexCoord2iv(glc.context, C.GLenum(target), (*C.GLint)(unsafe.Pointer(v)))
 	}
 
 	glc.MultiTexCoord2fv = func(target uint32, v *float32) {
-		C.gl30MultiTexCoord2fv(glc.context, C.GLenum(target), (*C.GLfloat)(unsafe.Pointer(v)))
+		defer glc.trace("MultiTexCoord2fv")
+		C.gl20MultiTexCoord2fv(glc.context, C.GLenum(target), (*C.GLfloat)(unsafe.Pointer(v)))
 	}
 
 	glc.MultiTexCoord2dv = func(target uint32, v *float64) {
-		C.gl30MultiTexCoord2dv(glc.context, C.GLenum(target), (*C.GLdouble)(unsafe.Pointer(v)))
+		defer glc.trace("MultiTexCoord2dv")
+		C.gl20MultiTexCoord2dv(glc.context, C.GLenum(target), (*C.GLdouble)(unsafe.Pointer(v)))
 	}
 
 	glc.MultiTexCoord3sv = func(target uint32, v *int16) {
-		C.gl30MultiTexCoord3sv(glc.context, C.GLenum(target), (*C.GLshort)(unsafe.Pointer(v)))
+		defer glc.trace("MultiTexCoord3sv")
+		C.gl20MultiTexCoord3sv(glc.context, C.GLenum(target), (*C.GLshort)(unsafe.Pointer(v)))
 	}
 
 	glc.MultiTexCoord3iv = func(target uint32, v *int32) {
-		C.gl30MultiTexCoord3iv(glc.context, C.GLenum(target), (*C.GLint)(unsafe.Pointer(v)))
+		defer glc.trace("MultiTexCoord3iv")
+		C.gl20MultiTexCoord3iv(glc.context, C.GLenum(target), (*C.GLint)(unsafe.Pointer(v)))
 	}
 
 	glc.MultiTexCoord3fv = func(target uint32, v *float32) {
-		C.gl30MultiTexCoord3fv(glc.context, C.GLenum(target), (*C.GLfloat)(unsafe.Pointer(v)))
+		defer glc.trace("MultiTexCoord3fv")
+		C.gl20MultiTexCoord3fv(glc.context, C.GLenum(target), (*C.GLfloat)(unsafe.Pointer(v)))
 	}
 
 	glc.MultiTexCoord3dv = func(target uint32, v *float64) {
-		C.gl30MultiTexCoord3dv(glc.context, C.GLenum(target), (*C.GLdouble)(unsafe.Pointer(v)))
+		defer glc.trace("MultiTexCoord3dv")
+		C.gl20MultiTexCoord3dv(glc.context, C.GLenum(target), (*C.GLdouble)(unsafe.Pointer(v)))
 	}
 
 	glc.MultiTexCoord4sv = func(target uint32, v *int16) {
-		C.gl30MultiTexCoord4sv(glc.context, C.GLenum(target), (*C.GLshort)(unsafe.Pointer(v)))
+		defer glc.trace("MultiTexCoord4sv")
+		C.gl20MultiTexCoord4sv(glc.context, C.GLenum(target), (*C.GLshort)(unsafe.Pointer(v)))
 	}
 
 	glc.MultiTexCoord4iv = func(target uint32, v *int32) {
-		C.gl30MultiTexCoord4iv(glc.context, C.GLenum(target), (*C.GLint)(unsafe.Pointer(v)))
+		defer glc.trace("MultiTexCoord4iv")
+		C.gl20MultiTexCoord4iv(glc.context, C.GLenum(target), (*C.GLint)(unsafe.Pointer(v)))
 	}
 
 	glc.MultiTexCoord4fv = func(target uint32, v *float32) {
-		C.gl30MultiTexCoord4fv(glc.context, C.GLenum(target), (*C.GLfloat)(unsafe.Pointer(v)))
+		defer glc.trace("MultiTexCoord4fv")
+		C.gl20MultiTexCoord4fv(glc.context, C.GLenum(target), (*C.GLfloat)(unsafe.Pointer(v)))
 	}
 
 	glc.MultiTexCoord4dv = func(target uint32, v *float64) {
-		C.gl30MultiTexCoord4dv(glc.context, C.GLenum(target), (*C.GLdouble)(unsafe.Pointer(v)))
+		defer glc.trace("MultiTexCoord4dv")
+		C.gl20MultiTexCoord4dv(glc.context, C.GLenum(target), (*C.GLdouble)(unsafe.Pointer(v)))
 	}
 
 	glc.ResetHistogram = func(target uint32) {
-		C.gl30ResetHistogram(glc.context, C.GLenum(target))
+		defer glc.trace("ResetHistogram")
+		C.gl20ResetHistogram(glc.context, C.GLenum(target))
 	}
 
 	glc.ResetMinmax = func(target uint32) {
-		C.gl30ResetMinmax(glc.context, C.GLenum(target))
+		defer glc.trace("ResetMinmax")
+		C.gl20ResetMinmax(glc.context, C.GLenum(target))
 	}
 
 	glc.SeparableFilter2D = func(target, internalformat uint32, width, height int32, format, Type uint32, row, column unsafe.Pointer) {
-		C.gl30SeparableFilter2D(glc.context, C.GLenum(target), C.GLenum(internalformat), C.GLsizei(width), C.GLsizei(height), C.GLenum(format), C.GLenum(Type), row, column)
+		defer glc.trace("SeparableFilter2D")
+		C.gl20SeparableFilter2D(glc.context, C.GLenum(target), C.GLenum(internalformat), C.GLsizei(width), C.GLsizei(height), C.GLenum(format), C.GLenum(Type), row, column)
 	}
 
 	glc.BlendColor = func(red, green, blue, alpha float32) {
-		C.gl30BlendColor(glc.context, C.GLclampf(red), C.GLclampf(green), C.GLclampf(blue), C.GLclampf(alpha))
+		defer glc.trace("BlendColor")
+		C.gl20BlendColor(glc.context, C.GLclampf(red), C.GLclampf(green), C.GLclampf(blue), C.GLclampf(alpha))
 	}
 
 	glc.BlendEquation = func(mode uint32) {
-		C.gl30BlendEquation(glc.context, C.GLenum(mode))
+		defer glc.trace("BlendEquation")
+		C.gl20BlendEquation(glc.context, C.GLenum(mode))
 	}
 
 	glc.CopyTexSubImage3D = func(target uint32, level, xoffset, yoffset, zoffset, x, y int32, width, height int32) {
-		C.gl30CopyTexSubImage3D(glc.context, C.GLenum(target), C.GLint(level), C.GLint(xoffset), C.GLint(yoffset), C.GLint(zoffset), C.GLint(x), C.GLint(y), C.GLsizei(width), C.GLsizei(height))
+		defer glc.trace("CopyTexSubImage3D")
+		C.gl20CopyTexSubImage3D(glc.context, C.GLenum(target), C.GLint(level), C.GLint(xoffset), C.GLint(yoffset), C.GLint(zoffset), C.GLint(x), C.GLint(y), C.GLsizei(width), C.GLsizei(height))
 	}
 
 	glc.DrawRangeElements = func(mode uint32, start, end uint32, count int32, Type uint32, indices unsafe.Pointer) {
-		C.gl30DrawRangeElements(glc.context, C.GLenum(mode), C.GLuint(start), C.GLuint(end), C.GLsizei(count), C.GLenum(Type), indices)
+		defer glc.trace("DrawRangeElements")
+		C.gl20DrawRangeElements(glc.context, C.GLenum(mode), C.GLuint(start), C.GLuint(end), C.GLsizei(count), C.GLenum(Type), indices)
 	}
 
 	glc.TexImage3D = func(target uint32, level, internalformat int32, width, height, depth int32, border int32, format, Type uint32, pixels unsafe.Pointer) {
-		C.gl30TexImage3D(glc.context, C.GLenum(target), C.GLint(level), C.GLint(internalformat), C.GLsizei(width), C.GLsizei(height), C.GLsizei(depth), C.GLint(border), C.GLenum(format), C.GLenum(Type), pixels)
+		defer glc.trace("TexImage3D")
+		C.gl20TexImage3D(glc.context, C.GLenum(target), C.GLint(level), C.GLint(internalformat), C.GLsizei(width), C.GLsizei(height), C.GLsizei(depth), C.GLint(border), C.GLenum(format), C.GLenum(Type), pixels)
 	}
 
 	glc.TexSubImage3D = func(target uint32, level, xoffset, yoffset, zoffset int32, width, height, depth int32, format, Type uint32, pixels unsafe.Pointer) {
-		C.gl30TexSubImage3D(glc.context, C.GLenum(target), C.GLint(level), C.GLint(xoffset), C.GLint(yoffset), C.GLint(zoffset), C.GLsizei(width), C.GLsizei(height), C.GLsizei(depth), C.GLenum(format), C.GLenum(Type), pixels)
+		defer glc.trace("TexSubImage3D")
+		C.gl20TexSubImage3D(glc.context, C.GLenum(target), C.GLint(level), C.GLint(xoffset), C.GLint(yoffset), C.GLint(zoffset), C.GLsizei(width), C.GLsizei(height), C.GLsizei(depth), C.GLenum(format), C.GLenum(Type), pixels)
 	}
 
 	glc.ActiveTexture = func(texture uint32) {
-		C.gl30ActiveTexture(glc.context, C.GLenum(texture))
+		defer glc.trace("ActiveTexture")
+		C.gl20ActiveTexture(glc.context, C.GLenum(texture))
 	}
 
 	glc.ClientActiveTexture = func(texture uint32) {
-		C.gl30ClientActiveTexture(glc.context, C.GLenum(texture))
+		defer glc.trace("ClientActiveTexture")
+		C.gl20ClientActiveTexture(glc.context, C.GLenum(texture))
 	}
 
 	glc.CompressedTexImage1D = func(target uint32, level int32, internalformat uint32, width int32, border int32, imageSize int32, data unsafe.Pointer) {
-		C.gl30CompressedTexImage1D(glc.context, C.GLenum(target), C.GLint(level), C.GLenum(internalformat), C.GLsizei(width), C.GLint(border), C.GLsizei(imageSize), data)
+		defer glc.trace("CompressedTexImage1D")
+		C.gl20CompressedTexImage1D(glc.context, C.GLenum(target), C.GLint(level), C.GLenum(internalformat), C.GLsizei(width), C.GLint(border), C.GLsizei(imageSize), data)
 	}
 
 	glc.CompressedTexImage2D = func(target uint32, level int32, internalformat uint32, width, height int32, border int32, imageSize int32, data unsafe.Pointer) {
-		C.gl30CompressedTexImage2D(glc.context, C.GLenum(target), C.GLint(level), C.GLenum(internalformat), C.GLsizei(width), C.GLsizei(height), C.GLint(border), C.GLsizei(imageSize), data)
+		defer glc.trace("CompressedTexImage2D")
+		C.gl20CompressedTexImage2D(glc.context, C.GLenum(target), C.GLint(level), C.GLenum(internalformat), C.GLsizei(width), C.GLsizei(height), C.GLint(border), C.GLsizei(imageSize), data)
 	}
 
 	glc.CompressedTexImage3D = func(target uint32, level int32, internalformat uint32, width, height, depth int32, border int32, imageSize int32, data unsafe.Pointer) {
-		C.gl30CompressedTexImage3D(glc.context, C.GLenum(target), C.GLint(level), C.GLenum(internalformat), C.GLsizei(width), C.GLsizei(height), C.GLsizei(depth), C.GLint(border), C.GLsizei(imageSize), data)
+		defer glc.trace("CompressedTexImage3D")
+		C.gl20CompressedTexImage3D(glc.context, C.GLenum(target), C.GLint(level), C.GLenum(internalformat), C.GLsizei(width), C.GLsizei(height), C.GLsizei(depth), C.GLint(border), C.GLsizei(imageSize), data)
 	}
 
 	glc.CompressedTexSubImage1D = func(target uint32, level, xoffset int32, width int32, format uint32, imageSize int32, data unsafe.Pointer) {
-		C.gl30CompressedTexSubImage1D(glc.context, C.GLenum(target), C.GLint(level), C.GLint(xoffset), C.GLsizei(width), C.GLenum(format), C.GLsizei(imageSize), data)
+		defer glc.trace("CompressedTexSubImage1D")
+		C.gl20CompressedTexSubImage1D(glc.context, C.GLenum(target), C.GLint(level), C.GLint(xoffset), C.GLsizei(width), C.GLenum(format), C.GLsizei(imageSize), data)
 	}
 
 	glc.CompressedTexSubImage2D = func(target uint32, level, xoffset, yoffset int32, width, height int32, format uint32, imageSize int32, data unsafe.Pointer) {
-		C.gl30CompressedTexSubImage2D(glc.context, C.GLenum(target), C.GLint(level), C.GLint(xoffset), C.GLint(yoffset), C.GLsizei(width), C.GLsizei(height), C.GLenum(format), C.GLsizei(imageSize), data)
+		defer glc.trace("CompressedTexSubImage2D")
+		C.gl20CompressedTexSubImage2D(glc.context, C.GLenum(target), C.GLint(level), C.GLint(xoffset), C.GLint(yoffset), C.GLsizei(width), C.GLsizei(height), C.GLenum(format), C.GLsizei(imageSize), data)
 	}
 
 	glc.CompressedTexSubImage3D = func(target uint32, level, xoffset, yoffset, zoffset int32, width, height, depth int32, format uint32, imageSize int32, data unsafe.Pointer) {
-		C.gl30CompressedTexSubImage3D(glc.context, C.GLenum(target), C.GLint(level), C.GLint(xoffset), C.GLint(yoffset), C.GLint(zoffset), C.GLsizei(width), C.GLsizei(height), C.GLsizei(depth), C.GLenum(format), C.GLsizei(imageSize), data)
+		defer glc.trace("CompressedTexSubImage3D")
+		C.gl20CompressedTexSubImage3D(glc.context, C.GLenum(target), C.GLint(level), C.GLint(xoffset), C.GLint(yoffset), C.GLint(zoffset), C.GLsizei(width), C.GLsizei(height), C.GLsizei(depth), C.GLenum(format), C.GLsizei(imageSize), data)
 	}
 
 	glc.GetCompressedTexImage = func(target uint32, lod int32, img unsafe.Pointer) {
-		C.gl30GetCompressedTexImage(glc.context, C.GLenum(target), C.GLint(lod), img)
+		defer glc.trace("GetCompressedTexImage")
+		C.gl20GetCompressedTexImage(glc.context, C.GLenum(target), C.GLint(lod), img)
 	}
 
 	glc.LoadTransposeMatrixd = func(m *float64) {
-		C.gl30LoadTransposeMatrixd(glc.context, (*C.GLdouble)(unsafe.Pointer(m)))
+		defer glc.trace("LoadTransposeMatrixd")
+		C.gl20LoadTransposeMatrixd(glc.context, (*C.GLdouble)(unsafe.Pointer(m)))
 	}
 
 	glc.LoadTransposeMatrixf = func(m *float64) {
-		C.gl30LoadTransposeMatrixf(glc.context, (*C.GLdouble)(unsafe.Pointer(m)))
+		defer glc.trace("LoadTransposeMatrixf")
+		C.gl20LoadTransposeMatrixf(glc.context, (*C.GLdouble)(unsafe.Pointer(m)))
 	}
 
 	glc.MultTransposeMatrixd = func(m *float64) {
-		C.gl30MultTransposeMatrixd(glc.context, (*C.GLdouble)(unsafe.Pointer(m)))
+		defer glc.trace("MultTransposeMatrixd")
+		C.gl20MultTransposeMatrixd(glc.context, (*C.GLdouble)(unsafe.Pointer(m)))
 	}
 
 	glc.MultTransposeMatrixf = func(m *float32) {
-		C.gl30MultTransposeMatrixf(glc.context, (*C.GLfloat)(unsafe.Pointer(m)))
+		defer glc.trace("MultTransposeMatrixf")
+		C.gl20MultTransposeMatrixf(glc.context, (*C.GLfloat)(unsafe.Pointer(m)))
 	}
 
 	glc.SampleCoverage = func(value float32, invert bool) {
-		C.gl30SampleCoverage(glc.context, C.GLclampf(value), boolToGL(invert))
+		defer glc.trace("SampleCoverage")
+		C.gl20SampleCoverage(glc.context, C.GLclampf(value), boolToGL(invert))
 	}
 
 	glc.BlendFuncSeparate = func(srcRGB, dstRGB, srcAlpha, dstAlpha uint32) {
-		C.gl30BlendFuncSeparate(glc.context, C.GLenum(srcRGB), C.GLenum(dstRGB), C.GLenum(srcAlpha), C.GLenum(dstAlpha))
+		defer glc.trace("BlendFuncSeparate")
+		C.gl20BlendFuncSeparate(glc.context, C.GLenum(srcRGB), C.GLenum(dstRGB), C.GLenum(srcAlpha), C.GLenum(dstAlpha))
 	}
 
 	glc.FogCoordPointer = func(Type uint32, stride int32, pointer unsafe.Pointer) {
-		C.gl30FogCoordPointer(glc.context, C.GLenum(Type), C.GLsizei(stride), pointer)
+		defer glc.trace("FogCoordPointer")
+		C.gl20FogCoordPointer(glc.context, C.GLenum(Type), C.GLsizei(stride), pointer)
 	}
 
 	glc.FogCoordd = func(coord float64) {
-		C.gl30FogCoordd(glc.context, C.GLdouble(coord))
+		defer glc.trace("FogCoordd")
+		C.gl20FogCoordd(glc.context, C.GLdouble(coord))
 	}
 
 	glc.FogCoordf = func(coord float32) {
-		C.gl30FogCoordf(glc.context, C.GLfloat(coord))
+		defer glc.trace("FogCoordf")
+		C.gl20FogCoordf(glc.context, C.GLfloat(coord))
 	}
 
 	glc.FogCoorddv = func(coord *float64) {
-		C.gl30FogCoorddv(glc.context, (*C.GLdouble)(unsafe.Pointer(coord)))
+		defer glc.trace("FogCoorddv")
+		C.gl20FogCoorddv(glc.context, (*C.GLdouble)(unsafe.Pointer(coord)))
 	}
 
 	glc.FogCoordfv = func(coord *float32) {
-		C.gl30FogCoordfv(glc.context, (*C.GLfloat)(unsafe.Pointer(coord)))
+		defer glc.trace("FogCoordfv")
+		C.gl20FogCoordfv(glc.context, (*C.GLfloat)(unsafe.Pointer(coord)))
 	}
 
 	glc.MultiDrawArrays = func(mode uint32, first *int32, count *int32, primcount int32) {
-		C.gl30MultiDrawArrays(glc.context, C.GLenum(mode), (*C.GLint)(unsafe.Pointer(first)), (*C.GLsizei)(unsafe.Pointer(count)), C.GLsizei(primcount))
+		defer glc.trace("MultiDrawArrays")
+		C.gl20MultiDrawArrays(glc.context, C.GLenum(mode), (*C.GLint)(unsafe.Pointer(first)), (*C.GLsizei)(unsafe.Pointer(count)), C.GLsizei(primcount))
 	}
 
 	glc.MultiDrawElements = func(mode uint32, count *int32, Type uint32, indices unsafe.Pointer, primcount int32) {
-		C.gl30MultiDrawElements(glc.context, C.GLenum(mode), (*C.GLsizei)(unsafe.Pointer(count)), C.GLenum(Type), indices, C.GLsizei(primcount))
+		defer glc.trace("MultiDrawElements")
+		C.gl20MultiDrawElements(glc.context, C.GLenum(mode), (*C.GLsizei)(unsafe.Pointer(count)), C.GLenum(Type), indices, C.GLsizei(primcount))
 	}
 
 	glc.PointParameterf = func(pname uint32, param float32) {
-		C.gl30PointParameterf(glc.context, C.GLenum(pname), C.GLfloat(param))
+		defer glc.trace("PointParameterf")
+		C.gl20PointParameterf(glc.context, C.GLenum(pname), C.GLfloat(param))
 	}
 
 	glc.PointParameteri = func(pname uint32, param int32) {
-		C.gl30PointParameteri(glc.context, C.GLenum(pname), C.GLint(param))
+		defer glc.trace("PointParameteri")
+		C.gl20PointParameteri(glc.context, C.GLenum(pname), C.GLint(param))
 	}
 
 	glc.SecondaryColor3b = func(red, green, blue int8) {
-		C.gl30SecondaryColor3b(glc.context, C.GLbyte(red), C.GLbyte(green), C.GLbyte(blue))
+		defer glc.trace("SecondaryColor3b")
+		C.gl20SecondaryColor3b(glc.context, C.GLbyte(red), C.GLbyte(green), C.GLbyte(blue))
 	}
 
 	glc.SecondaryColor3s = func(red, green, blue int16) {
-		C.gl30SecondaryColor3s(glc.context, C.GLshort(red), C.GLshort(green), C.GLshort(blue))
+		defer glc.trace("SecondaryColor3s")
+		C.gl20SecondaryColor3s(glc.context, C.GLshort(red), C.GLshort(green), C.GLshort(blue))
 	}
 
 	glc.SecondaryColor3i = func(red, green, blue int32) {
-		C.gl30SecondaryColor3i(glc.context, C.GLint(red), C.GLint(green), C.GLint(blue))
+		defer glc.trace("SecondaryColor3i")
+		C.gl20SecondaryColor3i(glc.context, C.GLint(red), C.GLint(green), C.GLint(blue))
 	}
 
 	glc.SecondaryColor3f = func(red, green, blue float32) {
-		C.gl30SecondaryColor3f(glc.context, C.GLfloat(red), C.GLfloat(green), C.GLfloat(blue))
+		defer glc.trace("SecondaryColor3f")
+		C.gl20SecondaryColor3f(glc.context, C.GLfloat(red), C.GLfloat(green), C.GLfloat(blue))
 	}
 
 	glc.SecondaryColor3d = func(red, green, blue float64) {
-		C.gl30SecondaryColor3d(glc.context, C.GLdouble(red), C.GLdouble(green), C.GLdouble(blue))
+		defer glc.trace("SecondaryColor3d")
+		C.gl20SecondaryColor3d(glc.context, C.GLdouble(red), C.GLdouble(green), C.GLdouble(blue))
 	}
 
 	glc.SecondaryColor3ub = func(red, green, blue uint8) {
-		C.gl30SecondaryColor3ub(glc.context, C.GLubyte(red), C.GLubyte(green), C.GLubyte(blue))
+		defer glc.trace("SecondaryColor3ub")
+		C.gl20SecondaryColor3ub(glc.context, C.GLubyte(red), C.GLubyte(green), C.GLubyte(blue))
 	}
 
 	glc.SecondaryColor3us = func(red, green, blue uint16) {
-		C.gl30SecondaryColor3us(glc.context, C.GLushort(red), C.GLushort(green), C.GLushort(blue))
+		defer glc.trace("SecondaryColor3us")
+		C.gl20SecondaryColor3us(glc.context, C.GLushort(red), C.GLushort(green), C.GLushort(blue))
 	}
 
 	glc.SecondaryColor3ui = func(red, green, blue uint32) {
-		C.gl30SecondaryColor3ui(glc.context, C.GLuint(red), C.GLuint(green), C.GLuint(blue))
+		defer glc.trace("SecondaryColor3ui")
+		C.gl20SecondaryColor3ui(glc.context, C.GLuint(red), C.GLuint(green), C.GLuint(blue))
 	}
 
 	glc.SecondaryColor3bv = func(v *int8) {
-		C.gl30SecondaryColor3bv(glc.context, (*C.GLbyte)(unsafe.Pointer(v)))
+		defer glc.trace("SecondaryColor3bv")
+		C.gl20SecondaryColor3bv(glc.context, (*C.GLbyte)(unsafe.Pointer(v)))
 	}
 
 	glc.SecondaryColor3sv = func(v *int16) {
-		C.gl30SecondaryColor3sv(glc.context, (*C.GLshort)(unsafe.Pointer(v)))
+		defer glc.trace("SecondaryColor3sv")
+		C.gl20SecondaryColor3sv(glc.context, (*C.GLshort)(unsafe.Pointer(v)))
 	}
 
 	glc.SecondaryColor3iv = func(v *int32) {
-		C.gl30SecondaryColor3iv(glc.context, (*C.GLint)(unsafe.Pointer(v)))
+		defer glc.trace("SecondaryColor3iv")
+		C.gl20SecondaryColor3iv(glc.context, (*C.GLint)(unsafe.Pointer(v)))
 	}
 
 	glc.SecondaryColor3fv = func(v *float32) {
-		C.gl30SecondaryColor3fv(glc.context, (*C.GLfloat)(unsafe.Pointer(v)))
+		defer glc.trace("SecondaryColor3fv")
+		C.gl20SecondaryColor3fv(glc.context, (*C.GLfloat)(unsafe.Pointer(v)))
 	}
 
 	glc.SecondaryColor3dv = func(v *float64) {
-		C.gl30SecondaryColor3dv(glc.context, (*C.GLdouble)(unsafe.Pointer(v)))
+		defer glc.trace("SecondaryColor3dv")
+		C.gl20SecondaryColor3dv(glc.context, (*C.GLdouble)(unsafe.Pointer(v)))
 	}
 
 	glc.SecondaryColor3ubv = func(v *uint8) {
-		C.gl30SecondaryColor3ubv(glc.context, (*C.GLubyte)(unsafe.Pointer(v)))
+		defer glc.trace("SecondaryColor3ubv")
+		C.gl20SecondaryColor3ubv(glc.context, (*C.GLubyte)(unsafe.Pointer(v)))
 	}
 
 	glc.SecondaryColor3usv = func(v *uint16) {
-		C.gl30SecondaryColor3usv(glc.context, (*C.GLushort)(unsafe.Pointer(v)))
+		defer glc.trace("SecondaryColor3usv")
+		C.gl20SecondaryColor3usv(glc.context, (*C.GLushort)(unsafe.Pointer(v)))
 	}
 
 	glc.SecondaryColor3uiv = func(v *uint32) {
-		C.gl30SecondaryColor3uiv(glc.context, (*C.GLuint)(unsafe.Pointer(v)))
+		defer glc.trace("SecondaryColor3uiv")
+		C.gl20SecondaryColor3uiv(glc.context, (*C.GLuint)(unsafe.Pointer(v)))
 	}
 
 	glc.SecondaryColorPointer = func(size int32, Type uint32, stride int32, pointer unsafe.Pointer) {
-		C.gl30SecondaryColorPointer(glc.context, C.GLint(size), C.GLenum(Type), C.GLsizei(stride), pointer)
+		defer glc.trace("SecondaryColorPointer")
+		C.gl20SecondaryColorPointer(glc.context, C.GLint(size), C.GLenum(Type), C.GLsizei(stride), pointer)
 	}
 
 	glc.WindowPos2s = func(x, y int16) {
-		C.gl30WindowPos2s(glc.context, C.GLshort(x), C.GLshort(y))
+		defer glc.trace("WindowPos2s")
+		C.gl20WindowPos2s(glc.context, C.GLshort(x), C.GLshort(y))
 	}
 
 	glc.WindowPos2i = func(x, y int32) {
-		C.gl30WindowPos2i(glc.context, C.GLint(x), C.GLint(y))
+		defer glc.trace("WindowPos2i")
+		C.gl20WindowPos2i(glc.context, C.GLint(x), C.GLint(y))
 	}
 
 	glc.WindowPos2f = func(x, y float32) {
-		C.gl30WindowPos2f(glc.context, C.GLfloat(x), C.GLfloat(y))
+		defer glc.trace("WindowPos2f")
+		C.gl20WindowPos2f(glc.context, C.GLfloat(x), C.GLfloat(y))
 	}
 
 	glc.WindowPos2d = func(x, y float64) {
-		C.gl30WindowPos2d(glc.context, C.GLdouble(x), C.GLdouble(y))
+		defer glc.trace("WindowPos2d")
+		C.gl20WindowPos2d(glc.context, C.GLdouble(x), C.GLdouble(y))
 	}
 
 	glc.WindowPos3s = func(x, y, z int16) {
-		C.gl30WindowPos3s(glc.context, C.GLshort(x), C.GLshort(y), C.GLshort(z))
+		defer glc.trace("WindowPos3s")
+		C.gl20WindowPos3s(glc.context, C.GLshort(x), C.GLshort(y), C.GLshort(z))
 	}
 
 	glc.WindowPos3i = func(x, y, z int32) {
-		C.gl30WindowPos3i(glc.context, C.GLint(x), C.GLint(y), C.GLint(z))
+		defer glc.trace("WindowPos3i")
+		C.gl20WindowPos3i(glc.context, C.GLint(x), C.GLint(y), C.GLint(z))
 	}
 
 	glc.WindowPos3f = func(x, y, z float32) {
-		C.gl30WindowPos3f(glc.context, C.GLfloat(x), C.GLfloat(y), C.GLfloat(z))
+		defer glc.trace("WindowPos3f")
+		C.gl20WindowPos3f(glc.context, C.GLfloat(x), C.GLfloat(y), C.GLfloat(z))
 	}
 
 	glc.WindowPos3d = func(x, y, z float64) {
-		C.gl30WindowPos3d(glc.context, C.GLdouble(x), C.GLdouble(y), C.GLdouble(z))
+		defer glc.trace("WindowPos3d")
+		C.gl20WindowPos3d(glc.context, C.GLdouble(x), C.GLdouble(y), C.GLdouble(z))
 	}
 
 	glc.WindowPos2sv = func(v *int16) {
-		C.gl30WindowPos2sv(glc.context, (*C.GLshort)(unsafe.Pointer(v)))
+		defer glc.trace("WindowPos2sv")
+		C.gl20WindowPos2sv(glc.context, (*C.GLshort)(unsafe.Pointer(v)))
 	}
 
 	glc.WindowPos2iv = func(v *int32) {
-		C.gl30WindowPos2iv(glc.context, (*C.GLint)(unsafe.Pointer(v)))
+		defer glc.trace("WindowPos2iv")
+		C.gl20WindowPos2iv(glc.context, (*C.GLint)(unsafe.Pointer(v)))
 	}
 
 	glc.WindowPos2fv = func(v *float32) {
-		C.gl30WindowPos2fv(glc.context, (*C.GLfloat)(unsafe.Pointer(v)))
+		defer glc.trace("WindowPos2fv")
+		C.gl20WindowPos2fv(glc.context, (*C.GLfloat)(unsafe.Pointer(v)))
 	}
 
 	glc.WindowPos2dv = func(v *float64) {
-		C.gl30WindowPos2dv(glc.context, (*C.GLdouble)(unsafe.Pointer(v)))
+		defer glc.trace("WindowPos2dv")
+		C.gl20WindowPos2dv(glc.context, (*C.GLdouble)(unsafe.Pointer(v)))
 	}
 
 	glc.WindowPos3sv = func(v *int16) {
-		C.gl30WindowPos3sv(glc.context, (*C.GLshort)(unsafe.Pointer(v)))
+		defer glc.trace("WindowPos3sv")
+		C.gl20WindowPos3sv(glc.context, (*C.GLshort)(unsafe.Pointer(v)))
 	}
 
 	glc.WindowPos3iv = func(v *int32) {
-		C.gl30WindowPos3iv(glc.context, (*C.GLint)(unsafe.Pointer(v)))
+		defer glc.trace("WindowPos3iv")
+		C.gl20WindowPos3iv(glc.context, (*C.GLint)(unsafe.Pointer(v)))
 	}
 
 	glc.WindowPos3fv = func(v *float32) {
-		C.gl30WindowPos3fv(glc.context, (*C.GLfloat)(unsafe.Pointer(v)))
+		defer glc.trace("WindowPos3fv")
+		C.gl20WindowPos3fv(glc.context, (*C.GLfloat)(unsafe.Pointer(v)))
 	}
 
 	glc.WindowPos3dv = func(v *float64) {
-		C.gl30WindowPos3dv(glc.context, (*C.GLdouble)(unsafe.Pointer(v)))
+		defer glc.trace("WindowPos3dv")
+		C.gl20WindowPos3dv(glc.context, (*C.GLdouble)(unsafe.Pointer(v)))
 	}
 
 	glc.BeginQuery = func(target uint32, id uint32) {
-		C.gl30BeginQuery(glc.context, C.GLenum(target), C.GLuint(id))
+		defer glc.trace("BeginQuery")
+		C.gl20BeginQuery(glc.context, C.GLenum(target), C.GLuint(id))
 	}
 
 	glc.BindBuffer = func(target uint32, buffer uint32) {
-		C.gl30BindBuffer(glc.context, C.GLenum(target), C.GLuint(buffer))
+		defer glc.trace("BindBuffer")
+		C.gl20BindBuffer(glc.context, C.GLenum(target), C.GLuint(buffer))
 	}
 
 	glc.BufferData = func(target uint32, size int32, data unsafe.Pointer, usage uint32) {
-		C.gl30BufferData(glc.context, C.GLenum(target), C.GLsizeiptr(size), data, C.GLenum(usage))
+		defer glc.trace("BufferData")
+		C.gl20BufferData(glc.context, C.GLenum(target), C.GLsizeiptr(size), data, C.GLenum(usage))
 	}
 
 	glc.BufferSubData = func(target, offset uint32, size int32, data unsafe.Pointer) {
-		C.gl30BufferSubData(glc.context, C.GLenum(target), C.GLenum(offset), C.GLsizeiptr(size), data)
+		defer glc.trace("BufferSubData")
+		C.gl20BufferSubData(glc.context, C.GLenum(target), C.GLenum(offset), C.GLsizeiptr(size), data)
 	}
 
 	glc.DeleteBuffers = func(n int32, buffers *uint32) {
-		C.gl30DeleteBuffers(glc.context, C.GLsizei(n), (*C.GLuint)(unsafe.Pointer(buffers)))
+		defer glc.trace("DeleteBuffers")
+		C.gl20DeleteBuffers(glc.context, C.GLsizei(n), (*C.GLuint)(unsafe.Pointer(buffers)))
 	}
 
 	glc.DeleteQueries = func(n int32, ids *uint32) {
-		C.gl30DeleteQueries(glc.context, C.GLsizei(n), (*C.GLuint)(unsafe.Pointer(ids)))
+		defer glc.trace("DeleteQueries")
+		C.gl20DeleteQueries(glc.context, C.GLsizei(n), (*C.GLuint)(unsafe.Pointer(ids)))
 	}
 
 	glc.GenBuffers = func(n int32, buffers *uint32) {
-		C.gl30GenBuffers(glc.context, C.GLsizei(n), (*C.GLuint)(unsafe.Pointer(buffers)))
+		defer glc.trace("GenBuffers")
+		C.gl20GenBuffers(glc.context, C.GLsizei(n), (*C.GLuint)(unsafe.Pointer(buffers)))
 	}
 
 	glc.GenQueries = func(n int32, ids *uint32) {
-		C.gl30GenQueries(glc.context, C.GLsizei(n), (*C.GLuint)(unsafe.Pointer(ids)))
+		defer glc.trace("GenQueries")
+		C.gl20GenQueries(glc.context, C.GLsizei(n), (*C.GLuint)(unsafe.Pointer(ids)))
 	}
 
 	glc.GetBufferParameteriv = func(target, value uint32, data *int32) {
-		C.gl30GetBufferParameteriv(glc.context, C.GLenum(target), C.GLenum(value), (*C.GLint)(unsafe.Pointer(data)))
+		defer glc.trace("GetBufferParameteriv")
+		C.gl20GetBufferParameteriv(glc.context, C.GLenum(target), C.GLenum(value), (*C.GLint)(unsafe.Pointer(data)))
 	}
 
 	glc.GetBufferPointerv = func(target, pname uint32, params unsafe.Pointer) {
-		C.gl30GetBufferPointerv(glc.context, C.GLenum(target), C.GLenum(pname), params)
+		defer glc.trace("GetBufferPointerv")
+		C.gl20GetBufferPointerv(glc.context, C.GLenum(target), C.GLenum(pname), params)
 	}
 
 	glc.GetBufferSubData = func(target uint32, offset int32, size int32, data unsafe.Pointer) {
-		C.gl30GetBufferSubData(glc.context, C.GLenum(target), C.GLintptr(offset), C.GLsizeiptr(size), data)
+		defer glc.trace("GetBufferSubData")
+		C.gl20GetBufferSubData(glc.context, C.GLenum(target), C.GLintptr(offset), C.GLsizeiptr(size), data)
 	}
 
 	glc.GetQueryObjectiv = func(id uint32, pname uint32, params *int32) {
-		C.gl30GetQueryObjectiv(glc.context, C.GLuint(id), C.GLenum(pname), (*C.GLint)(unsafe.Pointer(params)))
+		defer glc.trace("GetQueryObjectiv")
+		C.gl20GetQueryObjectiv(glc.context, C.GLuint(id), C.GLenum(pname), (*C.GLint)(unsafe.Pointer(params)))
 	}
 
 	glc.GetQueryObjectuiv = func(id uint32, pname uint32, params *uint32) {
-		C.gl30GetQueryObjectuiv(glc.context, C.GLuint(id), C.GLenum(pname), (*C.GLuint)(unsafe.Pointer(params)))
+		defer glc.trace("GetQueryObjectuiv")
+		C.gl20GetQueryObjectuiv(glc.context, C.GLuint(id), C.GLenum(pname), (*C.GLuint)(unsafe.Pointer(params)))
 	}
 
 	glc.GetQueryiv = func(target, pname uint32, params *int32) {
-		C.gl30GetQueryiv(glc.context, C.GLenum(target), C.GLenum(pname), (*C.GLint)(unsafe.Pointer(params)))
+		defer glc.trace("GetQueryiv")
+		C.gl20GetQueryiv(glc.context, C.GLenum(target), C.GLenum(pname), (*C.GLint)(unsafe.Pointer(params)))
 	}
 
 	glc.IsBuffer = func(buffer uint32) bool {
-		return C.gl30IsBuffer(glc.context, C.GLuint(buffer)) != 0
+		defer glc.trace("IsBuffer")
+		return C.gl20IsBuffer(glc.context, C.GLuint(buffer)) != 0
 	}
 
 	glc.IsQuery = func(id uint32) bool {
-		return C.gl30IsQuery(glc.context, C.GLuint(id)) != 0
+		defer glc.trace("IsQuery")
+		return C.gl20IsQuery(glc.context, C.GLuint(id)) != 0
 	}
 
 	glc.MapBuffer = func(target, access uint32) unsafe.Pointer {
-		return unsafe.Pointer(C.gl30MapBuffer(glc.context, C.GLenum(target), C.GLenum(access)))
+		defer glc.trace("MapBuffer")
+		return unsafe.Pointer(C.gl20MapBuffer(glc.context, C.GLenum(target), C.GLenum(access)))
 	}
 
 	glc.UnmapBuffer = func(target uint32) bool {
-		return C.gl30UnmapBuffer(glc.context, C.GLenum(target)) != 0
+		defer glc.trace("UnmapBuffer")
+		return C.gl20UnmapBuffer(glc.context, C.GLenum(target)) != 0
 	}
 
 	glc.AttachShader = func(program, shader uint32) {
-		C.gl30AttachShader(glc.context, C.GLuint(program), C.GLuint(shader))
+		defer glc.trace("AttachShader")
+		C.gl20AttachShader(glc.context, C.GLuint(program), C.GLuint(shader))
 	}
 
 	glc.BindAttribLocation = func(program, index uint32, name string) {
+		defer glc.trace("BindAttribLocation")
 		cstr := C.CString(name)
 		defer C.free(unsafe.Pointer(&cstr))
-		C.gl30BindAttribLocation(glc.context, C.GLuint(program), C.GLuint(index), (*C.GLchar)(unsafe.Pointer(cstr)))
+		C.gl20BindAttribLocation(glc.context, C.GLuint(program), C.GLuint(index), (*C.GLchar)(unsafe.Pointer(cstr)))
 		return
 	}
 
 	glc.BlendEquationSeperate = func(modeRGB, modeAlpha uint32) {
-		C.gl30BlendEquationSeperate(glc.context, C.GLenum(modeRGB), C.GLenum(modeAlpha))
+		defer glc.trace("BlendEquationSeperate")
+		C.gl20BlendEquationSeperate(glc.context, C.GLenum(modeRGB), C.GLenum(modeAlpha))
 	}
 
 	glc.CompileShader = func(shader uint32) {
-		C.gl30CompileShader(glc.context, C.GLuint(shader))
+		defer glc.trace("CompileShader")
+		C.gl20CompileShader(glc.context, C.GLuint(shader))
 	}
 
 	glc.CreateProgram = func() uint32 {
-		return uint32(C.gl30CreateProgram(glc.context))
+		defer glc.trace("CreateProgram")
+		return uint32(C.gl20CreateProgram(glc.context))
 	}
 
 	glc.CreateShader = func(shaderType uint32) uint32 {
-		return uint32(C.gl30CreateShader(glc.context, C.GLenum(shaderType)))
+		defer glc.trace("CreateShader")
+		return uint32(C.gl20CreateShader(glc.context, C.GLenum(shaderType)))
 	}
 
 	glc.DeleteProgram = func(program uint32) {
-		C.gl30DeleteProgram(glc.context, C.GLuint(program))
+		defer glc.trace("DeleteProgram")
+		C.gl20DeleteProgram(glc.context, C.GLuint(program))
 	}
 
 	glc.DeleteShader = func(shader uint32) {
-		C.gl30DeleteShader(glc.context, C.GLuint(shader))
+		defer glc.trace("DeleteShader")
+		C.gl20DeleteShader(glc.context, C.GLuint(shader))
 	}
 
 	glc.DetachShader = func(program, shader uint32) {
-		C.gl30DetachShader(glc.context, C.GLuint(program), C.GLuint(shader))
+		defer glc.trace("DetachShader")
+		C.gl20DetachShader(glc.context, C.GLuint(program), C.GLuint(shader))
 	}
 
 	glc.EnableVertexAttribArray = func(index uint32) {
-		C.gl30EnableVertexAttribArray(glc.context, C.GLuint(index))
+		defer glc.trace("EnableVertexAttribArray")
+		C.gl20EnableVertexAttribArray(glc.context, C.GLuint(index))
 	}
 
 	glc.DisableVertexAttribArray = func(index uint32) {
-		C.gl30DisableVertexAttribArray(glc.context, C.GLuint(index))
+		defer glc.trace("DisableVertexAttribArray")
+		C.gl20DisableVertexAttribArray(glc.context, C.GLuint(index))
 	}
 
 	glc.DrawBuffers = func(n int32, bufs *uint32) {
-		C.gl30DrawBuffers(glc.context, C.GLsizei(n), (*C.GLenum)(unsafe.Pointer(bufs)))
+		defer glc.trace("DrawBuffers")
+		C.gl20DrawBuffers(glc.context, C.GLsizei(n), (*C.GLenum)(unsafe.Pointer(bufs)))
 	}
 
 	glc.GetActiveAttrib = func(program, index uint32, bufSize int32) (length int32, size int32, Type uint32, name string) {
+		defer glc.trace("GetActiveAttrib")
 		var (
 			cname C.GLchar
 		)
-		C.gl30GetActiveAttrib(glc.context, C.GLuint(program), C.GLuint(index), C.GLsizei(bufSize), (*C.GLsizei)(unsafe.Pointer(&length)), (*C.GLint)(unsafe.Pointer(&size)), (*C.GLenum)(unsafe.Pointer(&Type)), &cname)
+		C.gl20GetActiveAttrib(glc.context, C.GLuint(program), C.GLuint(index), C.GLsizei(bufSize), (*C.GLsizei)(unsafe.Pointer(&length)), (*C.GLint)(unsafe.Pointer(&size)), (*C.GLenum)(unsafe.Pointer(&Type)), &cname)
 		name = C.GoString((*C.char)(unsafe.Pointer(&cname)))
 		return
 	}
 
 	glc.GetActiveUniform = func(program, index uint32, bufSize int32, length *int32, size *int32, Type *uint32, name *byte) {
-		C.gl30GetActiveUniform(glc.context, C.GLuint(program), C.GLuint(index), C.GLsizei(bufSize), (*C.GLsizei)(unsafe.Pointer(length)), (*C.GLint)(unsafe.Pointer(size)), (*C.GLenum)(unsafe.Pointer(Type)), (*C.GLchar)(unsafe.Pointer(name)))
+		defer glc.trace("GetActiveUniform")
+		C.gl20GetActiveUniform(glc.context, C.GLuint(program), C.GLuint(index), C.GLsizei(bufSize), (*C.GLsizei)(unsafe.Pointer(length)), (*C.GLint)(unsafe.Pointer(size)), (*C.GLenum)(unsafe.Pointer(Type)), (*C.GLchar)(unsafe.Pointer(name)))
 	}
 
 	glc.GetAttachedShaders = func(program uint32, maxCount int32, count *int32, shaders *uint32) {
-		C.gl30GetAttachedShaders(glc.context, C.GLuint(program), C.GLsizei(maxCount), (*C.GLsizei)(unsafe.Pointer(count)), (*C.GLuint)(unsafe.Pointer(shaders)))
+		defer glc.trace("GetAttachedShaders")
+		C.gl20GetAttachedShaders(glc.context, C.GLuint(program), C.GLsizei(maxCount), (*C.GLsizei)(unsafe.Pointer(count)), (*C.GLuint)(unsafe.Pointer(shaders)))
 	}
 
 	glc.GetAttribLocation = func(program uint32, name *byte) int32 {
-		return int32(C.gl30GetAttribLocation(glc.context, C.GLuint(program), (*C.GLchar)(unsafe.Pointer(name))))
+		defer glc.trace("GetAttribLocation")
+		return int32(C.gl20GetAttribLocation(glc.context, C.GLuint(program), (*C.GLchar)(unsafe.Pointer(name))))
 	}
 
 	glc.GetProgramiv = func(program uint32, pname uint32, params *int32) {
-		C.gl30GetProgramiv(glc.context, C.GLuint(program), C.GLenum(pname), (*C.GLint)(unsafe.Pointer(params)))
+		defer glc.trace("GetProgramiv")
+		C.gl20GetProgramiv(glc.context, C.GLuint(program), C.GLenum(pname), (*C.GLint)(unsafe.Pointer(params)))
 	}
 
 	glc.GetProgramInfoLog = func(program uint32, maxLength int32, length *int32, infoLog *byte) {
-		C.gl30GetProgramInfoLog(glc.context, C.GLuint(program), C.GLsizei(maxLength), (*C.GLsizei)(unsafe.Pointer(length)), (*C.GLchar)(unsafe.Pointer(infoLog)))
+		defer glc.trace("GetProgramInfoLog")
+		C.gl20GetProgramInfoLog(glc.context, C.GLuint(program), C.GLsizei(maxLength), (*C.GLsizei)(unsafe.Pointer(length)), (*C.GLchar)(unsafe.Pointer(infoLog)))
 	}
 
 	glc.GetShaderiv = func(program uint32, pname uint32, params *int32) {
-		C.gl30GetShaderiv(glc.context, C.GLuint(program), C.GLenum(pname), (*C.GLint)(unsafe.Pointer(params)))
+		defer glc.trace("GetShaderiv")
+		C.gl20GetShaderiv(glc.context, C.GLuint(program), C.GLenum(pname), (*C.GLint)(unsafe.Pointer(params)))
 	}
 
 	glc.GetShaderInfoLog = func(shader uint32, maxLength int32, length *int32, infoLog *byte) {
-		C.gl30GetShaderInfoLog(glc.context, C.GLuint(shader), C.GLsizei(maxLength), (*C.GLsizei)(unsafe.Pointer(length)), (*C.GLchar)(unsafe.Pointer(infoLog)))
+		defer glc.trace("GetShaderInfoLog")
+		C.gl20GetShaderInfoLog(glc.context, C.GLuint(shader), C.GLsizei(maxLength), (*C.GLsizei)(unsafe.Pointer(length)), (*C.GLchar)(unsafe.Pointer(infoLog)))
 	}
 
 	glc.GetShaderSource = func(shader uint32, bufSize int32, length *int32, source *byte) {
-		C.gl30GetShaderSource(glc.context, C.GLuint(shader), C.GLsizei(bufSize), (*C.GLsizei)(unsafe.Pointer(length)), (*C.GLchar)(unsafe.Pointer(source)))
+		defer glc.trace("GetShaderSource")
+		C.gl20GetShaderSource(glc.context, C.GLuint(shader), C.GLsizei(bufSize), (*C.GLsizei)(unsafe.Pointer(length)), (*C.GLchar)(unsafe.Pointer(source)))
 	}
 
 	glc.GetUniformfv = func(program uint32, location int32, params *float32) {
-		C.gl30GetUniformfv(glc.context, C.GLuint(program), C.GLint(location), (*C.GLfloat)(unsafe.Pointer(params)))
+		defer glc.trace("GetUniformfv")
+		C.gl20GetUniformfv(glc.context, C.GLuint(program), C.GLint(location), (*C.GLfloat)(unsafe.Pointer(params)))
 	}
 
 	glc.GetUniformiv = func(program uint32, location int32, params *int32) {
-		C.gl30GetUniformiv(glc.context, C.GLuint(program), C.GLint(location), (*C.GLint)(unsafe.Pointer(params)))
+		defer glc.trace("GetUniformiv")
+		C.gl20GetUniformiv(glc.context, C.GLuint(program), C.GLint(location), (*C.GLint)(unsafe.Pointer(params)))
 	}
 
 	glc.GetUniformLocation = func(program uint32, name *byte) int32 {
-		return int32(C.gl30GetUniformLocation(glc.context, C.GLuint(program), (*C.GLchar)(unsafe.Pointer(name))))
+		defer glc.trace("GetUniformLocation")
+		return int32(C.gl20GetUniformLocation(glc.context, C.GLuint(program), (*C.GLchar)(unsafe.Pointer(name))))
 	}
 
 	glc.GetVertexAttribdv = func(index uint32, pname uint32, params *float64) {
-		C.gl30GetVertexAttribdv(glc.context, C.GLuint(index), C.GLenum(pname), (*C.GLdouble)(unsafe.Pointer(params)))
+		defer glc.trace("GetVertexAttribdv")
+		C.gl20GetVertexAttribdv(glc.context, C.GLuint(index), C.GLenum(pname), (*C.GLdouble)(unsafe.Pointer(params)))
 	}
 
 	glc.GetVertexAttribfv = func(index uint32, pname uint32, params *float32) {
-		C.gl30GetVertexAttribfv(glc.context, C.GLuint(index), C.GLenum(pname), (*C.GLfloat)(unsafe.Pointer(params)))
+		defer glc.trace("GetVertexAttribfv")
+		C.gl20GetVertexAttribfv(glc.context, C.GLuint(index), C.GLenum(pname), (*C.GLfloat)(unsafe.Pointer(params)))
 	}
 
 	glc.GetVertexAttribiv = func(index uint32, pname uint32, params *int32) {
-		C.gl30GetVertexAttribiv(glc.context, C.GLuint(index), C.GLenum(pname), (*C.GLint)(unsafe.Pointer(params)))
+		defer glc.trace("GetVertexAttribiv")
+		C.gl20GetVertexAttribiv(glc.context, C.GLuint(index), C.GLenum(pname), (*C.GLint)(unsafe.Pointer(params)))
 	}
 
 	glc.GetVertexAttribPointerv = func(index uint32, pname uint32, pointer unsafe.Pointer) {
-		C.gl30GetVertexAttribPointerv(glc.context, C.GLuint(index), C.GLenum(pname), pointer)
+		defer glc.trace("GetVertexAttribPointerv")
+		C.gl20GetVertexAttribPointerv(glc.context, C.GLuint(index), C.GLenum(pname), pointer)
 	}
 
 	glc.IsProgram = func(program uint32) bool {
-		return C.gl30IsProgram(glc.context, C.GLuint(program)) != 0
+		defer glc.trace("IsProgram")
+		return C.gl20IsProgram(glc.context, C.GLuint(program)) != 0
 	}
 
 	glc.IsShader = func(shader uint32) bool {
-		return C.gl30IsShader(glc.context, C.GLuint(shader)) != 0
+		defer glc.trace("IsShader")
+		return C.gl20IsShader(glc.context, C.GLuint(shader)) != 0
 	}
 
 	glc.LinkProgram = func(program uint32) {
-		C.gl30LinkProgram(glc.context, C.GLuint(program))
+		defer glc.trace("LinkProgram")
+		C.gl20LinkProgram(glc.context, C.GLuint(program))
 	}
 
 	glc.ShaderSource = func(shader uint32, count int32, string **byte, length *int32) {
-		C.gl30ShaderSource(glc.context, C.GLuint(shader), C.GLsizei(count), (**C.GLchar)(unsafe.Pointer(string)), (*C.GLint)(unsafe.Pointer(length)))
+		defer glc.trace("ShaderSource")
+		C.gl20ShaderSource(glc.context, C.GLuint(shader), C.GLsizei(count), (**C.GLchar)(unsafe.Pointer(string)), (*C.GLint)(unsafe.Pointer(length)))
 	}
 
 	glc.StencilFuncSeparate = func(face, Func uint32, ref int32, mask uint32) {
-		C.gl30StencilFuncSeparate(glc.context, C.GLenum(face), C.GLenum(Func), C.GLint(ref), C.GLuint(mask))
+		defer glc.trace("StencilFuncSeparate")
+		C.gl20StencilFuncSeparate(glc.context, C.GLenum(face), C.GLenum(Func), C.GLint(ref), C.GLuint(mask))
 	}
 
 	glc.StencilMaskSeparate = func(face uint32, mask uint32) {
-		C.gl30StencilMaskSeparate(glc.context, C.GLenum(face), C.GLuint(mask))
+		defer glc.trace("StencilMaskSeparate")
+		C.gl20StencilMaskSeparate(glc.context, C.GLenum(face), C.GLuint(mask))
 	}
 
 	glc.StencilOpSeparate = func(face, sfail, dpfail, dppass uint32) {
-		C.gl30StencilOpSeparate(glc.context, C.GLenum(face), C.GLenum(sfail), C.GLenum(dpfail), C.GLenum(dppass))
+		defer glc.trace("StencilOpSeparate")
+		C.gl20StencilOpSeparate(glc.context, C.GLenum(face), C.GLenum(sfail), C.GLenum(dpfail), C.GLenum(dppass))
 	}
 
 	glc.Uniform1f = func(location int32, v0 float32) {
-		C.gl30Uniform1f(glc.context, C.GLint(location), C.GLfloat(v0))
+		defer glc.trace("Uniform1f")
+		C.gl20Uniform1f(glc.context, C.GLint(location), C.GLfloat(v0))
 	}
 
 	glc.Uniform2f = func(location int32, v0, v1 float32) {
-		C.gl30Uniform2f(glc.context, C.GLint(location), C.GLfloat(v0), C.GLfloat(v1))
+		defer glc.trace("Uniform2f")
+		C.gl20Uniform2f(glc.context, C.GLint(location), C.GLfloat(v0), C.GLfloat(v1))
 	}
 
 	glc.Uniform3f = func(location int32, v0, v1, v2 float32) {
-		C.gl30Uniform3f(glc.context, C.GLint(location), C.GLfloat(v0), C.GLfloat(v1), C.GLfloat(v2))
+		defer glc.trace("Uniform3f")
+		C.gl20Uniform3f(glc.context, C.GLint(location), C.GLfloat(v0), C.GLfloat(v1), C.GLfloat(v2))
 	}
 
 	glc.Uniform4f = func(location int32, v0, v1, v2, v3 float32) {
-		C.gl30Uniform4f(glc.context, C.GLint(location), C.GLfloat(v0), C.GLfloat(v1), C.GLfloat(v2), C.GLfloat(v3))
+		defer glc.trace("Uniform4f")
+		C.gl20Uniform4f(glc.context, C.GLint(location), C.GLfloat(v0), C.GLfloat(v1), C.GLfloat(v2), C.GLfloat(v3))
 	}
 
 	glc.Uniform1i = func(location, v0 int32) {
-		C.gl30Uniform1i(glc.context, C.GLint(location), C.GLint(v0))
+		defer glc.trace("Uniform1i")
+		C.gl20Uniform1i(glc.context, C.GLint(location), C.GLint(v0))
 	}
 
 	glc.Uniform2i = func(location, v0, v1 int32) {
-		C.gl30Uniform2i(glc.context, C.GLint(location), C.GLint(v0), C.GLint(v1))
+		defer glc.trace("Uniform2i")
+		C.gl20Uniform2i(glc.context, C.GLint(location), C.GLint(v0), C.GLint(v1))
 	}
 
 	glc.Uniform3i = func(location, v0, v1, v2 int32) {
-		C.gl30Uniform3i(glc.context, C.GLint(location), C.GLint(v0), C.GLint(v1), C.GLint(v2))
+		defer glc.trace("Uniform3i")
+		C.gl20Uniform3i(glc.context, C.GLint(location), C.GLint(v0), C.GLint(v1), C.GLint(v2))
 	}
 
 	glc.Uniform4i = func(location, v0, v1, v2, v3 int32) {
-		C.gl30Uniform4i(glc.context, C.GLint(location), C.GLint(v0), C.GLint(v1), C.GLint(v2), C.GLint(v3))
+		defer glc.trace("Uniform4i")
+		C.gl20Uniform4i(glc.context, C.GLint(location), C.GLint(v0), C.GLint(v1), C.GLint(v2), C.GLint(v3))
 	}
 
 	glc.Uniform1ui = func(location int32, v0 uint32) {
-		C.gl30Uniform1ui(glc.context, C.GLint(location), C.GLuint(v0))
+		defer glc.trace("Uniform1ui")
+		C.gl20Uniform1ui(glc.context, C.GLint(location), C.GLuint(v0))
 	}
 
 	glc.Uniform2ui = func(location int32, v0, v1 uint32) {
-		C.gl30Uniform2ui(glc.context, C.GLint(location), C.GLuint(v0), C.GLuint(v1))
+		defer glc.trace("Uniform2ui")
+		C.gl20Uniform2ui(glc.context, C.GLint(location), C.GLuint(v0), C.GLuint(v1))
 	}
 
 	glc.Uniform3ui = func(location int32, v0, v1, v2 uint32) {
-		C.gl30Uniform3ui(glc.context, C.GLint(location), C.GLuint(v0), C.GLuint(v1), C.GLuint(v2))
+		defer glc.trace("Uniform3ui")
+		C.gl20Uniform3ui(glc.context, C.GLint(location), C.GLuint(v0), C.GLuint(v1), C.GLuint(v2))
 	}
 
 	glc.Uniform4ui = func(location int32, v0, v1, v2, v3 uint32) {
-		C.gl30Uniform4ui(glc.context, C.GLint(location), C.GLuint(v0), C.GLuint(v1), C.GLuint(v2), C.GLuint(v3))
+		defer glc.trace("Uniform4ui")
+		C.gl20Uniform4ui(glc.context, C.GLint(location), C.GLuint(v0), C.GLuint(v1), C.GLuint(v2), C.GLuint(v3))
 	}
 
 	glc.Uniform1fv = func(location int32, count int32, value *float32) {
-		C.gl30Uniform1fv(glc.context, C.GLint(location), C.GLsizei(count), (*C.GLfloat)(unsafe.Pointer(value)))
+		defer glc.trace("Uniform1fv")
+		C.gl20Uniform1fv(glc.context, C.GLint(location), C.GLsizei(count), (*C.GLfloat)(unsafe.Pointer(value)))
 	}
 
 	glc.Uniform2fv = func(location int32, count int32, value *float32) {
-		C.gl30Uniform2fv(glc.context, C.GLint(location), C.GLsizei(count), (*C.GLfloat)(unsafe.Pointer(value)))
+		defer glc.trace("Uniform2fv")
+		C.gl20Uniform2fv(glc.context, C.GLint(location), C.GLsizei(count), (*C.GLfloat)(unsafe.Pointer(value)))
 	}
 
 	glc.Uniform3fv = func(location int32, count int32, value *float32) {
-		C.gl30Uniform3fv(glc.context, C.GLint(location), C.GLsizei(count), (*C.GLfloat)(unsafe.Pointer(value)))
+		defer glc.trace("Uniform3fv")
+		C.gl20Uniform3fv(glc.context, C.GLint(location), C.GLsizei(count), (*C.GLfloat)(unsafe.Pointer(value)))
 	}
 
 	glc.Uniform4fv = func(location int32, count int32, value *float32) {
-		C.gl30Uniform4fv(glc.context, C.GLint(location), C.GLsizei(count), (*C.GLfloat)(unsafe.Pointer(value)))
+		defer glc.trace("Uniform4fv")
+		C.gl20Uniform4fv(glc.context, C.GLint(location), C.GLsizei(count), (*C.GLfloat)(unsafe.Pointer(value)))
 	}
 
 	glc.Uniform1iv = func(location int32, count int32, value *int32) {
-		C.gl30Uniform1iv(glc.context, C.GLint(location), C.GLsizei(count), (*C.GLint)(unsafe.Pointer(value)))
+		defer glc.trace("Uniform1iv")
+		C.gl20Uniform1iv(glc.context, C.GLint(location), C.GLsizei(count), (*C.GLint)(unsafe.Pointer(value)))
 	}
 
 	glc.Uniform2iv = func(location int32, count int32, value *int32) {
-		C.gl30Uniform2iv(glc.context, C.GLint(location), C.GLsizei(count), (*C.GLint)(unsafe.Pointer(value)))
+		defer glc.trace("Uniform2iv")
+		C.gl20Uniform2iv(glc.context, C.GLint(location), C.GLsizei(count), (*C.GLint)(unsafe.Pointer(value)))
 	}
 
 	glc.Uniform3iv = func(location int32, count int32, value *int32) {
-		C.gl30Uniform3iv(glc.context, C.GLint(location), C.GLsizei(count), (*C.GLint)(unsafe.Pointer(value)))
+		defer glc.trace("Uniform3iv")
+		C.gl20Uniform3iv(glc.context, C.GLint(location), C.GLsizei(count), (*C.GLint)(unsafe.Pointer(value)))
 	}
 
 	glc.Uniform4iv = func(location int32, count int32, value *int32) {
-		C.gl30Uniform4iv(glc.context, C.GLint(location), C.GLsizei(count), (*C.GLint)(unsafe.Pointer(value)))
+		defer glc.trace("Uniform4iv")
+		C.gl20Uniform4iv(glc.context, C.GLint(location), C.GLsizei(count), (*C.GLint)(unsafe.Pointer(value)))
 	}
 
 	glc.Uniform1uiv = func(location int32, count int32, value *uint32) {
-		C.gl30Uniform1uiv(glc.context, C.GLint(location), C.GLsizei(count), (*C.GLuint)(unsafe.Pointer(value)))
+		defer glc.trace("Uniform1uiv")
+		C.gl20Uniform1uiv(glc.context, C.GLint(location), C.GLsizei(count), (*C.GLuint)(unsafe.Pointer(value)))
 	}
 
 	glc.Uniform2uiv = func(location int32, count int32, value *uint32) {
-		C.gl30Uniform2uiv(glc.context, C.GLint(location), C.GLsizei(count), (*C.GLuint)(unsafe.Pointer(value)))
+		defer glc.trace("Uniform2uiv")
+		C.gl20Uniform2uiv(glc.context, C.GLint(location), C.GLsizei(count), (*C.GLuint)(unsafe.Pointer(value)))
 	}
 
 	glc.Uniform3uiv = func(location int32, count int32, value *uint32) {
-		C.gl30Uniform3uiv(glc.context, C.GLint(location), C.GLsizei(count), (*C.GLuint)(unsafe.Pointer(value)))
+		defer glc.trace("Uniform3uiv")
+		C.gl20Uniform3uiv(glc.context, C.GLint(location), C.GLsizei(count), (*C.GLuint)(unsafe.Pointer(value)))
 	}
 
 	glc.Uniform4uiv = func(location int32, count int32, value *uint32) {
-		C.gl30Uniform4uiv(glc.context, C.GLint(location), C.GLsizei(count), (*C.GLuint)(unsafe.Pointer(value)))
+		defer glc.trace("Uniform4uiv")
+		C.gl20Uniform4uiv(glc.context, C.GLint(location), C.GLsizei(count), (*C.GLuint)(unsafe.Pointer(value)))
 	}
 
 	glc.UseProgram = func(program uint32) {
-		C.gl30UseProgram(glc.context, C.GLuint(program))
+		defer glc.trace("UseProgram")
+		C.gl20UseProgram(glc.context, C.GLuint(program))
 	}
 
 	glc.ValidateProgram = func(program uint32) {
-		C.gl30ValidateProgram(glc.context, C.GLuint(program))
+		defer glc.trace("ValidateProgram")
+		C.gl20ValidateProgram(glc.context, C.GLuint(program))
 	}
 
 	glc.VertexAttribPointer = func(index uint32, size int32, Type uint32, normalized bool, stride int32, pointer unsafe.Pointer) {
-		C.gl30VertexAttribPointer(glc.context, C.GLuint(index), C.GLint(size), C.GLenum(Type), boolToGL(normalized), C.GLsizei(stride), pointer)
+		defer glc.trace("VertexAttribPointer")
+		C.gl20VertexAttribPointer(glc.context, C.GLuint(index), C.GLint(size), C.GLenum(Type), boolToGL(normalized), C.GLsizei(stride), pointer)
 	}
 
 	glc.VertexAttrib1f = func(index uint32, v0 float32) {
-		C.gl30VertexAttrib1f(glc.context, C.GLuint(index), C.GLfloat(v0))
+		defer glc.trace("VertexAttrib1f")
+		C.gl20VertexAttrib1f(glc.context, C.GLuint(index), C.GLfloat(v0))
 	}
 
 	glc.VertexAttrib1s = func(index uint32, v0 int16) {
-		C.gl30VertexAttrib1s(glc.context, C.GLuint(index), C.GLshort(v0))
+		defer glc.trace("VertexAttrib1s")
+		C.gl20VertexAttrib1s(glc.context, C.GLuint(index), C.GLshort(v0))
 	}
 
 	glc.VertexAttrib1d = func(index uint32, v0 float64) {
-		C.gl30VertexAttrib1d(glc.context, C.GLuint(index), C.GLdouble(v0))
+		defer glc.trace("VertexAttrib1d")
+		C.gl20VertexAttrib1d(glc.context, C.GLuint(index), C.GLdouble(v0))
 	}
 
 	glc.VertexAttrib2f = func(index uint32, v0, v1 float32) {
-		C.gl30VertexAttrib2f(glc.context, C.GLuint(index), C.GLfloat(v0), C.GLfloat(v1))
+		defer glc.trace("VertexAttrib2f")
+		C.gl20VertexAttrib2f(glc.context, C.GLuint(index), C.GLfloat(v0), C.GLfloat(v1))
 	}
 
 	glc.VertexAttrib2s = func(index uint32, v0, v1 int16) {
-		C.gl30VertexAttrib2s(glc.context, C.GLuint(index), C.GLshort(v0), C.GLshort(v1))
+		defer glc.trace("VertexAttrib2s")
+		C.gl20VertexAttrib2s(glc.context, C.GLuint(index), C.GLshort(v0), C.GLshort(v1))
 	}
 
 	glc.VertexAttrib2d = func(index uint32, v0, v1 float64) {
-		C.gl30VertexAttrib2d(glc.context, C.GLuint(index), C.GLdouble(v0), C.GLdouble(v1))
+		defer glc.trace("VertexAttrib2d")
+		C.gl20VertexAttrib2d(glc.context, C.GLuint(index), C.GLdouble(v0), C.GLdouble(v1))
 	}
 
 	glc.VertexAttrib3f = func(index uint32, v0, v1, v2 float32) {
-		C.gl30VertexAttrib3f(glc.context, C.GLuint(index), C.GLfloat(v0), C.GLfloat(v1), C.GLfloat(v2))
+		defer glc.trace("VertexAttrib3f")
+		C.gl20VertexAttrib3f(glc.context, C.GLuint(index), C.GLfloat(v0), C.GLfloat(v1), C.GLfloat(v2))
 	}
 
 	glc.VertexAttrib3s = func(index uint32, v0, v1, v2 int16) {
-		C.gl30VertexAttrib3s(glc.context, C.GLuint(index), C.GLshort(v0), C.GLshort(v1), C.GLshort(v2))
+		defer glc.trace("VertexAttrib3s")
+		C.gl20VertexAttrib3s(glc.context, C.GLuint(index), C.GLshort(v0), C.GLshort(v1), C.GLshort(v2))
 	}
 
 	glc.VertexAttrib3d = func(index uint32, v0, v1, v2 float64) {
-		C.gl30VertexAttrib3d(glc.context, C.GLuint(index), C.GLdouble(v0), C.GLdouble(v1), C.GLdouble(v2))
+		defer glc.trace("VertexAttrib3d")
+		C.gl20VertexAttrib3d(glc.context, C.GLuint(index), C.GLdouble(v0), C.GLdouble(v1), C.GLdouble(v2))
 	}
 
 	glc.VertexAttrib4f = func(index uint32, v0, v1, v2, v3 float32) {
-		C.gl30VertexAttrib4f(glc.context, C.GLuint(index), C.GLfloat(v0), C.GLfloat(v1), C.GLfloat(v2), C.GLfloat(v3))
+		defer glc.trace("VertexAttrib4f")
+		C.gl20VertexAttrib4f(glc.context, C.GLuint(index), C.GLfloat(v0), C.GLfloat(v1), C.GLfloat(v2), C.GLfloat(v3))
 	}
 
 	glc.VertexAttrib4s = func(index uint32, v0, v1, v2, v3 int16) {
-		C.gl30VertexAttrib4s(glc.context, C.GLuint(index), C.GLshort(v0), C.GLshort(v1), C.GLshort(v2), C.GLshort(v3))
+		defer glc.trace("VertexAttrib4s")
+		C.gl20VertexAttrib4s(glc.context, C.GLuint(index), C.GLshort(v0), C.GLshort(v1), C.GLshort(v2), C.GLshort(v3))
 	}
 
 	glc.VertexAttrib4d = func(index uint32, v0, v1, v2, v3 float64) {
-		C.gl30VertexAttrib4d(glc.context, C.GLuint(index), C.GLdouble(v0), C.GLdouble(v1), C.GLdouble(v2), C.GLdouble(v3))
+		defer glc.trace("VertexAttrib4d")
+		C.gl20VertexAttrib4d(glc.context, C.GLuint(index), C.GLdouble(v0), C.GLdouble(v1), C.GLdouble(v2), C.GLdouble(v3))
 	}
 
 	glc.VertexAttrib4Nuv = func(index uint32, v0, v1, v2, v3 uint8) {
-		C.gl30VertexAttrib4Nuv(glc.context, C.GLuint(index), C.GLubyte(v0), C.GLubyte(v1), C.GLubyte(v2), C.GLubyte(v3))
+		defer glc.trace("VertexAttrib4Nuv")
+		C.gl20VertexAttrib4Nuv(glc.context, C.GLuint(index), C.GLubyte(v0), C.GLubyte(v1), C.GLubyte(v2), C.GLubyte(v3))
 	}
 
 	glc.VertexAttrib1fv = func(index uint32, v *float32) {
-		C.gl30VertexAttrib1fv(glc.context, C.GLuint(index), (*C.GLfloat)(unsafe.Pointer(v)))
+		defer glc.trace("VertexAttrib1fv")
+		C.gl20VertexAttrib1fv(glc.context, C.GLuint(index), (*C.GLfloat)(unsafe.Pointer(v)))
 	}
 
 	glc.VertexAttrib1sv = func(index uint32, v *int16) {
-		C.gl30VertexAttrib1sv(glc.context, C.GLuint(index), (*C.GLshort)(unsafe.Pointer(v)))
+		defer glc.trace("VertexAttrib1sv")
+		C.gl20VertexAttrib1sv(glc.context, C.GLuint(index), (*C.GLshort)(unsafe.Pointer(v)))
 	}
 
 	glc.VertexAttrib1dv = func(index uint32, v *float64) {
-		C.gl30VertexAttrib1dv(glc.context, C.GLuint(index), (*C.GLdouble)(unsafe.Pointer(v)))
+		defer glc.trace("VertexAttrib1dv")
+		C.gl20VertexAttrib1dv(glc.context, C.GLuint(index), (*C.GLdouble)(unsafe.Pointer(v)))
 	}
 
 	glc.VertexAttrib2fv = func(index uint32, v *float32) {
-		C.gl30VertexAttrib2fv(glc.context, C.GLuint(index), (*C.GLfloat)(unsafe.Pointer(v)))
+		defer glc.trace("VertexAttrib2fv")
+		C.gl20VertexAttrib2fv(glc.context, C.GLuint(index), (*C.GLfloat)(unsafe.Pointer(v)))
 	}
 
 	glc.VertexAttrib2sv = func(index uint32, v *int16) {
-		C.gl30VertexAttrib2sv(glc.context, C.GLuint(index), (*C.GLshort)(unsafe.Pointer(v)))
+		defer glc.trace("VertexAttrib2sv")
+		C.gl20VertexAttrib2sv(glc.context, C.GLuint(index), (*C.GLshort)(unsafe.Pointer(v)))
 	}
 
 	glc.VertexAttrib2dv = func(index uint32, v *float64) {
-		C.gl30VertexAttrib2dv(glc.context, C.GLuint(index), (*C.GLdouble)(unsafe.Pointer(v)))
+		defer glc.trace("VertexAttrib2dv")
+		C.gl20VertexAttrib2dv(glc.context, C.GLuint(index), (*C.GLdouble)(unsafe.Pointer(v)))
 	}
 
 	glc.VertexAttrib3fv = func(index uint32, v *float32) {
-		C.gl30VertexAttrib3fv(glc.context, C.GLuint(index), (*C.GLfloat)(unsafe.Pointer(v)))
+		defer glc.trace("VertexAttrib3fv")
+		C.gl20VertexAttrib3fv(glc.context, C.GLuint(index), (*C.GLfloat)(unsafe.Pointer(v)))
 	}
 
 	glc.VertexAttrib3sv = func(index uint32, v *int16) {
-		C.gl30VertexAttrib3sv(glc.context, C.GLuint(index), (*C.GLshort)(unsafe.Pointer(v)))
+		defer glc.trace("VertexAttrib3sv")
+		C.gl20VertexAttrib3sv(glc.context, C.GLuint(index), (*C.GLshort)(unsafe.Pointer(v)))
 	}
 
 	glc.VertexAttrib3dv = func(index uint32, v *float64) {
-		C.gl30VertexAttrib3dv(glc.context, C.GLuint(index), (*C.GLdouble)(unsafe.Pointer(v)))
+		defer glc.trace("VertexAttrib3dv")
+		C.gl20VertexAttrib3dv(glc.context, C.GLuint(index), (*C.GLdouble)(unsafe.Pointer(v)))
 	}
 
 	glc.VertexAttrib4fv = func(index uint32, v *float32) {
-		C.gl30VertexAttrib4fv(glc.context, C.GLuint(index), (*C.GLfloat)(unsafe.Pointer(v)))
+		defer glc.trace("VertexAttrib4fv")
+		C.gl20VertexAttrib4fv(glc.context, C.GLuint(index), (*C.GLfloat)(unsafe.Pointer(v)))
 	}
 
 	glc.VertexAttrib4sv = func(index uint32, v *int16) {
-		C.gl30VertexAttrib4sv(glc.context, C.GLuint(index), (*C.GLshort)(unsafe.Pointer(v)))
+		defer glc.trace("VertexAttrib4sv")
+		C.gl20VertexAttrib4sv(glc.context, C.GLuint(index), (*C.GLshort)(unsafe.Pointer(v)))
 	}
 
 	glc.VertexAttrib4dv = func(index uint32, v *float64) {
-		C.gl30VertexAttrib4dv(glc.context, C.GLuint(index), (*C.GLdouble)(unsafe.Pointer(v)))
+		defer glc.trace("VertexAttrib4dv")
+		C.gl20VertexAttrib4dv(glc.context, C.GLuint(index), (*C.GLdouble)(unsafe.Pointer(v)))
 	}
 
 	glc.VertexAttrib4iv = func(index uint32, v *int32) {
-		C.gl30VertexAttrib4iv(glc.context, C.GLuint(index), (*C.GLint)(unsafe.Pointer(v)))
+		defer glc.trace("VertexAttrib4iv")
+		C.gl20VertexAttrib4iv(glc.context, C.GLuint(index), (*C.GLint)(unsafe.Pointer(v)))
 	}
 
 	glc.VertexAttrib4bv = func(index uint32, v *int8) {
-		C.gl30VertexAttrib4bv(glc.context, C.GLuint(index), (*C.GLbyte)(unsafe.Pointer(v)))
+		defer glc.trace("VertexAttrib4bv")
+		C.gl20VertexAttrib4bv(glc.context, C.GLuint(index), (*C.GLbyte)(unsafe.Pointer(v)))
 	}
 
 	glc.VertexAttrib4ubv = func(index uint32, v *uint8) {
-		C.gl30VertexAttrib4ubv(glc.context, C.GLuint(index), (*C.GLubyte)(unsafe.Pointer(v)))
+		defer glc.trace("VertexAttrib4ubv")
+		C.gl20VertexAttrib4ubv(glc.context, C.GLuint(index), (*C.GLubyte)(unsafe.Pointer(v)))
 	}
 
 	glc.VertexAttrib4usv = func(index uint32, v *uint16) {
-		C.gl30VertexAttrib4usv(glc.context, C.GLuint(index), (*C.GLushort)(unsafe.Pointer(v)))
+		defer glc.trace("VertexAttrib4usv")
+		C.gl20VertexAttrib4usv(glc.context, C.GLuint(index), (*C.GLushort)(unsafe.Pointer(v)))
 	}
 
 	glc.VertexAttrib4uiv = func(index uint32, v *uint32) {
-		C.gl30VertexAttrib4uiv(glc.context, C.GLuint(index), (*C.GLuint)(unsafe.Pointer(v)))
+		defer glc.trace("VertexAttrib4uiv")
+		C.gl20VertexAttrib4uiv(glc.context, C.GLuint(index), (*C.GLuint)(unsafe.Pointer(v)))
 	}
 
 	glc.VertexAttrib4Nbv = func(index uint32, v *int8) {
-		C.gl30VertexAttrib4Nbv(glc.context, C.GLuint(index), (*C.GLbyte)(unsafe.Pointer(v)))
+		defer glc.trace("VertexAttrib4Nbv")
+		C.gl20VertexAttrib4Nbv(glc.context, C.GLuint(index), (*C.GLbyte)(unsafe.Pointer(v)))
 	}
 
 	glc.VertexAttrib4Nsv = func(index uint32, v *int16) {
-		C.gl30VertexAttrib4Nsv(glc.context, C.GLuint(index), (*C.GLshort)(unsafe.Pointer(v)))
+		defer glc.trace("VertexAttrib4Nsv")
+		C.gl20VertexAttrib4Nsv(glc.context, C.GLuint(index), (*C.GLshort)(unsafe.Pointer(v)))
 	}
 
 	glc.VertexAttrib4Niv = func(index uint32, v *int32) {
-		C.gl30VertexAttrib4Niv(glc.context, C.GLuint(index), (*C.GLint)(unsafe.Pointer(v)))
+		defer glc.trace("VertexAttrib4Niv")
+		C.gl20VertexAttrib4Niv(glc.context, C.GLuint(index), (*C.GLint)(unsafe.Pointer(v)))
 	}
 
 	glc.VertexAttrib4Nubv = func(index uint32, v *uint8) {
-		C.gl30VertexAttrib4Nubv(glc.context, C.GLuint(index), (*C.GLubyte)(unsafe.Pointer(v)))
+		defer glc.trace("VertexAttrib4Nubv")
+		C.gl20VertexAttrib4Nubv(glc.context, C.GLuint(index), (*C.GLubyte)(unsafe.Pointer(v)))
 	}
 
 	glc.VertexAttrib4Nusv = func(index uint32, v *uint16) {
-		C.gl30VertexAttrib4Nusv(glc.context, C.GLuint(index), (*C.GLushort)(unsafe.Pointer(v)))
+		defer glc.trace("VertexAttrib4Nusv")
+		C.gl20VertexAttrib4Nusv(glc.context, C.GLuint(index), (*C.GLushort)(unsafe.Pointer(v)))
 	}
 
 	glc.VertexAttrib4Nuiv = func(index uint32, v *uint32) {
-		C.gl30VertexAttrib4Nuiv(glc.context, C.GLuint(index), (*C.GLuint)(unsafe.Pointer(v)))
+		defer glc.trace("VertexAttrib4Nuiv")
+		C.gl20VertexAttrib4Nuiv(glc.context, C.GLuint(index), (*C.GLuint)(unsafe.Pointer(v)))
 	}
 
 	glc.UniformMatrix2fv = func(location int32, count int32, transpose bool, value *float32) {
-		C.gl30UniformMatrix2fv(glc.context, C.GLint(location), C.GLsizei(count), boolToGL(transpose), (*C.GLfloat)(unsafe.Pointer(value)))
+		defer glc.trace("UniformMatrix2fv")
+		C.gl20UniformMatrix2fv(glc.context, C.GLint(location), C.GLsizei(count), boolToGL(transpose), (*C.GLfloat)(unsafe.Pointer(value)))
 	}
 
 	glc.UniformMatrix3fv = func(location int32, count int32, transpose bool, value *float32) {
-		C.gl30UniformMatrix3fv(glc.context, C.GLint(location), C.GLsizei(count), boolToGL(transpose), (*C.GLfloat)(unsafe.Pointer(value)))
+		defer glc.trace("UniformMatrix3fv")
+		C.gl20UniformMatrix3fv(glc.context, C.GLint(location), C.GLsizei(count), boolToGL(transpose), (*C.GLfloat)(unsafe.Pointer(value)))
 	}
 
 	glc.UniformMatrix4fv = func(location int32, count int32, transpose bool, value *float32) {
-		C.gl30UniformMatrix4fv(glc.context, C.GLint(location), C.GLsizei(count), boolToGL(transpose), (*C.GLfloat)(unsafe.Pointer(value)))
+		defer glc.trace("UniformMatrix4fv")
+		C.gl20UniformMatrix4fv(glc.context, C.GLint(location), C.GLsizei(count), boolToGL(transpose), (*C.GLfloat)(unsafe.Pointer(value)))
 	}
 
 	glc.UniformMatrix2x3fv = func(location int32, count int32, transpose bool, value *float32) {
-		C.gl30UniformMatrix2x3fv(glc.context, C.GLint(location), C.GLsizei(count), boolToGL(transpose), (*C.GLfloat)(unsafe.Pointer(value)))
+		defer glc.trace("UniformMatrix2x3fv")
+		C.gl20UniformMatrix2x3fv(glc.context, C.GLint(location), C.GLsizei(count), boolToGL(transpose), (*C.GLfloat)(unsafe.Pointer(value)))
 	}
 
 	glc.UniformMatrix3x2fv = func(location int32, count int32, transpose bool, value *float32) {
-		C.gl30UniformMatrix3x2fv(glc.context, C.GLint(location), C.GLsizei(count), boolToGL(transpose), (*C.GLfloat)(unsafe.Pointer(value)))
+		defer glc.trace("UniformMatrix3x2fv")
+		C.gl20UniformMatrix3x2fv(glc.context, C.GLint(location), C.GLsizei(count), boolToGL(transpose), (*C.GLfloat)(unsafe.Pointer(value)))
 	}
 
 	glc.UniformMatrix2x4fv = func(location int32, count int32, transpose bool, value *float32) {
-		C.gl30UniformMatrix2x4fv(glc.context, C.GLint(location), C.GLsizei(count), boolToGL(transpose), (*C.GLfloat)(unsafe.Pointer(value)))
+		defer glc.trace("UniformMatrix2x4fv")
+		C.gl20UniformMatrix2x4fv(glc.context, C.GLint(location), C.GLsizei(count), boolToGL(transpose), (*C.GLfloat)(unsafe.Pointer(value)))
 	}
 
 	glc.UniformMatrix4x2fv = func(location int32, count int32, transpose bool, value *float32) {
-		C.gl30UniformMatrix4x2fv(glc.context, C.GLint(location), C.GLsizei(count), boolToGL(transpose), (*C.GLfloat)(unsafe.Pointer(value)))
+		defer glc.trace("UniformMatrix4x2fv")
+		C.gl20UniformMatrix4x2fv(glc.context, C.GLint(location), C.GLsizei(count), boolToGL(transpose), (*C.GLfloat)(unsafe.Pointer(value)))
 	}
 
 	glc.UniformMatrix3x4fv = func(location int32, count int32, transpose bool, value *float32) {
-		C.gl30UniformMatrix3x4fv(glc.context, C.GLint(location), C.GLsizei(count), boolToGL(transpose), (*C.GLfloat)(unsafe.Pointer(value)))
+		defer glc.trace("UniformMatrix3x4fv")
+		C.gl20UniformMatrix3x4fv(glc.context, C.GLint(location), C.GLsizei(count), boolToGL(transpose), (*C.GLfloat)(unsafe.Pointer(value)))
 	}
 
 	glc.UniformMatrix4x3fv = func(location int32, count int32, transpose bool, value *float32) {
-		C.gl30UniformMatrix4x3fv(glc.context, C.GLint(location), C.GLsizei(count), boolToGL(transpose), (*C.GLfloat)(unsafe.Pointer(value)))
+		defer glc.trace("UniformMatrix4x3fv")
+		C.gl20UniformMatrix4x3fv(glc.context, C.GLint(location), C.GLsizei(count), boolToGL(transpose), (*C.GLfloat)(unsafe.Pointer(value)))
 	}
 
 	if !versionSupported(glc) {

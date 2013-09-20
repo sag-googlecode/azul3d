@@ -1,3 +1,6 @@
+// Copyright 2012 Lightpoke. All rights reserved.
+// This source code is subject to the terms and
+// conditions defined in the "License.txt" file.
 
 #include <stdbool.h>
 #include <stdlib.h>
@@ -2059,6 +2062,22 @@ void gl12Uniform4i(gl12Context* glc, GLint location, GLint v0, GLint v1, GLint v
     return glc->fnUniform4i(location, v0, v1, v2, v3);
 }
 
+void gl12Uniform1ui(gl12Context* glc, GLint location, GLuint v0) {
+    return glc->fnUniform1ui(location, v0);
+}
+
+void gl12Uniform2ui(gl12Context* glc, GLint location, GLuint v0, GLuint v1) {
+    return glc->fnUniform2ui(location, v0, v1);
+}
+
+void gl12Uniform3ui(gl12Context* glc, GLint location, GLuint v0, GLuint v1, GLuint v2) {
+    return glc->fnUniform3ui(location, v0, v1, v2);
+}
+
+void gl12Uniform4ui(gl12Context* glc, GLint location, GLuint v0, GLuint v1, GLuint v2, GLuint v3) {
+    return glc->fnUniform4ui(location, v0, v1, v2, v3);
+}
+
 void gl12Uniform1fv(gl12Context* glc, GLint location, GLsizei count, GLfloat* value) {
     return glc->fnUniform1fv(location, count, value);
 }
@@ -2089,6 +2108,22 @@ void gl12Uniform3iv(gl12Context* glc, GLint location, GLsizei count, GLint* valu
 
 void gl12Uniform4iv(gl12Context* glc, GLint location, GLsizei count, GLint* value) {
     return glc->fnUniform4iv(location, count, value);
+}
+
+void gl12Uniform1uiv(gl12Context* glc, GLint location, GLsizei count, GLuint* value) {
+    return glc->fnUniform1uiv(location, count, value);
+}
+
+void gl12Uniform2uiv(gl12Context* glc, GLint location, GLsizei count, GLuint* value) {
+    return glc->fnUniform2uiv(location, count, value);
+}
+
+void gl12Uniform3uiv(gl12Context* glc, GLint location, GLsizei count, GLuint* value) {
+    return glc->fnUniform3uiv(location, count, value);
+}
+
+void gl12Uniform4uiv(gl12Context* glc, GLint location, GLsizei count, GLuint* value) {
+    return glc->fnUniform4uiv(location, count, value);
 }
 
 void gl12UseProgram(gl12Context* glc, GLuint program) {
@@ -2762,94 +2797,102 @@ gl12Context* gl12NewContext() {
     glc->fnDetachShader = (gl12PDetachShader)gl12GLGetProcAddress("glDetachShader");
     glc->fnEnableVertexAttribArray = (gl12PEnableVertexAttribArray)gl12GLGetProcAddress("glEnableVertexAttribArray");
     glc->fnDisableVertexAttribArray = (gl12PDisableVertexAttribArray)gl12GLGetProcAddress("glDisableVertexAttribArray");
-    glc->fnDrawBuffers = (gl12PDrawBuffers)gl12LibGetProcAddress("glDrawBuffers");
-    glc->fnGetActiveAttrib = (gl12PGetActiveAttrib)gl12LibGetProcAddress("glGetActiveAttrib");
-    glc->fnGetActiveUniform = (gl12PGetActiveUniform)gl12LibGetProcAddress("glGetActiveUniform");
-    glc->fnGetAttachedShaders = (gl12PGetAttachedShaders)gl12LibGetProcAddress("glGetAttachedShaders");
-    glc->fnGetAttribLocation = (gl12PGetAttribLocation)gl12LibGetProcAddress("glGetAttribLocation");
-    glc->fnGetProgramiv = (gl12PGetProgramiv)gl12LibGetProcAddress("glGetProgramiv");
-    glc->fnGetProgramInfoLog = (gl12PGetProgramInfoLog)gl12LibGetProcAddress("glGetProgramInfoLog");
-    glc->fnGetShaderiv = (gl12PGetShaderiv)gl12LibGetProcAddress("glGetShaderiv");
-    glc->fnGetShaderInfoLog = (gl12PGetShaderInfoLog)gl12LibGetProcAddress("glGetShaderInfoLog");
-    glc->fnGetShaderSource = (gl12PGetShaderSource)gl12LibGetProcAddress("glGetShaderSource");
-    glc->fnGetUniformfv = (gl12PGetUniformfv)gl12LibGetProcAddress("glGetUniformfv");
-    glc->fnGetUniformiv = (gl12PGetUniformiv)gl12LibGetProcAddress("glGetUniformiv");
-    glc->fnGetUniformLocation = (gl12PGetUniformLocation)gl12LibGetProcAddress("glGetUniformLocation");
-    glc->fnGetVertexAttribdv = (gl12PGetVertexAttribdv)gl12LibGetProcAddress("glGetVertexAttribdv");
-    glc->fnGetVertexAttribfv = (gl12PGetVertexAttribfv)gl12LibGetProcAddress("glGetVertexAttribfv");
-    glc->fnGetVertexAttribiv = (gl12PGetVertexAttribiv)gl12LibGetProcAddress("glGetVertexAttribiv");
-    glc->fnGetVertexAttribPointerv = (gl12PGetVertexAttribPointerv)gl12LibGetProcAddress("glGetVertexAttribPointerv");
-    glc->fnIsProgram = (gl12PIsProgram)gl12LibGetProcAddress("glIsProgram");
-    glc->fnIsShader = (gl12PIsShader)gl12LibGetProcAddress("glIsShader");
-    glc->fnLinkProgram = (gl12PLinkProgram)gl12LibGetProcAddress("glLinkProgram");
-    glc->fnShaderSource = (gl12PShaderSource)gl12LibGetProcAddress("glShaderSource");
-    glc->fnStencilFuncSeparate = (gl12PStencilFuncSeparate)gl12LibGetProcAddress("glStencilFuncSeparate");
-    glc->fnStencilMaskSeparate = (gl12PStencilMaskSeparate)gl12LibGetProcAddress("glStencilMaskSeparate");
-    glc->fnStencilOpSeparate = (gl12PStencilOpSeparate)gl12LibGetProcAddress("glStencilOpSeparate");
-    glc->fnUniform1f = (gl12PUniform1f)gl12LibGetProcAddress("glUniform1f");
-    glc->fnUniform2f = (gl12PUniform2f)gl12LibGetProcAddress("glUniform2f");
-    glc->fnUniform3f = (gl12PUniform3f)gl12LibGetProcAddress("glUniform3f");
-    glc->fnUniform4f = (gl12PUniform4f)gl12LibGetProcAddress("glUniform4f");
-    glc->fnUniform1i = (gl12PUniform1i)gl12LibGetProcAddress("glUniform1i");
-    glc->fnUniform2i = (gl12PUniform2i)gl12LibGetProcAddress("glUniform2i");
-    glc->fnUniform3i = (gl12PUniform3i)gl12LibGetProcAddress("glUniform3i");
-    glc->fnUniform4i = (gl12PUniform4i)gl12LibGetProcAddress("glUniform4i");
-    glc->fnUniform1fv = (gl12PUniform1fv)gl12LibGetProcAddress("glUniform1fv");
-    glc->fnUniform2fv = (gl12PUniform2fv)gl12LibGetProcAddress("glUniform2fv");
-    glc->fnUniform3fv = (gl12PUniform3fv)gl12LibGetProcAddress("glUniform3fv");
-    glc->fnUniform4fv = (gl12PUniform4fv)gl12LibGetProcAddress("glUniform4fv");
-    glc->fnUniform1iv = (gl12PUniform1iv)gl12LibGetProcAddress("glUniform1iv");
-    glc->fnUniform2iv = (gl12PUniform2iv)gl12LibGetProcAddress("glUniform2iv");
-    glc->fnUniform3iv = (gl12PUniform3iv)gl12LibGetProcAddress("glUniform3iv");
-    glc->fnUniform4iv = (gl12PUniform4iv)gl12LibGetProcAddress("glUniform4iv");
-    glc->fnUseProgram = (gl12PUseProgram)gl12LibGetProcAddress("glUseProgram");
-    glc->fnValidateProgram = (gl12PValidateProgram)gl12LibGetProcAddress("glValidateProgram");
-    glc->fnVertexAttribPointer = (gl12PVertexAttribPointer)gl12LibGetProcAddress("glVertexAttribPointer");
-    glc->fnVertexAttrib1f = (gl12PVertexAttrib1f)gl12LibGetProcAddress("glVertexAttrib1f");
-    glc->fnVertexAttrib1s = (gl12PVertexAttrib1s)gl12LibGetProcAddress("glVertexAttrib1s");
-    glc->fnVertexAttrib1d = (gl12PVertexAttrib1d)gl12LibGetProcAddress("glVertexAttrib1d");
-    glc->fnVertexAttrib2f = (gl12PVertexAttrib2f)gl12LibGetProcAddress("glVertexAttrib2f");
-    glc->fnVertexAttrib2s = (gl12PVertexAttrib2s)gl12LibGetProcAddress("glVertexAttrib2s");
-    glc->fnVertexAttrib2d = (gl12PVertexAttrib2d)gl12LibGetProcAddress("glVertexAttrib2d");
-    glc->fnVertexAttrib3f = (gl12PVertexAttrib3f)gl12LibGetProcAddress("glVertexAttrib3f");
-    glc->fnVertexAttrib3s = (gl12PVertexAttrib3s)gl12LibGetProcAddress("glVertexAttrib3s");
-    glc->fnVertexAttrib3d = (gl12PVertexAttrib3d)gl12LibGetProcAddress("glVertexAttrib3d");
-    glc->fnVertexAttrib4f = (gl12PVertexAttrib4f)gl12LibGetProcAddress("glVertexAttrib4f");
-    glc->fnVertexAttrib4s = (gl12PVertexAttrib4s)gl12LibGetProcAddress("glVertexAttrib4s");
-    glc->fnVertexAttrib4d = (gl12PVertexAttrib4d)gl12LibGetProcAddress("glVertexAttrib4d");
-    glc->fnVertexAttrib4Nuv = (gl12PVertexAttrib4Nuv)gl12LibGetProcAddress("glVertexAttrib4Nuv");
-    glc->fnVertexAttrib1fv = (gl12PVertexAttrib1fv)gl12LibGetProcAddress("glVertexAttrib1fv");
-    glc->fnVertexAttrib1sv = (gl12PVertexAttrib1sv)gl12LibGetProcAddress("glVertexAttrib1sv");
-    glc->fnVertexAttrib1dv = (gl12PVertexAttrib1dv)gl12LibGetProcAddress("glVertexAttrib1dv");
-    glc->fnVertexAttrib2fv = (gl12PVertexAttrib2fv)gl12LibGetProcAddress("glVertexAttrib2fv");
-    glc->fnVertexAttrib2sv = (gl12PVertexAttrib2sv)gl12LibGetProcAddress("glVertexAttrib2sv");
-    glc->fnVertexAttrib2dv = (gl12PVertexAttrib2dv)gl12LibGetProcAddress("glVertexAttrib2dv");
-    glc->fnVertexAttrib3fv = (gl12PVertexAttrib3fv)gl12LibGetProcAddress("glVertexAttrib3fv");
-    glc->fnVertexAttrib3sv = (gl12PVertexAttrib3sv)gl12LibGetProcAddress("glVertexAttrib3sv");
-    glc->fnVertexAttrib3dv = (gl12PVertexAttrib3dv)gl12LibGetProcAddress("glVertexAttrib3dv");
-    glc->fnVertexAttrib4fv = (gl12PVertexAttrib4fv)gl12LibGetProcAddress("glVertexAttrib4fv");
-    glc->fnVertexAttrib4sv = (gl12PVertexAttrib4sv)gl12LibGetProcAddress("glVertexAttrib4sv");
-    glc->fnVertexAttrib4dv = (gl12PVertexAttrib4dv)gl12LibGetProcAddress("glVertexAttrib4dv");
-    glc->fnVertexAttrib4iv = (gl12PVertexAttrib4iv)gl12LibGetProcAddress("glVertexAttrib4iv");
-    glc->fnVertexAttrib4bv = (gl12PVertexAttrib4bv)gl12LibGetProcAddress("glVertexAttrib4bv");
-    glc->fnVertexAttrib4ubv = (gl12PVertexAttrib4ubv)gl12LibGetProcAddress("glVertexAttrib4ubv");
-    glc->fnVertexAttrib4usv = (gl12PVertexAttrib4usv)gl12LibGetProcAddress("glVertexAttrib4usv");
-    glc->fnVertexAttrib4uiv = (gl12PVertexAttrib4uiv)gl12LibGetProcAddress("glVertexAttrib4uiv");
-    glc->fnVertexAttrib4Nbv = (gl12PVertexAttrib4Nbv)gl12LibGetProcAddress("glVertexAttrib4Nbv");
-    glc->fnVertexAttrib4Nsv = (gl12PVertexAttrib4Nsv)gl12LibGetProcAddress("glVertexAttrib4Nsv");
-    glc->fnVertexAttrib4Niv = (gl12PVertexAttrib4Niv)gl12LibGetProcAddress("glVertexAttrib4Niv");
-    glc->fnVertexAttrib4Nubv = (gl12PVertexAttrib4Nubv)gl12LibGetProcAddress("glVertexAttrib4Nubv");
-    glc->fnVertexAttrib4Nusv = (gl12PVertexAttrib4Nusv)gl12LibGetProcAddress("glVertexAttrib4Nusv");
-    glc->fnVertexAttrib4Nuiv = (gl12PVertexAttrib4Nuiv)gl12LibGetProcAddress("glVertexAttrib4Nuiv");
-    glc->fnUniformMatrix2fv = (gl12PUniformMatrix2fv)gl12LibGetProcAddress("glUniformMatrix2fv");
-    glc->fnUniformMatrix3fv = (gl12PUniformMatrix3fv)gl12LibGetProcAddress("glUniformMatrix3fv");
-    glc->fnUniformMatrix4fv = (gl12PUniformMatrix4fv)gl12LibGetProcAddress("glUniformMatrix4fv");
-    glc->fnUniformMatrix2x3fv = (gl12PUniformMatrix2x3fv)gl12LibGetProcAddress("glUniformMatrix2x3fv");
-    glc->fnUniformMatrix3x2fv = (gl12PUniformMatrix3x2fv)gl12LibGetProcAddress("glUniformMatrix3x2fv");
-    glc->fnUniformMatrix2x4fv = (gl12PUniformMatrix2x4fv)gl12LibGetProcAddress("glUniformMatrix2x4fv");
-    glc->fnUniformMatrix4x2fv = (gl12PUniformMatrix4x2fv)gl12LibGetProcAddress("glUniformMatrix4x2fv");
-    glc->fnUniformMatrix3x4fv = (gl12PUniformMatrix3x4fv)gl12LibGetProcAddress("glUniformMatrix3x4fv");
-    glc->fnUniformMatrix4x3fv = (gl12PUniformMatrix4x3fv)gl12LibGetProcAddress("glUniformMatrix4x3fv");
+    glc->fnDrawBuffers = (gl12PDrawBuffers)gl12GLGetProcAddress("glDrawBuffers");
+    glc->fnGetActiveAttrib = (gl12PGetActiveAttrib)gl12GLGetProcAddress("glGetActiveAttrib");
+    glc->fnGetActiveUniform = (gl12PGetActiveUniform)gl12GLGetProcAddress("glGetActiveUniform");
+    glc->fnGetAttachedShaders = (gl12PGetAttachedShaders)gl12GLGetProcAddress("glGetAttachedShaders");
+    glc->fnGetAttribLocation = (gl12PGetAttribLocation)gl12GLGetProcAddress("glGetAttribLocation");
+    glc->fnGetProgramiv = (gl12PGetProgramiv)gl12GLGetProcAddress("glGetProgramiv");
+    glc->fnGetProgramInfoLog = (gl12PGetProgramInfoLog)gl12GLGetProcAddress("glGetProgramInfoLog");
+    glc->fnGetShaderiv = (gl12PGetShaderiv)gl12GLGetProcAddress("glGetShaderiv");
+    glc->fnGetShaderInfoLog = (gl12PGetShaderInfoLog)gl12GLGetProcAddress("glGetShaderInfoLog");
+    glc->fnGetShaderSource = (gl12PGetShaderSource)gl12GLGetProcAddress("glGetShaderSource");
+    glc->fnGetUniformfv = (gl12PGetUniformfv)gl12GLGetProcAddress("glGetUniformfv");
+    glc->fnGetUniformiv = (gl12PGetUniformiv)gl12GLGetProcAddress("glGetUniformiv");
+    glc->fnGetUniformLocation = (gl12PGetUniformLocation)gl12GLGetProcAddress("glGetUniformLocation");
+    glc->fnGetVertexAttribdv = (gl12PGetVertexAttribdv)gl12GLGetProcAddress("glGetVertexAttribdv");
+    glc->fnGetVertexAttribfv = (gl12PGetVertexAttribfv)gl12GLGetProcAddress("glGetVertexAttribfv");
+    glc->fnGetVertexAttribiv = (gl12PGetVertexAttribiv)gl12GLGetProcAddress("glGetVertexAttribiv");
+    glc->fnGetVertexAttribPointerv = (gl12PGetVertexAttribPointerv)gl12GLGetProcAddress("glGetVertexAttribPointerv");
+    glc->fnIsProgram = (gl12PIsProgram)gl12GLGetProcAddress("glIsProgram");
+    glc->fnIsShader = (gl12PIsShader)gl12GLGetProcAddress("glIsShader");
+    glc->fnLinkProgram = (gl12PLinkProgram)gl12GLGetProcAddress("glLinkProgram");
+    glc->fnShaderSource = (gl12PShaderSource)gl12GLGetProcAddress("glShaderSource");
+    glc->fnStencilFuncSeparate = (gl12PStencilFuncSeparate)gl12GLGetProcAddress("glStencilFuncSeparate");
+    glc->fnStencilMaskSeparate = (gl12PStencilMaskSeparate)gl12GLGetProcAddress("glStencilMaskSeparate");
+    glc->fnStencilOpSeparate = (gl12PStencilOpSeparate)gl12GLGetProcAddress("glStencilOpSeparate");
+    glc->fnUniform1f = (gl12PUniform1f)gl12GLGetProcAddress("glUniform1f");
+    glc->fnUniform2f = (gl12PUniform2f)gl12GLGetProcAddress("glUniform2f");
+    glc->fnUniform3f = (gl12PUniform3f)gl12GLGetProcAddress("glUniform3f");
+    glc->fnUniform4f = (gl12PUniform4f)gl12GLGetProcAddress("glUniform4f");
+    glc->fnUniform1i = (gl12PUniform1i)gl12GLGetProcAddress("glUniform1i");
+    glc->fnUniform2i = (gl12PUniform2i)gl12GLGetProcAddress("glUniform2i");
+    glc->fnUniform3i = (gl12PUniform3i)gl12GLGetProcAddress("glUniform3i");
+    glc->fnUniform4i = (gl12PUniform4i)gl12GLGetProcAddress("glUniform4i");
+    glc->fnUniform1ui = (gl12PUniform1ui)gl12GLGetProcAddress("glUniform1ui");
+    glc->fnUniform2ui = (gl12PUniform2ui)gl12GLGetProcAddress("glUniform2ui");
+    glc->fnUniform3ui = (gl12PUniform3ui)gl12GLGetProcAddress("glUniform3ui");
+    glc->fnUniform4ui = (gl12PUniform4ui)gl12GLGetProcAddress("glUniform4ui");
+    glc->fnUniform1fv = (gl12PUniform1fv)gl12GLGetProcAddress("glUniform1fv");
+    glc->fnUniform2fv = (gl12PUniform2fv)gl12GLGetProcAddress("glUniform2fv");
+    glc->fnUniform3fv = (gl12PUniform3fv)gl12GLGetProcAddress("glUniform3fv");
+    glc->fnUniform4fv = (gl12PUniform4fv)gl12GLGetProcAddress("glUniform4fv");
+    glc->fnUniform1iv = (gl12PUniform1iv)gl12GLGetProcAddress("glUniform1iv");
+    glc->fnUniform2iv = (gl12PUniform2iv)gl12GLGetProcAddress("glUniform2iv");
+    glc->fnUniform3iv = (gl12PUniform3iv)gl12GLGetProcAddress("glUniform3iv");
+    glc->fnUniform4iv = (gl12PUniform4iv)gl12GLGetProcAddress("glUniform4iv");
+    glc->fnUniform1uiv = (gl12PUniform1uiv)gl12GLGetProcAddress("glUniform1uiv");
+    glc->fnUniform2uiv = (gl12PUniform2uiv)gl12GLGetProcAddress("glUniform2uiv");
+    glc->fnUniform3uiv = (gl12PUniform3uiv)gl12GLGetProcAddress("glUniform3uiv");
+    glc->fnUniform4uiv = (gl12PUniform4uiv)gl12GLGetProcAddress("glUniform4uiv");
+    glc->fnUseProgram = (gl12PUseProgram)gl12GLGetProcAddress("glUseProgram");
+    glc->fnValidateProgram = (gl12PValidateProgram)gl12GLGetProcAddress("glValidateProgram");
+    glc->fnVertexAttribPointer = (gl12PVertexAttribPointer)gl12GLGetProcAddress("glVertexAttribPointer");
+    glc->fnVertexAttrib1f = (gl12PVertexAttrib1f)gl12GLGetProcAddress("glVertexAttrib1f");
+    glc->fnVertexAttrib1s = (gl12PVertexAttrib1s)gl12GLGetProcAddress("glVertexAttrib1s");
+    glc->fnVertexAttrib1d = (gl12PVertexAttrib1d)gl12GLGetProcAddress("glVertexAttrib1d");
+    glc->fnVertexAttrib2f = (gl12PVertexAttrib2f)gl12GLGetProcAddress("glVertexAttrib2f");
+    glc->fnVertexAttrib2s = (gl12PVertexAttrib2s)gl12GLGetProcAddress("glVertexAttrib2s");
+    glc->fnVertexAttrib2d = (gl12PVertexAttrib2d)gl12GLGetProcAddress("glVertexAttrib2d");
+    glc->fnVertexAttrib3f = (gl12PVertexAttrib3f)gl12GLGetProcAddress("glVertexAttrib3f");
+    glc->fnVertexAttrib3s = (gl12PVertexAttrib3s)gl12GLGetProcAddress("glVertexAttrib3s");
+    glc->fnVertexAttrib3d = (gl12PVertexAttrib3d)gl12GLGetProcAddress("glVertexAttrib3d");
+    glc->fnVertexAttrib4f = (gl12PVertexAttrib4f)gl12GLGetProcAddress("glVertexAttrib4f");
+    glc->fnVertexAttrib4s = (gl12PVertexAttrib4s)gl12GLGetProcAddress("glVertexAttrib4s");
+    glc->fnVertexAttrib4d = (gl12PVertexAttrib4d)gl12GLGetProcAddress("glVertexAttrib4d");
+    glc->fnVertexAttrib4Nuv = (gl12PVertexAttrib4Nuv)gl12GLGetProcAddress("glVertexAttrib4Nuv");
+    glc->fnVertexAttrib1fv = (gl12PVertexAttrib1fv)gl12GLGetProcAddress("glVertexAttrib1fv");
+    glc->fnVertexAttrib1sv = (gl12PVertexAttrib1sv)gl12GLGetProcAddress("glVertexAttrib1sv");
+    glc->fnVertexAttrib1dv = (gl12PVertexAttrib1dv)gl12GLGetProcAddress("glVertexAttrib1dv");
+    glc->fnVertexAttrib2fv = (gl12PVertexAttrib2fv)gl12GLGetProcAddress("glVertexAttrib2fv");
+    glc->fnVertexAttrib2sv = (gl12PVertexAttrib2sv)gl12GLGetProcAddress("glVertexAttrib2sv");
+    glc->fnVertexAttrib2dv = (gl12PVertexAttrib2dv)gl12GLGetProcAddress("glVertexAttrib2dv");
+    glc->fnVertexAttrib3fv = (gl12PVertexAttrib3fv)gl12GLGetProcAddress("glVertexAttrib3fv");
+    glc->fnVertexAttrib3sv = (gl12PVertexAttrib3sv)gl12GLGetProcAddress("glVertexAttrib3sv");
+    glc->fnVertexAttrib3dv = (gl12PVertexAttrib3dv)gl12GLGetProcAddress("glVertexAttrib3dv");
+    glc->fnVertexAttrib4fv = (gl12PVertexAttrib4fv)gl12GLGetProcAddress("glVertexAttrib4fv");
+    glc->fnVertexAttrib4sv = (gl12PVertexAttrib4sv)gl12GLGetProcAddress("glVertexAttrib4sv");
+    glc->fnVertexAttrib4dv = (gl12PVertexAttrib4dv)gl12GLGetProcAddress("glVertexAttrib4dv");
+    glc->fnVertexAttrib4iv = (gl12PVertexAttrib4iv)gl12GLGetProcAddress("glVertexAttrib4iv");
+    glc->fnVertexAttrib4bv = (gl12PVertexAttrib4bv)gl12GLGetProcAddress("glVertexAttrib4bv");
+    glc->fnVertexAttrib4ubv = (gl12PVertexAttrib4ubv)gl12GLGetProcAddress("glVertexAttrib4ubv");
+    glc->fnVertexAttrib4usv = (gl12PVertexAttrib4usv)gl12GLGetProcAddress("glVertexAttrib4usv");
+    glc->fnVertexAttrib4uiv = (gl12PVertexAttrib4uiv)gl12GLGetProcAddress("glVertexAttrib4uiv");
+    glc->fnVertexAttrib4Nbv = (gl12PVertexAttrib4Nbv)gl12GLGetProcAddress("glVertexAttrib4Nbv");
+    glc->fnVertexAttrib4Nsv = (gl12PVertexAttrib4Nsv)gl12GLGetProcAddress("glVertexAttrib4Nsv");
+    glc->fnVertexAttrib4Niv = (gl12PVertexAttrib4Niv)gl12GLGetProcAddress("glVertexAttrib4Niv");
+    glc->fnVertexAttrib4Nubv = (gl12PVertexAttrib4Nubv)gl12GLGetProcAddress("glVertexAttrib4Nubv");
+    glc->fnVertexAttrib4Nusv = (gl12PVertexAttrib4Nusv)gl12GLGetProcAddress("glVertexAttrib4Nusv");
+    glc->fnVertexAttrib4Nuiv = (gl12PVertexAttrib4Nuiv)gl12GLGetProcAddress("glVertexAttrib4Nuiv");
+    glc->fnUniformMatrix2fv = (gl12PUniformMatrix2fv)gl12GLGetProcAddress("glUniformMatrix2fv");
+    glc->fnUniformMatrix3fv = (gl12PUniformMatrix3fv)gl12GLGetProcAddress("glUniformMatrix3fv");
+    glc->fnUniformMatrix4fv = (gl12PUniformMatrix4fv)gl12GLGetProcAddress("glUniformMatrix4fv");
+    glc->fnUniformMatrix2x3fv = (gl12PUniformMatrix2x3fv)gl12GLGetProcAddress("glUniformMatrix2x3fv");
+    glc->fnUniformMatrix3x2fv = (gl12PUniformMatrix3x2fv)gl12GLGetProcAddress("glUniformMatrix3x2fv");
+    glc->fnUniformMatrix2x4fv = (gl12PUniformMatrix2x4fv)gl12GLGetProcAddress("glUniformMatrix2x4fv");
+    glc->fnUniformMatrix4x2fv = (gl12PUniformMatrix4x2fv)gl12GLGetProcAddress("glUniformMatrix4x2fv");
+    glc->fnUniformMatrix3x4fv = (gl12PUniformMatrix3x4fv)gl12GLGetProcAddress("glUniformMatrix3x4fv");
+    glc->fnUniformMatrix4x3fv = (gl12PUniformMatrix4x3fv)gl12GLGetProcAddress("glUniformMatrix4x3fv");
     return glc;
 }
 

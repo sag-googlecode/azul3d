@@ -19,6 +19,11 @@ import (
 	"strings"
 )
 
+const licenseHeader = `// Copyright 2012 Lightpoke. All rights reserved.
+// This source code is subject to the terms and
+// conditions defined in the "License.txt" file.
+`
+
 var specialProcedures = make(map[string]func(ctx, prefix string, p *Procedure) (name, args, body, returns string))
 
 type Procedure struct {
@@ -264,6 +269,9 @@ func Generate(specFilePath, outputDir string) {
 		generateC(packageDir, prefix, version, versionWithoutDots, versionProcs, possibleProcs)
 
 		// Generate (.go) source
-		generateGo(packageDir, prefix, version, versionWithoutDots, versionProcs, possibleProcs, constants)
+		generateGo(packageDir, prefix, version, versionWithoutDots, versionProcs, possibleProcs, constants, false)
+
+		// Generate (.go) traceback source
+		generateGo(packageDir, prefix, version, versionWithoutDots, versionProcs, possibleProcs, constants, true)
 	}
 }

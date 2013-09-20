@@ -1,3 +1,6 @@
+// Copyright 2012 Lightpoke. All rights reserved.
+// This source code is subject to the terms and
+// conditions defined in the "License.txt" file.
 
 #include <stdbool.h>
 #include <stdlib.h>
@@ -1931,6 +1934,390 @@ void gl30DisableVertexAttribArray(gl30Context* glc, GLuint index) {
     return glc->fnDisableVertexAttribArray(index);
 }
 
+void gl30DrawBuffers(gl30Context* glc, GLsizei n, GLenum* bufs) {
+    return glc->fnDrawBuffers(n, bufs);
+}
+
+void gl30GetActiveAttrib(gl30Context* glc, GLuint program, GLuint index, GLsizei bufSize, GLsizei* length, GLint* size, GLenum* type, GLchar* name) {
+    return glc->fnGetActiveAttrib(program, index, bufSize, length, size, type, name);
+}
+
+void gl30GetActiveUniform(gl30Context* glc, GLuint program, GLuint index, GLsizei bufSize, GLsizei* length, GLint* size, GLenum* type, GLchar* name) {
+    return glc->fnGetActiveUniform(program, index, bufSize, length, size, type, name);
+}
+
+void gl30GetAttachedShaders(gl30Context* glc, GLuint program, GLsizei maxCount, GLsizei* count, GLuint* shaders) {
+    return glc->fnGetAttachedShaders(program, maxCount, count, shaders);
+}
+
+GLint gl30GetAttribLocation(gl30Context* glc, GLuint program, GLchar* name) {
+    return glc->fnGetAttribLocation(program, name);
+}
+
+void gl30GetProgramiv(gl30Context* glc, GLuint program, GLenum pname, GLint* params) {
+    return glc->fnGetProgramiv(program, pname, params);
+}
+
+void gl30GetProgramInfoLog(gl30Context* glc, GLuint program, GLsizei maxLength, GLsizei* length, GLchar* infoLog) {
+    return glc->fnGetProgramInfoLog(program, maxLength, length, infoLog);
+}
+
+void gl30GetShaderiv(gl30Context* glc, GLuint program, GLenum pname, GLint* params) {
+    return glc->fnGetShaderiv(program, pname, params);
+}
+
+void gl30GetShaderInfoLog(gl30Context* glc, GLuint shader, GLsizei maxLength, GLsizei* length, GLchar* infoLog) {
+    return glc->fnGetShaderInfoLog(shader, maxLength, length, infoLog);
+}
+
+void gl30GetShaderSource(gl30Context* glc, GLuint shader, GLsizei bufSize, GLsizei* length, GLchar* source) {
+    return glc->fnGetShaderSource(shader, bufSize, length, source);
+}
+
+void gl30GetUniformfv(gl30Context* glc, GLuint program, GLint location, GLfloat* params) {
+    return glc->fnGetUniformfv(program, location, params);
+}
+
+void gl30GetUniformiv(gl30Context* glc, GLuint program, GLint location, GLint* params) {
+    return glc->fnGetUniformiv(program, location, params);
+}
+
+GLint gl30GetUniformLocation(gl30Context* glc, GLuint program, GLchar* name) {
+    return glc->fnGetUniformLocation(program, name);
+}
+
+void gl30GetVertexAttribdv(gl30Context* glc, GLuint index, GLenum pname, GLdouble* params) {
+    return glc->fnGetVertexAttribdv(index, pname, params);
+}
+
+void gl30GetVertexAttribfv(gl30Context* glc, GLuint index, GLenum pname, GLfloat* params) {
+    return glc->fnGetVertexAttribfv(index, pname, params);
+}
+
+void gl30GetVertexAttribiv(gl30Context* glc, GLuint index, GLenum pname, GLint* params) {
+    return glc->fnGetVertexAttribiv(index, pname, params);
+}
+
+void gl30GetVertexAttribPointerv(gl30Context* glc, GLuint index, GLenum pname, GLvoid* pointer) {
+    return glc->fnGetVertexAttribPointerv(index, pname, pointer);
+}
+
+GLboolean gl30IsProgram(gl30Context* glc, GLuint program) {
+    return glc->fnIsProgram(program);
+}
+
+GLboolean gl30IsShader(gl30Context* glc, GLuint shader) {
+    return glc->fnIsShader(shader);
+}
+
+void gl30LinkProgram(gl30Context* glc, GLuint program) {
+    return glc->fnLinkProgram(program);
+}
+
+void gl30ShaderSource(gl30Context* glc, GLuint shader, GLsizei count, GLchar** string, GLint* length) {
+    return glc->fnShaderSource(shader, count, string, length);
+}
+
+void gl30StencilFuncSeparate(gl30Context* glc, GLenum face, GLenum func, GLint ref, GLuint mask) {
+    return glc->fnStencilFuncSeparate(face, func, ref, mask);
+}
+
+void gl30StencilMaskSeparate(gl30Context* glc, GLenum face, GLuint mask) {
+    return glc->fnStencilMaskSeparate(face, mask);
+}
+
+void gl30StencilOpSeparate(gl30Context* glc, GLenum face, GLenum sfail, GLenum dpfail, GLenum dppass) {
+    return glc->fnStencilOpSeparate(face, sfail, dpfail, dppass);
+}
+
+void gl30Uniform1f(gl30Context* glc, GLint location, GLfloat v0) {
+    return glc->fnUniform1f(location, v0);
+}
+
+void gl30Uniform2f(gl30Context* glc, GLint location, GLfloat v0, GLfloat v1) {
+    return glc->fnUniform2f(location, v0, v1);
+}
+
+void gl30Uniform3f(gl30Context* glc, GLint location, GLfloat v0, GLfloat v1, GLfloat v2) {
+    return glc->fnUniform3f(location, v0, v1, v2);
+}
+
+void gl30Uniform4f(gl30Context* glc, GLint location, GLfloat v0, GLfloat v1, GLfloat v2, GLfloat v3) {
+    return glc->fnUniform4f(location, v0, v1, v2, v3);
+}
+
+void gl30Uniform1i(gl30Context* glc, GLint location, GLint v0) {
+    return glc->fnUniform1i(location, v0);
+}
+
+void gl30Uniform2i(gl30Context* glc, GLint location, GLint v0, GLint v1) {
+    return glc->fnUniform2i(location, v0, v1);
+}
+
+void gl30Uniform3i(gl30Context* glc, GLint location, GLint v0, GLint v1, GLint v2) {
+    return glc->fnUniform3i(location, v0, v1, v2);
+}
+
+void gl30Uniform4i(gl30Context* glc, GLint location, GLint v0, GLint v1, GLint v2, GLint v3) {
+    return glc->fnUniform4i(location, v0, v1, v2, v3);
+}
+
+void gl30Uniform1ui(gl30Context* glc, GLint location, GLuint v0) {
+    return glc->fnUniform1ui(location, v0);
+}
+
+void gl30Uniform2ui(gl30Context* glc, GLint location, GLuint v0, GLuint v1) {
+    return glc->fnUniform2ui(location, v0, v1);
+}
+
+void gl30Uniform3ui(gl30Context* glc, GLint location, GLuint v0, GLuint v1, GLuint v2) {
+    return glc->fnUniform3ui(location, v0, v1, v2);
+}
+
+void gl30Uniform4ui(gl30Context* glc, GLint location, GLuint v0, GLuint v1, GLuint v2, GLuint v3) {
+    return glc->fnUniform4ui(location, v0, v1, v2, v3);
+}
+
+void gl30Uniform1fv(gl30Context* glc, GLint location, GLsizei count, GLfloat* value) {
+    return glc->fnUniform1fv(location, count, value);
+}
+
+void gl30Uniform2fv(gl30Context* glc, GLint location, GLsizei count, GLfloat* value) {
+    return glc->fnUniform2fv(location, count, value);
+}
+
+void gl30Uniform3fv(gl30Context* glc, GLint location, GLsizei count, GLfloat* value) {
+    return glc->fnUniform3fv(location, count, value);
+}
+
+void gl30Uniform4fv(gl30Context* glc, GLint location, GLsizei count, GLfloat* value) {
+    return glc->fnUniform4fv(location, count, value);
+}
+
+void gl30Uniform1iv(gl30Context* glc, GLint location, GLsizei count, GLint* value) {
+    return glc->fnUniform1iv(location, count, value);
+}
+
+void gl30Uniform2iv(gl30Context* glc, GLint location, GLsizei count, GLint* value) {
+    return glc->fnUniform2iv(location, count, value);
+}
+
+void gl30Uniform3iv(gl30Context* glc, GLint location, GLsizei count, GLint* value) {
+    return glc->fnUniform3iv(location, count, value);
+}
+
+void gl30Uniform4iv(gl30Context* glc, GLint location, GLsizei count, GLint* value) {
+    return glc->fnUniform4iv(location, count, value);
+}
+
+void gl30Uniform1uiv(gl30Context* glc, GLint location, GLsizei count, GLuint* value) {
+    return glc->fnUniform1uiv(location, count, value);
+}
+
+void gl30Uniform2uiv(gl30Context* glc, GLint location, GLsizei count, GLuint* value) {
+    return glc->fnUniform2uiv(location, count, value);
+}
+
+void gl30Uniform3uiv(gl30Context* glc, GLint location, GLsizei count, GLuint* value) {
+    return glc->fnUniform3uiv(location, count, value);
+}
+
+void gl30Uniform4uiv(gl30Context* glc, GLint location, GLsizei count, GLuint* value) {
+    return glc->fnUniform4uiv(location, count, value);
+}
+
+void gl30UseProgram(gl30Context* glc, GLuint program) {
+    return glc->fnUseProgram(program);
+}
+
+void gl30ValidateProgram(gl30Context* glc, GLuint program) {
+    return glc->fnValidateProgram(program);
+}
+
+void gl30VertexAttribPointer(gl30Context* glc, GLuint index, GLint size, GLenum type, GLboolean normalized, GLsizei stride, GLvoid* pointer) {
+    return glc->fnVertexAttribPointer(index, size, type, normalized, stride, pointer);
+}
+
+void gl30VertexAttrib1f(gl30Context* glc, GLuint index, GLfloat v0) {
+    return glc->fnVertexAttrib1f(index, v0);
+}
+
+void gl30VertexAttrib1s(gl30Context* glc, GLuint index, GLshort v0) {
+    return glc->fnVertexAttrib1s(index, v0);
+}
+
+void gl30VertexAttrib1d(gl30Context* glc, GLuint index, GLdouble v0) {
+    return glc->fnVertexAttrib1d(index, v0);
+}
+
+void gl30VertexAttrib2f(gl30Context* glc, GLuint index, GLfloat v0, GLfloat v1) {
+    return glc->fnVertexAttrib2f(index, v0, v1);
+}
+
+void gl30VertexAttrib2s(gl30Context* glc, GLuint index, GLshort v0, GLshort v1) {
+    return glc->fnVertexAttrib2s(index, v0, v1);
+}
+
+void gl30VertexAttrib2d(gl30Context* glc, GLuint index, GLdouble v0, GLdouble v1) {
+    return glc->fnVertexAttrib2d(index, v0, v1);
+}
+
+void gl30VertexAttrib3f(gl30Context* glc, GLuint index, GLfloat v0, GLfloat v1, GLfloat v2) {
+    return glc->fnVertexAttrib3f(index, v0, v1, v2);
+}
+
+void gl30VertexAttrib3s(gl30Context* glc, GLuint index, GLshort v0, GLshort v1, GLshort v2) {
+    return glc->fnVertexAttrib3s(index, v0, v1, v2);
+}
+
+void gl30VertexAttrib3d(gl30Context* glc, GLuint index, GLdouble v0, GLdouble v1, GLdouble v2) {
+    return glc->fnVertexAttrib3d(index, v0, v1, v2);
+}
+
+void gl30VertexAttrib4f(gl30Context* glc, GLuint index, GLfloat v0, GLfloat v1, GLfloat v2, GLfloat v3) {
+    return glc->fnVertexAttrib4f(index, v0, v1, v2, v3);
+}
+
+void gl30VertexAttrib4s(gl30Context* glc, GLuint index, GLshort v0, GLshort v1, GLshort v2, GLshort v3) {
+    return glc->fnVertexAttrib4s(index, v0, v1, v2, v3);
+}
+
+void gl30VertexAttrib4d(gl30Context* glc, GLuint index, GLdouble v0, GLdouble v1, GLdouble v2, GLdouble v3) {
+    return glc->fnVertexAttrib4d(index, v0, v1, v2, v3);
+}
+
+void gl30VertexAttrib4Nuv(gl30Context* glc, GLuint index, GLubyte v0, GLubyte v1, GLubyte v2, GLubyte v3) {
+    return glc->fnVertexAttrib4Nuv(index, v0, v1, v2, v3);
+}
+
+void gl30VertexAttrib1fv(gl30Context* glc, GLuint index, GLfloat* v) {
+    return glc->fnVertexAttrib1fv(index, v);
+}
+
+void gl30VertexAttrib1sv(gl30Context* glc, GLuint index, GLshort* v) {
+    return glc->fnVertexAttrib1sv(index, v);
+}
+
+void gl30VertexAttrib1dv(gl30Context* glc, GLuint index, GLdouble* v) {
+    return glc->fnVertexAttrib1dv(index, v);
+}
+
+void gl30VertexAttrib2fv(gl30Context* glc, GLuint index, GLfloat* v) {
+    return glc->fnVertexAttrib2fv(index, v);
+}
+
+void gl30VertexAttrib2sv(gl30Context* glc, GLuint index, GLshort* v) {
+    return glc->fnVertexAttrib2sv(index, v);
+}
+
+void gl30VertexAttrib2dv(gl30Context* glc, GLuint index, GLdouble* v) {
+    return glc->fnVertexAttrib2dv(index, v);
+}
+
+void gl30VertexAttrib3fv(gl30Context* glc, GLuint index, GLfloat* v) {
+    return glc->fnVertexAttrib3fv(index, v);
+}
+
+void gl30VertexAttrib3sv(gl30Context* glc, GLuint index, GLshort* v) {
+    return glc->fnVertexAttrib3sv(index, v);
+}
+
+void gl30VertexAttrib3dv(gl30Context* glc, GLuint index, GLdouble* v) {
+    return glc->fnVertexAttrib3dv(index, v);
+}
+
+void gl30VertexAttrib4fv(gl30Context* glc, GLuint index, GLfloat* v) {
+    return glc->fnVertexAttrib4fv(index, v);
+}
+
+void gl30VertexAttrib4sv(gl30Context* glc, GLuint index, GLshort* v) {
+    return glc->fnVertexAttrib4sv(index, v);
+}
+
+void gl30VertexAttrib4dv(gl30Context* glc, GLuint index, GLdouble* v) {
+    return glc->fnVertexAttrib4dv(index, v);
+}
+
+void gl30VertexAttrib4iv(gl30Context* glc, GLuint index, GLint* v) {
+    return glc->fnVertexAttrib4iv(index, v);
+}
+
+void gl30VertexAttrib4bv(gl30Context* glc, GLuint index, GLbyte* v) {
+    return glc->fnVertexAttrib4bv(index, v);
+}
+
+void gl30VertexAttrib4ubv(gl30Context* glc, GLuint index, GLubyte* v) {
+    return glc->fnVertexAttrib4ubv(index, v);
+}
+
+void gl30VertexAttrib4usv(gl30Context* glc, GLuint index, GLushort* v) {
+    return glc->fnVertexAttrib4usv(index, v);
+}
+
+void gl30VertexAttrib4uiv(gl30Context* glc, GLuint index, GLuint* v) {
+    return glc->fnVertexAttrib4uiv(index, v);
+}
+
+void gl30VertexAttrib4Nbv(gl30Context* glc, GLuint index, GLbyte* v) {
+    return glc->fnVertexAttrib4Nbv(index, v);
+}
+
+void gl30VertexAttrib4Nsv(gl30Context* glc, GLuint index, GLshort* v) {
+    return glc->fnVertexAttrib4Nsv(index, v);
+}
+
+void gl30VertexAttrib4Niv(gl30Context* glc, GLuint index, GLint* v) {
+    return glc->fnVertexAttrib4Niv(index, v);
+}
+
+void gl30VertexAttrib4Nubv(gl30Context* glc, GLuint index, GLubyte* v) {
+    return glc->fnVertexAttrib4Nubv(index, v);
+}
+
+void gl30VertexAttrib4Nusv(gl30Context* glc, GLuint index, GLushort* v) {
+    return glc->fnVertexAttrib4Nusv(index, v);
+}
+
+void gl30VertexAttrib4Nuiv(gl30Context* glc, GLuint index, GLuint* v) {
+    return glc->fnVertexAttrib4Nuiv(index, v);
+}
+
+void gl30UniformMatrix2fv(gl30Context* glc, GLint location, GLsizei count, GLboolean transpose, GLfloat* value) {
+    return glc->fnUniformMatrix2fv(location, count, transpose, value);
+}
+
+void gl30UniformMatrix3fv(gl30Context* glc, GLint location, GLsizei count, GLboolean transpose, GLfloat* value) {
+    return glc->fnUniformMatrix3fv(location, count, transpose, value);
+}
+
+void gl30UniformMatrix4fv(gl30Context* glc, GLint location, GLsizei count, GLboolean transpose, GLfloat* value) {
+    return glc->fnUniformMatrix4fv(location, count, transpose, value);
+}
+
+void gl30UniformMatrix2x3fv(gl30Context* glc, GLint location, GLsizei count, GLboolean transpose, GLfloat* value) {
+    return glc->fnUniformMatrix2x3fv(location, count, transpose, value);
+}
+
+void gl30UniformMatrix3x2fv(gl30Context* glc, GLint location, GLsizei count, GLboolean transpose, GLfloat* value) {
+    return glc->fnUniformMatrix3x2fv(location, count, transpose, value);
+}
+
+void gl30UniformMatrix2x4fv(gl30Context* glc, GLint location, GLsizei count, GLboolean transpose, GLfloat* value) {
+    return glc->fnUniformMatrix2x4fv(location, count, transpose, value);
+}
+
+void gl30UniformMatrix4x2fv(gl30Context* glc, GLint location, GLsizei count, GLboolean transpose, GLfloat* value) {
+    return glc->fnUniformMatrix4x2fv(location, count, transpose, value);
+}
+
+void gl30UniformMatrix3x4fv(gl30Context* glc, GLint location, GLsizei count, GLboolean transpose, GLfloat* value) {
+    return glc->fnUniformMatrix3x4fv(location, count, transpose, value);
+}
+
+void gl30UniformMatrix4x3fv(gl30Context* glc, GLint location, GLsizei count, GLboolean transpose, GLfloat* value) {
+    return glc->fnUniformMatrix4x3fv(location, count, transpose, value);
+}
+
 gl30Context* gl30NewContext() {
     gl30Context* glc = calloc(1, sizeof(gl30Context));
 
@@ -2410,6 +2797,102 @@ gl30Context* gl30NewContext() {
     glc->fnDetachShader = (gl30PDetachShader)gl30GLGetProcAddress("glDetachShader");
     glc->fnEnableVertexAttribArray = (gl30PEnableVertexAttribArray)gl30GLGetProcAddress("glEnableVertexAttribArray");
     glc->fnDisableVertexAttribArray = (gl30PDisableVertexAttribArray)gl30GLGetProcAddress("glDisableVertexAttribArray");
+    glc->fnDrawBuffers = (gl30PDrawBuffers)gl30GLGetProcAddress("glDrawBuffers");
+    glc->fnGetActiveAttrib = (gl30PGetActiveAttrib)gl30GLGetProcAddress("glGetActiveAttrib");
+    glc->fnGetActiveUniform = (gl30PGetActiveUniform)gl30GLGetProcAddress("glGetActiveUniform");
+    glc->fnGetAttachedShaders = (gl30PGetAttachedShaders)gl30GLGetProcAddress("glGetAttachedShaders");
+    glc->fnGetAttribLocation = (gl30PGetAttribLocation)gl30GLGetProcAddress("glGetAttribLocation");
+    glc->fnGetProgramiv = (gl30PGetProgramiv)gl30GLGetProcAddress("glGetProgramiv");
+    glc->fnGetProgramInfoLog = (gl30PGetProgramInfoLog)gl30GLGetProcAddress("glGetProgramInfoLog");
+    glc->fnGetShaderiv = (gl30PGetShaderiv)gl30GLGetProcAddress("glGetShaderiv");
+    glc->fnGetShaderInfoLog = (gl30PGetShaderInfoLog)gl30GLGetProcAddress("glGetShaderInfoLog");
+    glc->fnGetShaderSource = (gl30PGetShaderSource)gl30GLGetProcAddress("glGetShaderSource");
+    glc->fnGetUniformfv = (gl30PGetUniformfv)gl30GLGetProcAddress("glGetUniformfv");
+    glc->fnGetUniformiv = (gl30PGetUniformiv)gl30GLGetProcAddress("glGetUniformiv");
+    glc->fnGetUniformLocation = (gl30PGetUniformLocation)gl30GLGetProcAddress("glGetUniformLocation");
+    glc->fnGetVertexAttribdv = (gl30PGetVertexAttribdv)gl30GLGetProcAddress("glGetVertexAttribdv");
+    glc->fnGetVertexAttribfv = (gl30PGetVertexAttribfv)gl30GLGetProcAddress("glGetVertexAttribfv");
+    glc->fnGetVertexAttribiv = (gl30PGetVertexAttribiv)gl30GLGetProcAddress("glGetVertexAttribiv");
+    glc->fnGetVertexAttribPointerv = (gl30PGetVertexAttribPointerv)gl30GLGetProcAddress("glGetVertexAttribPointerv");
+    glc->fnIsProgram = (gl30PIsProgram)gl30GLGetProcAddress("glIsProgram");
+    glc->fnIsShader = (gl30PIsShader)gl30GLGetProcAddress("glIsShader");
+    glc->fnLinkProgram = (gl30PLinkProgram)gl30GLGetProcAddress("glLinkProgram");
+    glc->fnShaderSource = (gl30PShaderSource)gl30GLGetProcAddress("glShaderSource");
+    glc->fnStencilFuncSeparate = (gl30PStencilFuncSeparate)gl30GLGetProcAddress("glStencilFuncSeparate");
+    glc->fnStencilMaskSeparate = (gl30PStencilMaskSeparate)gl30GLGetProcAddress("glStencilMaskSeparate");
+    glc->fnStencilOpSeparate = (gl30PStencilOpSeparate)gl30GLGetProcAddress("glStencilOpSeparate");
+    glc->fnUniform1f = (gl30PUniform1f)gl30GLGetProcAddress("glUniform1f");
+    glc->fnUniform2f = (gl30PUniform2f)gl30GLGetProcAddress("glUniform2f");
+    glc->fnUniform3f = (gl30PUniform3f)gl30GLGetProcAddress("glUniform3f");
+    glc->fnUniform4f = (gl30PUniform4f)gl30GLGetProcAddress("glUniform4f");
+    glc->fnUniform1i = (gl30PUniform1i)gl30GLGetProcAddress("glUniform1i");
+    glc->fnUniform2i = (gl30PUniform2i)gl30GLGetProcAddress("glUniform2i");
+    glc->fnUniform3i = (gl30PUniform3i)gl30GLGetProcAddress("glUniform3i");
+    glc->fnUniform4i = (gl30PUniform4i)gl30GLGetProcAddress("glUniform4i");
+    glc->fnUniform1ui = (gl30PUniform1ui)gl30GLGetProcAddress("glUniform1ui");
+    glc->fnUniform2ui = (gl30PUniform2ui)gl30GLGetProcAddress("glUniform2ui");
+    glc->fnUniform3ui = (gl30PUniform3ui)gl30GLGetProcAddress("glUniform3ui");
+    glc->fnUniform4ui = (gl30PUniform4ui)gl30GLGetProcAddress("glUniform4ui");
+    glc->fnUniform1fv = (gl30PUniform1fv)gl30GLGetProcAddress("glUniform1fv");
+    glc->fnUniform2fv = (gl30PUniform2fv)gl30GLGetProcAddress("glUniform2fv");
+    glc->fnUniform3fv = (gl30PUniform3fv)gl30GLGetProcAddress("glUniform3fv");
+    glc->fnUniform4fv = (gl30PUniform4fv)gl30GLGetProcAddress("glUniform4fv");
+    glc->fnUniform1iv = (gl30PUniform1iv)gl30GLGetProcAddress("glUniform1iv");
+    glc->fnUniform2iv = (gl30PUniform2iv)gl30GLGetProcAddress("glUniform2iv");
+    glc->fnUniform3iv = (gl30PUniform3iv)gl30GLGetProcAddress("glUniform3iv");
+    glc->fnUniform4iv = (gl30PUniform4iv)gl30GLGetProcAddress("glUniform4iv");
+    glc->fnUniform1uiv = (gl30PUniform1uiv)gl30GLGetProcAddress("glUniform1uiv");
+    glc->fnUniform2uiv = (gl30PUniform2uiv)gl30GLGetProcAddress("glUniform2uiv");
+    glc->fnUniform3uiv = (gl30PUniform3uiv)gl30GLGetProcAddress("glUniform3uiv");
+    glc->fnUniform4uiv = (gl30PUniform4uiv)gl30GLGetProcAddress("glUniform4uiv");
+    glc->fnUseProgram = (gl30PUseProgram)gl30GLGetProcAddress("glUseProgram");
+    glc->fnValidateProgram = (gl30PValidateProgram)gl30GLGetProcAddress("glValidateProgram");
+    glc->fnVertexAttribPointer = (gl30PVertexAttribPointer)gl30GLGetProcAddress("glVertexAttribPointer");
+    glc->fnVertexAttrib1f = (gl30PVertexAttrib1f)gl30GLGetProcAddress("glVertexAttrib1f");
+    glc->fnVertexAttrib1s = (gl30PVertexAttrib1s)gl30GLGetProcAddress("glVertexAttrib1s");
+    glc->fnVertexAttrib1d = (gl30PVertexAttrib1d)gl30GLGetProcAddress("glVertexAttrib1d");
+    glc->fnVertexAttrib2f = (gl30PVertexAttrib2f)gl30GLGetProcAddress("glVertexAttrib2f");
+    glc->fnVertexAttrib2s = (gl30PVertexAttrib2s)gl30GLGetProcAddress("glVertexAttrib2s");
+    glc->fnVertexAttrib2d = (gl30PVertexAttrib2d)gl30GLGetProcAddress("glVertexAttrib2d");
+    glc->fnVertexAttrib3f = (gl30PVertexAttrib3f)gl30GLGetProcAddress("glVertexAttrib3f");
+    glc->fnVertexAttrib3s = (gl30PVertexAttrib3s)gl30GLGetProcAddress("glVertexAttrib3s");
+    glc->fnVertexAttrib3d = (gl30PVertexAttrib3d)gl30GLGetProcAddress("glVertexAttrib3d");
+    glc->fnVertexAttrib4f = (gl30PVertexAttrib4f)gl30GLGetProcAddress("glVertexAttrib4f");
+    glc->fnVertexAttrib4s = (gl30PVertexAttrib4s)gl30GLGetProcAddress("glVertexAttrib4s");
+    glc->fnVertexAttrib4d = (gl30PVertexAttrib4d)gl30GLGetProcAddress("glVertexAttrib4d");
+    glc->fnVertexAttrib4Nuv = (gl30PVertexAttrib4Nuv)gl30GLGetProcAddress("glVertexAttrib4Nuv");
+    glc->fnVertexAttrib1fv = (gl30PVertexAttrib1fv)gl30GLGetProcAddress("glVertexAttrib1fv");
+    glc->fnVertexAttrib1sv = (gl30PVertexAttrib1sv)gl30GLGetProcAddress("glVertexAttrib1sv");
+    glc->fnVertexAttrib1dv = (gl30PVertexAttrib1dv)gl30GLGetProcAddress("glVertexAttrib1dv");
+    glc->fnVertexAttrib2fv = (gl30PVertexAttrib2fv)gl30GLGetProcAddress("glVertexAttrib2fv");
+    glc->fnVertexAttrib2sv = (gl30PVertexAttrib2sv)gl30GLGetProcAddress("glVertexAttrib2sv");
+    glc->fnVertexAttrib2dv = (gl30PVertexAttrib2dv)gl30GLGetProcAddress("glVertexAttrib2dv");
+    glc->fnVertexAttrib3fv = (gl30PVertexAttrib3fv)gl30GLGetProcAddress("glVertexAttrib3fv");
+    glc->fnVertexAttrib3sv = (gl30PVertexAttrib3sv)gl30GLGetProcAddress("glVertexAttrib3sv");
+    glc->fnVertexAttrib3dv = (gl30PVertexAttrib3dv)gl30GLGetProcAddress("glVertexAttrib3dv");
+    glc->fnVertexAttrib4fv = (gl30PVertexAttrib4fv)gl30GLGetProcAddress("glVertexAttrib4fv");
+    glc->fnVertexAttrib4sv = (gl30PVertexAttrib4sv)gl30GLGetProcAddress("glVertexAttrib4sv");
+    glc->fnVertexAttrib4dv = (gl30PVertexAttrib4dv)gl30GLGetProcAddress("glVertexAttrib4dv");
+    glc->fnVertexAttrib4iv = (gl30PVertexAttrib4iv)gl30GLGetProcAddress("glVertexAttrib4iv");
+    glc->fnVertexAttrib4bv = (gl30PVertexAttrib4bv)gl30GLGetProcAddress("glVertexAttrib4bv");
+    glc->fnVertexAttrib4ubv = (gl30PVertexAttrib4ubv)gl30GLGetProcAddress("glVertexAttrib4ubv");
+    glc->fnVertexAttrib4usv = (gl30PVertexAttrib4usv)gl30GLGetProcAddress("glVertexAttrib4usv");
+    glc->fnVertexAttrib4uiv = (gl30PVertexAttrib4uiv)gl30GLGetProcAddress("glVertexAttrib4uiv");
+    glc->fnVertexAttrib4Nbv = (gl30PVertexAttrib4Nbv)gl30GLGetProcAddress("glVertexAttrib4Nbv");
+    glc->fnVertexAttrib4Nsv = (gl30PVertexAttrib4Nsv)gl30GLGetProcAddress("glVertexAttrib4Nsv");
+    glc->fnVertexAttrib4Niv = (gl30PVertexAttrib4Niv)gl30GLGetProcAddress("glVertexAttrib4Niv");
+    glc->fnVertexAttrib4Nubv = (gl30PVertexAttrib4Nubv)gl30GLGetProcAddress("glVertexAttrib4Nubv");
+    glc->fnVertexAttrib4Nusv = (gl30PVertexAttrib4Nusv)gl30GLGetProcAddress("glVertexAttrib4Nusv");
+    glc->fnVertexAttrib4Nuiv = (gl30PVertexAttrib4Nuiv)gl30GLGetProcAddress("glVertexAttrib4Nuiv");
+    glc->fnUniformMatrix2fv = (gl30PUniformMatrix2fv)gl30GLGetProcAddress("glUniformMatrix2fv");
+    glc->fnUniformMatrix3fv = (gl30PUniformMatrix3fv)gl30GLGetProcAddress("glUniformMatrix3fv");
+    glc->fnUniformMatrix4fv = (gl30PUniformMatrix4fv)gl30GLGetProcAddress("glUniformMatrix4fv");
+    glc->fnUniformMatrix2x3fv = (gl30PUniformMatrix2x3fv)gl30GLGetProcAddress("glUniformMatrix2x3fv");
+    glc->fnUniformMatrix3x2fv = (gl30PUniformMatrix3x2fv)gl30GLGetProcAddress("glUniformMatrix3x2fv");
+    glc->fnUniformMatrix2x4fv = (gl30PUniformMatrix2x4fv)gl30GLGetProcAddress("glUniformMatrix2x4fv");
+    glc->fnUniformMatrix4x2fv = (gl30PUniformMatrix4x2fv)gl30GLGetProcAddress("glUniformMatrix4x2fv");
+    glc->fnUniformMatrix3x4fv = (gl30PUniformMatrix3x4fv)gl30GLGetProcAddress("glUniformMatrix3x4fv");
+    glc->fnUniformMatrix4x3fv = (gl30PUniformMatrix4x3fv)gl30GLGetProcAddress("glUniformMatrix4x3fv");
     return glc;
 }
 

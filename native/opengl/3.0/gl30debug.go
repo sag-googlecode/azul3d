@@ -2,7 +2,7 @@
 // This source code is subject to the terms and
 // conditions defined in the "License.txt" file.
 //
-// +build !opengl_debug
+// +build opengl_debug
 
 // Package 'opengl' implements OpenGL version 3.0
 package opengl
@@ -166,508 +166,6 @@ func (glc *Context) Extension(ext string) bool {
 }
 
 const (
-	FOG_BIT                                                    = 0x00000080
-	OUT_OF_MEMORY                                              = 0x0505
-	FILTER                                                     = 0x829A
-	UNSIGNED_INT_ATOMIC_COUNTER                                = 0x92DB
-	MAX_NUM_COMPATIBLE_SUBROUTINES                             = 0x92F8
-	SAMPLE_PATTERN_EXT                                         = 0x80AC
-	EYE_LINE_SGIS                                              = 0x81F6
-	GEOMETRY_VERTICES_OUT                                      = 0x8916
-	UNSIGNED_NORMALIZED                                        = 0x8C17
-	COLOR_ATTACHMENT11_NV                                      = 0x8CEB
-	UNSIGNED_INT_IMAGE_CUBE_EXT                                = 0x9066
-	SYNC_X11_FENCE_EXT                                         = 0x90E1
-	COMPRESSED_RGBA_ASTC_10x10_KHR                             = 0x93BB
-	COMMAND_BARRIER_BIT                                        = 0x00000040
-	FIXED                                                      = 0x140C
-	SPRITE_SGIX                                                = 0x8148
-	FRAMEBUFFER_ATTACHMENT_RED_SIZE                            = 0x8212
-	OP_CLAMP_EXT                                               = 0x878E
-	UNSIGNALED_APPLE                                           = 0x9118
-	PROJECTION_STACK_DEPTH                                     = 0x0BA4
-	GL_2PASS_0_EXT                                             = 0x80A2
-	TEXTURE_LOD_BIAS_R_SGIX                                    = 0x8190
-	SLIM8U_SGIX                                                = 0x831D
-	DEPTH_STENCIL_OES                                          = 0x84F9
-	ATOMIC_COUNTER_BUFFER_REFERENCED_BY_TESS_EVALUATION_SHADER = 0x92C9
-	POLYGON_OFFSET_FACTOR                                      = 0x8038
-	DEBUG_SOURCE_THIRD_PARTY                                   = 0x8249
-	CURRENT_RASTER_SECONDARY_COLOR                             = 0x845F
-	TEXTURE_RANGE_POINTER_APPLE                                = 0x85B8
-	CIRCULAR_CW_ARC_TO_NV                                      = 0xFA
-	DEBUG_CALLBACK_USER_PARAM_ARB                              = 0x8245
-	COLOR_COMPONENTS                                           = 0x8283
-	CURRENT_RASTER_TEXTURE_COORDS                              = 0x0B06
-	MAP2_GRID_DOMAIN                                           = 0x0DD2
-	PIXEL_SUBSAMPLE_4444_SGIX                                  = 0x85A2
-	FOG_COORDINATE_ARRAY_POINTER                               = 0x8456
-	AVERAGE_HP                                                 = 0x8160
-	TEXTURE_MAG_SIZE_NV                                        = 0x871F
-	BUFFER_ACCESS_OES                                          = 0x88BB
-	FRAMEBUFFER_DEFAULT_SAMPLES                                = 0x9313
-	SCISSOR_TEST                                               = 0x0C11
-	TEXTURE_BLUE_SIZE                                          = 0x805E
-	GENERATE_MIPMAP_SGIS                                       = 0x8191
-	SOURCE3_ALPHA_NV                                           = 0x858B
-	INT16_VEC3_NV                                              = 0x8FE6
-	EDGE_FLAG_ARRAY_POINTER_EXT                                = 0x8093
-	SAMPLES_EXT                                                = 0x80A9
-	INTERNALFORMAT_STENCIL_TYPE                                = 0x827D
-	SECONDARY_COLOR_ARRAY_TYPE                                 = 0x845B
-	DRAW_BUFFER15_NV                                           = 0x8834
-	MATRIX23_ARB                                               = 0x88D7
-	SAMPLER_3D_OES                                             = 0x8B5F
-	FRAGMENT_SHADER_DERIVATIVE_HINT_OES                        = 0x8B8B
-	TEXTURE_BUFFER_FORMAT_EXT                                  = 0x8C2E
-	DRAW_FRAMEBUFFER_NV                                        = 0x8CA9
-	ALPHA16I_EXT                                               = 0x8D8A
-	MAX_COMBINED_SHADER_STORAGE_BLOCKS                         = 0x90DC
-	FRAMEBUFFER_DEFAULT_HEIGHT                                 = 0x9311
-	RESAMPLE_REPLICATE_SGIX                                    = 0x842E
-	MAX_GEOMETRY_IMAGE_UNIFORMS                                = 0x90CD
-	TEXTURE7_ARB                                               = 0x84C7
-	VARIABLE_F_NV                                              = 0x8528
-	SHADER_STORAGE_BUFFER_OFFSET_ALIGNMENT                     = 0x90DF
-	VERTEX_ATTRIB_ARRAY7_NV                                    = 0x8657
-	DSDT8_MAG8_INTENSITY8_NV                                   = 0x870B
-	MAX_PROGRAM_TEMPORARIES_ARB                                = 0x88A5
-	PROXY_TEXTURE_2D_ARRAY_EXT                                 = 0x8C1B
-	READ_FRAMEBUFFER_BINDING_NV                                = 0x8CAA
-	POINT_SMOOTH                                               = 0x0B10
-	INDEX_ARRAY_TYPE_EXT                                       = 0x8085
-	OUTPUT_TEXTURE_COORD18_EXT                                 = 0x87AF
-	DUAL_LUMINANCE4_SGIS                                       = 0x8114
-	OPERAND0_RGB_ARB                                           = 0x8590
-	VERTEX_STREAM1_ATI                                         = 0x876D
-	MAX_BINDABLE_UNIFORM_SIZE_EXT                              = 0x8DED
-	FONT_HEIGHT_BIT_NV                                         = 0x00800000
-	DEBUG_SEVERITY_HIGH                                        = 0x9146
-	CONVOLUTION_FILTER_SCALE_EXT                               = 0x8014
-	GL_422_AVERAGE_EXT                                         = 0x80CE
-	QUERY_WAIT_NV                                              = 0x8E13
-	TEXTURE_BINDING_CUBE_MAP_ARRAY                             = 0x900A
-	COMPRESSED_RGBA_PVRTC_4BPPV2_IMG                           = 0x9138
-	MAX_SPARSE_ARRAY_TEXTURE_LAYERS                            = 0x919A
-	SCISSOR_BOX                                                = 0x0C10
-	POST_CONVOLUTION_RED_BIAS                                  = 0x8020
-	FRAGMENT_TEXTURE                                           = 0x829F
-	TEXTURE16_ARB                                              = 0x84D0
-	DRAW_BUFFER15                                              = 0x8834
-	CURRENT_MATRIX_INDEX_ARB                                   = 0x8845
-	BUFFER_USAGE                                               = 0x8765
-	BUFFER_MAPPED                                              = 0x88BC
-	MATRIX0_ARB                                                = 0x88C0
-	PROGRAM_OBJECT_ARB                                         = 0x8B40
-	POINT_SIZE_RANGE                                           = 0x0B12
-	TEXTURE_MATERIAL_FACE_EXT                                  = 0x8351
-	FRAGMENT_COLOR_MATERIAL_SGIX                               = 0x8401
-	COMPRESSED_TEXTURE_FORMATS                                 = 0x86A3
-	MAX_PROGRAM_PATCH_ATTRIBS_NV                               = 0x86D8
-	SAMPLER_CUBE                                               = 0x8B60
-	COLOR_ARRAY_SIZE_EXT                                       = 0x8081
-	OP_MULTIPLY_MATRIX_EXT                                     = 0x8798
-	POST_COLOR_MATRIX_GREEN_BIAS_SGI                           = 0x80B9
-	MAX_COMPUTE_ATOMIC_COUNTER_BUFFERS                         = 0x8264
-	BACK_SECONDARY_COLOR_NV                                    = 0x8C78
-	COLOR_ATTACHMENT2_NV                                       = 0x8CE2
-	QUADRATIC_ATTENUATION                                      = 0x1209
-	RGB5_A1                                                    = 0x8057
-	SAMPLE_ALPHA_TO_MASK_SGIS                                  = 0x809E
-	COMBINE_ALPHA_ARB                                          = 0x8572
-	CURRENT_MATRIX_ARB                                         = 0x8641
-	TRACE_PIXELS_BIT_MESA                                      = 0x0010
-	REG_15_ATI                                                 = 0x8930
-	ATOMIC_COUNTER_BUFFER_INDEX                                = 0x9301
-	TEXTURE_BINDING_CUBE_MAP                                   = 0x8514
-	TRACE_ERRORS_BIT_MESA                                      = 0x0020
-	MATRIX8_ARB                                                = 0x88C8
-	SRGB_EXT                                                   = 0x8C40
-	CLIENT_PIXEL_STORE_BIT                                     = 0x00000001
-	RGBA4_OES                                                  = 0x8056
-	COLOR_ARRAY_EXT                                            = 0x8076
-	SAMPLE_MASK_INVERT_EXT                                     = 0x80AB
-	STREAM_READ_ARB                                            = 0x88E1
-	SECONDARY_COLOR_ARRAY_SIZE                                 = 0x845A
-	REFLECTION_MAP_OES                                         = 0x8512
-	TEXTURE_INDEX_SIZE_EXT                                     = 0x80ED
-	PERTURB_EXT                                                = 0x85AE
-	BUMP_ENVMAP_ATI                                            = 0x877B
-	ALPHA8                                                     = 0x803C
-	PIXEL_TRANSFORM_2D_MATRIX_EXT                              = 0x8338
-	SPARE0_NV                                                  = 0x852E
-	OBJECT_BUFFER_USAGE_ATI                                    = 0x8765
-	TEXTURE_COORD_ARRAY_STRIDE_EXT                             = 0x808A
-	UNKNOWN_CONTEXT_RESET_ARB                                  = 0x8255
-	REGISTER_COMBINERS_NV                                      = 0x8522
-	NEGATE_BIT_ATI                                             = 0x00000004
-	COMPRESSED_LUMINANCE_LATC1_EXT                             = 0x8C70
-	UNIFORM_BLOCK                                              = 0x92E2
-	ONE_MINUS_CONSTANT_COLOR                                   = 0x8002
-	ATTRIB_ARRAY_STRIDE_NV                                     = 0x8624
-	IMAGE_CUBE                                                 = 0x9050
-	LUMINANCE16                                                = 0x8042
-	VIEWPORT_INDEX_PROVOKING_VERTEX                            = 0x825F
-	TEXTURE_RANGE_LENGTH_APPLE                                 = 0x85B7
-	POINT_SIZE_ARRAY_BUFFER_BINDING_OES                        = 0x8B9F
-	INT_IMAGE_CUBE_MAP_ARRAY_EXT                               = 0x905F
-	CONDITION_SATISFIED_APPLE                                  = 0x911C
-	COMPRESSED_RGBA_ASTC_10x5_KHR                              = 0x93B8
-	MODELVIEW_STACK_DEPTH                                      = 0x0BA3
-	SEPARATE_SPECULAR_COLOR                                    = 0x81FA
-	VIEW_CLASS_96_BITS                                         = 0x82C5
-	MAX_RECTANGLE_TEXTURE_SIZE_ARB                             = 0x84F8
-	CON_19_ATI                                                 = 0x8954
-	COLOR_ATTACHMENT7_NV                                       = 0x8CE7
-	PREFER_DOUBLEBUFFER_HINT_PGI                               = 0x1A1F8
-	UNSIGNED_BYTE_3_3_2_EXT                                    = 0x8032
-	POST_COLOR_MATRIX_BLUE_BIAS_SGI                            = 0x80BA
-	DEPTH_COMPONENT24_SGIX                                     = 0x81A6
-	TEXTURE_MAX_CLAMP_T_SGIX                                   = 0x836A
-	TEXTURE10_ARB                                              = 0x84CA
-	PROXY_POST_COLOR_MATRIX_COLOR_TABLE                        = 0x80D5
-	TEXTURE9_ARB                                               = 0x84C9
-	MAP2_VERTEX_ATTRIB10_4_NV                                  = 0x867A
-	OP_EXP_BASE_2_EXT                                          = 0x8791
-	REG_12_ATI                                                 = 0x892D
-	UNSIGNED_INT_SAMPLER_1D_ARRAY                              = 0x8DD6
-	INT_IMAGE_2D_RECT                                          = 0x905A
-	MAX_TESS_EVALUATION_OUTPUT_COMPONENTS                      = 0x8E86
-	TEXTURE18                                                  = 0x84D2
-	DOT3_RGBA_EXT                                              = 0x8741
-	CIRCULAR_CCW_ARC_TO_NV                                     = 0xF8
-	UNSIGNED_INT_8_8_8_8_REV_EXT                               = 0x8367
-	TEXTURE_LUMINANCE_TYPE_ARB                                 = 0x8C14
-	SKIP_COMPONENTS3_NV                                        = -4
-	CURRENT_TEXTURE_COORDS                                     = 0x0B03
-	SRC1_RGB                                                   = 0x8581
-	QUAD_MESH_SUN                                              = 0x8614
-	OFFSET_TEXTURE_SCALE_NV                                    = 0x86E2
-	SIGNED_RGBA8_NV                                            = 0x86FC
-	WRITEONLY_RENDERING_QCOM                                   = 0x8823
-	RENDERBUFFER_BINDING                                       = 0x8CA7
-	RENDERBUFFER_HEIGHT_EXT                                    = 0x8D43
-	RGB8UI                                                     = 0x8D7D
-	PIXEL_BUFFER_BARRIER_BIT_EXT                               = 0x00000080
-	TEXTURE_STENCIL_SIZE                                       = 0x88F1
-	REG_13_ATI                                                 = 0x892E
-	LUMINANCE16_ALPHA16_SNORM                                  = 0x901A
-	TEXTURE_BINDING_1D                                         = 0x8068
-	FOG_COORD_ARRAY_POINTER                                    = 0x8456
-	ALPHA_FLOAT16_ATI                                          = 0x881C
-	DRAW_BUFFER3_ATI                                           = 0x8828
-	FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER_OES                     = 0x8CDB
-	SHADER_STORAGE_BARRIER_BIT                                 = 0x00002000
-	DEBUG_OUTPUT_SYNCHRONOUS                                   = 0x8242
-	VARIABLE_D_NV                                              = 0x8526
-	BUFFER_MAPPED_ARB                                          = 0x88BC
-	COMPRESSED_SRGB_ALPHA_S3TC_DXT1_EXT                        = 0x8C4D
-	MAX_TRANSFORM_FEEDBACK_INTERLEAVED_COMPONENTS_NV           = 0x8C8A
-	TESS_CONTROL_SHADER                                        = 0x8E88
-	COMPRESSED_SRGB8_ALPHA8_ASTC_10x6_KHR                      = 0x93D9
-	POST_CONVOLUTION_COLOR_TABLE_SGI                           = 0x80D1
-	SOURCE2_ALPHA                                              = 0x858A
-	TEXTURE_1D_STACK_BINDING_MESAX                             = 0x875D
-	DEPTH24_STENCIL8_OES                                       = 0x88F0
-	RELEASED_APPLE                                             = 0x8A19
-	SGIS_texture_edge_clamp                                    = 1
-	CONVOLUTION_HEIGHT                                         = 0x8019
-	IMAGE_MAG_FILTER_HP                                        = 0x815C
-	IMAGE_CLASS_10_10_10_2                                     = 0x82C3
-	VERTEX_ATTRIB_ARRAY_UNIFIED_NV                             = 0x8F1E
-	R16                                                        = 0x822A
-	TEXTURE_CUBE_MAP_NEGATIVE_Z                                = 0x851A
-	EXPAND_NORMAL_NV                                           = 0x8538
-	PALETTE8_RGBA8_OES                                         = 0x8B96
-	COLOR_ATTACHMENT0                                          = 0x8CE0
-	PROGRAM_INPUT                                              = 0x92E3
-	REFERENCED_BY_COMPUTE_SHADER                               = 0x930B
-	ALL_SHADER_BITS                                            = 0xFFFFFFFF
-	PIXEL_UNPACK_BUFFER_BINDING_EXT                            = 0x88EF
-	UNSIGNED_INT_SAMPLER_3D_EXT                                = 0x8DD3
-	COMMAND_BARRIER_BIT_EXT                                    = 0x00000040
-	ALPHA_BITS                                                 = 0x0D55
-	DEPTH_COMPONENT32                                          = 0x81A7
-	FRAMEBUFFER                                                = 0x8D40
-	INT_SAMPLER_3D                                             = 0x8DCB
-	ALL_BARRIER_BITS_EXT                                       = 0xFFFFFFFF
-	TRIANGLES                                                  = 0x0004
-	UNSIGNED_BYTE_2_3_3_REV                                    = 0x8362
-	PATH_STENCIL_DEPTH_OFFSET_UNITS_NV                         = 0x90BE
-	ALPHA12                                                    = 0x803D
-	UNSIGNED_SHORT_5_6_5                                       = 0x8363
-	TEXTURE_BLUE_SIZE_EXT                                      = 0x805E
-	SMOOTH_LINE_WIDTH_GRANULARITY                              = 0x0B23
-	VERTEX_STREAM6_ATI                                         = 0x8772
-	DRAW_BUFFER13                                              = 0x8832
-	MAX_DRAW_BUFFERS_NV                                        = 0x8824
-	UNIFORM_BLOCK_NAME_LENGTH                                  = 0x8A41
-	MAX_PROGRAM_OUTPUT_VERTICES_NV                             = 0x8C27
-	POLYGON_STIPPLE                                            = 0x0B42
-	COLOR_EXT                                                  = 0x1800
-	MINMAX                                                     = 0x802E
-	TEXTURE_CONSTANT_DATA_SUNX                                 = 0x81D6
-	SIGNED_RGB8_NV                                             = 0x86FF
-	WEIGHT_ARRAY_BUFFER_BINDING                                = 0x889E
-	CON_6_ATI                                                  = 0x8947
-	TEXTURE_SWIZZLE_RGBA_EXT                                   = 0x8E46
-	DISPATCH_INDIRECT_BUFFER_BINDING                           = 0x90EF
-	TEXTURE_GREEN_SIZE                                         = 0x805D
-	DEPTH_COMPONENT24                                          = 0x81A6
-	PROGRAM_NATIVE_PARAMETERS_ARB                              = 0x88AA
-	FRAGMENT_PROGRAM_CALLBACK_FUNC_MESA                        = 0x8BB2
-	COMPRESSED_RED_RGTC1_EXT                                   = 0x8DBB
-	TEXTURE_COMPARE_MODE_ARB                                   = 0x884C
-	FLOAT_RGB32_NV                                             = 0x8889
-	TRIANGLE_STRIP_ADJACENCY_ARB                               = 0x000D
-	SAMPLE_COVERAGE_ARB                                        = 0x80A0
-	INDEX_WRITEMASK                                            = 0x0C21
-	VERTEX_BINDING_STRIDE                                      = 0x82D8
-	RGBA4_DXT5_S3TC                                            = 0x83A5
-	COMBINER2_NV                                               = 0x8552
-	ONE_MINUS_SRC1_ALPHA                                       = 0x88FB
-	UNSIGNED_INT_IMAGE_2D_RECT                                 = 0x9065
-	CUBIC_CURVE_TO_NV                                          = 0x0C
-	COMPRESSED_RGB_FXT1_3DFX                                   = 0x86B0
-	TEXTURE_BUFFER_DATA_STORE_BINDING_ARB                      = 0x8C2D
-	MIN_MAP_BUFFER_ALIGNMENT                                   = 0x90BC
-	EXT_point_parameters                                       = 1
-	MAP_READ_BIT                                               = 0x0001
-	DSDT8_NV                                                   = 0x8709
-	MAD_ATI                                                    = 0x8968
-	COMPRESSED_SIGNED_LUMINANCE_ALPHA_LATC2_EXT                = 0x8C73
-	INT_SAMPLER_1D_ARRAY                                       = 0x8DCE
-	UNSIGNED_INT16_VEC4_NV                                     = 0x8FF3
-	PATH_END_CAPS_NV                                           = 0x9076
-	OP_FLOOR_EXT                                               = 0x878F
-	MAX_SAMPLES_EXT                                            = 0x8D57
-	MAX_VERTEX_UNIFORM_VECTORS                                 = 0x8DFB
-	TEXTURE_STORAGE_SPARSE_BIT_AMD                             = 0x00000001
-	TEXTURE_MAG_FILTER                                         = 0x2800
-	HISTOGRAM_FORMAT_EXT                                       = 0x8027
-	PALETTE8_R5_G6_B5_OES                                      = 0x8B97
-	ITALIC_BIT_NV                                              = 0x02
-	CLAMP_TO_BORDER_SGIS                                       = 0x812D
-	MAX_COMPUTE_IMAGE_UNIFORMS                                 = 0x91BD
-	PROGRAM_PIPELINE_BINDING_EXT                               = 0x825A
-	GEOMETRY_TEXTURE                                           = 0x829E
-	TEXTURE_COMPRESSED_ARB                                     = 0x86A1
-	SWIZZLE_STRQ_DQ_ATI                                        = 0x897B
-	FLOAT_VEC2                                                 = 0x8B50
-	TRANSFORM_FEEDBACK_BUFFER_BINDING_EXT                      = 0x8C8F
-	NORMAL_ARRAY_TYPE                                          = 0x807E
-	LIGHT4                                                     = 0x4004
-	UNPACK_CONSTANT_DATA_SUNX                                  = 0x81D5
-	PRIMITIVE_RESTART_INDEX_NV                                 = 0x8559
-	MAX_OPTIMIZED_VERTEX_SHADER_INSTRUCTIONS_EXT               = 0x87CA
-	HIGH_FLOAT                                                 = 0x8DF2
-	CURRENT_FOG_COORDINATE_EXT                                 = 0x8453
-	COLOR_ATTACHMENT5_NV                                       = 0x8CE5
-	VIDEO_CAPTURE_SURFACE_ORIGIN_NV                            = 0x903C
-	STENCIL_REF                                                = 0x0B97
-	TEXTURE_COORD_ARRAY_TYPE                                   = 0x8089
-	COMBINER_AB_DOT_PRODUCT_NV                                 = 0x8545
-	MAX_FRAGMENT_PROGRAM_LOCAL_PARAMETERS_NV                   = 0x8868
-	INT_SAMPLER_2D_ARRAY_EXT                                   = 0x8DCF
-	INT8_VEC2_NV                                               = 0x8FE1
-	BLEND_DST_RGB                                              = 0x80C8
-	VIEW_CLASS_S3TC_DXT1_RGB                                   = 0x82CC
-	TEXTURE_COMPARE_FUNC                                       = 0x884D
-	FORCE_BLUE_TO_ONE_NV                                       = 0x8860
-	COMPRESSED_SRGB_ALPHA                                      = 0x8C49
-	LUMINANCE_ALPHA32I_EXT                                     = 0x8D87
-	LAST_VIDEO_CAPTURE_STATUS_NV                               = 0x9027
-	BLEND_EQUATION_RGB_OES                                     = 0x8009
-	POST_CONVOLUTION_GREEN_BIAS                                = 0x8021
-	VERTEX_ARRAY_POINTER_EXT                                   = 0x808E
-	FOG_COORDINATE_ARRAY_TYPE_EXT                              = 0x8454
-	MAP1_VERTEX_ATTRIB5_4_NV                                   = 0x8665
-	HILO8_NV                                                   = 0x885E
-	RENDERBUFFER_HEIGHT_OES                                    = 0x8D43
-	INT_SAMPLER_1D                                             = 0x8DC9
-	PIXEL_TEX_GEN_Q_CEILING_SGIX                               = 0x8184
-	MAP2_VERTEX_ATTRIB14_4_NV                                  = 0x867E
-	DOT3_RGB_ARB                                               = 0x86AE
-	MAX_PROGRAM_LOOP_DEPTH_NV                                  = 0x88F7
-	TEXTURE14                                                  = 0x84CE
-	Z400_BINARY_AMD                                            = 0x8740
-	TEXTURE_DEPTH_SIZE                                         = 0x884A
-	MAP2_INDEX                                                 = 0x0DB1
-	PACK_SKIP_IMAGES                                           = 0x806B
-	FRAGMENT_SHADER_ATI                                        = 0x8920
-	PRIMITIVES_GENERATED_EXT                                   = 0x8C87
-	QUERY_NO_WAIT                                              = 0x8E14
-	SRC_ALPHA_SATURATE                                         = 0x0308
-	TEXTURE_ALPHA_SIZE                                         = 0x805F
-	RG_EXT                                                     = 0x8227
-	COMPRESSED_RGBA_S3TC_DXT5_EXT                              = 0x83F3
-	UNSIGNED_INT_8_24_REV_MESA                                 = 0x8752
-	GLYPH_VERTICAL_BEARING_Y_BIT_NV                            = 0x40
-	NO_ERROR                                                   = 0
-	SHADER_OBJECT_ARB                                          = 0x8B48
-	PERCENTAGE_AMD                                             = 0x8BC3
-	REG_0_ATI                                                  = 0x8921
-	FRAMEBUFFER_UNSUPPORTED_OES                                = 0x8CDD
-	VIDEO_CAPTURE_FRAME_WIDTH_NV                               = 0x9038
-	MAX_DEFORMATION_ORDER_SGIX                                 = 0x8197
-	DEBUG_PRINT_MESA                                           = 0x875A
-	RGBA_INTEGER_EXT                                           = 0x8D99
-	MAX_SHADER_STORAGE_BUFFER_BINDINGS                         = 0x90DD
-	ARRAY_SIZE                                                 = 0x92FB
-	COLOR_ARRAY_LIST_STRIDE_IBM                                = 103082
-	TEXTURE25                                                  = 0x84D9
-	X_EXT                                                      = 0x87D5
-	FRAGMENT_SHADER_ARB                                        = 0x8B30
-	CLIENT_ATTRIB_STACK_DEPTH                                  = 0x0BB1
-	INDEX_MODE                                                 = 0x0C30
-	DEPTH_SCALE                                                = 0x0D1E
-	RGB8_EXT                                                   = 0x8051
-	SCALE_BY_FOUR_NV                                           = 0x853F
-	WRITE_PIXEL_DATA_RANGE_LENGTH_NV                           = 0x887A
-	RENDERBUFFER_GREEN_SIZE_EXT                                = 0x8D51
-	COLOR_ATTACHMENT0_OES                                      = 0x8CE0
-	UNSIGNED_INT_IMAGE_2D_EXT                                  = 0x9063
-	COMPRESSED_SRGB8_ALPHA8_ASTC_10x10_KHR                     = 0x93DB
-	TEXTURE                                                    = 0x1702
-	UNSIGNED_BYTE_2_3_3_REV_EXT                                = 0x8362
-	DISTANCE_ATTENUATION_SGIS                                  = 0x8129
-	CURRENT_WEIGHT_ARB                                         = 0x86A8
-	MODELVIEW29_ARB                                            = 0x873D
-	BUMP_TARGET_ATI                                            = 0x877C
-	QUERY_RESULT                                               = 0x8866
-	RGBA16_SNORM                                               = 0x8F9B
-	INT8_VEC4_NV                                               = 0x8FE3
-	DOUBLE_VEC4_EXT                                            = 0x8FFE
-	DRAW_BUFFER12                                              = 0x8831
-	Z4Y12Z4CB12Z4A12Z4Y12Z4CR12Z4A12_4224_NV                   = 0x9036
-	PATH_DASH_OFFSET_NV                                        = 0x907E
-	SGIS_generate_mipmap                                       = 1
-	COLOR_TABLE_BIAS_SGI                                       = 0x80D7
-	LUMINANCE_ALPHA_FLOAT32_ATI                                = 0x8819
-	COPY_READ_BUFFER_BINDING                                   = 0x8F36
-	FRAMEBUFFER_ATTACHMENT_OBJECT_TYPE_EXT                     = 0x8CD0
-	INTENSITY8UI_EXT                                           = 0x8D7F
-	DOMAIN                                                     = 0x0A02
-	COLOR_ARRAY_COUNT_EXT                                      = 0x8084
-	SINGLE_COLOR                                               = 0x81F9
-	MAX_COMBINED_DIMENSIONS                                    = 0x8282
-	TEXTURE_BLUE_TYPE_ARB                                      = 0x8C12
-	UNSIGNED_INT_IMAGE_BUFFER_EXT                              = 0x9067
-	DUAL_INTENSITY4_SGIS                                       = 0x8118
-	TEXTURE_RECTANGLE_NV                                       = 0x84F5
-	UNIFORM_BUFFER_OFFSET_ALIGNMENT                            = 0x8A34
-	NORMAL_MAP_EXT                                             = 0x8511
-	UNSIGNED_INT16_NV                                          = 0x8FF0
-	COUNT_UP_NV                                                = 0x9088
-	QUAD_INTENSITY8_SGIS                                       = 0x8123
-	PROXY_POST_IMAGE_TRANSFORM_COLOR_TABLE_HP                  = 0x8163
-	YCRCB_SGIX                                                 = 0x8318
-	VERTEX_ATTRIB_ARRAY11_NV                                   = 0x865B
-	TEXTURE_BORDER_VALUES_NV                                   = 0x871A
-	PROXY_TEXTURE_1D_STACK_MESAX                               = 0x875B
-	PN_TRIANGLES_TESSELATION_LEVEL_ATI                         = 0x87F4
-	DYNAMIC_READ_ARB                                           = 0x88E9
-	CON_13_ATI                                                 = 0x894E
-	COLOR_ATTACHMENT0_EXT                                      = 0x8CE0
-	MAP_UNSYNCHRONIZED_BIT_EXT                                 = 0x0020
-	PIXEL_MAP_I_TO_G_SIZE                                      = 0x0CB3
-	BLEND_EQUATION_RGB                                         = 0x8009
-	DUAL_ALPHA4_SGIS                                           = 0x8110
-	PIXEL_TILE_HEIGHT_SGIX                                     = 0x8141
-	WRITE_ONLY_ARB                                             = 0x88B9
-	AFFINE_3D_NV                                               = 0x9094
-	ONE_MINUS_SRC_ALPHA                                        = 0x0303
-	VERTEX_PRECLIP_SGIX                                        = 0x83EE
-	FLOAT_VEC3_ARB                                             = 0x8B51
-	RGBA16I_EXT                                                = 0x8D88
-	DEPTH32F_STENCIL8_NV                                       = 0x8DAC
-	VERTEX_ARRAY_OBJECT_EXT                                    = 0x9154
-	SGIX_pixel_tiles                                           = 1
-	KEEP                                                       = 0x1E00
-	RGB_FLOAT32_ATI                                            = 0x8815
-	POINT_SIZE_MIN_SGIS                                        = 0x8126
-	MVP_MATRIX_EXT                                             = 0x87E3
-	SRGB8_EXT                                                  = 0x8C41
-	BACK_PRIMARY_COLOR_NV                                      = 0x8C77
-	COMPRESSED_RG_RGTC2                                        = 0x8DBD
-	IMAGE_CUBE_MAP_ARRAY_EXT                                   = 0x9054
-	SGIX_instruments                                           = 1
-	CLAMP_TO_BORDER_NV                                         = 0x812D
-	LINE_STRIP_ADJACENCY                                       = 0x000B
-	RGBA_S3TC                                                  = 0x83A2
-	SMOOTH_POINT_SIZE_GRANULARITY                              = 0x0B13
-	TEXTURE_BUFFER_OFFSET_ALIGNMENT                            = 0x919F
-	T2F_IUI_N3F_V2F_EXT                                        = 0x81B3
-	CURRENT_RASTER_NORMAL_SGIX                                 = 0x8406
-	MAP1_BINORMAL_EXT                                          = 0x8446
-	PROXY_TEXTURE_1D_ARRAY_EXT                                 = 0x8C19
-	AUX1                                                       = 0x040A
-	CURRENT_RASTER_POSITION_VALID                              = 0x0B08
-	COLOR_TABLE_ALPHA_SIZE                                     = 0x80DD
-	DEPTH24_STENCIL8                                           = 0x88F0
-	RGBA32UI_EXT                                               = 0x8D70
-	MAT_DIFFUSE_BIT_PGI                                        = 0x00400000
-	TEXTURE_COMPONENTS                                         = 0x1003
-	TEXTURE_COMPARE_FAIL_VALUE_ARB                             = 0x80BF
-	TEXTURE_BASE_LEVEL                                         = 0x813C
-	VARIANT_ARRAY_EXT                                          = 0x87E8
-	PATH_CLIENT_LENGTH_NV                                      = 0x907F
-	MAX_TESS_CONTROL_ATOMIC_COUNTERS                           = 0x92D3
-	RGB16                                                      = 0x8054
-	FULL_SUPPORT                                               = 0x82B7
-	VERTEX_STREAM5_ATI                                         = 0x8771
-	OP_LOG_BASE_2_EXT                                          = 0x8792
-	INDEX_ARRAY_ADDRESS_NV                                     = 0x8F24
-	SPRITE_OBJECT_ALIGNED_SGIX                                 = 0x814D
-	TEXTURE16                                                  = 0x84D0
-	UNSIGNED_INT64_VEC2_NV                                     = 0x8FF5
-	BUFFER_BINDING                                             = 0x9302
-	CMYK_EXT                                                   = 0x800C
-	PIXEL_TILE_GRID_WIDTH_SGIX                                 = 0x8142
-	DEBUG_CATEGORY_OTHER_AMD                                   = 0x9150
-	TEXTURE_LOD_BIAS_EXT                                       = 0x8501
-	TRANSPOSE_AFFINE_2D_NV                                     = 0x9096
-	STENCIL_CLEAR_VALUE                                        = 0x0B91
-	EYE_RADIAL_NV                                              = 0x855B
-	ACTIVE_PROGRAM_EXT                                         = 0x8B8D
-	TEXTURE_2D_MULTISAMPLE                                     = 0x9100
-	DEBUG_LOGGED_MESSAGES_ARB                                  = 0x9145
-	MAP_READ_BIT_EXT                                           = 0x0001
-	ACCUM_CLEAR_VALUE                                          = 0x0B80
-	INDEX_ARRAY_STRIDE_EXT                                     = 0x8086
-	DEBUG_SOURCE_OTHER_ARB                                     = 0x824B
-	READ_PIXEL_DATA_RANGE_LENGTH_NV                            = 0x887B
-	PROXY_TEXTURE_1D_ARRAY                                     = 0x8C19
-	MAX_GEOMETRY_TEXTURE_IMAGE_UNITS_ARB                       = 0x8C29
-	VERTEX_ATTRIB_MAP1_COEFF_APPLE                             = 0x8A03
-	SAMPLER_2D_ARRAY_EXT                                       = 0x8DC1
-	VIDEO_COLOR_CONVERSION_MATRIX_NV                           = 0x9029
-	MAP_WRITE_BIT_EXT                                          = 0x0002
-	R                                                          = 0x2002
-	UNSIGNED_SHORT_4_4_4_4                                     = 0x8033
-	INT_SAMPLER_CUBE_EXT                                       = 0x8DCC
-	UNSIGNED_INT_10_10_10_2_OES                                = 0x8DF6
-	VERTICAL_LINE_TO_NV                                        = 0x08
-	TEXTURE_DEFORMATION_BIT_SGIX                               = 0x00000001
-	SELECT                                                     = 0x1C02
-	TEXTURE_PRIORITY_EXT                                       = 0x8066
-	DEPENDENT_RGB_TEXTURE_CUBE_MAP_NV                          = 0x885A
-	PROGRAM_ERROR_STRING_ARB                                   = 0x8874
-	COMPRESSED_SRGB_S3TC_DXT1_NV                               = 0x8C4C
-	UNIFORM_BUFFER_BINDING_EXT                                 = 0x8DEF
-	TEXTURE_CUBE_MAP_ARRAY                                     = 0x9009
-	SRGB_READ                                                  = 0x8297
-	LUMINANCE16F_ARB                                           = 0x881E
-	REG_2_ATI                                                  = 0x8923
-	INT_10_10_10_2_OES                                         = 0x8DF7
-	OFFSET                                                     = 0x92FC
-	POLYGON_STIPPLE_BIT                                        = 0x00000010
-	STENCIL_EXT                                                = 0x1802
-	WEIGHT_SUM_UNITY_ARB                                       = 0x86A6
-	CON_24_ATI                                                 = 0x8959
-	TEXTURE_WIDTH_QCOM                                         = 0x8BD2
-	RENDERBUFFER_RED_SIZE                                      = 0x8D50
-	RGB32UI_EXT                                                = 0x8D71
 	MAX_CLIPMAP_DEPTH_SGIX                                     = 0x8177
 	FRAMEBUFFER_RENDERABLE_LAYERED                             = 0x828A
 	CURRENT_QUERY_ARB                                          = 0x8865
@@ -5000,6 +4498,508 @@ const (
 	LAYER_NV                                                   = 0x8DAA
 	RENDER_DIRECT_TO_FRAMEBUFFER_QCOM                          = 0x8FB3
 	INT_IMAGE_3D                                               = 0x9059
+	FOG_BIT                                                    = 0x00000080
+	OUT_OF_MEMORY                                              = 0x0505
+	FILTER                                                     = 0x829A
+	UNSIGNED_INT_ATOMIC_COUNTER                                = 0x92DB
+	MAX_NUM_COMPATIBLE_SUBROUTINES                             = 0x92F8
+	SAMPLE_PATTERN_EXT                                         = 0x80AC
+	EYE_LINE_SGIS                                              = 0x81F6
+	GEOMETRY_VERTICES_OUT                                      = 0x8916
+	UNSIGNED_NORMALIZED                                        = 0x8C17
+	COLOR_ATTACHMENT11_NV                                      = 0x8CEB
+	UNSIGNED_INT_IMAGE_CUBE_EXT                                = 0x9066
+	SYNC_X11_FENCE_EXT                                         = 0x90E1
+	COMPRESSED_RGBA_ASTC_10x10_KHR                             = 0x93BB
+	COMMAND_BARRIER_BIT                                        = 0x00000040
+	FIXED                                                      = 0x140C
+	SPRITE_SGIX                                                = 0x8148
+	FRAMEBUFFER_ATTACHMENT_RED_SIZE                            = 0x8212
+	OP_CLAMP_EXT                                               = 0x878E
+	UNSIGNALED_APPLE                                           = 0x9118
+	PROJECTION_STACK_DEPTH                                     = 0x0BA4
+	GL_2PASS_0_EXT                                             = 0x80A2
+	TEXTURE_LOD_BIAS_R_SGIX                                    = 0x8190
+	SLIM8U_SGIX                                                = 0x831D
+	DEPTH_STENCIL_OES                                          = 0x84F9
+	ATOMIC_COUNTER_BUFFER_REFERENCED_BY_TESS_EVALUATION_SHADER = 0x92C9
+	POLYGON_OFFSET_FACTOR                                      = 0x8038
+	DEBUG_SOURCE_THIRD_PARTY                                   = 0x8249
+	CURRENT_RASTER_SECONDARY_COLOR                             = 0x845F
+	TEXTURE_RANGE_POINTER_APPLE                                = 0x85B8
+	CIRCULAR_CW_ARC_TO_NV                                      = 0xFA
+	DEBUG_CALLBACK_USER_PARAM_ARB                              = 0x8245
+	COLOR_COMPONENTS                                           = 0x8283
+	CURRENT_RASTER_TEXTURE_COORDS                              = 0x0B06
+	MAP2_GRID_DOMAIN                                           = 0x0DD2
+	PIXEL_SUBSAMPLE_4444_SGIX                                  = 0x85A2
+	FOG_COORDINATE_ARRAY_POINTER                               = 0x8456
+	AVERAGE_HP                                                 = 0x8160
+	TEXTURE_MAG_SIZE_NV                                        = 0x871F
+	BUFFER_ACCESS_OES                                          = 0x88BB
+	FRAMEBUFFER_DEFAULT_SAMPLES                                = 0x9313
+	SCISSOR_TEST                                               = 0x0C11
+	TEXTURE_BLUE_SIZE                                          = 0x805E
+	GENERATE_MIPMAP_SGIS                                       = 0x8191
+	SOURCE3_ALPHA_NV                                           = 0x858B
+	INT16_VEC3_NV                                              = 0x8FE6
+	EDGE_FLAG_ARRAY_POINTER_EXT                                = 0x8093
+	SAMPLES_EXT                                                = 0x80A9
+	INTERNALFORMAT_STENCIL_TYPE                                = 0x827D
+	SECONDARY_COLOR_ARRAY_TYPE                                 = 0x845B
+	DRAW_BUFFER15_NV                                           = 0x8834
+	MATRIX23_ARB                                               = 0x88D7
+	SAMPLER_3D_OES                                             = 0x8B5F
+	FRAGMENT_SHADER_DERIVATIVE_HINT_OES                        = 0x8B8B
+	TEXTURE_BUFFER_FORMAT_EXT                                  = 0x8C2E
+	DRAW_FRAMEBUFFER_NV                                        = 0x8CA9
+	ALPHA16I_EXT                                               = 0x8D8A
+	MAX_COMBINED_SHADER_STORAGE_BLOCKS                         = 0x90DC
+	FRAMEBUFFER_DEFAULT_HEIGHT                                 = 0x9311
+	RESAMPLE_REPLICATE_SGIX                                    = 0x842E
+	MAX_GEOMETRY_IMAGE_UNIFORMS                                = 0x90CD
+	TEXTURE7_ARB                                               = 0x84C7
+	VARIABLE_F_NV                                              = 0x8528
+	SHADER_STORAGE_BUFFER_OFFSET_ALIGNMENT                     = 0x90DF
+	VERTEX_ATTRIB_ARRAY7_NV                                    = 0x8657
+	DSDT8_MAG8_INTENSITY8_NV                                   = 0x870B
+	MAX_PROGRAM_TEMPORARIES_ARB                                = 0x88A5
+	PROXY_TEXTURE_2D_ARRAY_EXT                                 = 0x8C1B
+	READ_FRAMEBUFFER_BINDING_NV                                = 0x8CAA
+	POINT_SMOOTH                                               = 0x0B10
+	INDEX_ARRAY_TYPE_EXT                                       = 0x8085
+	OUTPUT_TEXTURE_COORD18_EXT                                 = 0x87AF
+	DUAL_LUMINANCE4_SGIS                                       = 0x8114
+	OPERAND0_RGB_ARB                                           = 0x8590
+	VERTEX_STREAM1_ATI                                         = 0x876D
+	MAX_BINDABLE_UNIFORM_SIZE_EXT                              = 0x8DED
+	FONT_HEIGHT_BIT_NV                                         = 0x00800000
+	DEBUG_SEVERITY_HIGH                                        = 0x9146
+	CONVOLUTION_FILTER_SCALE_EXT                               = 0x8014
+	GL_422_AVERAGE_EXT                                         = 0x80CE
+	QUERY_WAIT_NV                                              = 0x8E13
+	TEXTURE_BINDING_CUBE_MAP_ARRAY                             = 0x900A
+	COMPRESSED_RGBA_PVRTC_4BPPV2_IMG                           = 0x9138
+	MAX_SPARSE_ARRAY_TEXTURE_LAYERS                            = 0x919A
+	SCISSOR_BOX                                                = 0x0C10
+	POST_CONVOLUTION_RED_BIAS                                  = 0x8020
+	FRAGMENT_TEXTURE                                           = 0x829F
+	TEXTURE16_ARB                                              = 0x84D0
+	DRAW_BUFFER15                                              = 0x8834
+	CURRENT_MATRIX_INDEX_ARB                                   = 0x8845
+	BUFFER_USAGE                                               = 0x8765
+	BUFFER_MAPPED                                              = 0x88BC
+	MATRIX0_ARB                                                = 0x88C0
+	PROGRAM_OBJECT_ARB                                         = 0x8B40
+	POINT_SIZE_RANGE                                           = 0x0B12
+	TEXTURE_MATERIAL_FACE_EXT                                  = 0x8351
+	FRAGMENT_COLOR_MATERIAL_SGIX                               = 0x8401
+	COMPRESSED_TEXTURE_FORMATS                                 = 0x86A3
+	MAX_PROGRAM_PATCH_ATTRIBS_NV                               = 0x86D8
+	SAMPLER_CUBE                                               = 0x8B60
+	COLOR_ARRAY_SIZE_EXT                                       = 0x8081
+	OP_MULTIPLY_MATRIX_EXT                                     = 0x8798
+	POST_COLOR_MATRIX_GREEN_BIAS_SGI                           = 0x80B9
+	MAX_COMPUTE_ATOMIC_COUNTER_BUFFERS                         = 0x8264
+	BACK_SECONDARY_COLOR_NV                                    = 0x8C78
+	COLOR_ATTACHMENT2_NV                                       = 0x8CE2
+	QUADRATIC_ATTENUATION                                      = 0x1209
+	RGB5_A1                                                    = 0x8057
+	SAMPLE_ALPHA_TO_MASK_SGIS                                  = 0x809E
+	COMBINE_ALPHA_ARB                                          = 0x8572
+	CURRENT_MATRIX_ARB                                         = 0x8641
+	TRACE_PIXELS_BIT_MESA                                      = 0x0010
+	REG_15_ATI                                                 = 0x8930
+	ATOMIC_COUNTER_BUFFER_INDEX                                = 0x9301
+	TEXTURE_BINDING_CUBE_MAP                                   = 0x8514
+	TRACE_ERRORS_BIT_MESA                                      = 0x0020
+	MATRIX8_ARB                                                = 0x88C8
+	SRGB_EXT                                                   = 0x8C40
+	CLIENT_PIXEL_STORE_BIT                                     = 0x00000001
+	RGBA4_OES                                                  = 0x8056
+	COLOR_ARRAY_EXT                                            = 0x8076
+	SAMPLE_MASK_INVERT_EXT                                     = 0x80AB
+	STREAM_READ_ARB                                            = 0x88E1
+	SECONDARY_COLOR_ARRAY_SIZE                                 = 0x845A
+	REFLECTION_MAP_OES                                         = 0x8512
+	TEXTURE_INDEX_SIZE_EXT                                     = 0x80ED
+	PERTURB_EXT                                                = 0x85AE
+	BUMP_ENVMAP_ATI                                            = 0x877B
+	ALPHA8                                                     = 0x803C
+	PIXEL_TRANSFORM_2D_MATRIX_EXT                              = 0x8338
+	SPARE0_NV                                                  = 0x852E
+	OBJECT_BUFFER_USAGE_ATI                                    = 0x8765
+	TEXTURE_COORD_ARRAY_STRIDE_EXT                             = 0x808A
+	UNKNOWN_CONTEXT_RESET_ARB                                  = 0x8255
+	REGISTER_COMBINERS_NV                                      = 0x8522
+	NEGATE_BIT_ATI                                             = 0x00000004
+	COMPRESSED_LUMINANCE_LATC1_EXT                             = 0x8C70
+	UNIFORM_BLOCK                                              = 0x92E2
+	ONE_MINUS_CONSTANT_COLOR                                   = 0x8002
+	ATTRIB_ARRAY_STRIDE_NV                                     = 0x8624
+	IMAGE_CUBE                                                 = 0x9050
+	LUMINANCE16                                                = 0x8042
+	VIEWPORT_INDEX_PROVOKING_VERTEX                            = 0x825F
+	TEXTURE_RANGE_LENGTH_APPLE                                 = 0x85B7
+	POINT_SIZE_ARRAY_BUFFER_BINDING_OES                        = 0x8B9F
+	INT_IMAGE_CUBE_MAP_ARRAY_EXT                               = 0x905F
+	CONDITION_SATISFIED_APPLE                                  = 0x911C
+	COMPRESSED_RGBA_ASTC_10x5_KHR                              = 0x93B8
+	MODELVIEW_STACK_DEPTH                                      = 0x0BA3
+	SEPARATE_SPECULAR_COLOR                                    = 0x81FA
+	VIEW_CLASS_96_BITS                                         = 0x82C5
+	MAX_RECTANGLE_TEXTURE_SIZE_ARB                             = 0x84F8
+	CON_19_ATI                                                 = 0x8954
+	COLOR_ATTACHMENT7_NV                                       = 0x8CE7
+	PREFER_DOUBLEBUFFER_HINT_PGI                               = 0x1A1F8
+	UNSIGNED_BYTE_3_3_2_EXT                                    = 0x8032
+	POST_COLOR_MATRIX_BLUE_BIAS_SGI                            = 0x80BA
+	DEPTH_COMPONENT24_SGIX                                     = 0x81A6
+	TEXTURE_MAX_CLAMP_T_SGIX                                   = 0x836A
+	TEXTURE10_ARB                                              = 0x84CA
+	PROXY_POST_COLOR_MATRIX_COLOR_TABLE                        = 0x80D5
+	TEXTURE9_ARB                                               = 0x84C9
+	MAP2_VERTEX_ATTRIB10_4_NV                                  = 0x867A
+	OP_EXP_BASE_2_EXT                                          = 0x8791
+	REG_12_ATI                                                 = 0x892D
+	UNSIGNED_INT_SAMPLER_1D_ARRAY                              = 0x8DD6
+	INT_IMAGE_2D_RECT                                          = 0x905A
+	MAX_TESS_EVALUATION_OUTPUT_COMPONENTS                      = 0x8E86
+	TEXTURE18                                                  = 0x84D2
+	DOT3_RGBA_EXT                                              = 0x8741
+	CIRCULAR_CCW_ARC_TO_NV                                     = 0xF8
+	UNSIGNED_INT_8_8_8_8_REV_EXT                               = 0x8367
+	TEXTURE_LUMINANCE_TYPE_ARB                                 = 0x8C14
+	SKIP_COMPONENTS3_NV                                        = -4
+	CURRENT_TEXTURE_COORDS                                     = 0x0B03
+	SRC1_RGB                                                   = 0x8581
+	QUAD_MESH_SUN                                              = 0x8614
+	OFFSET_TEXTURE_SCALE_NV                                    = 0x86E2
+	SIGNED_RGBA8_NV                                            = 0x86FC
+	WRITEONLY_RENDERING_QCOM                                   = 0x8823
+	RENDERBUFFER_BINDING                                       = 0x8CA7
+	RENDERBUFFER_HEIGHT_EXT                                    = 0x8D43
+	RGB8UI                                                     = 0x8D7D
+	PIXEL_BUFFER_BARRIER_BIT_EXT                               = 0x00000080
+	TEXTURE_STENCIL_SIZE                                       = 0x88F1
+	REG_13_ATI                                                 = 0x892E
+	LUMINANCE16_ALPHA16_SNORM                                  = 0x901A
+	TEXTURE_BINDING_1D                                         = 0x8068
+	FOG_COORD_ARRAY_POINTER                                    = 0x8456
+	ALPHA_FLOAT16_ATI                                          = 0x881C
+	DRAW_BUFFER3_ATI                                           = 0x8828
+	FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER_OES                     = 0x8CDB
+	SHADER_STORAGE_BARRIER_BIT                                 = 0x00002000
+	DEBUG_OUTPUT_SYNCHRONOUS                                   = 0x8242
+	VARIABLE_D_NV                                              = 0x8526
+	BUFFER_MAPPED_ARB                                          = 0x88BC
+	COMPRESSED_SRGB_ALPHA_S3TC_DXT1_EXT                        = 0x8C4D
+	MAX_TRANSFORM_FEEDBACK_INTERLEAVED_COMPONENTS_NV           = 0x8C8A
+	TESS_CONTROL_SHADER                                        = 0x8E88
+	COMPRESSED_SRGB8_ALPHA8_ASTC_10x6_KHR                      = 0x93D9
+	POST_CONVOLUTION_COLOR_TABLE_SGI                           = 0x80D1
+	SOURCE2_ALPHA                                              = 0x858A
+	TEXTURE_1D_STACK_BINDING_MESAX                             = 0x875D
+	DEPTH24_STENCIL8_OES                                       = 0x88F0
+	RELEASED_APPLE                                             = 0x8A19
+	SGIS_texture_edge_clamp                                    = 1
+	CONVOLUTION_HEIGHT                                         = 0x8019
+	IMAGE_MAG_FILTER_HP                                        = 0x815C
+	IMAGE_CLASS_10_10_10_2                                     = 0x82C3
+	VERTEX_ATTRIB_ARRAY_UNIFIED_NV                             = 0x8F1E
+	R16                                                        = 0x822A
+	TEXTURE_CUBE_MAP_NEGATIVE_Z                                = 0x851A
+	EXPAND_NORMAL_NV                                           = 0x8538
+	PALETTE8_RGBA8_OES                                         = 0x8B96
+	COLOR_ATTACHMENT0                                          = 0x8CE0
+	PROGRAM_INPUT                                              = 0x92E3
+	REFERENCED_BY_COMPUTE_SHADER                               = 0x930B
+	ALL_SHADER_BITS                                            = 0xFFFFFFFF
+	PIXEL_UNPACK_BUFFER_BINDING_EXT                            = 0x88EF
+	UNSIGNED_INT_SAMPLER_3D_EXT                                = 0x8DD3
+	COMMAND_BARRIER_BIT_EXT                                    = 0x00000040
+	ALPHA_BITS                                                 = 0x0D55
+	DEPTH_COMPONENT32                                          = 0x81A7
+	FRAMEBUFFER                                                = 0x8D40
+	INT_SAMPLER_3D                                             = 0x8DCB
+	ALL_BARRIER_BITS_EXT                                       = 0xFFFFFFFF
+	TRIANGLES                                                  = 0x0004
+	UNSIGNED_BYTE_2_3_3_REV                                    = 0x8362
+	PATH_STENCIL_DEPTH_OFFSET_UNITS_NV                         = 0x90BE
+	ALPHA12                                                    = 0x803D
+	UNSIGNED_SHORT_5_6_5                                       = 0x8363
+	TEXTURE_BLUE_SIZE_EXT                                      = 0x805E
+	SMOOTH_LINE_WIDTH_GRANULARITY                              = 0x0B23
+	VERTEX_STREAM6_ATI                                         = 0x8772
+	DRAW_BUFFER13                                              = 0x8832
+	MAX_DRAW_BUFFERS_NV                                        = 0x8824
+	UNIFORM_BLOCK_NAME_LENGTH                                  = 0x8A41
+	MAX_PROGRAM_OUTPUT_VERTICES_NV                             = 0x8C27
+	POLYGON_STIPPLE                                            = 0x0B42
+	COLOR_EXT                                                  = 0x1800
+	MINMAX                                                     = 0x802E
+	TEXTURE_CONSTANT_DATA_SUNX                                 = 0x81D6
+	SIGNED_RGB8_NV                                             = 0x86FF
+	WEIGHT_ARRAY_BUFFER_BINDING                                = 0x889E
+	CON_6_ATI                                                  = 0x8947
+	TEXTURE_SWIZZLE_RGBA_EXT                                   = 0x8E46
+	DISPATCH_INDIRECT_BUFFER_BINDING                           = 0x90EF
+	TEXTURE_GREEN_SIZE                                         = 0x805D
+	DEPTH_COMPONENT24                                          = 0x81A6
+	PROGRAM_NATIVE_PARAMETERS_ARB                              = 0x88AA
+	FRAGMENT_PROGRAM_CALLBACK_FUNC_MESA                        = 0x8BB2
+	COMPRESSED_RED_RGTC1_EXT                                   = 0x8DBB
+	TEXTURE_COMPARE_MODE_ARB                                   = 0x884C
+	FLOAT_RGB32_NV                                             = 0x8889
+	TRIANGLE_STRIP_ADJACENCY_ARB                               = 0x000D
+	SAMPLE_COVERAGE_ARB                                        = 0x80A0
+	INDEX_WRITEMASK                                            = 0x0C21
+	VERTEX_BINDING_STRIDE                                      = 0x82D8
+	RGBA4_DXT5_S3TC                                            = 0x83A5
+	COMBINER2_NV                                               = 0x8552
+	ONE_MINUS_SRC1_ALPHA                                       = 0x88FB
+	UNSIGNED_INT_IMAGE_2D_RECT                                 = 0x9065
+	CUBIC_CURVE_TO_NV                                          = 0x0C
+	COMPRESSED_RGB_FXT1_3DFX                                   = 0x86B0
+	TEXTURE_BUFFER_DATA_STORE_BINDING_ARB                      = 0x8C2D
+	MIN_MAP_BUFFER_ALIGNMENT                                   = 0x90BC
+	EXT_point_parameters                                       = 1
+	MAP_READ_BIT                                               = 0x0001
+	DSDT8_NV                                                   = 0x8709
+	MAD_ATI                                                    = 0x8968
+	COMPRESSED_SIGNED_LUMINANCE_ALPHA_LATC2_EXT                = 0x8C73
+	INT_SAMPLER_1D_ARRAY                                       = 0x8DCE
+	UNSIGNED_INT16_VEC4_NV                                     = 0x8FF3
+	PATH_END_CAPS_NV                                           = 0x9076
+	OP_FLOOR_EXT                                               = 0x878F
+	MAX_SAMPLES_EXT                                            = 0x8D57
+	MAX_VERTEX_UNIFORM_VECTORS                                 = 0x8DFB
+	TEXTURE_STORAGE_SPARSE_BIT_AMD                             = 0x00000001
+	TEXTURE_MAG_FILTER                                         = 0x2800
+	HISTOGRAM_FORMAT_EXT                                       = 0x8027
+	PALETTE8_R5_G6_B5_OES                                      = 0x8B97
+	ITALIC_BIT_NV                                              = 0x02
+	CLAMP_TO_BORDER_SGIS                                       = 0x812D
+	MAX_COMPUTE_IMAGE_UNIFORMS                                 = 0x91BD
+	PROGRAM_PIPELINE_BINDING_EXT                               = 0x825A
+	GEOMETRY_TEXTURE                                           = 0x829E
+	TEXTURE_COMPRESSED_ARB                                     = 0x86A1
+	SWIZZLE_STRQ_DQ_ATI                                        = 0x897B
+	FLOAT_VEC2                                                 = 0x8B50
+	TRANSFORM_FEEDBACK_BUFFER_BINDING_EXT                      = 0x8C8F
+	NORMAL_ARRAY_TYPE                                          = 0x807E
+	LIGHT4                                                     = 0x4004
+	UNPACK_CONSTANT_DATA_SUNX                                  = 0x81D5
+	PRIMITIVE_RESTART_INDEX_NV                                 = 0x8559
+	MAX_OPTIMIZED_VERTEX_SHADER_INSTRUCTIONS_EXT               = 0x87CA
+	HIGH_FLOAT                                                 = 0x8DF2
+	CURRENT_FOG_COORDINATE_EXT                                 = 0x8453
+	COLOR_ATTACHMENT5_NV                                       = 0x8CE5
+	VIDEO_CAPTURE_SURFACE_ORIGIN_NV                            = 0x903C
+	STENCIL_REF                                                = 0x0B97
+	TEXTURE_COORD_ARRAY_TYPE                                   = 0x8089
+	COMBINER_AB_DOT_PRODUCT_NV                                 = 0x8545
+	MAX_FRAGMENT_PROGRAM_LOCAL_PARAMETERS_NV                   = 0x8868
+	INT_SAMPLER_2D_ARRAY_EXT                                   = 0x8DCF
+	INT8_VEC2_NV                                               = 0x8FE1
+	BLEND_DST_RGB                                              = 0x80C8
+	VIEW_CLASS_S3TC_DXT1_RGB                                   = 0x82CC
+	TEXTURE_COMPARE_FUNC                                       = 0x884D
+	FORCE_BLUE_TO_ONE_NV                                       = 0x8860
+	COMPRESSED_SRGB_ALPHA                                      = 0x8C49
+	LUMINANCE_ALPHA32I_EXT                                     = 0x8D87
+	LAST_VIDEO_CAPTURE_STATUS_NV                               = 0x9027
+	BLEND_EQUATION_RGB_OES                                     = 0x8009
+	POST_CONVOLUTION_GREEN_BIAS                                = 0x8021
+	VERTEX_ARRAY_POINTER_EXT                                   = 0x808E
+	FOG_COORDINATE_ARRAY_TYPE_EXT                              = 0x8454
+	MAP1_VERTEX_ATTRIB5_4_NV                                   = 0x8665
+	HILO8_NV                                                   = 0x885E
+	RENDERBUFFER_HEIGHT_OES                                    = 0x8D43
+	INT_SAMPLER_1D                                             = 0x8DC9
+	PIXEL_TEX_GEN_Q_CEILING_SGIX                               = 0x8184
+	MAP2_VERTEX_ATTRIB14_4_NV                                  = 0x867E
+	DOT3_RGB_ARB                                               = 0x86AE
+	MAX_PROGRAM_LOOP_DEPTH_NV                                  = 0x88F7
+	TEXTURE14                                                  = 0x84CE
+	Z400_BINARY_AMD                                            = 0x8740
+	TEXTURE_DEPTH_SIZE                                         = 0x884A
+	MAP2_INDEX                                                 = 0x0DB1
+	PACK_SKIP_IMAGES                                           = 0x806B
+	FRAGMENT_SHADER_ATI                                        = 0x8920
+	PRIMITIVES_GENERATED_EXT                                   = 0x8C87
+	QUERY_NO_WAIT                                              = 0x8E14
+	SRC_ALPHA_SATURATE                                         = 0x0308
+	TEXTURE_ALPHA_SIZE                                         = 0x805F
+	RG_EXT                                                     = 0x8227
+	COMPRESSED_RGBA_S3TC_DXT5_EXT                              = 0x83F3
+	UNSIGNED_INT_8_24_REV_MESA                                 = 0x8752
+	GLYPH_VERTICAL_BEARING_Y_BIT_NV                            = 0x40
+	NO_ERROR                                                   = 0
+	SHADER_OBJECT_ARB                                          = 0x8B48
+	PERCENTAGE_AMD                                             = 0x8BC3
+	REG_0_ATI                                                  = 0x8921
+	FRAMEBUFFER_UNSUPPORTED_OES                                = 0x8CDD
+	VIDEO_CAPTURE_FRAME_WIDTH_NV                               = 0x9038
+	MAX_DEFORMATION_ORDER_SGIX                                 = 0x8197
+	DEBUG_PRINT_MESA                                           = 0x875A
+	RGBA_INTEGER_EXT                                           = 0x8D99
+	MAX_SHADER_STORAGE_BUFFER_BINDINGS                         = 0x90DD
+	ARRAY_SIZE                                                 = 0x92FB
+	COLOR_ARRAY_LIST_STRIDE_IBM                                = 103082
+	TEXTURE25                                                  = 0x84D9
+	X_EXT                                                      = 0x87D5
+	FRAGMENT_SHADER_ARB                                        = 0x8B30
+	CLIENT_ATTRIB_STACK_DEPTH                                  = 0x0BB1
+	INDEX_MODE                                                 = 0x0C30
+	DEPTH_SCALE                                                = 0x0D1E
+	RGB8_EXT                                                   = 0x8051
+	SCALE_BY_FOUR_NV                                           = 0x853F
+	WRITE_PIXEL_DATA_RANGE_LENGTH_NV                           = 0x887A
+	RENDERBUFFER_GREEN_SIZE_EXT                                = 0x8D51
+	COLOR_ATTACHMENT0_OES                                      = 0x8CE0
+	UNSIGNED_INT_IMAGE_2D_EXT                                  = 0x9063
+	COMPRESSED_SRGB8_ALPHA8_ASTC_10x10_KHR                     = 0x93DB
+	TEXTURE                                                    = 0x1702
+	UNSIGNED_BYTE_2_3_3_REV_EXT                                = 0x8362
+	DISTANCE_ATTENUATION_SGIS                                  = 0x8129
+	CURRENT_WEIGHT_ARB                                         = 0x86A8
+	MODELVIEW29_ARB                                            = 0x873D
+	BUMP_TARGET_ATI                                            = 0x877C
+	QUERY_RESULT                                               = 0x8866
+	RGBA16_SNORM                                               = 0x8F9B
+	INT8_VEC4_NV                                               = 0x8FE3
+	DOUBLE_VEC4_EXT                                            = 0x8FFE
+	DRAW_BUFFER12                                              = 0x8831
+	Z4Y12Z4CB12Z4A12Z4Y12Z4CR12Z4A12_4224_NV                   = 0x9036
+	PATH_DASH_OFFSET_NV                                        = 0x907E
+	SGIS_generate_mipmap                                       = 1
+	COLOR_TABLE_BIAS_SGI                                       = 0x80D7
+	LUMINANCE_ALPHA_FLOAT32_ATI                                = 0x8819
+	COPY_READ_BUFFER_BINDING                                   = 0x8F36
+	FRAMEBUFFER_ATTACHMENT_OBJECT_TYPE_EXT                     = 0x8CD0
+	INTENSITY8UI_EXT                                           = 0x8D7F
+	DOMAIN                                                     = 0x0A02
+	COLOR_ARRAY_COUNT_EXT                                      = 0x8084
+	SINGLE_COLOR                                               = 0x81F9
+	MAX_COMBINED_DIMENSIONS                                    = 0x8282
+	TEXTURE_BLUE_TYPE_ARB                                      = 0x8C12
+	UNSIGNED_INT_IMAGE_BUFFER_EXT                              = 0x9067
+	DUAL_INTENSITY4_SGIS                                       = 0x8118
+	TEXTURE_RECTANGLE_NV                                       = 0x84F5
+	UNIFORM_BUFFER_OFFSET_ALIGNMENT                            = 0x8A34
+	NORMAL_MAP_EXT                                             = 0x8511
+	UNSIGNED_INT16_NV                                          = 0x8FF0
+	COUNT_UP_NV                                                = 0x9088
+	QUAD_INTENSITY8_SGIS                                       = 0x8123
+	PROXY_POST_IMAGE_TRANSFORM_COLOR_TABLE_HP                  = 0x8163
+	YCRCB_SGIX                                                 = 0x8318
+	VERTEX_ATTRIB_ARRAY11_NV                                   = 0x865B
+	TEXTURE_BORDER_VALUES_NV                                   = 0x871A
+	PROXY_TEXTURE_1D_STACK_MESAX                               = 0x875B
+	PN_TRIANGLES_TESSELATION_LEVEL_ATI                         = 0x87F4
+	DYNAMIC_READ_ARB                                           = 0x88E9
+	CON_13_ATI                                                 = 0x894E
+	COLOR_ATTACHMENT0_EXT                                      = 0x8CE0
+	MAP_UNSYNCHRONIZED_BIT_EXT                                 = 0x0020
+	PIXEL_MAP_I_TO_G_SIZE                                      = 0x0CB3
+	BLEND_EQUATION_RGB                                         = 0x8009
+	DUAL_ALPHA4_SGIS                                           = 0x8110
+	PIXEL_TILE_HEIGHT_SGIX                                     = 0x8141
+	WRITE_ONLY_ARB                                             = 0x88B9
+	AFFINE_3D_NV                                               = 0x9094
+	ONE_MINUS_SRC_ALPHA                                        = 0x0303
+	VERTEX_PRECLIP_SGIX                                        = 0x83EE
+	FLOAT_VEC3_ARB                                             = 0x8B51
+	RGBA16I_EXT                                                = 0x8D88
+	DEPTH32F_STENCIL8_NV                                       = 0x8DAC
+	VERTEX_ARRAY_OBJECT_EXT                                    = 0x9154
+	SGIX_pixel_tiles                                           = 1
+	KEEP                                                       = 0x1E00
+	RGB_FLOAT32_ATI                                            = 0x8815
+	POINT_SIZE_MIN_SGIS                                        = 0x8126
+	MVP_MATRIX_EXT                                             = 0x87E3
+	SRGB8_EXT                                                  = 0x8C41
+	BACK_PRIMARY_COLOR_NV                                      = 0x8C77
+	COMPRESSED_RG_RGTC2                                        = 0x8DBD
+	IMAGE_CUBE_MAP_ARRAY_EXT                                   = 0x9054
+	SGIX_instruments                                           = 1
+	CLAMP_TO_BORDER_NV                                         = 0x812D
+	LINE_STRIP_ADJACENCY                                       = 0x000B
+	RGBA_S3TC                                                  = 0x83A2
+	SMOOTH_POINT_SIZE_GRANULARITY                              = 0x0B13
+	TEXTURE_BUFFER_OFFSET_ALIGNMENT                            = 0x919F
+	T2F_IUI_N3F_V2F_EXT                                        = 0x81B3
+	CURRENT_RASTER_NORMAL_SGIX                                 = 0x8406
+	MAP1_BINORMAL_EXT                                          = 0x8446
+	PROXY_TEXTURE_1D_ARRAY_EXT                                 = 0x8C19
+	AUX1                                                       = 0x040A
+	CURRENT_RASTER_POSITION_VALID                              = 0x0B08
+	COLOR_TABLE_ALPHA_SIZE                                     = 0x80DD
+	DEPTH24_STENCIL8                                           = 0x88F0
+	RGBA32UI_EXT                                               = 0x8D70
+	MAT_DIFFUSE_BIT_PGI                                        = 0x00400000
+	TEXTURE_COMPONENTS                                         = 0x1003
+	TEXTURE_COMPARE_FAIL_VALUE_ARB                             = 0x80BF
+	TEXTURE_BASE_LEVEL                                         = 0x813C
+	VARIANT_ARRAY_EXT                                          = 0x87E8
+	PATH_CLIENT_LENGTH_NV                                      = 0x907F
+	MAX_TESS_CONTROL_ATOMIC_COUNTERS                           = 0x92D3
+	RGB16                                                      = 0x8054
+	FULL_SUPPORT                                               = 0x82B7
+	VERTEX_STREAM5_ATI                                         = 0x8771
+	OP_LOG_BASE_2_EXT                                          = 0x8792
+	INDEX_ARRAY_ADDRESS_NV                                     = 0x8F24
+	SPRITE_OBJECT_ALIGNED_SGIX                                 = 0x814D
+	TEXTURE16                                                  = 0x84D0
+	UNSIGNED_INT64_VEC2_NV                                     = 0x8FF5
+	BUFFER_BINDING                                             = 0x9302
+	CMYK_EXT                                                   = 0x800C
+	PIXEL_TILE_GRID_WIDTH_SGIX                                 = 0x8142
+	DEBUG_CATEGORY_OTHER_AMD                                   = 0x9150
+	TEXTURE_LOD_BIAS_EXT                                       = 0x8501
+	TRANSPOSE_AFFINE_2D_NV                                     = 0x9096
+	STENCIL_CLEAR_VALUE                                        = 0x0B91
+	EYE_RADIAL_NV                                              = 0x855B
+	ACTIVE_PROGRAM_EXT                                         = 0x8B8D
+	TEXTURE_2D_MULTISAMPLE                                     = 0x9100
+	DEBUG_LOGGED_MESSAGES_ARB                                  = 0x9145
+	MAP_READ_BIT_EXT                                           = 0x0001
+	ACCUM_CLEAR_VALUE                                          = 0x0B80
+	INDEX_ARRAY_STRIDE_EXT                                     = 0x8086
+	DEBUG_SOURCE_OTHER_ARB                                     = 0x824B
+	READ_PIXEL_DATA_RANGE_LENGTH_NV                            = 0x887B
+	PROXY_TEXTURE_1D_ARRAY                                     = 0x8C19
+	MAX_GEOMETRY_TEXTURE_IMAGE_UNITS_ARB                       = 0x8C29
+	VERTEX_ATTRIB_MAP1_COEFF_APPLE                             = 0x8A03
+	SAMPLER_2D_ARRAY_EXT                                       = 0x8DC1
+	VIDEO_COLOR_CONVERSION_MATRIX_NV                           = 0x9029
+	MAP_WRITE_BIT_EXT                                          = 0x0002
+	R                                                          = 0x2002
+	UNSIGNED_SHORT_4_4_4_4                                     = 0x8033
+	INT_SAMPLER_CUBE_EXT                                       = 0x8DCC
+	UNSIGNED_INT_10_10_10_2_OES                                = 0x8DF6
+	VERTICAL_LINE_TO_NV                                        = 0x08
+	TEXTURE_DEFORMATION_BIT_SGIX                               = 0x00000001
+	SELECT                                                     = 0x1C02
+	TEXTURE_PRIORITY_EXT                                       = 0x8066
+	DEPENDENT_RGB_TEXTURE_CUBE_MAP_NV                          = 0x885A
+	PROGRAM_ERROR_STRING_ARB                                   = 0x8874
+	COMPRESSED_SRGB_S3TC_DXT1_NV                               = 0x8C4C
+	UNIFORM_BUFFER_BINDING_EXT                                 = 0x8DEF
+	TEXTURE_CUBE_MAP_ARRAY                                     = 0x9009
+	SRGB_READ                                                  = 0x8297
+	LUMINANCE16F_ARB                                           = 0x881E
+	REG_2_ATI                                                  = 0x8923
+	INT_10_10_10_2_OES                                         = 0x8DF7
+	OFFSET                                                     = 0x92FC
+	POLYGON_STIPPLE_BIT                                        = 0x00000010
+	STENCIL_EXT                                                = 0x1802
+	WEIGHT_SUM_UNITY_ARB                                       = 0x86A6
+	CON_24_ATI                                                 = 0x8959
+	TEXTURE_WIDTH_QCOM                                         = 0x8BD2
+	RENDERBUFFER_RED_SIZE                                      = 0x8D50
+	RGB32UI_EXT                                                = 0x8D71
 )
 
 type Context struct {
@@ -5586,362 +5586,451 @@ func New() *Context {
 	glc.context = C.gl30NewContext()
 
 	glc.Accum = func(op uint32, value float32) {
+		defer glc.trace("Accum")
 		C.gl30Accum(glc.context, C.GLenum(op), C.GLfloat(value))
 	}
 
 	glc.AlphaFunc = func(Func uint32, ref float32) {
+		defer glc.trace("AlphaFunc")
 		C.gl30AlphaFunc(glc.context, C.GLenum(Func), C.GLclampf(ref))
 	}
 
 	glc.Begin = func(mode uint32) {
+		defer glc.trace("Begin")
 		glc.inBeginEnd = true
 		C.gl30Begin(glc.context, C.GLenum(mode))
 		return
 	}
 
 	glc.End = func() {
+		defer glc.trace("End")
 		C.gl30End(glc.context)
 		glc.inBeginEnd = false
 		return
 	}
 
 	glc.Bitmap = func(width, height int32, xorig, yorig, xmove, ymove float32, bitmap *uint8) {
+		defer glc.trace("Bitmap")
 		C.gl30Bitmap(glc.context, C.GLsizei(width), C.GLsizei(height), C.GLfloat(xorig), C.GLfloat(yorig), C.GLfloat(xmove), C.GLfloat(ymove), (*C.GLubyte)(unsafe.Pointer(bitmap)))
 	}
 
 	glc.BlendFunc = func(sfactor, dfactor uint32) {
+		defer glc.trace("BlendFunc")
 		C.gl30BlendFunc(glc.context, C.GLenum(sfactor), C.GLenum(dfactor))
 	}
 
 	glc.CallList = func(list uint32) {
+		defer glc.trace("CallList")
 		C.gl30CallList(glc.context, C.GLuint(list))
 	}
 
 	glc.CallLists = func(n int32, Type uint32, lists unsafe.Pointer) {
+		defer glc.trace("CallLists")
 		C.gl30CallLists(glc.context, C.GLsizei(n), C.GLenum(Type), lists)
 	}
 
 	glc.Clear = func(mask uint32) {
+		defer glc.trace("Clear")
 		C.gl30Clear(glc.context, C.GLbitfield(mask))
 	}
 
 	glc.ClearAccum = func(red, green, blue, alpha float32) {
+		defer glc.trace("ClearAccum")
 		C.gl30ClearAccum(glc.context, C.GLfloat(red), C.GLfloat(green), C.GLfloat(blue), C.GLfloat(alpha))
 	}
 
 	glc.ClearColor = func(red, green, blue, alpha float32) {
+		defer glc.trace("ClearColor")
 		C.gl30ClearColor(glc.context, C.GLclampf(red), C.GLclampf(green), C.GLclampf(blue), C.GLclampf(alpha))
 	}
 
 	glc.ClearDepth = func(depth float64) {
+		defer glc.trace("ClearDepth")
 		C.gl30ClearDepth(glc.context, C.GLclampd(depth))
 	}
 
 	glc.ClearIndex = func(c float32) {
+		defer glc.trace("ClearIndex")
 		C.gl30ClearIndex(glc.context, C.GLfloat(c))
 	}
 
 	glc.ClearStencil = func(s int32) {
+		defer glc.trace("ClearStencil")
 		C.gl30ClearStencil(glc.context, C.GLint(s))
 	}
 
 	glc.ClipPlane = func(plane uint32, equation *float64) {
+		defer glc.trace("ClipPlane")
 		C.gl30ClipPlane(glc.context, C.GLenum(plane), (*C.GLdouble)(unsafe.Pointer(equation)))
 	}
 
 	glc.Color3b = func(red, green, blue int8) {
+		defer glc.trace("Color3b")
 		C.gl30Color3b(glc.context, C.GLbyte(red), C.GLbyte(green), C.GLbyte(blue))
 	}
 
 	glc.Color3d = func(red, green, blue float64) {
+		defer glc.trace("Color3d")
 		C.gl30Color3d(glc.context, C.GLdouble(red), C.GLdouble(green), C.GLdouble(blue))
 	}
 
 	glc.Color3f = func(red, green, blue float32) {
+		defer glc.trace("Color3f")
 		C.gl30Color3f(glc.context, C.GLfloat(red), C.GLfloat(green), C.GLfloat(blue))
 	}
 
 	glc.Color3i = func(red, green, blue int32) {
+		defer glc.trace("Color3i")
 		C.gl30Color3i(glc.context, C.GLint(red), C.GLint(green), C.GLint(blue))
 	}
 
 	glc.Color3s = func(red, green, blue int16) {
+		defer glc.trace("Color3s")
 		C.gl30Color3s(glc.context, C.GLshort(red), C.GLshort(green), C.GLshort(blue))
 	}
 
 	glc.Color3ub = func(red, green, blue uint8) {
+		defer glc.trace("Color3ub")
 		C.gl30Color3ub(glc.context, C.GLubyte(red), C.GLubyte(green), C.GLubyte(blue))
 	}
 
 	glc.Color3ui = func(red, green, blue uint32) {
+		defer glc.trace("Color3ui")
 		C.gl30Color3ui(glc.context, C.GLuint(red), C.GLuint(green), C.GLuint(blue))
 	}
 
 	glc.Color3us = func(red, green, blue uint16) {
+		defer glc.trace("Color3us")
 		C.gl30Color3us(glc.context, C.GLushort(red), C.GLushort(green), C.GLushort(blue))
 	}
 
 	glc.Color4b = func(red, green, blue, alpha int8) {
+		defer glc.trace("Color4b")
 		C.gl30Color4b(glc.context, C.GLbyte(red), C.GLbyte(green), C.GLbyte(blue), C.GLbyte(alpha))
 	}
 
 	glc.Color4d = func(red, green, blue, alpha float64) {
+		defer glc.trace("Color4d")
 		C.gl30Color4d(glc.context, C.GLdouble(red), C.GLdouble(green), C.GLdouble(blue), C.GLdouble(alpha))
 	}
 
 	glc.Color4f = func(red, green, blue, alpha float32) {
+		defer glc.trace("Color4f")
 		C.gl30Color4f(glc.context, C.GLfloat(red), C.GLfloat(green), C.GLfloat(blue), C.GLfloat(alpha))
 	}
 
 	glc.Color4i = func(red, green, blue, alpha int32) {
+		defer glc.trace("Color4i")
 		C.gl30Color4i(glc.context, C.GLint(red), C.GLint(green), C.GLint(blue), C.GLint(alpha))
 	}
 
 	glc.Color4s = func(red, green, blue, alpha int16) {
+		defer glc.trace("Color4s")
 		C.gl30Color4s(glc.context, C.GLshort(red), C.GLshort(green), C.GLshort(blue), C.GLshort(alpha))
 	}
 
 	glc.Color4ub = func(red, green, blue, alpha uint8) {
+		defer glc.trace("Color4ub")
 		C.gl30Color4ub(glc.context, C.GLubyte(red), C.GLubyte(green), C.GLubyte(blue), C.GLubyte(alpha))
 	}
 
 	glc.Color4ui = func(red, green, blue, alpha uint32) {
+		defer glc.trace("Color4ui")
 		C.gl30Color4ui(glc.context, C.GLuint(red), C.GLuint(green), C.GLuint(blue), C.GLuint(alpha))
 	}
 
 	glc.Color4us = func(red, green, blue, alpha uint16) {
+		defer glc.trace("Color4us")
 		C.gl30Color4us(glc.context, C.GLushort(red), C.GLushort(green), C.GLushort(blue), C.GLushort(alpha))
 	}
 
 	glc.Color3bv = func(v *int8) {
+		defer glc.trace("Color3bv")
 		C.gl30Color3bv(glc.context, (*C.GLbyte)(unsafe.Pointer(v)))
 	}
 
 	glc.Color3dv = func(v *float64) {
+		defer glc.trace("Color3dv")
 		C.gl30Color3dv(glc.context, (*C.GLdouble)(unsafe.Pointer(v)))
 	}
 
 	glc.Color3fv = func(v *float32) {
+		defer glc.trace("Color3fv")
 		C.gl30Color3fv(glc.context, (*C.GLfloat)(unsafe.Pointer(v)))
 	}
 
 	glc.Color3iv = func(v *int32) {
+		defer glc.trace("Color3iv")
 		C.gl30Color3iv(glc.context, (*C.GLint)(unsafe.Pointer(v)))
 	}
 
 	glc.Color3sv = func(v *int16) {
+		defer glc.trace("Color3sv")
 		C.gl30Color3sv(glc.context, (*C.GLshort)(unsafe.Pointer(v)))
 	}
 
 	glc.Color3ubv = func(v *uint8) {
+		defer glc.trace("Color3ubv")
 		C.gl30Color3ubv(glc.context, (*C.GLubyte)(unsafe.Pointer(v)))
 	}
 
 	glc.Color3uiv = func(v *uint32) {
+		defer glc.trace("Color3uiv")
 		C.gl30Color3uiv(glc.context, (*C.GLuint)(unsafe.Pointer(v)))
 	}
 
 	glc.Color3usv = func(v *uint16) {
+		defer glc.trace("Color3usv")
 		C.gl30Color3usv(glc.context, (*C.GLushort)(unsafe.Pointer(v)))
 	}
 
 	glc.Color4bv = func(v *int8) {
+		defer glc.trace("Color4bv")
 		C.gl30Color4bv(glc.context, (*C.GLbyte)(unsafe.Pointer(v)))
 	}
 
 	glc.Color4dv = func(v *float64) {
+		defer glc.trace("Color4dv")
 		C.gl30Color4dv(glc.context, (*C.GLdouble)(unsafe.Pointer(v)))
 	}
 
 	glc.Color4fv = func(v *float32) {
+		defer glc.trace("Color4fv")
 		C.gl30Color4fv(glc.context, (*C.GLfloat)(unsafe.Pointer(v)))
 	}
 
 	glc.Color4iv = func(v *int32) {
+		defer glc.trace("Color4iv")
 		C.gl30Color4iv(glc.context, (*C.GLint)(unsafe.Pointer(v)))
 	}
 
 	glc.Color4sv = func(v *int16) {
+		defer glc.trace("Color4sv")
 		C.gl30Color4sv(glc.context, (*C.GLshort)(unsafe.Pointer(v)))
 	}
 
 	glc.Color4ubv = func(v *uint8) {
+		defer glc.trace("Color4ubv")
 		C.gl30Color4ubv(glc.context, (*C.GLubyte)(unsafe.Pointer(v)))
 	}
 
 	glc.Color4uiv = func(v *uint32) {
+		defer glc.trace("Color4uiv")
 		C.gl30Color4uiv(glc.context, (*C.GLuint)(unsafe.Pointer(v)))
 	}
 
 	glc.Color4usv = func(v *uint16) {
+		defer glc.trace("Color4usv")
 		C.gl30Color4usv(glc.context, (*C.GLushort)(unsafe.Pointer(v)))
 	}
 
 	glc.ColorMask = func(red, green, blue, alpha bool) {
+		defer glc.trace("ColorMask")
 		C.gl30ColorMask(glc.context, boolToGL(red), boolToGL(green), boolToGL(blue), boolToGL(alpha))
 	}
 
 	glc.ColorMaterial = func(face, mode uint32) {
+		defer glc.trace("ColorMaterial")
 		C.gl30ColorMaterial(glc.context, C.GLenum(face), C.GLenum(mode))
 	}
 
 	glc.CopyPixels = func(x, y int32, width, height int32, Type uint32) {
+		defer glc.trace("CopyPixels")
 		C.gl30CopyPixels(glc.context, C.GLint(x), C.GLint(y), C.GLsizei(width), C.GLsizei(height), C.GLenum(Type))
 	}
 
 	glc.CullFace = func(mode uint32) {
+		defer glc.trace("CullFace")
 		C.gl30CullFace(glc.context, C.GLenum(mode))
 	}
 
 	glc.DeleteLists = func(list uint32, Range int32) {
+		defer glc.trace("DeleteLists")
 		C.gl30DeleteLists(glc.context, C.GLuint(list), C.GLsizei(Range))
 	}
 
 	glc.DepthFunc = func(Func uint32) {
+		defer glc.trace("DepthFunc")
 		C.gl30DepthFunc(glc.context, C.GLenum(Func))
 	}
 
 	glc.DepthMask = func(flag bool) {
+		defer glc.trace("DepthMask")
 		C.gl30DepthMask(glc.context, boolToGL(flag))
 	}
 
 	glc.DepthRange = func(zNear, zFar float64) {
+		defer glc.trace("DepthRange")
 		C.gl30DepthRange(glc.context, C.GLclampd(zNear), C.GLclampd(zFar))
 	}
 
 	glc.Enable = func(cap uint32) {
+		defer glc.trace("Enable")
 		C.gl30Enable(glc.context, C.GLenum(cap))
 	}
 
 	glc.Disable = func(cap uint32) {
+		defer glc.trace("Disable")
 		C.gl30Disable(glc.context, C.GLenum(cap))
 	}
 
 	glc.DrawBuffer = func(mode uint32) {
+		defer glc.trace("DrawBuffer")
 		C.gl30DrawBuffer(glc.context, C.GLenum(mode))
 	}
 
 	glc.DrawPixels = func(width, height int32, format, Type uint32, data unsafe.Pointer) {
+		defer glc.trace("DrawPixels")
 		C.gl30DrawPixels(glc.context, C.GLsizei(width), C.GLsizei(height), C.GLenum(format), C.GLenum(Type), data)
 	}
 
 	glc.EdgeFlag = func(flag bool) {
+		defer glc.trace("EdgeFlag")
 		C.gl30EdgeFlag(glc.context, boolToGL(flag))
 	}
 
 	glc.EdgeFlagv = func(flag *bool) {
+		defer glc.trace("EdgeFlagv")
 		C.gl30EdgeFlagv(glc.context, (*C.GLboolean)(unsafe.Pointer(flag)))
 	}
 
 	glc.EdgeFlagPointer = func(stride int32, pointer unsafe.Pointer) {
+		defer glc.trace("EdgeFlagPointer")
 		C.gl30EdgeFlagPointer(glc.context, C.GLsizei(stride), pointer)
 	}
 
 	glc.EvalCoord1d = func(u float64) {
+		defer glc.trace("EvalCoord1d")
 		C.gl30EvalCoord1d(glc.context, C.GLdouble(u))
 	}
 
 	glc.EvalCoord1f = func(u float32) {
+		defer glc.trace("EvalCoord1f")
 		C.gl30EvalCoord1f(glc.context, C.GLfloat(u))
 	}
 
 	glc.EvalCoord2d = func(u, v float64) {
+		defer glc.trace("EvalCoord2d")
 		C.gl30EvalCoord2d(glc.context, C.GLdouble(u), C.GLdouble(v))
 	}
 
 	glc.EvalCoord2f = func(u, v float32) {
+		defer glc.trace("EvalCoord2f")
 		C.gl30EvalCoord2f(glc.context, C.GLfloat(u), C.GLfloat(v))
 	}
 
 	glc.EvalCoord1dv = func(u *float64) {
+		defer glc.trace("EvalCoord1dv")
 		C.gl30EvalCoord1dv(glc.context, (*C.GLdouble)(unsafe.Pointer(u)))
 	}
 
 	glc.EvalCoord1fv = func(u *float32) {
+		defer glc.trace("EvalCoord1fv")
 		C.gl30EvalCoord1fv(glc.context, (*C.GLfloat)(unsafe.Pointer(u)))
 	}
 
 	glc.EvalCoord2dv = func(u *float64) {
+		defer glc.trace("EvalCoord2dv")
 		C.gl30EvalCoord2dv(glc.context, (*C.GLdouble)(unsafe.Pointer(u)))
 	}
 
 	glc.EvalCoord2fv = func(u *float32) {
+		defer glc.trace("EvalCoord2fv")
 		C.gl30EvalCoord2fv(glc.context, (*C.GLfloat)(unsafe.Pointer(u)))
 	}
 
 	glc.EvalMesh1 = func(mode uint32, i1, i2 int32) {
+		defer glc.trace("EvalMesh1")
 		C.gl30EvalMesh1(glc.context, C.GLenum(mode), C.GLint(i1), C.GLint(i2))
 	}
 
 	glc.EvalMesh2 = func(mode uint32, i1, i2, j1, j2 int32) {
+		defer glc.trace("EvalMesh2")
 		C.gl30EvalMesh2(glc.context, C.GLenum(mode), C.GLint(i1), C.GLint(i2), C.GLint(j1), C.GLint(j2))
 	}
 
 	glc.EvalPoint1 = func(i int32) {
+		defer glc.trace("EvalPoint1")
 		C.gl30EvalPoint1(glc.context, C.GLint(i))
 	}
 
 	glc.EvalPoint2 = func(i, j int32) {
+		defer glc.trace("EvalPoint2")
 		C.gl30EvalPoint2(glc.context, C.GLint(i), C.GLint(j))
 	}
 
 	glc.FeedbackBuffer = func(size int32, Type uint32, buffer *float32) {
+		defer glc.trace("FeedbackBuffer")
 		C.gl30FeedbackBuffer(glc.context, C.GLsizei(size), C.GLenum(Type), (*C.GLfloat)(unsafe.Pointer(buffer)))
 	}
 
 	glc.Finish = func() {
+		defer glc.trace("Finish")
 		C.gl30Finish(glc.context)
 	}
 
 	glc.Flush = func() {
+		defer glc.trace("Flush")
 		C.gl30Flush(glc.context)
 	}
 
 	glc.Fogf = func(pname uint32, param float32) {
+		defer glc.trace("Fogf")
 		C.gl30Fogf(glc.context, C.GLenum(pname), C.GLfloat(param))
 	}
 
 	glc.Fogi = func(pname uint32, param int32) {
+		defer glc.trace("Fogi")
 		C.gl30Fogi(glc.context, C.GLenum(pname), C.GLint(param))
 	}
 
 	glc.Fogfv = func(pname uint32, params *float32) {
+		defer glc.trace("Fogfv")
 		C.gl30Fogfv(glc.context, C.GLenum(pname), (*C.GLfloat)(unsafe.Pointer(params)))
 	}
 
 	glc.Fogiv = func(pname uint32, params *int32) {
+		defer glc.trace("Fogiv")
 		C.gl30Fogiv(glc.context, C.GLenum(pname), (*C.GLint)(unsafe.Pointer(params)))
 	}
 
 	glc.FrontFace = func(mode uint32) {
+		defer glc.trace("FrontFace")
 		C.gl30FrontFace(glc.context, C.GLenum(mode))
 	}
 
 	glc.Frustum = func(left, right, bottom, top, zNear, zFar float64) {
+		defer glc.trace("Frustum")
 		C.gl30Frustum(glc.context, C.GLdouble(left), C.GLdouble(right), C.GLdouble(bottom), C.GLdouble(top), C.GLdouble(zNear), C.GLdouble(zFar))
 	}
 
 	glc.GenLists = func(Range int32) uint32 {
+		defer glc.trace("GenLists")
 		return uint32(C.gl30GenLists(glc.context, C.GLsizei(Range)))
 	}
 
 	glc.GetBooleanv = func(pname uint32, params *bool) {
+		defer glc.trace("GetBooleanv")
 		C.gl30GetBooleanv(glc.context, C.GLenum(pname), (*C.GLboolean)(unsafe.Pointer(params)))
 	}
 
 	glc.GetDoublev = func(pname uint32, params *float64) {
+		defer glc.trace("GetDoublev")
 		C.gl30GetDoublev(glc.context, C.GLenum(pname), (*C.GLdouble)(unsafe.Pointer(params)))
 	}
 
 	glc.GetFloatv = func(pname uint32, params *float32) {
+		defer glc.trace("GetFloatv")
 		C.gl30GetFloatv(glc.context, C.GLenum(pname), (*C.GLfloat)(unsafe.Pointer(params)))
 	}
 
 	glc.GetIntegerv = func(pname uint32, params *int32) {
+		defer glc.trace("GetIntegerv")
 		C.gl30GetIntegerv(glc.context, C.GLenum(pname), (*C.GLint)(unsafe.Pointer(params)))
 	}
 
 	glc.GetClipPlane = func(plane uint32, equation *float64) {
+		defer glc.trace("GetClipPlane")
 		C.gl30GetClipPlane(glc.context, C.GLenum(plane), (*C.GLdouble)(unsafe.Pointer(equation)))
 	}
 
@@ -5950,839 +6039,1048 @@ func New() *Context {
 	}
 
 	glc.GetLightfv = func(light, pname uint32, params *float32) {
+		defer glc.trace("GetLightfv")
 		C.gl30GetLightfv(glc.context, C.GLenum(light), C.GLenum(pname), (*C.GLfloat)(unsafe.Pointer(params)))
 	}
 
 	glc.GetLightiv = func(light, pname uint32, params *int32) {
+		defer glc.trace("GetLightiv")
 		C.gl30GetLightiv(glc.context, C.GLenum(light), C.GLenum(pname), (*C.GLint)(unsafe.Pointer(params)))
 	}
 
 	glc.GetMapdv = func(target, query uint32, v *float64) {
+		defer glc.trace("GetMapdv")
 		C.gl30GetMapdv(glc.context, C.GLenum(target), C.GLenum(query), (*C.GLdouble)(unsafe.Pointer(v)))
 	}
 
 	glc.GetMapfv = func(target, query uint32, v *float32) {
+		defer glc.trace("GetMapfv")
 		C.gl30GetMapfv(glc.context, C.GLenum(target), C.GLenum(query), (*C.GLfloat)(unsafe.Pointer(v)))
 	}
 
 	glc.GetMapiv = func(target, query uint32, v *int32) {
+		defer glc.trace("GetMapiv")
 		C.gl30GetMapiv(glc.context, C.GLenum(target), C.GLenum(query), (*C.GLint)(unsafe.Pointer(v)))
 	}
 
 	glc.GetMaterialfv = func(face, pname uint32, params *float32) {
+		defer glc.trace("GetMaterialfv")
 		C.gl30GetMaterialfv(glc.context, C.GLenum(face), C.GLenum(pname), (*C.GLfloat)(unsafe.Pointer(params)))
 	}
 
 	glc.GetMaterialiv = func(face, pname uint32, params *int32) {
+		defer glc.trace("GetMaterialiv")
 		C.gl30GetMaterialiv(glc.context, C.GLenum(face), C.GLenum(pname), (*C.GLint)(unsafe.Pointer(params)))
 	}
 
 	glc.GetPixelMapfv = func(Map uint32, values *float32) {
+		defer glc.trace("GetPixelMapfv")
 		C.gl30GetPixelMapfv(glc.context, C.GLenum(Map), (*C.GLfloat)(unsafe.Pointer(values)))
 	}
 
 	glc.GetPixelMapuiv = func(Map uint32, values *uint32) {
+		defer glc.trace("GetPixelMapuiv")
 		C.gl30GetPixelMapuiv(glc.context, C.GLenum(Map), (*C.GLuint)(unsafe.Pointer(values)))
 	}
 
 	glc.GetPixelMapusv = func(Map uint32, values *uint16) {
+		defer glc.trace("GetPixelMapusv")
 		C.gl30GetPixelMapusv(glc.context, C.GLenum(Map), (*C.GLushort)(unsafe.Pointer(values)))
 	}
 
 	glc.GetPolygonStipple = func(pattern *uint8) {
+		defer glc.trace("GetPolygonStipple")
 		C.gl30GetPolygonStipple(glc.context, (*C.GLubyte)(unsafe.Pointer(pattern)))
 	}
 
 	glc.GetString = func(name uint32) string {
+		defer glc.trace("GetString")
 		cstr := C.gl30GetString(glc.context, C.GLenum(name))
 		return C.GoString((*C.char)(unsafe.Pointer(cstr)))
 	}
 
 	glc.GetTexEnvfv = func(target, pname uint32, params *float32) {
+		defer glc.trace("GetTexEnvfv")
 		C.gl30GetTexEnvfv(glc.context, C.GLenum(target), C.GLenum(pname), (*C.GLfloat)(unsafe.Pointer(params)))
 	}
 
 	glc.GetTexEnviv = func(target, pname uint32, params *int32) {
+		defer glc.trace("GetTexEnviv")
 		C.gl30GetTexEnviv(glc.context, C.GLenum(target), C.GLenum(pname), (*C.GLint)(unsafe.Pointer(params)))
 	}
 
 	glc.GetTexGendv = func(coord, pname uint32, params *float64) {
+		defer glc.trace("GetTexGendv")
 		C.gl30GetTexGendv(glc.context, C.GLenum(coord), C.GLenum(pname), (*C.GLdouble)(unsafe.Pointer(params)))
 	}
 
 	glc.GetTexGenfv = func(coord, pname uint32, params *float32) {
+		defer glc.trace("GetTexGenfv")
 		C.gl30GetTexGenfv(glc.context, C.GLenum(coord), C.GLenum(pname), (*C.GLfloat)(unsafe.Pointer(params)))
 	}
 
 	glc.GetTexGeniv = func(coord, pname uint32, params *int32) {
+		defer glc.trace("GetTexGeniv")
 		C.gl30GetTexGeniv(glc.context, C.GLenum(coord), C.GLenum(pname), (*C.GLint)(unsafe.Pointer(params)))
 	}
 
 	glc.GetTexImage = func(target uint32, level int32, format, Type uint32, pixels unsafe.Pointer) {
+		defer glc.trace("GetTexImage")
 		C.gl30GetTexImage(glc.context, C.GLenum(target), C.GLint(level), C.GLenum(format), C.GLenum(Type), pixels)
 	}
 
 	glc.GetTexLevelParameterfv = func(target uint32, level int32, pname uint32, params *float32) {
+		defer glc.trace("GetTexLevelParameterfv")
 		C.gl30GetTexLevelParameterfv(glc.context, C.GLenum(target), C.GLint(level), C.GLenum(pname), (*C.GLfloat)(unsafe.Pointer(params)))
 	}
 
 	glc.GetTexLevelParameteriv = func(target uint32, level int32, pname uint32, params *int32) {
+		defer glc.trace("GetTexLevelParameteriv")
 		C.gl30GetTexLevelParameteriv(glc.context, C.GLenum(target), C.GLint(level), C.GLenum(pname), (*C.GLint)(unsafe.Pointer(params)))
 	}
 
 	glc.GetTexParameterfv = func(target, pname uint32, params *float32) {
+		defer glc.trace("GetTexParameterfv")
 		C.gl30GetTexParameterfv(glc.context, C.GLenum(target), C.GLenum(pname), (*C.GLfloat)(unsafe.Pointer(params)))
 	}
 
 	glc.GetTexParameteriv = func(target, pname uint32, params *int32) {
+		defer glc.trace("GetTexParameteriv")
 		C.gl30GetTexParameteriv(glc.context, C.GLenum(target), C.GLenum(pname), (*C.GLint)(unsafe.Pointer(params)))
 	}
 
 	glc.Hint = func(target, mode uint32) {
+		defer glc.trace("Hint")
 		C.gl30Hint(glc.context, C.GLenum(target), C.GLenum(mode))
 	}
 
 	glc.Indexd = func(c float64) {
+		defer glc.trace("Indexd")
 		C.gl30Indexd(glc.context, C.GLdouble(c))
 	}
 
 	glc.Indexf = func(c float32) {
+		defer glc.trace("Indexf")
 		C.gl30Indexf(glc.context, C.GLfloat(c))
 	}
 
 	glc.Indexi = func(c int32) {
+		defer glc.trace("Indexi")
 		C.gl30Indexi(glc.context, C.GLint(c))
 	}
 
 	glc.Indexs = func(c int16) {
+		defer glc.trace("Indexs")
 		C.gl30Indexs(glc.context, C.GLshort(c))
 	}
 
 	glc.Indexdv = func(c *float64) {
+		defer glc.trace("Indexdv")
 		C.gl30Indexdv(glc.context, (*C.GLdouble)(unsafe.Pointer(c)))
 	}
 
 	glc.Indexfv = func(c *float32) {
+		defer glc.trace("Indexfv")
 		C.gl30Indexfv(glc.context, (*C.GLfloat)(unsafe.Pointer(c)))
 	}
 
 	glc.Indexiv = func(c *int32) {
+		defer glc.trace("Indexiv")
 		C.gl30Indexiv(glc.context, (*C.GLint)(unsafe.Pointer(c)))
 	}
 
 	glc.Indexsv = func(c *int16) {
+		defer glc.trace("Indexsv")
 		C.gl30Indexsv(glc.context, (*C.GLshort)(unsafe.Pointer(c)))
 	}
 
 	glc.IndexMask = func(mask uint32) {
+		defer glc.trace("IndexMask")
 		C.gl30IndexMask(glc.context, C.GLuint(mask))
 	}
 
 	glc.IndexPointer = func(Type uint32, stride int32, pointer unsafe.Pointer) {
+		defer glc.trace("IndexPointer")
 		C.gl30IndexPointer(glc.context, C.GLenum(Type), C.GLsizei(stride), pointer)
 	}
 
 	glc.InitNames = func() {
+		defer glc.trace("InitNames")
 		C.gl30InitNames(glc.context)
 	}
 
 	glc.IsEnabled = func(cap uint32) {
+		defer glc.trace("IsEnabled")
 		C.gl30IsEnabled(glc.context, C.GLenum(cap))
 	}
 
 	glc.IsList = func(list uint32) bool {
+		defer glc.trace("IsList")
 		return C.gl30IsList(glc.context, C.GLuint(list)) != 0
 	}
 
 	glc.Lightf = func(light, pname uint32, param float32) {
+		defer glc.trace("Lightf")
 		C.gl30Lightf(glc.context, C.GLenum(light), C.GLenum(pname), C.GLfloat(param))
 	}
 
 	glc.Lighti = func(light, pname uint32, param int32) {
+		defer glc.trace("Lighti")
 		C.gl30Lighti(glc.context, C.GLenum(light), C.GLenum(pname), C.GLint(param))
 	}
 
 	glc.Lightfv = func(light, pname uint32, params *float32) {
+		defer glc.trace("Lightfv")
 		C.gl30Lightfv(glc.context, C.GLenum(light), C.GLenum(pname), (*C.GLfloat)(unsafe.Pointer(params)))
 	}
 
 	glc.Lightiv = func(light, pname uint32, params *int32) {
+		defer glc.trace("Lightiv")
 		C.gl30Lightiv(glc.context, C.GLenum(light), C.GLenum(pname), (*C.GLint)(unsafe.Pointer(params)))
 	}
 
 	glc.LightModelf = func(pname uint32, param float32) {
+		defer glc.trace("LightModelf")
 		C.gl30LightModelf(glc.context, C.GLenum(pname), C.GLfloat(param))
 	}
 
 	glc.LightModeli = func(pname uint32, param int32) {
+		defer glc.trace("LightModeli")
 		C.gl30LightModeli(glc.context, C.GLenum(pname), C.GLint(param))
 	}
 
 	glc.LightModelfv = func(pname uint32, params *float32) {
+		defer glc.trace("LightModelfv")
 		C.gl30LightModelfv(glc.context, C.GLenum(pname), (*C.GLfloat)(unsafe.Pointer(params)))
 	}
 
 	glc.LightModeliv = func(pname uint32, params *int32) {
+		defer glc.trace("LightModeliv")
 		C.gl30LightModeliv(glc.context, C.GLenum(pname), (*C.GLint)(unsafe.Pointer(params)))
 	}
 
 	glc.LineStipple = func(factor int32, pattern uint16) {
+		defer glc.trace("LineStipple")
 		C.gl30LineStipple(glc.context, C.GLint(factor), C.GLushort(pattern))
 	}
 
 	glc.LineWidth = func(width float32) {
+		defer glc.trace("LineWidth")
 		C.gl30LineWidth(glc.context, C.GLfloat(width))
 	}
 
 	glc.ListBase = func(base uint32) {
+		defer glc.trace("ListBase")
 		C.gl30ListBase(glc.context, C.GLuint(base))
 	}
 
 	glc.LoadIdentity = func() {
+		defer glc.trace("LoadIdentity")
 		C.gl30LoadIdentity(glc.context)
 	}
 
 	glc.LoadMatrixd = func(m *float64) {
+		defer glc.trace("LoadMatrixd")
 		C.gl30LoadMatrixd(glc.context, (*C.GLdouble)(unsafe.Pointer(m)))
 	}
 
 	glc.LoadMatrixf = func(m *float32) {
+		defer glc.trace("LoadMatrixf")
 		C.gl30LoadMatrixf(glc.context, (*C.GLfloat)(unsafe.Pointer(m)))
 	}
 
 	glc.LoadName = func(name uint32) {
+		defer glc.trace("LoadName")
 		C.gl30LoadName(glc.context, C.GLuint(name))
 	}
 
 	glc.LogicOp = func(opcode uint32) {
+		defer glc.trace("LogicOp")
 		C.gl30LogicOp(glc.context, C.GLenum(opcode))
 	}
 
 	glc.Map1d = func(target uint32, u1, u2 float64, stride, order int32, points *float64) {
+		defer glc.trace("Map1d")
 		C.gl30Map1d(glc.context, C.GLenum(target), C.GLdouble(u1), C.GLdouble(u2), C.GLint(stride), C.GLint(order), (*C.GLdouble)(unsafe.Pointer(points)))
 	}
 
 	glc.Map1f = func(target uint32, u1, u2 float32, stride, order int32, points *float32) {
+		defer glc.trace("Map1f")
 		C.gl30Map1f(glc.context, C.GLenum(target), C.GLfloat(u1), C.GLfloat(u2), C.GLint(stride), C.GLint(order), (*C.GLfloat)(unsafe.Pointer(points)))
 	}
 
 	glc.Map2d = func(target uint32, u1, u2 float64, ustride, uorder int32, v1, v2 float64, vstride, vorder int32, points *float64) {
+		defer glc.trace("Map2d")
 		C.gl30Map2d(glc.context, C.GLenum(target), C.GLdouble(u1), C.GLdouble(u2), C.GLint(ustride), C.GLint(uorder), C.GLdouble(v1), C.GLdouble(v2), C.GLint(vstride), C.GLint(vorder), (*C.GLdouble)(unsafe.Pointer(points)))
 	}
 
 	glc.Map2f = func(target uint32, u1, u2 float32, ustride, uorder int32, v1, v2 float32, vstride, vorder int32, points *float32) {
+		defer glc.trace("Map2f")
 		C.gl30Map2f(glc.context, C.GLenum(target), C.GLfloat(u1), C.GLfloat(u2), C.GLint(ustride), C.GLint(uorder), C.GLfloat(v1), C.GLfloat(v2), C.GLint(vstride), C.GLint(vorder), (*C.GLfloat)(unsafe.Pointer(points)))
 	}
 
 	glc.MapGrid1d = func(un int32, u1, u2 float64) {
+		defer glc.trace("MapGrid1d")
 		C.gl30MapGrid1d(glc.context, C.GLint(un), C.GLdouble(u1), C.GLdouble(u2))
 	}
 
 	glc.MapGrid1f = func(un int32, u1, u2 float32) {
+		defer glc.trace("MapGrid1f")
 		C.gl30MapGrid1f(glc.context, C.GLint(un), C.GLfloat(u1), C.GLfloat(u2))
 	}
 
 	glc.MapGrid2d = func(un int32, u1, u2 float64, vn int32, v1, v2 float64) {
+		defer glc.trace("MapGrid2d")
 		C.gl30MapGrid2d(glc.context, C.GLint(un), C.GLdouble(u1), C.GLdouble(u2), C.GLint(vn), C.GLdouble(v1), C.GLdouble(v2))
 	}
 
 	glc.MapGrid2f = func(un int32, u1, u2 float32, vn int32, v1, v2 float32) {
+		defer glc.trace("MapGrid2f")
 		C.gl30MapGrid2f(glc.context, C.GLint(un), C.GLfloat(u1), C.GLfloat(u2), C.GLint(vn), C.GLfloat(v1), C.GLfloat(v2))
 	}
 
 	glc.Materialf = func(face, pname uint32, param float32) {
+		defer glc.trace("Materialf")
 		C.gl30Materialf(glc.context, C.GLenum(face), C.GLenum(pname), C.GLfloat(param))
 	}
 
 	glc.Materiali = func(face, pname uint32, param int32) {
+		defer glc.trace("Materiali")
 		C.gl30Materiali(glc.context, C.GLenum(face), C.GLenum(pname), C.GLint(param))
 	}
 
 	glc.Materialfv = func(face, pname uint32, params *float32) {
+		defer glc.trace("Materialfv")
 		C.gl30Materialfv(glc.context, C.GLenum(face), C.GLenum(pname), (*C.GLfloat)(unsafe.Pointer(params)))
 	}
 
 	glc.Materialiv = func(face, pname uint32, params *int32) {
+		defer glc.trace("Materialiv")
 		C.gl30Materialiv(glc.context, C.GLenum(face), C.GLenum(pname), (*C.GLint)(unsafe.Pointer(params)))
 	}
 
 	glc.MatrixMode = func(mode uint32) {
+		defer glc.trace("MatrixMode")
 		C.gl30MatrixMode(glc.context, C.GLenum(mode))
 	}
 
 	glc.MultMatrixd = func(m *float64) {
+		defer glc.trace("MultMatrixd")
 		C.gl30MultMatrixd(glc.context, (*C.GLdouble)(unsafe.Pointer(m)))
 	}
 
 	glc.MultMatrixf = func(m *float32) {
+		defer glc.trace("MultMatrixf")
 		C.gl30MultMatrixf(glc.context, (*C.GLfloat)(unsafe.Pointer(m)))
 	}
 
 	glc.NewList = func(list uint32, mode uint32) {
+		defer glc.trace("NewList")
 		C.gl30NewList(glc.context, C.GLuint(list), C.GLenum(mode))
 	}
 
 	glc.EndList = func() {
+		defer glc.trace("EndList")
 		C.gl30EndList(glc.context)
 	}
 
 	glc.Normal3b = func(nx, ny, nz int8) {
+		defer glc.trace("Normal3b")
 		C.gl30Normal3b(glc.context, C.GLbyte(nx), C.GLbyte(ny), C.GLbyte(nz))
 	}
 
 	glc.Normal3d = func(nx, ny, nz float64) {
+		defer glc.trace("Normal3d")
 		C.gl30Normal3d(glc.context, C.GLdouble(nx), C.GLdouble(ny), C.GLdouble(nz))
 	}
 
 	glc.Normal3f = func(nx, ny, nz float32) {
+		defer glc.trace("Normal3f")
 		C.gl30Normal3f(glc.context, C.GLfloat(nx), C.GLfloat(ny), C.GLfloat(nz))
 	}
 
 	glc.Normal3i = func(nx, ny, nz int32) {
+		defer glc.trace("Normal3i")
 		C.gl30Normal3i(glc.context, C.GLint(nx), C.GLint(ny), C.GLint(nz))
 	}
 
 	glc.Normal3s = func(nx, ny, nz int16) {
+		defer glc.trace("Normal3s")
 		C.gl30Normal3s(glc.context, C.GLshort(nx), C.GLshort(ny), C.GLshort(nz))
 	}
 
 	glc.Normal3bv = func(v *int8) {
+		defer glc.trace("Normal3bv")
 		C.gl30Normal3bv(glc.context, (*C.GLbyte)(unsafe.Pointer(v)))
 	}
 
 	glc.Normal3dv = func(v *float64) {
+		defer glc.trace("Normal3dv")
 		C.gl30Normal3dv(glc.context, (*C.GLdouble)(unsafe.Pointer(v)))
 	}
 
 	glc.Normal3fv = func(v *float32) {
+		defer glc.trace("Normal3fv")
 		C.gl30Normal3fv(glc.context, (*C.GLfloat)(unsafe.Pointer(v)))
 	}
 
 	glc.Normal3iv = func(v *int32) {
+		defer glc.trace("Normal3iv")
 		C.gl30Normal3iv(glc.context, (*C.GLint)(unsafe.Pointer(v)))
 	}
 
 	glc.Normal3sv = func(v *int16) {
+		defer glc.trace("Normal3sv")
 		C.gl30Normal3sv(glc.context, (*C.GLshort)(unsafe.Pointer(v)))
 	}
 
 	glc.Ortho = func(left, right, bottom, top, zNear, zfar float64) {
+		defer glc.trace("Ortho")
 		C.gl30Ortho(glc.context, C.GLdouble(left), C.GLdouble(right), C.GLdouble(bottom), C.GLdouble(top), C.GLdouble(zNear), C.GLdouble(zfar))
 	}
 
 	glc.PassThrough = func(token float32) {
+		defer glc.trace("PassThrough")
 		C.gl30PassThrough(glc.context, C.GLfloat(token))
 	}
 
 	glc.PixelMapfv = func(Map uint32, mapsize int32, values *float32) {
+		defer glc.trace("PixelMapfv")
 		C.gl30PixelMapfv(glc.context, C.GLenum(Map), C.GLsizei(mapsize), (*C.GLfloat)(unsafe.Pointer(values)))
 	}
 
 	glc.PixelMapuiv = func(Map uint32, mapsize int32, values *uint32) {
+		defer glc.trace("PixelMapuiv")
 		C.gl30PixelMapuiv(glc.context, C.GLenum(Map), C.GLsizei(mapsize), (*C.GLuint)(unsafe.Pointer(values)))
 	}
 
 	glc.PixelMapusv = func(Map uint32, mapsize int32, values *uint16) {
+		defer glc.trace("PixelMapusv")
 		C.gl30PixelMapusv(glc.context, C.GLenum(Map), C.GLsizei(mapsize), (*C.GLushort)(unsafe.Pointer(values)))
 	}
 
 	glc.PixelStoref = func(pname uint32, param float32) {
+		defer glc.trace("PixelStoref")
 		C.gl30PixelStoref(glc.context, C.GLenum(pname), C.GLfloat(param))
 	}
 
 	glc.PixelStorei = func(pname uint32, param int32) {
+		defer glc.trace("PixelStorei")
 		C.gl30PixelStorei(glc.context, C.GLenum(pname), C.GLint(param))
 	}
 
 	glc.PixelTransferf = func(pname uint32, param float32) {
+		defer glc.trace("PixelTransferf")
 		C.gl30PixelTransferf(glc.context, C.GLenum(pname), C.GLfloat(param))
 	}
 
 	glc.PixelTransferi = func(pname uint32, param int32) {
+		defer glc.trace("PixelTransferi")
 		C.gl30PixelTransferi(glc.context, C.GLenum(pname), C.GLint(param))
 	}
 
 	glc.PixelZoom = func(xfactor, yfactor float32) {
+		defer glc.trace("PixelZoom")
 		C.gl30PixelZoom(glc.context, C.GLfloat(xfactor), C.GLfloat(yfactor))
 	}
 
 	glc.PointSize = func(size float32) {
+		defer glc.trace("PointSize")
 		C.gl30PointSize(glc.context, C.GLfloat(size))
 	}
 
 	glc.PolygonMode = func(face, mode uint32) {
+		defer glc.trace("PolygonMode")
 		C.gl30PolygonMode(glc.context, C.GLenum(face), C.GLenum(mode))
 	}
 
 	glc.PolygonStipple = func(mask *uint8) {
+		defer glc.trace("PolygonStipple")
 		C.gl30PolygonStipple(glc.context, (*C.GLubyte)(unsafe.Pointer(mask)))
 	}
 
 	glc.PushAttrib = func(mask uint32) {
+		defer glc.trace("PushAttrib")
 		C.gl30PushAttrib(glc.context, C.GLbitfield(mask))
 	}
 
 	glc.PopAttrib = func() {
+		defer glc.trace("PopAttrib")
 		C.gl30PopAttrib(glc.context)
 	}
 
 	glc.PushMatrix = func() {
+		defer glc.trace("PushMatrix")
 		C.gl30PushMatrix(glc.context)
 	}
 
 	glc.PopMatrix = func() {
+		defer glc.trace("PopMatrix")
 		C.gl30PopMatrix(glc.context)
 	}
 
 	glc.PushName = func(name uint32) {
+		defer glc.trace("PushName")
 		C.gl30PushName(glc.context, C.GLuint(name))
 	}
 
 	glc.PopName = func() {
+		defer glc.trace("PopName")
 		C.gl30PopName(glc.context)
 	}
 
 	glc.RasterPos2d = func(x, y float64) {
+		defer glc.trace("RasterPos2d")
 		C.gl30RasterPos2d(glc.context, C.GLdouble(x), C.GLdouble(y))
 	}
 
 	glc.RasterPos2f = func(x, y float32) {
+		defer glc.trace("RasterPos2f")
 		C.gl30RasterPos2f(glc.context, C.GLfloat(x), C.GLfloat(y))
 	}
 
 	glc.RasterPos2i = func(x, y int32) {
+		defer glc.trace("RasterPos2i")
 		C.gl30RasterPos2i(glc.context, C.GLint(x), C.GLint(y))
 	}
 
 	glc.RasterPos2s = func(x, y int16) {
+		defer glc.trace("RasterPos2s")
 		C.gl30RasterPos2s(glc.context, C.GLshort(x), C.GLshort(y))
 	}
 
 	glc.RasterPos3d = func(x, y, z float64) {
+		defer glc.trace("RasterPos3d")
 		C.gl30RasterPos3d(glc.context, C.GLdouble(x), C.GLdouble(y), C.GLdouble(z))
 	}
 
 	glc.RasterPos3f = func(x, y, z float32) {
+		defer glc.trace("RasterPos3f")
 		C.gl30RasterPos3f(glc.context, C.GLfloat(x), C.GLfloat(y), C.GLfloat(z))
 	}
 
 	glc.RasterPos3i = func(x, y, z int32) {
+		defer glc.trace("RasterPos3i")
 		C.gl30RasterPos3i(glc.context, C.GLint(x), C.GLint(y), C.GLint(z))
 	}
 
 	glc.RasterPos3s = func(x, y, z int16) {
+		defer glc.trace("RasterPos3s")
 		C.gl30RasterPos3s(glc.context, C.GLshort(x), C.GLshort(y), C.GLshort(z))
 	}
 
 	glc.RasterPos4d = func(x, y, z, w float64) {
+		defer glc.trace("RasterPos4d")
 		C.gl30RasterPos4d(glc.context, C.GLdouble(x), C.GLdouble(y), C.GLdouble(z), C.GLdouble(w))
 	}
 
 	glc.RasterPos4f = func(x, y, z, w float32) {
+		defer glc.trace("RasterPos4f")
 		C.gl30RasterPos4f(glc.context, C.GLfloat(x), C.GLfloat(y), C.GLfloat(z), C.GLfloat(w))
 	}
 
 	glc.RasterPos4i = func(x, y, z, w int32) {
+		defer glc.trace("RasterPos4i")
 		C.gl30RasterPos4i(glc.context, C.GLint(x), C.GLint(y), C.GLint(z), C.GLint(w))
 	}
 
 	glc.RasterPos4s = func(x, y, z, w int16) {
+		defer glc.trace("RasterPos4s")
 		C.gl30RasterPos4s(glc.context, C.GLshort(x), C.GLshort(y), C.GLshort(z), C.GLshort(w))
 	}
 
 	glc.RasterPos2dv = func(v *float64) {
+		defer glc.trace("RasterPos2dv")
 		C.gl30RasterPos2dv(glc.context, (*C.GLdouble)(unsafe.Pointer(v)))
 	}
 
 	glc.RasterPos2fv = func(v *float32) {
+		defer glc.trace("RasterPos2fv")
 		C.gl30RasterPos2fv(glc.context, (*C.GLfloat)(unsafe.Pointer(v)))
 	}
 
 	glc.RasterPos2iv = func(v *int32) {
+		defer glc.trace("RasterPos2iv")
 		C.gl30RasterPos2iv(glc.context, (*C.GLint)(unsafe.Pointer(v)))
 	}
 
 	glc.RasterPos2sv = func(v *int16) {
+		defer glc.trace("RasterPos2sv")
 		C.gl30RasterPos2sv(glc.context, (*C.GLshort)(unsafe.Pointer(v)))
 	}
 
 	glc.RasterPos3dv = func(v *float64) {
+		defer glc.trace("RasterPos3dv")
 		C.gl30RasterPos3dv(glc.context, (*C.GLdouble)(unsafe.Pointer(v)))
 	}
 
 	glc.RasterPos3fv = func(v *float32) {
+		defer glc.trace("RasterPos3fv")
 		C.gl30RasterPos3fv(glc.context, (*C.GLfloat)(unsafe.Pointer(v)))
 	}
 
 	glc.RasterPos3iv = func(v *int32) {
+		defer glc.trace("RasterPos3iv")
 		C.gl30RasterPos3iv(glc.context, (*C.GLint)(unsafe.Pointer(v)))
 	}
 
 	glc.RasterPos3sv = func(v *int16) {
+		defer glc.trace("RasterPos3sv")
 		C.gl30RasterPos3sv(glc.context, (*C.GLshort)(unsafe.Pointer(v)))
 	}
 
 	glc.RasterPos4dv = func(v *float64) {
+		defer glc.trace("RasterPos4dv")
 		C.gl30RasterPos4dv(glc.context, (*C.GLdouble)(unsafe.Pointer(v)))
 	}
 
 	glc.RasterPos4fv = func(v *float32) {
+		defer glc.trace("RasterPos4fv")
 		C.gl30RasterPos4fv(glc.context, (*C.GLfloat)(unsafe.Pointer(v)))
 	}
 
 	glc.RasterPos4iv = func(v *int32) {
+		defer glc.trace("RasterPos4iv")
 		C.gl30RasterPos4iv(glc.context, (*C.GLint)(unsafe.Pointer(v)))
 	}
 
 	glc.RasterPos4sv = func(v *int16) {
+		defer glc.trace("RasterPos4sv")
 		C.gl30RasterPos4sv(glc.context, (*C.GLshort)(unsafe.Pointer(v)))
 	}
 
 	glc.ReadBuffer = func(mode uint32) {
+		defer glc.trace("ReadBuffer")
 		C.gl30ReadBuffer(glc.context, C.GLenum(mode))
 	}
 
 	glc.ReadPixels = func(x, y int32, width, height int32, format, Type uint32, pixels unsafe.Pointer) {
+		defer glc.trace("ReadPixels")
 		C.gl30ReadPixels(glc.context, C.GLint(x), C.GLint(y), C.GLsizei(width), C.GLsizei(height), C.GLenum(format), C.GLenum(Type), pixels)
 	}
 
 	glc.Rectd = func(x1, y1, x2, y2 float64) {
+		defer glc.trace("Rectd")
 		C.gl30Rectd(glc.context, C.GLdouble(x1), C.GLdouble(y1), C.GLdouble(x2), C.GLdouble(y2))
 	}
 
 	glc.Rectf = func(x1, y1, x2, y2 float32) {
+		defer glc.trace("Rectf")
 		C.gl30Rectf(glc.context, C.GLfloat(x1), C.GLfloat(y1), C.GLfloat(x2), C.GLfloat(y2))
 	}
 
 	glc.Recti = func(x1, y1, x2, y2 int32) {
+		defer glc.trace("Recti")
 		C.gl30Recti(glc.context, C.GLint(x1), C.GLint(y1), C.GLint(x2), C.GLint(y2))
 	}
 
 	glc.Rects = func(x1, y1, x2, y2 int16) {
+		defer glc.trace("Rects")
 		C.gl30Rects(glc.context, C.GLshort(x1), C.GLshort(y1), C.GLshort(x2), C.GLshort(y2))
 	}
 
 	glc.Rectdv = func(v1, v2 *float64) {
+		defer glc.trace("Rectdv")
 		C.gl30Rectdv(glc.context, (*C.GLdouble)(unsafe.Pointer(v1)), (*C.GLdouble)(unsafe.Pointer(v2)))
 	}
 
 	glc.Rectfv = func(v1, v2 *float32) {
+		defer glc.trace("Rectfv")
 		C.gl30Rectfv(glc.context, (*C.GLfloat)(unsafe.Pointer(v1)), (*C.GLfloat)(unsafe.Pointer(v2)))
 	}
 
 	glc.Rectiv = func(v1, v2 *int32) {
+		defer glc.trace("Rectiv")
 		C.gl30Rectiv(glc.context, (*C.GLint)(unsafe.Pointer(v1)), (*C.GLint)(unsafe.Pointer(v2)))
 	}
 
 	glc.Rectsv = func(v1, v2 *int16) {
+		defer glc.trace("Rectsv")
 		C.gl30Rectsv(glc.context, (*C.GLshort)(unsafe.Pointer(v1)), (*C.GLshort)(unsafe.Pointer(v2)))
 	}
 
 	glc.RenderMode = func(mode uint32) int32 {
+		defer glc.trace("RenderMode")
 		return int32(C.gl30RenderMode(glc.context, C.GLenum(mode)))
 	}
 
 	glc.Rotated = func(angle, x, y, z float64) {
+		defer glc.trace("Rotated")
 		C.gl30Rotated(glc.context, C.GLdouble(angle), C.GLdouble(x), C.GLdouble(y), C.GLdouble(z))
 	}
 
 	glc.Rotatef = func(angle, x, y, z float32) {
+		defer glc.trace("Rotatef")
 		C.gl30Rotatef(glc.context, C.GLfloat(angle), C.GLfloat(x), C.GLfloat(y), C.GLfloat(z))
 	}
 
 	glc.Scaled = func(x, y, z float64) {
+		defer glc.trace("Scaled")
 		C.gl30Scaled(glc.context, C.GLdouble(x), C.GLdouble(y), C.GLdouble(z))
 	}
 
 	glc.Scalef = func(x, y, z float32) {
+		defer glc.trace("Scalef")
 		C.gl30Scalef(glc.context, C.GLfloat(x), C.GLfloat(y), C.GLfloat(z))
 	}
 
 	glc.Scissor = func(x, y int32, width, height int32) {
+		defer glc.trace("Scissor")
 		C.gl30Scissor(glc.context, C.GLint(x), C.GLint(y), C.GLsizei(width), C.GLsizei(height))
 	}
 
 	glc.SelectBuffer = func(size int32, buffer *uint32) {
+		defer glc.trace("SelectBuffer")
 		C.gl30SelectBuffer(glc.context, C.GLsizei(size), (*C.GLuint)(unsafe.Pointer(buffer)))
 	}
 
 	glc.ShadeModel = func(mode uint32) {
+		defer glc.trace("ShadeModel")
 		C.gl30ShadeModel(glc.context, C.GLenum(mode))
 	}
 
 	glc.StencilFunc = func(Func uint32, ref int32, mask uint32) {
+		defer glc.trace("StencilFunc")
 		C.gl30StencilFunc(glc.context, C.GLenum(Func), C.GLint(ref), C.GLuint(mask))
 	}
 
 	glc.StencilMask = func(mask uint32) {
+		defer glc.trace("StencilMask")
 		C.gl30StencilMask(glc.context, C.GLuint(mask))
 	}
 
 	glc.StencilOp = func(fail, zfail, zpass uint32) {
+		defer glc.trace("StencilOp")
 		C.gl30StencilOp(glc.context, C.GLenum(fail), C.GLenum(zfail), C.GLenum(zpass))
 	}
 
 	glc.TexCoord1d = func(s float64) {
+		defer glc.trace("TexCoord1d")
 		C.gl30TexCoord1d(glc.context, C.GLdouble(s))
 	}
 
 	glc.TexCoord1f = func(s float32) {
+		defer glc.trace("TexCoord1f")
 		C.gl30TexCoord1f(glc.context, C.GLfloat(s))
 	}
 
 	glc.TexCoord1i = func(s int32) {
+		defer glc.trace("TexCoord1i")
 		C.gl30TexCoord1i(glc.context, C.GLint(s))
 	}
 
 	glc.TexCoord1s = func(s int16) {
+		defer glc.trace("TexCoord1s")
 		C.gl30TexCoord1s(glc.context, C.GLshort(s))
 	}
 
 	glc.TexCoord2d = func(s, t float64) {
+		defer glc.trace("TexCoord2d")
 		C.gl30TexCoord2d(glc.context, C.GLdouble(s), C.GLdouble(t))
 	}
 
 	glc.TexCoord2f = func(s, t float32) {
+		defer glc.trace("TexCoord2f")
 		C.gl30TexCoord2f(glc.context, C.GLfloat(s), C.GLfloat(t))
 	}
 
 	glc.TexCoord2i = func(s, t int32) {
+		defer glc.trace("TexCoord2i")
 		C.gl30TexCoord2i(glc.context, C.GLint(s), C.GLint(t))
 	}
 
 	glc.TexCoord2s = func(s, t int16) {
+		defer glc.trace("TexCoord2s")
 		C.gl30TexCoord2s(glc.context, C.GLshort(s), C.GLshort(t))
 	}
 
 	glc.TexCoord3d = func(s, t, r float64) {
+		defer glc.trace("TexCoord3d")
 		C.gl30TexCoord3d(glc.context, C.GLdouble(s), C.GLdouble(t), C.GLdouble(r))
 	}
 
 	glc.TexCoord3f = func(s, t, r float32) {
+		defer glc.trace("TexCoord3f")
 		C.gl30TexCoord3f(glc.context, C.GLfloat(s), C.GLfloat(t), C.GLfloat(r))
 	}
 
 	glc.TexCoord3i = func(s, t, r int32) {
+		defer glc.trace("TexCoord3i")
 		C.gl30TexCoord3i(glc.context, C.GLint(s), C.GLint(t), C.GLint(r))
 	}
 
 	glc.TexCoord3s = func(s, t, r int16) {
+		defer glc.trace("TexCoord3s")
 		C.gl30TexCoord3s(glc.context, C.GLshort(s), C.GLshort(t), C.GLshort(r))
 	}
 
 	glc.TexCoord4d = func(s, t, r, q float64) {
+		defer glc.trace("TexCoord4d")
 		C.gl30TexCoord4d(glc.context, C.GLdouble(s), C.GLdouble(t), C.GLdouble(r), C.GLdouble(q))
 	}
 
 	glc.TexCoord4f = func(s, t, r, q float32) {
+		defer glc.trace("TexCoord4f")
 		C.gl30TexCoord4f(glc.context, C.GLfloat(s), C.GLfloat(t), C.GLfloat(r), C.GLfloat(q))
 	}
 
 	glc.TexCoord4i = func(s, t, r, q int32) {
+		defer glc.trace("TexCoord4i")
 		C.gl30TexCoord4i(glc.context, C.GLint(s), C.GLint(t), C.GLint(r), C.GLint(q))
 	}
 
 	glc.TexCoord4s = func(s, t, r, q int16) {
+		defer glc.trace("TexCoord4s")
 		C.gl30TexCoord4s(glc.context, C.GLshort(s), C.GLshort(t), C.GLshort(r), C.GLshort(q))
 	}
 
 	glc.TexCoord1dv = func(v *float64) {
+		defer glc.trace("TexCoord1dv")
 		C.gl30TexCoord1dv(glc.context, (*C.GLdouble)(unsafe.Pointer(v)))
 	}
 
 	glc.TexCoord1fv = func(v *float32) {
+		defer glc.trace("TexCoord1fv")
 		C.gl30TexCoord1fv(glc.context, (*C.GLfloat)(unsafe.Pointer(v)))
 	}
 
 	glc.TexCoord1iv = func(v *int32) {
+		defer glc.trace("TexCoord1iv")
 		C.gl30TexCoord1iv(glc.context, (*C.GLint)(unsafe.Pointer(v)))
 	}
 
 	glc.TexCoord1sv = func(v *int16) {
+		defer glc.trace("TexCoord1sv")
 		C.gl30TexCoord1sv(glc.context, (*C.GLshort)(unsafe.Pointer(v)))
 	}
 
 	glc.TexCoord2dv = func(v *float64) {
+		defer glc.trace("TexCoord2dv")
 		C.gl30TexCoord2dv(glc.context, (*C.GLdouble)(unsafe.Pointer(v)))
 	}
 
 	glc.TexCoord2fv = func(v *float32) {
+		defer glc.trace("TexCoord2fv")
 		C.gl30TexCoord2fv(glc.context, (*C.GLfloat)(unsafe.Pointer(v)))
 	}
 
 	glc.TexCoord2iv = func(v *int32) {
+		defer glc.trace("TexCoord2iv")
 		C.gl30TexCoord2iv(glc.context, (*C.GLint)(unsafe.Pointer(v)))
 	}
 
 	glc.TexCoord2sv = func(v *int16) {
+		defer glc.trace("TexCoord2sv")
 		C.gl30TexCoord2sv(glc.context, (*C.GLshort)(unsafe.Pointer(v)))
 	}
 
 	glc.TexCoord3dv = func(v *float64) {
+		defer glc.trace("TexCoord3dv")
 		C.gl30TexCoord3dv(glc.context, (*C.GLdouble)(unsafe.Pointer(v)))
 	}
 
 	glc.TexCoord3fv = func(v *float32) {
+		defer glc.trace("TexCoord3fv")
 		C.gl30TexCoord3fv(glc.context, (*C.GLfloat)(unsafe.Pointer(v)))
 	}
 
 	glc.TexCoord3iv = func(v *int32) {
+		defer glc.trace("TexCoord3iv")
 		C.gl30TexCoord3iv(glc.context, (*C.GLint)(unsafe.Pointer(v)))
 	}
 
 	glc.TexCoord3sv = func(v *int16) {
+		defer glc.trace("TexCoord3sv")
 		C.gl30TexCoord3sv(glc.context, (*C.GLshort)(unsafe.Pointer(v)))
 	}
 
 	glc.TexCoord4dv = func(v *float64) {
+		defer glc.trace("TexCoord4dv")
 		C.gl30TexCoord4dv(glc.context, (*C.GLdouble)(unsafe.Pointer(v)))
 	}
 
 	glc.TexCoord4fv = func(v *float32) {
+		defer glc.trace("TexCoord4fv")
 		C.gl30TexCoord4fv(glc.context, (*C.GLfloat)(unsafe.Pointer(v)))
 	}
 
 	glc.TexCoord4iv = func(v *int32) {
+		defer glc.trace("TexCoord4iv")
 		C.gl30TexCoord4iv(glc.context, (*C.GLint)(unsafe.Pointer(v)))
 	}
 
 	glc.TexCoord4sv = func(v *int16) {
+		defer glc.trace("TexCoord4sv")
 		C.gl30TexCoord4sv(glc.context, (*C.GLshort)(unsafe.Pointer(v)))
 	}
 
 	glc.TexEnvf = func(target, pname uint32, param float32) {
+		defer glc.trace("TexEnvf")
 		C.gl30TexEnvf(glc.context, C.GLenum(target), C.GLenum(pname), C.GLfloat(param))
 	}
 
 	glc.TexEnvi = func(target, pname uint32, param int32) {
+		defer glc.trace("TexEnvi")
 		C.gl30TexEnvi(glc.context, C.GLenum(target), C.GLenum(pname), C.GLint(param))
 	}
 
 	glc.TexEnvfv = func(target, pname uint32, params *float32) {
+		defer glc.trace("TexEnvfv")
 		C.gl30TexEnvfv(glc.context, C.GLenum(target), C.GLenum(pname), (*C.GLfloat)(unsafe.Pointer(params)))
 	}
 
 	glc.TexEnviv = func(target, pname uint32, params *int32) {
+		defer glc.trace("TexEnviv")
 		C.gl30TexEnviv(glc.context, C.GLenum(target), C.GLenum(pname), (*C.GLint)(unsafe.Pointer(params)))
 	}
 
 	glc.TexGend = func(coord, pname uint32, param float64) {
+		defer glc.trace("TexGend")
 		C.gl30TexGend(glc.context, C.GLenum(coord), C.GLenum(pname), C.GLdouble(param))
 	}
 
 	glc.TexGenf = func(coord, pname uint32, param float32) {
+		defer glc.trace("TexGenf")
 		C.gl30TexGenf(glc.context, C.GLenum(coord), C.GLenum(pname), C.GLfloat(param))
 	}
 
 	glc.TexGeni = func(coord, pname uint32, param int32) {
+		defer glc.trace("TexGeni")
 		C.gl30TexGeni(glc.context, C.GLenum(coord), C.GLenum(pname), C.GLint(param))
 	}
 
 	glc.TexGendv = func(coord, pname uint32, params *float64) {
+		defer glc.trace("TexGendv")
 		C.gl30TexGendv(glc.context, C.GLenum(coord), C.GLenum(pname), (*C.GLdouble)(unsafe.Pointer(params)))
 	}
 
 	glc.TexGenfv = func(coord, pname uint32, params *float32) {
+		defer glc.trace("TexGenfv")
 		C.gl30TexGenfv(glc.context, C.GLenum(coord), C.GLenum(pname), (*C.GLfloat)(unsafe.Pointer(params)))
 	}
 
 	glc.TexGeniv = func(coord, pname uint32, params *int32) {
+		defer glc.trace("TexGeniv")
 		C.gl30TexGeniv(glc.context, C.GLenum(coord), C.GLenum(pname), (*C.GLint)(unsafe.Pointer(params)))
 	}
 
 	glc.TexImage1D = func(target uint32, level, internalformat int32, width int32, border int32, format, Type uint32, pixels unsafe.Pointer) {
+		defer glc.trace("TexImage1D")
 		C.gl30TexImage1D(glc.context, C.GLenum(target), C.GLint(level), C.GLint(internalformat), C.GLsizei(width), C.GLint(border), C.GLenum(format), C.GLenum(Type), pixels)
 	}
 
 	glc.TexImage2D = func(target uint32, level, internalformat int32, width, height int32, border int32, format, Type uint32, pixels unsafe.Pointer) {
+		defer glc.trace("TexImage2D")
 		C.gl30TexImage2D(glc.context, C.GLenum(target), C.GLint(level), C.GLint(internalformat), C.GLsizei(width), C.GLsizei(height), C.GLint(border), C.GLenum(format), C.GLenum(Type), pixels)
 	}
 
 	glc.TexParameterf = func(target, pname uint32, param float32) {
+		defer glc.trace("TexParameterf")
 		C.gl30TexParameterf(glc.context, C.GLenum(target), C.GLenum(pname), C.GLfloat(param))
 	}
 
 	glc.TexParameteri = func(target, pname uint32, param int32) {
+		defer glc.trace("TexParameteri")
 		C.gl30TexParameteri(glc.context, C.GLenum(target), C.GLenum(pname), C.GLint(param))
 	}
 
 	glc.TexParameterfv = func(target, pname uint32, params *float32) {
+		defer glc.trace("TexParameterfv")
 		C.gl30TexParameterfv(glc.context, C.GLenum(target), C.GLenum(pname), (*C.GLfloat)(unsafe.Pointer(params)))
 	}
 
 	glc.TexParameteriv = func(target, pname uint32, params *int32) {
+		defer glc.trace("TexParameteriv")
 		C.gl30TexParameteriv(glc.context, C.GLenum(target), C.GLenum(pname), (*C.GLint)(unsafe.Pointer(params)))
 	}
 
 	glc.Translated = func(x, y, z float64) {
+		defer glc.trace("Translated")
 		C.gl30Translated(glc.context, C.GLdouble(x), C.GLdouble(y), C.GLdouble(z))
 	}
 
 	glc.Translatef = func(x, y, z float32) {
+		defer glc.trace("Translatef")
 		C.gl30Translatef(glc.context, C.GLfloat(x), C.GLfloat(y), C.GLfloat(z))
 	}
 
 	glc.Vertex2s = func(x, y int16) {
+		defer glc.trace("Vertex2s")
 		C.gl30Vertex2s(glc.context, C.GLshort(x), C.GLshort(y))
 	}
 
 	glc.Vertex2i = func(x, y int32) {
+		defer glc.trace("Vertex2i")
 		C.gl30Vertex2i(glc.context, C.GLint(x), C.GLint(y))
 	}
 
 	glc.Vertex2f = func(x, y float32) {
+		defer glc.trace("Vertex2f")
 		C.gl30Vertex2f(glc.context, C.GLfloat(x), C.GLfloat(y))
 	}
 
 	glc.Vertex2d = func(x, y float64) {
+		defer glc.trace("Vertex2d")
 		C.gl30Vertex2d(glc.context, C.GLdouble(x), C.GLdouble(y))
 	}
 
 	glc.Vertex3s = func(x, y, z int16) {
+		defer glc.trace("Vertex3s")
 		C.gl30Vertex3s(glc.context, C.GLshort(x), C.GLshort(y), C.GLshort(z))
 	}
 
 	glc.Vertex3i = func(x, y, z int32) {
+		defer glc.trace("Vertex3i")
 		C.gl30Vertex3i(glc.context, C.GLint(x), C.GLint(y), C.GLint(z))
 	}
 
 	glc.Vertex3f = func(x, y, z float32) {
+		defer glc.trace("Vertex3f")
 		C.gl30Vertex3f(glc.context, C.GLfloat(x), C.GLfloat(y), C.GLfloat(z))
 	}
 
 	glc.Vertex3d = func(x, y, z float64) {
+		defer glc.trace("Vertex3d")
 		C.gl30Vertex3d(glc.context, C.GLdouble(x), C.GLdouble(y), C.GLdouble(z))
 	}
 
 	glc.Vertex4s = func(x, y, z, w int16) {
+		defer glc.trace("Vertex4s")
 		C.gl30Vertex4s(glc.context, C.GLshort(x), C.GLshort(y), C.GLshort(z), C.GLshort(w))
 	}
 
 	glc.Vertex4i = func(x, y, z, w int32) {
+		defer glc.trace("Vertex4i")
 		C.gl30Vertex4i(glc.context, C.GLint(x), C.GLint(y), C.GLint(z), C.GLint(w))
 	}
 
 	glc.Vertex4f = func(x, y, z, w float32) {
+		defer glc.trace("Vertex4f")
 		C.gl30Vertex4f(glc.context, C.GLfloat(x), C.GLfloat(y), C.GLfloat(z), C.GLfloat(w))
 	}
 
 	glc.Vertex4d = func(x, y, z, w float64) {
+		defer glc.trace("Vertex4d")
 		C.gl30Vertex4d(glc.context, C.GLdouble(x), C.GLdouble(y), C.GLdouble(z), C.GLdouble(w))
 	}
 
 	glc.Viewport = func(x, y int32, width, height int32) {
+		defer glc.trace("Viewport")
 		C.gl30Viewport(glc.context, C.GLint(x), C.GLint(y), C.GLsizei(width), C.GLsizei(height))
 	}
 
 	glc.GetConvolutionParameterfv = func(target, pname uint32, params *float32) {
+		defer glc.trace("GetConvolutionParameterfv")
 		C.gl30GetConvolutionParameterfv(glc.context, C.GLenum(target), C.GLenum(pname), (*C.GLfloat)(unsafe.Pointer(params)))
 	}
 
 	glc.GetConvolutionParameteriv = func(target, pname uint32, params *int32) {
+		defer glc.trace("GetConvolutionParameteriv")
 		C.gl30GetConvolutionParameteriv(glc.context, C.GLenum(target), C.GLenum(pname), (*C.GLint)(unsafe.Pointer(params)))
 	}
 
 	glc.AreTexturesResident = func(textures []uint32) (status bool, residencies []bool) {
+		defer glc.trace("AreTexturesResident")
 		var cRes *C.GLboolean
 		status = C.gl30AreTexturesResident(glc.context, C.GLsizei(len(textures)), (*C.GLuint)(unsafe.Pointer(&textures[0])), cRes) != 0
 		residencies = make([]bool, len(textures))
@@ -6793,670 +7091,837 @@ func New() *Context {
 	}
 
 	glc.ArrayElement = func(i int32) {
+		defer glc.trace("ArrayElement")
 		C.gl30ArrayElement(glc.context, C.GLint(i))
 	}
 
 	glc.DrawArrays = func(mode uint32, first int32, count int32) {
+		defer glc.trace("DrawArrays")
 		C.gl30DrawArrays(glc.context, C.GLenum(mode), C.GLint(first), C.GLsizei(count))
 	}
 
 	glc.DrawElements = func(mode uint32, count int32, Type uint32, indices unsafe.Pointer) {
+		defer glc.trace("DrawElements")
 		C.gl30DrawElements(glc.context, C.GLenum(mode), C.GLsizei(count), C.GLenum(Type), indices)
 	}
 
 	glc.GetPointerv = func(pname uint32, params unsafe.Pointer) {
+		defer glc.trace("GetPointerv")
 		C.gl30GetPointerv(glc.context, C.GLenum(pname), params)
 	}
 
 	glc.PolygonOffset = func(factor, units float32) {
+		defer glc.trace("PolygonOffset")
 		C.gl30PolygonOffset(glc.context, C.GLfloat(factor), C.GLfloat(units))
 	}
 
 	glc.CopyTexImage1D = func(target uint32, level int32, internalFormat uint32, x, y int32, width int32, border int32) {
+		defer glc.trace("CopyTexImage1D")
 		C.gl30CopyTexImage1D(glc.context, C.GLenum(target), C.GLint(level), C.GLenum(internalFormat), C.GLint(x), C.GLint(y), C.GLsizei(width), C.GLint(border))
 	}
 
 	glc.CopyTexImage2D = func(target uint32, level int32, internalFormat uint32, x, y int32, width, height int32, border int32) {
+		defer glc.trace("CopyTexImage2D")
 		C.gl30CopyTexImage2D(glc.context, C.GLenum(target), C.GLint(level), C.GLenum(internalFormat), C.GLint(x), C.GLint(y), C.GLsizei(width), C.GLsizei(height), C.GLint(border))
 	}
 
 	glc.CopyTexSubImage1D = func(target uint32, level, xoffset, x, y int32, width int32) {
+		defer glc.trace("CopyTexSubImage1D")
 		C.gl30CopyTexSubImage1D(glc.context, C.GLenum(target), C.GLint(level), C.GLint(xoffset), C.GLint(x), C.GLint(y), C.GLsizei(width))
 	}
 
 	glc.CopyTexSubImage2D = func(target uint32, level, xoffset, yoffset, x, y int32, width, height int32) {
+		defer glc.trace("CopyTexSubImage2D")
 		C.gl30CopyTexSubImage2D(glc.context, C.GLenum(target), C.GLint(level), C.GLint(xoffset), C.GLint(yoffset), C.GLint(x), C.GLint(y), C.GLsizei(width), C.GLsizei(height))
 	}
 
 	glc.BindTexture = func(target uint32, texture uint32) {
+		defer glc.trace("BindTexture")
 		C.gl30BindTexture(glc.context, C.GLenum(target), C.GLuint(texture))
 	}
 
 	glc.DeleteTextures = func(n int32, textures *uint32) {
+		defer glc.trace("DeleteTextures")
 		C.gl30DeleteTextures(glc.context, C.GLsizei(n), (*C.GLuint)(unsafe.Pointer(textures)))
 	}
 
 	glc.GenTextures = func(n int32, textures *uint32) {
+		defer glc.trace("GenTextures")
 		C.gl30GenTextures(glc.context, C.GLsizei(n), (*C.GLuint)(unsafe.Pointer(textures)))
 	}
 
 	glc.IsTexture = func(texture uint32) bool {
+		defer glc.trace("IsTexture")
 		return C.gl30IsTexture(glc.context, C.GLuint(texture)) != 0
 	}
 
 	glc.ColorPointer = func(size int32, Type uint32, stride int32, pointer unsafe.Pointer) {
+		defer glc.trace("ColorPointer")
 		C.gl30ColorPointer(glc.context, C.GLint(size), C.GLenum(Type), C.GLsizei(stride), pointer)
 	}
 
 	glc.EnableClientState = func(cap uint32) {
+		defer glc.trace("EnableClientState")
 		C.gl30EnableClientState(glc.context, C.GLenum(cap))
 	}
 
 	glc.DisableClientState = func(cap uint32) {
+		defer glc.trace("DisableClientState")
 		C.gl30DisableClientState(glc.context, C.GLenum(cap))
 	}
 
 	glc.Indexub = func(c uint8) {
+		defer glc.trace("Indexub")
 		C.gl30Indexub(glc.context, C.GLubyte(c))
 	}
 
 	glc.Indexubv = func(c *uint8) {
+		defer glc.trace("Indexubv")
 		C.gl30Indexubv(glc.context, (*C.GLubyte)(unsafe.Pointer(c)))
 	}
 
 	glc.InterleavedArrays = func(format uint32, stride int32, pointer unsafe.Pointer) {
+		defer glc.trace("InterleavedArrays")
 		C.gl30InterleavedArrays(glc.context, C.GLenum(format), C.GLsizei(stride), pointer)
 	}
 
 	glc.NormalPointer = func(Type uint32, stride int32, pointer unsafe.Pointer) {
+		defer glc.trace("NormalPointer")
 		C.gl30NormalPointer(glc.context, C.GLenum(Type), C.GLsizei(stride), pointer)
 	}
 
 	glc.PushClientAttrib = func(mask uint32) {
+		defer glc.trace("PushClientAttrib")
 		C.gl30PushClientAttrib(glc.context, C.GLbitfield(mask))
 	}
 
 	glc.PrioritizeTextures = func(n int32, textures *uint32, priorities *float32) {
+		defer glc.trace("PrioritizeTextures")
 		C.gl30PrioritizeTextures(glc.context, C.GLsizei(n), (*C.GLuint)(unsafe.Pointer(textures)), (*C.GLclampf)(unsafe.Pointer(priorities)))
 	}
 
 	glc.PopClientAttrib = func() {
+		defer glc.trace("PopClientAttrib")
 		C.gl30PopClientAttrib(glc.context)
 	}
 
 	glc.TexCoordPointer = func(size int32, Type uint32, stride int32, pointer unsafe.Pointer) {
+		defer glc.trace("TexCoordPointer")
 		C.gl30TexCoordPointer(glc.context, C.GLint(size), C.GLenum(Type), C.GLsizei(stride), pointer)
 	}
 
 	glc.TexSubImage1D = func(target uint32, level, xoffset int32, width int32, format, Type uint32, pixels unsafe.Pointer) {
+		defer glc.trace("TexSubImage1D")
 		C.gl30TexSubImage1D(glc.context, C.GLenum(target), C.GLint(level), C.GLint(xoffset), C.GLsizei(width), C.GLenum(format), C.GLenum(Type), pixels)
 	}
 
 	glc.TexSubImage2D = func(target uint32, level, xoffset, yoffset int32, width, height int32, format, Type uint32, pixels unsafe.Pointer) {
+		defer glc.trace("TexSubImage2D")
 		C.gl30TexSubImage2D(glc.context, C.GLenum(target), C.GLint(level), C.GLint(xoffset), C.GLint(yoffset), C.GLsizei(width), C.GLsizei(height), C.GLenum(format), C.GLenum(Type), pixels)
 	}
 
 	glc.VertexPointer = func(size int32, Type uint32, stride int32, pointer unsafe.Pointer) {
+		defer glc.trace("VertexPointer")
 		C.gl30VertexPointer(glc.context, C.GLint(size), C.GLenum(Type), C.GLsizei(stride), pointer)
 	}
 
 	glc.ColorTable = func(target, internalformat uint32, width int32, format, Type uint32, data unsafe.Pointer) {
+		defer glc.trace("ColorTable")
 		C.gl30ColorTable(glc.context, C.GLenum(target), C.GLenum(internalformat), C.GLsizei(width), C.GLenum(format), C.GLenum(Type), data)
 	}
 
 	glc.ColorTableParameterfv = func(target, pname uint32, params *float32) {
+		defer glc.trace("ColorTableParameterfv")
 		C.gl30ColorTableParameterfv(glc.context, C.GLenum(target), C.GLenum(pname), (*C.GLfloat)(unsafe.Pointer(params)))
 	}
 
 	glc.ColorTableParameteriv = func(target, pname uint32, params *int32) {
+		defer glc.trace("ColorTableParameteriv")
 		C.gl30ColorTableParameteriv(glc.context, C.GLenum(target), C.GLenum(pname), (*C.GLint)(unsafe.Pointer(params)))
 	}
 
 	glc.ColorSubTable = func(target uint32, start, count int32, format, Type uint32, data unsafe.Pointer) {
+		defer glc.trace("ColorSubTable")
 		C.gl30ColorSubTable(glc.context, C.GLenum(target), C.GLsizei(start), C.GLsizei(count), C.GLenum(format), C.GLenum(Type), data)
 	}
 
 	glc.ConvolutionFilter1D = func(target, internalformat uint32, width int32, format, Type uint32, data unsafe.Pointer) {
+		defer glc.trace("ConvolutionFilter1D")
 		C.gl30ConvolutionFilter1D(glc.context, C.GLenum(target), C.GLenum(internalformat), C.GLsizei(width), C.GLenum(format), C.GLenum(Type), data)
 	}
 
 	glc.ConvolutionFilter2D = func(target, internalformat uint32, width, height int32, format, Type uint32, data unsafe.Pointer) {
+		defer glc.trace("ConvolutionFilter2D")
 		C.gl30ConvolutionFilter2D(glc.context, C.GLenum(target), C.GLenum(internalformat), C.GLsizei(width), C.GLsizei(height), C.GLenum(format), C.GLenum(Type), data)
 	}
 
 	glc.ConvolutionParameterf = func(target, pname uint32, params float32) {
+		defer glc.trace("ConvolutionParameterf")
 		C.gl30ConvolutionParameterf(glc.context, C.GLenum(target), C.GLenum(pname), C.GLfloat(params))
 	}
 
 	glc.ConvolutionParameteri = func(target, pname uint32, params int32) {
+		defer glc.trace("ConvolutionParameteri")
 		C.gl30ConvolutionParameteri(glc.context, C.GLenum(target), C.GLenum(pname), C.GLint(params))
 	}
 
 	glc.CopyColorTable = func(target, internalformat uint32, x, y int32, width int32) {
+		defer glc.trace("CopyColorTable")
 		C.gl30CopyColorTable(glc.context, C.GLenum(target), C.GLenum(internalformat), C.GLint(x), C.GLint(y), C.GLsizei(width))
 	}
 
 	glc.CopyColorSubTable = func(target uint32, start int32, x, y int32, width int32) {
+		defer glc.trace("CopyColorSubTable")
 		C.gl30CopyColorSubTable(glc.context, C.GLenum(target), C.GLsizei(start), C.GLint(x), C.GLint(y), C.GLsizei(width))
 	}
 
 	glc.CopyConvolutionFilter1D = func(target, internalformat uint32, x, y int32, width int32) {
+		defer glc.trace("CopyConvolutionFilter1D")
 		C.gl30CopyConvolutionFilter1D(glc.context, C.GLenum(target), C.GLenum(internalformat), C.GLint(x), C.GLint(y), C.GLsizei(width))
 	}
 
 	glc.CopyConvolutionFilter2D = func(target, internalformat uint32, x, y int32, width, height int32) {
+		defer glc.trace("CopyConvolutionFilter2D")
 		C.gl30CopyConvolutionFilter2D(glc.context, C.GLenum(target), C.GLenum(internalformat), C.GLint(x), C.GLint(y), C.GLsizei(width), C.GLsizei(height))
 	}
 
 	glc.GetColorTable = func(target, format, Type uint32, table unsafe.Pointer) {
+		defer glc.trace("GetColorTable")
 		C.gl30GetColorTable(glc.context, C.GLenum(target), C.GLenum(format), C.GLenum(Type), table)
 	}
 
 	glc.GetColorTableParameterfv = func(target, pname uint32, params *float32) {
+		defer glc.trace("GetColorTableParameterfv")
 		C.gl30GetColorTableParameterfv(glc.context, C.GLenum(target), C.GLenum(pname), (*C.GLfloat)(unsafe.Pointer(params)))
 	}
 
 	glc.GetColorTableParameteriv = func(target, pname uint32, params *int32) {
+		defer glc.trace("GetColorTableParameteriv")
 		C.gl30GetColorTableParameteriv(glc.context, C.GLenum(target), C.GLenum(pname), (*C.GLint)(unsafe.Pointer(params)))
 	}
 
 	glc.GetConvolutionFilter = func(target, format, Type uint32, image unsafe.Pointer) {
+		defer glc.trace("GetConvolutionFilter")
 		C.gl30GetConvolutionFilter(glc.context, C.GLenum(target), C.GLenum(format), C.GLenum(Type), image)
 	}
 
 	glc.GetHistogram = func(target uint32, reset bool, format, Type uint32, values unsafe.Pointer) {
+		defer glc.trace("GetHistogram")
 		C.gl30GetHistogram(glc.context, C.GLenum(target), boolToGL(reset), C.GLenum(format), C.GLenum(Type), values)
 	}
 
 	glc.GetHistogramParameterfv = func(target, pname uint32, params *float32) {
+		defer glc.trace("GetHistogramParameterfv")
 		C.gl30GetHistogramParameterfv(glc.context, C.GLenum(target), C.GLenum(pname), (*C.GLfloat)(unsafe.Pointer(params)))
 	}
 
 	glc.GetHistogramParameteriv = func(target, pname uint32, params *int32) {
+		defer glc.trace("GetHistogramParameteriv")
 		C.gl30GetHistogramParameteriv(glc.context, C.GLenum(target), C.GLenum(pname), (*C.GLint)(unsafe.Pointer(params)))
 	}
 
 	glc.GetSeparableFilter = func(target, format, Type uint32, row, column, span unsafe.Pointer) {
+		defer glc.trace("GetSeparableFilter")
 		C.gl30GetSeparableFilter(glc.context, C.GLenum(target), C.GLenum(format), C.GLenum(Type), row, column, span)
 	}
 
 	glc.Histogram = func(target uint32, width int32, internalformat uint32, sink bool) {
+		defer glc.trace("Histogram")
 		C.gl30Histogram(glc.context, C.GLenum(target), C.GLsizei(width), C.GLenum(internalformat), boolToGL(sink))
 	}
 
 	glc.Minmax = func(target, internalformat uint32, sink bool) {
+		defer glc.trace("Minmax")
 		C.gl30Minmax(glc.context, C.GLenum(target), C.GLenum(internalformat), boolToGL(sink))
 	}
 
 	glc.MultiTexCoord1s = func(target uint32, s int16) {
+		defer glc.trace("MultiTexCoord1s")
 		C.gl30MultiTexCoord1s(glc.context, C.GLenum(target), C.GLshort(s))
 	}
 
 	glc.MultiTexCoord1i = func(target uint32, s int32) {
+		defer glc.trace("MultiTexCoord1i")
 		C.gl30MultiTexCoord1i(glc.context, C.GLenum(target), C.GLint(s))
 	}
 
 	glc.MultiTexCoord1f = func(target uint32, s float32) {
+		defer glc.trace("MultiTexCoord1f")
 		C.gl30MultiTexCoord1f(glc.context, C.GLenum(target), C.GLfloat(s))
 	}
 
 	glc.MultiTexCoord1d = func(target uint32, s float64) {
+		defer glc.trace("MultiTexCoord1d")
 		C.gl30MultiTexCoord1d(glc.context, C.GLenum(target), C.GLdouble(s))
 	}
 
 	glc.MultiTexCoord2s = func(target uint32, s, t int16) {
+		defer glc.trace("MultiTexCoord2s")
 		C.gl30MultiTexCoord2s(glc.context, C.GLenum(target), C.GLshort(s), C.GLshort(t))
 	}
 
 	glc.MultiTexCoord2i = func(target uint32, s, t int32) {
+		defer glc.trace("MultiTexCoord2i")
 		C.gl30MultiTexCoord2i(glc.context, C.GLenum(target), C.GLint(s), C.GLint(t))
 	}
 
 	glc.MultiTexCoord2f = func(target uint32, s, t float32) {
+		defer glc.trace("MultiTexCoord2f")
 		C.gl30MultiTexCoord2f(glc.context, C.GLenum(target), C.GLfloat(s), C.GLfloat(t))
 	}
 
 	glc.MultiTexCoord2d = func(target uint32, s, t float64) {
+		defer glc.trace("MultiTexCoord2d")
 		C.gl30MultiTexCoord2d(glc.context, C.GLenum(target), C.GLdouble(s), C.GLdouble(t))
 	}
 
 	glc.MultiTexCoord3s = func(target uint32, s, t, r int16) {
+		defer glc.trace("MultiTexCoord3s")
 		C.gl30MultiTexCoord3s(glc.context, C.GLenum(target), C.GLshort(s), C.GLshort(t), C.GLshort(r))
 	}
 
 	glc.MultiTexCoord3i = func(target uint32, s, t, r int32) {
+		defer glc.trace("MultiTexCoord3i")
 		C.gl30MultiTexCoord3i(glc.context, C.GLenum(target), C.GLint(s), C.GLint(t), C.GLint(r))
 	}
 
 	glc.MultiTexCoord3f = func(target uint32, s, t, r float32) {
+		defer glc.trace("MultiTexCoord3f")
 		C.gl30MultiTexCoord3f(glc.context, C.GLenum(target), C.GLfloat(s), C.GLfloat(t), C.GLfloat(r))
 	}
 
 	glc.MultiTexCoord3d = func(target uint32, s, t, r float64) {
+		defer glc.trace("MultiTexCoord3d")
 		C.gl30MultiTexCoord3d(glc.context, C.GLenum(target), C.GLdouble(s), C.GLdouble(t), C.GLdouble(r))
 	}
 
 	glc.MultiTexCoord4s = func(target uint32, s, t, r, q int16) {
+		defer glc.trace("MultiTexCoord4s")
 		C.gl30MultiTexCoord4s(glc.context, C.GLenum(target), C.GLshort(s), C.GLshort(t), C.GLshort(r), C.GLshort(q))
 	}
 
 	glc.MultiTexCoord4i = func(target uint32, s, t, r, q int32) {
+		defer glc.trace("MultiTexCoord4i")
 		C.gl30MultiTexCoord4i(glc.context, C.GLenum(target), C.GLint(s), C.GLint(t), C.GLint(r), C.GLint(q))
 	}
 
 	glc.MultiTexCoord4f = func(target uint32, s, t, r, q float32) {
+		defer glc.trace("MultiTexCoord4f")
 		C.gl30MultiTexCoord4f(glc.context, C.GLenum(target), C.GLfloat(s), C.GLfloat(t), C.GLfloat(r), C.GLfloat(q))
 	}
 
 	glc.MultiTexCoord4d = func(target uint32, s, t, r, q float64) {
+		defer glc.trace("MultiTexCoord4d")
 		C.gl30MultiTexCoord4d(glc.context, C.GLenum(target), C.GLdouble(s), C.GLdouble(t), C.GLdouble(r), C.GLdouble(q))
 	}
 
 	glc.MultiTexCoord1sv = func(target uint32, v *int16) {
+		defer glc.trace("MultiTexCoord1sv")
 		C.gl30MultiTexCoord1sv(glc.context, C.GLenum(target), (*C.GLshort)(unsafe.Pointer(v)))
 	}
 
 	glc.MultiTexCoord1iv = func(target uint32, v *int32) {
+		defer glc.trace("MultiTexCoord1iv")
 		C.gl30MultiTexCoord1iv(glc.context, C.GLenum(target), (*C.GLint)(unsafe.Pointer(v)))
 	}
 
 	glc.MultiTexCoord1fv = func(target uint32, v *float32) {
+		defer glc.trace("MultiTexCoord1fv")
 		C.gl30MultiTexCoord1fv(glc.context, C.GLenum(target), (*C.GLfloat)(unsafe.Pointer(v)))
 	}
 
 	glc.MultiTexCoord1dv = func(target uint32, v *float64) {
+		defer glc.trace("MultiTexCoord1dv")
 		C.gl30MultiTexCoord1dv(glc.context, C.GLenum(target), (*C.GLdouble)(unsafe.Pointer(v)))
 	}
 
 	glc.MultiTexCoord2sv = func(target uint32, v *int16) {
+		defer glc.trace("MultiTexCoord2sv")
 		C.gl30MultiTexCoord2sv(glc.context, C.GLenum(target), (*C.GLshort)(unsafe.Pointer(v)))
 	}
 
 	glc.MultiTexCoord2iv = func(target uint32, v *int32) {
+		defer glc.trace("MultiTexCoord2iv")
 		C.gl30MultiTexCoord2iv(glc.context, C.GLenum(target), (*C.GLint)(unsafe.Pointer(v)))
 	}
 
 	glc.MultiTexCoord2fv = func(target uint32, v *float32) {
+		defer glc.trace("MultiTexCoord2fv")
 		C.gl30MultiTexCoord2fv(glc.context, C.GLenum(target), (*C.GLfloat)(unsafe.Pointer(v)))
 	}
 
 	glc.MultiTexCoord2dv = func(target uint32, v *float64) {
+		defer glc.trace("MultiTexCoord2dv")
 		C.gl30MultiTexCoord2dv(glc.context, C.GLenum(target), (*C.GLdouble)(unsafe.Pointer(v)))
 	}
 
 	glc.MultiTexCoord3sv = func(target uint32, v *int16) {
+		defer glc.trace("MultiTexCoord3sv")
 		C.gl30MultiTexCoord3sv(glc.context, C.GLenum(target), (*C.GLshort)(unsafe.Pointer(v)))
 	}
 
 	glc.MultiTexCoord3iv = func(target uint32, v *int32) {
+		defer glc.trace("MultiTexCoord3iv")
 		C.gl30MultiTexCoord3iv(glc.context, C.GLenum(target), (*C.GLint)(unsafe.Pointer(v)))
 	}
 
 	glc.MultiTexCoord3fv = func(target uint32, v *float32) {
+		defer glc.trace("MultiTexCoord3fv")
 		C.gl30MultiTexCoord3fv(glc.context, C.GLenum(target), (*C.GLfloat)(unsafe.Pointer(v)))
 	}
 
 	glc.MultiTexCoord3dv = func(target uint32, v *float64) {
+		defer glc.trace("MultiTexCoord3dv")
 		C.gl30MultiTexCoord3dv(glc.context, C.GLenum(target), (*C.GLdouble)(unsafe.Pointer(v)))
 	}
 
 	glc.MultiTexCoord4sv = func(target uint32, v *int16) {
+		defer glc.trace("MultiTexCoord4sv")
 		C.gl30MultiTexCoord4sv(glc.context, C.GLenum(target), (*C.GLshort)(unsafe.Pointer(v)))
 	}
 
 	glc.MultiTexCoord4iv = func(target uint32, v *int32) {
+		defer glc.trace("MultiTexCoord4iv")
 		C.gl30MultiTexCoord4iv(glc.context, C.GLenum(target), (*C.GLint)(unsafe.Pointer(v)))
 	}
 
 	glc.MultiTexCoord4fv = func(target uint32, v *float32) {
+		defer glc.trace("MultiTexCoord4fv")
 		C.gl30MultiTexCoord4fv(glc.context, C.GLenum(target), (*C.GLfloat)(unsafe.Pointer(v)))
 	}
 
 	glc.MultiTexCoord4dv = func(target uint32, v *float64) {
+		defer glc.trace("MultiTexCoord4dv")
 		C.gl30MultiTexCoord4dv(glc.context, C.GLenum(target), (*C.GLdouble)(unsafe.Pointer(v)))
 	}
 
 	glc.ResetHistogram = func(target uint32) {
+		defer glc.trace("ResetHistogram")
 		C.gl30ResetHistogram(glc.context, C.GLenum(target))
 	}
 
 	glc.ResetMinmax = func(target uint32) {
+		defer glc.trace("ResetMinmax")
 		C.gl30ResetMinmax(glc.context, C.GLenum(target))
 	}
 
 	glc.SeparableFilter2D = func(target, internalformat uint32, width, height int32, format, Type uint32, row, column unsafe.Pointer) {
+		defer glc.trace("SeparableFilter2D")
 		C.gl30SeparableFilter2D(glc.context, C.GLenum(target), C.GLenum(internalformat), C.GLsizei(width), C.GLsizei(height), C.GLenum(format), C.GLenum(Type), row, column)
 	}
 
 	glc.BlendColor = func(red, green, blue, alpha float32) {
+		defer glc.trace("BlendColor")
 		C.gl30BlendColor(glc.context, C.GLclampf(red), C.GLclampf(green), C.GLclampf(blue), C.GLclampf(alpha))
 	}
 
 	glc.BlendEquation = func(mode uint32) {
+		defer glc.trace("BlendEquation")
 		C.gl30BlendEquation(glc.context, C.GLenum(mode))
 	}
 
 	glc.CopyTexSubImage3D = func(target uint32, level, xoffset, yoffset, zoffset, x, y int32, width, height int32) {
+		defer glc.trace("CopyTexSubImage3D")
 		C.gl30CopyTexSubImage3D(glc.context, C.GLenum(target), C.GLint(level), C.GLint(xoffset), C.GLint(yoffset), C.GLint(zoffset), C.GLint(x), C.GLint(y), C.GLsizei(width), C.GLsizei(height))
 	}
 
 	glc.DrawRangeElements = func(mode uint32, start, end uint32, count int32, Type uint32, indices unsafe.Pointer) {
+		defer glc.trace("DrawRangeElements")
 		C.gl30DrawRangeElements(glc.context, C.GLenum(mode), C.GLuint(start), C.GLuint(end), C.GLsizei(count), C.GLenum(Type), indices)
 	}
 
 	glc.TexImage3D = func(target uint32, level, internalformat int32, width, height, depth int32, border int32, format, Type uint32, pixels unsafe.Pointer) {
+		defer glc.trace("TexImage3D")
 		C.gl30TexImage3D(glc.context, C.GLenum(target), C.GLint(level), C.GLint(internalformat), C.GLsizei(width), C.GLsizei(height), C.GLsizei(depth), C.GLint(border), C.GLenum(format), C.GLenum(Type), pixels)
 	}
 
 	glc.TexSubImage3D = func(target uint32, level, xoffset, yoffset, zoffset int32, width, height, depth int32, format, Type uint32, pixels unsafe.Pointer) {
+		defer glc.trace("TexSubImage3D")
 		C.gl30TexSubImage3D(glc.context, C.GLenum(target), C.GLint(level), C.GLint(xoffset), C.GLint(yoffset), C.GLint(zoffset), C.GLsizei(width), C.GLsizei(height), C.GLsizei(depth), C.GLenum(format), C.GLenum(Type), pixels)
 	}
 
 	glc.ActiveTexture = func(texture uint32) {
+		defer glc.trace("ActiveTexture")
 		C.gl30ActiveTexture(glc.context, C.GLenum(texture))
 	}
 
 	glc.ClientActiveTexture = func(texture uint32) {
+		defer glc.trace("ClientActiveTexture")
 		C.gl30ClientActiveTexture(glc.context, C.GLenum(texture))
 	}
 
 	glc.CompressedTexImage1D = func(target uint32, level int32, internalformat uint32, width int32, border int32, imageSize int32, data unsafe.Pointer) {
+		defer glc.trace("CompressedTexImage1D")
 		C.gl30CompressedTexImage1D(glc.context, C.GLenum(target), C.GLint(level), C.GLenum(internalformat), C.GLsizei(width), C.GLint(border), C.GLsizei(imageSize), data)
 	}
 
 	glc.CompressedTexImage2D = func(target uint32, level int32, internalformat uint32, width, height int32, border int32, imageSize int32, data unsafe.Pointer) {
+		defer glc.trace("CompressedTexImage2D")
 		C.gl30CompressedTexImage2D(glc.context, C.GLenum(target), C.GLint(level), C.GLenum(internalformat), C.GLsizei(width), C.GLsizei(height), C.GLint(border), C.GLsizei(imageSize), data)
 	}
 
 	glc.CompressedTexImage3D = func(target uint32, level int32, internalformat uint32, width, height, depth int32, border int32, imageSize int32, data unsafe.Pointer) {
+		defer glc.trace("CompressedTexImage3D")
 		C.gl30CompressedTexImage3D(glc.context, C.GLenum(target), C.GLint(level), C.GLenum(internalformat), C.GLsizei(width), C.GLsizei(height), C.GLsizei(depth), C.GLint(border), C.GLsizei(imageSize), data)
 	}
 
 	glc.CompressedTexSubImage1D = func(target uint32, level, xoffset int32, width int32, format uint32, imageSize int32, data unsafe.Pointer) {
+		defer glc.trace("CompressedTexSubImage1D")
 		C.gl30CompressedTexSubImage1D(glc.context, C.GLenum(target), C.GLint(level), C.GLint(xoffset), C.GLsizei(width), C.GLenum(format), C.GLsizei(imageSize), data)
 	}
 
 	glc.CompressedTexSubImage2D = func(target uint32, level, xoffset, yoffset int32, width, height int32, format uint32, imageSize int32, data unsafe.Pointer) {
+		defer glc.trace("CompressedTexSubImage2D")
 		C.gl30CompressedTexSubImage2D(glc.context, C.GLenum(target), C.GLint(level), C.GLint(xoffset), C.GLint(yoffset), C.GLsizei(width), C.GLsizei(height), C.GLenum(format), C.GLsizei(imageSize), data)
 	}
 
 	glc.CompressedTexSubImage3D = func(target uint32, level, xoffset, yoffset, zoffset int32, width, height, depth int32, format uint32, imageSize int32, data unsafe.Pointer) {
+		defer glc.trace("CompressedTexSubImage3D")
 		C.gl30CompressedTexSubImage3D(glc.context, C.GLenum(target), C.GLint(level), C.GLint(xoffset), C.GLint(yoffset), C.GLint(zoffset), C.GLsizei(width), C.GLsizei(height), C.GLsizei(depth), C.GLenum(format), C.GLsizei(imageSize), data)
 	}
 
 	glc.GetCompressedTexImage = func(target uint32, lod int32, img unsafe.Pointer) {
+		defer glc.trace("GetCompressedTexImage")
 		C.gl30GetCompressedTexImage(glc.context, C.GLenum(target), C.GLint(lod), img)
 	}
 
 	glc.LoadTransposeMatrixd = func(m *float64) {
+		defer glc.trace("LoadTransposeMatrixd")
 		C.gl30LoadTransposeMatrixd(glc.context, (*C.GLdouble)(unsafe.Pointer(m)))
 	}
 
 	glc.LoadTransposeMatrixf = func(m *float64) {
+		defer glc.trace("LoadTransposeMatrixf")
 		C.gl30LoadTransposeMatrixf(glc.context, (*C.GLdouble)(unsafe.Pointer(m)))
 	}
 
 	glc.MultTransposeMatrixd = func(m *float64) {
+		defer glc.trace("MultTransposeMatrixd")
 		C.gl30MultTransposeMatrixd(glc.context, (*C.GLdouble)(unsafe.Pointer(m)))
 	}
 
 	glc.MultTransposeMatrixf = func(m *float32) {
+		defer glc.trace("MultTransposeMatrixf")
 		C.gl30MultTransposeMatrixf(glc.context, (*C.GLfloat)(unsafe.Pointer(m)))
 	}
 
 	glc.SampleCoverage = func(value float32, invert bool) {
+		defer glc.trace("SampleCoverage")
 		C.gl30SampleCoverage(glc.context, C.GLclampf(value), boolToGL(invert))
 	}
 
 	glc.BlendFuncSeparate = func(srcRGB, dstRGB, srcAlpha, dstAlpha uint32) {
+		defer glc.trace("BlendFuncSeparate")
 		C.gl30BlendFuncSeparate(glc.context, C.GLenum(srcRGB), C.GLenum(dstRGB), C.GLenum(srcAlpha), C.GLenum(dstAlpha))
 	}
 
 	glc.FogCoordPointer = func(Type uint32, stride int32, pointer unsafe.Pointer) {
+		defer glc.trace("FogCoordPointer")
 		C.gl30FogCoordPointer(glc.context, C.GLenum(Type), C.GLsizei(stride), pointer)
 	}
 
 	glc.FogCoordd = func(coord float64) {
+		defer glc.trace("FogCoordd")
 		C.gl30FogCoordd(glc.context, C.GLdouble(coord))
 	}
 
 	glc.FogCoordf = func(coord float32) {
+		defer glc.trace("FogCoordf")
 		C.gl30FogCoordf(glc.context, C.GLfloat(coord))
 	}
 
 	glc.FogCoorddv = func(coord *float64) {
+		defer glc.trace("FogCoorddv")
 		C.gl30FogCoorddv(glc.context, (*C.GLdouble)(unsafe.Pointer(coord)))
 	}
 
 	glc.FogCoordfv = func(coord *float32) {
+		defer glc.trace("FogCoordfv")
 		C.gl30FogCoordfv(glc.context, (*C.GLfloat)(unsafe.Pointer(coord)))
 	}
 
 	glc.MultiDrawArrays = func(mode uint32, first *int32, count *int32, primcount int32) {
+		defer glc.trace("MultiDrawArrays")
 		C.gl30MultiDrawArrays(glc.context, C.GLenum(mode), (*C.GLint)(unsafe.Pointer(first)), (*C.GLsizei)(unsafe.Pointer(count)), C.GLsizei(primcount))
 	}
 
 	glc.MultiDrawElements = func(mode uint32, count *int32, Type uint32, indices unsafe.Pointer, primcount int32) {
+		defer glc.trace("MultiDrawElements")
 		C.gl30MultiDrawElements(glc.context, C.GLenum(mode), (*C.GLsizei)(unsafe.Pointer(count)), C.GLenum(Type), indices, C.GLsizei(primcount))
 	}
 
 	glc.PointParameterf = func(pname uint32, param float32) {
+		defer glc.trace("PointParameterf")
 		C.gl30PointParameterf(glc.context, C.GLenum(pname), C.GLfloat(param))
 	}
 
 	glc.PointParameteri = func(pname uint32, param int32) {
+		defer glc.trace("PointParameteri")
 		C.gl30PointParameteri(glc.context, C.GLenum(pname), C.GLint(param))
 	}
 
 	glc.SecondaryColor3b = func(red, green, blue int8) {
+		defer glc.trace("SecondaryColor3b")
 		C.gl30SecondaryColor3b(glc.context, C.GLbyte(red), C.GLbyte(green), C.GLbyte(blue))
 	}
 
 	glc.SecondaryColor3s = func(red, green, blue int16) {
+		defer glc.trace("SecondaryColor3s")
 		C.gl30SecondaryColor3s(glc.context, C.GLshort(red), C.GLshort(green), C.GLshort(blue))
 	}
 
 	glc.SecondaryColor3i = func(red, green, blue int32) {
+		defer glc.trace("SecondaryColor3i")
 		C.gl30SecondaryColor3i(glc.context, C.GLint(red), C.GLint(green), C.GLint(blue))
 	}
 
 	glc.SecondaryColor3f = func(red, green, blue float32) {
+		defer glc.trace("SecondaryColor3f")
 		C.gl30SecondaryColor3f(glc.context, C.GLfloat(red), C.GLfloat(green), C.GLfloat(blue))
 	}
 
 	glc.SecondaryColor3d = func(red, green, blue float64) {
+		defer glc.trace("SecondaryColor3d")
 		C.gl30SecondaryColor3d(glc.context, C.GLdouble(red), C.GLdouble(green), C.GLdouble(blue))
 	}
 
 	glc.SecondaryColor3ub = func(red, green, blue uint8) {
+		defer glc.trace("SecondaryColor3ub")
 		C.gl30SecondaryColor3ub(glc.context, C.GLubyte(red), C.GLubyte(green), C.GLubyte(blue))
 	}
 
 	glc.SecondaryColor3us = func(red, green, blue uint16) {
+		defer glc.trace("SecondaryColor3us")
 		C.gl30SecondaryColor3us(glc.context, C.GLushort(red), C.GLushort(green), C.GLushort(blue))
 	}
 
 	glc.SecondaryColor3ui = func(red, green, blue uint32) {
+		defer glc.trace("SecondaryColor3ui")
 		C.gl30SecondaryColor3ui(glc.context, C.GLuint(red), C.GLuint(green), C.GLuint(blue))
 	}
 
 	glc.SecondaryColor3bv = func(v *int8) {
+		defer glc.trace("SecondaryColor3bv")
 		C.gl30SecondaryColor3bv(glc.context, (*C.GLbyte)(unsafe.Pointer(v)))
 	}
 
 	glc.SecondaryColor3sv = func(v *int16) {
+		defer glc.trace("SecondaryColor3sv")
 		C.gl30SecondaryColor3sv(glc.context, (*C.GLshort)(unsafe.Pointer(v)))
 	}
 
 	glc.SecondaryColor3iv = func(v *int32) {
+		defer glc.trace("SecondaryColor3iv")
 		C.gl30SecondaryColor3iv(glc.context, (*C.GLint)(unsafe.Pointer(v)))
 	}
 
 	glc.SecondaryColor3fv = func(v *float32) {
+		defer glc.trace("SecondaryColor3fv")
 		C.gl30SecondaryColor3fv(glc.context, (*C.GLfloat)(unsafe.Pointer(v)))
 	}
 
 	glc.SecondaryColor3dv = func(v *float64) {
+		defer glc.trace("SecondaryColor3dv")
 		C.gl30SecondaryColor3dv(glc.context, (*C.GLdouble)(unsafe.Pointer(v)))
 	}
 
 	glc.SecondaryColor3ubv = func(v *uint8) {
+		defer glc.trace("SecondaryColor3ubv")
 		C.gl30SecondaryColor3ubv(glc.context, (*C.GLubyte)(unsafe.Pointer(v)))
 	}
 
 	glc.SecondaryColor3usv = func(v *uint16) {
+		defer glc.trace("SecondaryColor3usv")
 		C.gl30SecondaryColor3usv(glc.context, (*C.GLushort)(unsafe.Pointer(v)))
 	}
 
 	glc.SecondaryColor3uiv = func(v *uint32) {
+		defer glc.trace("SecondaryColor3uiv")
 		C.gl30SecondaryColor3uiv(glc.context, (*C.GLuint)(unsafe.Pointer(v)))
 	}
 
 	glc.SecondaryColorPointer = func(size int32, Type uint32, stride int32, pointer unsafe.Pointer) {
+		defer glc.trace("SecondaryColorPointer")
 		C.gl30SecondaryColorPointer(glc.context, C.GLint(size), C.GLenum(Type), C.GLsizei(stride), pointer)
 	}
 
 	glc.WindowPos2s = func(x, y int16) {
+		defer glc.trace("WindowPos2s")
 		C.gl30WindowPos2s(glc.context, C.GLshort(x), C.GLshort(y))
 	}
 
 	glc.WindowPos2i = func(x, y int32) {
+		defer glc.trace("WindowPos2i")
 		C.gl30WindowPos2i(glc.context, C.GLint(x), C.GLint(y))
 	}
 
 	glc.WindowPos2f = func(x, y float32) {
+		defer glc.trace("WindowPos2f")
 		C.gl30WindowPos2f(glc.context, C.GLfloat(x), C.GLfloat(y))
 	}
 
 	glc.WindowPos2d = func(x, y float64) {
+		defer glc.trace("WindowPos2d")
 		C.gl30WindowPos2d(glc.context, C.GLdouble(x), C.GLdouble(y))
 	}
 
 	glc.WindowPos3s = func(x, y, z int16) {
+		defer glc.trace("WindowPos3s")
 		C.gl30WindowPos3s(glc.context, C.GLshort(x), C.GLshort(y), C.GLshort(z))
 	}
 
 	glc.WindowPos3i = func(x, y, z int32) {
+		defer glc.trace("WindowPos3i")
 		C.gl30WindowPos3i(glc.context, C.GLint(x), C.GLint(y), C.GLint(z))
 	}
 
 	glc.WindowPos3f = func(x, y, z float32) {
+		defer glc.trace("WindowPos3f")
 		C.gl30WindowPos3f(glc.context, C.GLfloat(x), C.GLfloat(y), C.GLfloat(z))
 	}
 
 	glc.WindowPos3d = func(x, y, z float64) {
+		defer glc.trace("WindowPos3d")
 		C.gl30WindowPos3d(glc.context, C.GLdouble(x), C.GLdouble(y), C.GLdouble(z))
 	}
 
 	glc.WindowPos2sv = func(v *int16) {
+		defer glc.trace("WindowPos2sv")
 		C.gl30WindowPos2sv(glc.context, (*C.GLshort)(unsafe.Pointer(v)))
 	}
 
 	glc.WindowPos2iv = func(v *int32) {
+		defer glc.trace("WindowPos2iv")
 		C.gl30WindowPos2iv(glc.context, (*C.GLint)(unsafe.Pointer(v)))
 	}
 
 	glc.WindowPos2fv = func(v *float32) {
+		defer glc.trace("WindowPos2fv")
 		C.gl30WindowPos2fv(glc.context, (*C.GLfloat)(unsafe.Pointer(v)))
 	}
 
 	glc.WindowPos2dv = func(v *float64) {
+		defer glc.trace("WindowPos2dv")
 		C.gl30WindowPos2dv(glc.context, (*C.GLdouble)(unsafe.Pointer(v)))
 	}
 
 	glc.WindowPos3sv = func(v *int16) {
+		defer glc.trace("WindowPos3sv")
 		C.gl30WindowPos3sv(glc.context, (*C.GLshort)(unsafe.Pointer(v)))
 	}
 
 	glc.WindowPos3iv = func(v *int32) {
+		defer glc.trace("WindowPos3iv")
 		C.gl30WindowPos3iv(glc.context, (*C.GLint)(unsafe.Pointer(v)))
 	}
 
 	glc.WindowPos3fv = func(v *float32) {
+		defer glc.trace("WindowPos3fv")
 		C.gl30WindowPos3fv(glc.context, (*C.GLfloat)(unsafe.Pointer(v)))
 	}
 
 	glc.WindowPos3dv = func(v *float64) {
+		defer glc.trace("WindowPos3dv")
 		C.gl30WindowPos3dv(glc.context, (*C.GLdouble)(unsafe.Pointer(v)))
 	}
 
 	glc.BeginQuery = func(target uint32, id uint32) {
+		defer glc.trace("BeginQuery")
 		C.gl30BeginQuery(glc.context, C.GLenum(target), C.GLuint(id))
 	}
 
 	glc.BindBuffer = func(target uint32, buffer uint32) {
+		defer glc.trace("BindBuffer")
 		C.gl30BindBuffer(glc.context, C.GLenum(target), C.GLuint(buffer))
 	}
 
 	glc.BufferData = func(target uint32, size int32, data unsafe.Pointer, usage uint32) {
+		defer glc.trace("BufferData")
 		C.gl30BufferData(glc.context, C.GLenum(target), C.GLsizeiptr(size), data, C.GLenum(usage))
 	}
 
 	glc.BufferSubData = func(target, offset uint32, size int32, data unsafe.Pointer) {
+		defer glc.trace("BufferSubData")
 		C.gl30BufferSubData(glc.context, C.GLenum(target), C.GLenum(offset), C.GLsizeiptr(size), data)
 	}
 
 	glc.DeleteBuffers = func(n int32, buffers *uint32) {
+		defer glc.trace("DeleteBuffers")
 		C.gl30DeleteBuffers(glc.context, C.GLsizei(n), (*C.GLuint)(unsafe.Pointer(buffers)))
 	}
 
 	glc.DeleteQueries = func(n int32, ids *uint32) {
+		defer glc.trace("DeleteQueries")
 		C.gl30DeleteQueries(glc.context, C.GLsizei(n), (*C.GLuint)(unsafe.Pointer(ids)))
 	}
 
 	glc.GenBuffers = func(n int32, buffers *uint32) {
+		defer glc.trace("GenBuffers")
 		C.gl30GenBuffers(glc.context, C.GLsizei(n), (*C.GLuint)(unsafe.Pointer(buffers)))
 	}
 
 	glc.GenQueries = func(n int32, ids *uint32) {
+		defer glc.trace("GenQueries")
 		C.gl30GenQueries(glc.context, C.GLsizei(n), (*C.GLuint)(unsafe.Pointer(ids)))
 	}
 
 	glc.GetBufferParameteriv = func(target, value uint32, data *int32) {
+		defer glc.trace("GetBufferParameteriv")
 		C.gl30GetBufferParameteriv(glc.context, C.GLenum(target), C.GLenum(value), (*C.GLint)(unsafe.Pointer(data)))
 	}
 
 	glc.GetBufferPointerv = func(target, pname uint32, params unsafe.Pointer) {
+		defer glc.trace("GetBufferPointerv")
 		C.gl30GetBufferPointerv(glc.context, C.GLenum(target), C.GLenum(pname), params)
 	}
 
 	glc.GetBufferSubData = func(target uint32, offset int32, size int32, data unsafe.Pointer) {
+		defer glc.trace("GetBufferSubData")
 		C.gl30GetBufferSubData(glc.context, C.GLenum(target), C.GLintptr(offset), C.GLsizeiptr(size), data)
 	}
 
 	glc.GetQueryObjectiv = func(id uint32, pname uint32, params *int32) {
+		defer glc.trace("GetQueryObjectiv")
 		C.gl30GetQueryObjectiv(glc.context, C.GLuint(id), C.GLenum(pname), (*C.GLint)(unsafe.Pointer(params)))
 	}
 
 	glc.GetQueryObjectuiv = func(id uint32, pname uint32, params *uint32) {
+		defer glc.trace("GetQueryObjectuiv")
 		C.gl30GetQueryObjectuiv(glc.context, C.GLuint(id), C.GLenum(pname), (*C.GLuint)(unsafe.Pointer(params)))
 	}
 
 	glc.GetQueryiv = func(target, pname uint32, params *int32) {
+		defer glc.trace("GetQueryiv")
 		C.gl30GetQueryiv(glc.context, C.GLenum(target), C.GLenum(pname), (*C.GLint)(unsafe.Pointer(params)))
 	}
 
 	glc.IsBuffer = func(buffer uint32) bool {
+		defer glc.trace("IsBuffer")
 		return C.gl30IsBuffer(glc.context, C.GLuint(buffer)) != 0
 	}
 
 	glc.IsQuery = func(id uint32) bool {
+		defer glc.trace("IsQuery")
 		return C.gl30IsQuery(glc.context, C.GLuint(id)) != 0
 	}
 
 	glc.MapBuffer = func(target, access uint32) unsafe.Pointer {
+		defer glc.trace("MapBuffer")
 		return unsafe.Pointer(C.gl30MapBuffer(glc.context, C.GLenum(target), C.GLenum(access)))
 	}
 
 	glc.UnmapBuffer = func(target uint32) bool {
+		defer glc.trace("UnmapBuffer")
 		return C.gl30UnmapBuffer(glc.context, C.GLenum(target)) != 0
 	}
 
 	glc.AttachShader = func(program, shader uint32) {
+		defer glc.trace("AttachShader")
 		C.gl30AttachShader(glc.context, C.GLuint(program), C.GLuint(shader))
 	}
 
 	glc.BindAttribLocation = func(program, index uint32, name string) {
+		defer glc.trace("BindAttribLocation")
 		cstr := C.CString(name)
 		defer C.free(unsafe.Pointer(&cstr))
 		C.gl30BindAttribLocation(glc.context, C.GLuint(program), C.GLuint(index), (*C.GLchar)(unsafe.Pointer(cstr)))
@@ -7464,46 +7929,57 @@ func New() *Context {
 	}
 
 	glc.BlendEquationSeperate = func(modeRGB, modeAlpha uint32) {
+		defer glc.trace("BlendEquationSeperate")
 		C.gl30BlendEquationSeperate(glc.context, C.GLenum(modeRGB), C.GLenum(modeAlpha))
 	}
 
 	glc.CompileShader = func(shader uint32) {
+		defer glc.trace("CompileShader")
 		C.gl30CompileShader(glc.context, C.GLuint(shader))
 	}
 
 	glc.CreateProgram = func() uint32 {
+		defer glc.trace("CreateProgram")
 		return uint32(C.gl30CreateProgram(glc.context))
 	}
 
 	glc.CreateShader = func(shaderType uint32) uint32 {
+		defer glc.trace("CreateShader")
 		return uint32(C.gl30CreateShader(glc.context, C.GLenum(shaderType)))
 	}
 
 	glc.DeleteProgram = func(program uint32) {
+		defer glc.trace("DeleteProgram")
 		C.gl30DeleteProgram(glc.context, C.GLuint(program))
 	}
 
 	glc.DeleteShader = func(shader uint32) {
+		defer glc.trace("DeleteShader")
 		C.gl30DeleteShader(glc.context, C.GLuint(shader))
 	}
 
 	glc.DetachShader = func(program, shader uint32) {
+		defer glc.trace("DetachShader")
 		C.gl30DetachShader(glc.context, C.GLuint(program), C.GLuint(shader))
 	}
 
 	glc.EnableVertexAttribArray = func(index uint32) {
+		defer glc.trace("EnableVertexAttribArray")
 		C.gl30EnableVertexAttribArray(glc.context, C.GLuint(index))
 	}
 
 	glc.DisableVertexAttribArray = func(index uint32) {
+		defer glc.trace("DisableVertexAttribArray")
 		C.gl30DisableVertexAttribArray(glc.context, C.GLuint(index))
 	}
 
 	glc.DrawBuffers = func(n int32, bufs *uint32) {
+		defer glc.trace("DrawBuffers")
 		C.gl30DrawBuffers(glc.context, C.GLsizei(n), (*C.GLenum)(unsafe.Pointer(bufs)))
 	}
 
 	glc.GetActiveAttrib = func(program, index uint32, bufSize int32) (length int32, size int32, Type uint32, name string) {
+		defer glc.trace("GetActiveAttrib")
 		var (
 			cname C.GLchar
 		)
@@ -7513,378 +7989,472 @@ func New() *Context {
 	}
 
 	glc.GetActiveUniform = func(program, index uint32, bufSize int32, length *int32, size *int32, Type *uint32, name *byte) {
+		defer glc.trace("GetActiveUniform")
 		C.gl30GetActiveUniform(glc.context, C.GLuint(program), C.GLuint(index), C.GLsizei(bufSize), (*C.GLsizei)(unsafe.Pointer(length)), (*C.GLint)(unsafe.Pointer(size)), (*C.GLenum)(unsafe.Pointer(Type)), (*C.GLchar)(unsafe.Pointer(name)))
 	}
 
 	glc.GetAttachedShaders = func(program uint32, maxCount int32, count *int32, shaders *uint32) {
+		defer glc.trace("GetAttachedShaders")
 		C.gl30GetAttachedShaders(glc.context, C.GLuint(program), C.GLsizei(maxCount), (*C.GLsizei)(unsafe.Pointer(count)), (*C.GLuint)(unsafe.Pointer(shaders)))
 	}
 
 	glc.GetAttribLocation = func(program uint32, name *byte) int32 {
+		defer glc.trace("GetAttribLocation")
 		return int32(C.gl30GetAttribLocation(glc.context, C.GLuint(program), (*C.GLchar)(unsafe.Pointer(name))))
 	}
 
 	glc.GetProgramiv = func(program uint32, pname uint32, params *int32) {
+		defer glc.trace("GetProgramiv")
 		C.gl30GetProgramiv(glc.context, C.GLuint(program), C.GLenum(pname), (*C.GLint)(unsafe.Pointer(params)))
 	}
 
 	glc.GetProgramInfoLog = func(program uint32, maxLength int32, length *int32, infoLog *byte) {
+		defer glc.trace("GetProgramInfoLog")
 		C.gl30GetProgramInfoLog(glc.context, C.GLuint(program), C.GLsizei(maxLength), (*C.GLsizei)(unsafe.Pointer(length)), (*C.GLchar)(unsafe.Pointer(infoLog)))
 	}
 
 	glc.GetShaderiv = func(program uint32, pname uint32, params *int32) {
+		defer glc.trace("GetShaderiv")
 		C.gl30GetShaderiv(glc.context, C.GLuint(program), C.GLenum(pname), (*C.GLint)(unsafe.Pointer(params)))
 	}
 
 	glc.GetShaderInfoLog = func(shader uint32, maxLength int32, length *int32, infoLog *byte) {
+		defer glc.trace("GetShaderInfoLog")
 		C.gl30GetShaderInfoLog(glc.context, C.GLuint(shader), C.GLsizei(maxLength), (*C.GLsizei)(unsafe.Pointer(length)), (*C.GLchar)(unsafe.Pointer(infoLog)))
 	}
 
 	glc.GetShaderSource = func(shader uint32, bufSize int32, length *int32, source *byte) {
+		defer glc.trace("GetShaderSource")
 		C.gl30GetShaderSource(glc.context, C.GLuint(shader), C.GLsizei(bufSize), (*C.GLsizei)(unsafe.Pointer(length)), (*C.GLchar)(unsafe.Pointer(source)))
 	}
 
 	glc.GetUniformfv = func(program uint32, location int32, params *float32) {
+		defer glc.trace("GetUniformfv")
 		C.gl30GetUniformfv(glc.context, C.GLuint(program), C.GLint(location), (*C.GLfloat)(unsafe.Pointer(params)))
 	}
 
 	glc.GetUniformiv = func(program uint32, location int32, params *int32) {
+		defer glc.trace("GetUniformiv")
 		C.gl30GetUniformiv(glc.context, C.GLuint(program), C.GLint(location), (*C.GLint)(unsafe.Pointer(params)))
 	}
 
 	glc.GetUniformLocation = func(program uint32, name *byte) int32 {
+		defer glc.trace("GetUniformLocation")
 		return int32(C.gl30GetUniformLocation(glc.context, C.GLuint(program), (*C.GLchar)(unsafe.Pointer(name))))
 	}
 
 	glc.GetVertexAttribdv = func(index uint32, pname uint32, params *float64) {
+		defer glc.trace("GetVertexAttribdv")
 		C.gl30GetVertexAttribdv(glc.context, C.GLuint(index), C.GLenum(pname), (*C.GLdouble)(unsafe.Pointer(params)))
 	}
 
 	glc.GetVertexAttribfv = func(index uint32, pname uint32, params *float32) {
+		defer glc.trace("GetVertexAttribfv")
 		C.gl30GetVertexAttribfv(glc.context, C.GLuint(index), C.GLenum(pname), (*C.GLfloat)(unsafe.Pointer(params)))
 	}
 
 	glc.GetVertexAttribiv = func(index uint32, pname uint32, params *int32) {
+		defer glc.trace("GetVertexAttribiv")
 		C.gl30GetVertexAttribiv(glc.context, C.GLuint(index), C.GLenum(pname), (*C.GLint)(unsafe.Pointer(params)))
 	}
 
 	glc.GetVertexAttribPointerv = func(index uint32, pname uint32, pointer unsafe.Pointer) {
+		defer glc.trace("GetVertexAttribPointerv")
 		C.gl30GetVertexAttribPointerv(glc.context, C.GLuint(index), C.GLenum(pname), pointer)
 	}
 
 	glc.IsProgram = func(program uint32) bool {
+		defer glc.trace("IsProgram")
 		return C.gl30IsProgram(glc.context, C.GLuint(program)) != 0
 	}
 
 	glc.IsShader = func(shader uint32) bool {
+		defer glc.trace("IsShader")
 		return C.gl30IsShader(glc.context, C.GLuint(shader)) != 0
 	}
 
 	glc.LinkProgram = func(program uint32) {
+		defer glc.trace("LinkProgram")
 		C.gl30LinkProgram(glc.context, C.GLuint(program))
 	}
 
 	glc.ShaderSource = func(shader uint32, count int32, string **byte, length *int32) {
+		defer glc.trace("ShaderSource")
 		C.gl30ShaderSource(glc.context, C.GLuint(shader), C.GLsizei(count), (**C.GLchar)(unsafe.Pointer(string)), (*C.GLint)(unsafe.Pointer(length)))
 	}
 
 	glc.StencilFuncSeparate = func(face, Func uint32, ref int32, mask uint32) {
+		defer glc.trace("StencilFuncSeparate")
 		C.gl30StencilFuncSeparate(glc.context, C.GLenum(face), C.GLenum(Func), C.GLint(ref), C.GLuint(mask))
 	}
 
 	glc.StencilMaskSeparate = func(face uint32, mask uint32) {
+		defer glc.trace("StencilMaskSeparate")
 		C.gl30StencilMaskSeparate(glc.context, C.GLenum(face), C.GLuint(mask))
 	}
 
 	glc.StencilOpSeparate = func(face, sfail, dpfail, dppass uint32) {
+		defer glc.trace("StencilOpSeparate")
 		C.gl30StencilOpSeparate(glc.context, C.GLenum(face), C.GLenum(sfail), C.GLenum(dpfail), C.GLenum(dppass))
 	}
 
 	glc.Uniform1f = func(location int32, v0 float32) {
+		defer glc.trace("Uniform1f")
 		C.gl30Uniform1f(glc.context, C.GLint(location), C.GLfloat(v0))
 	}
 
 	glc.Uniform2f = func(location int32, v0, v1 float32) {
+		defer glc.trace("Uniform2f")
 		C.gl30Uniform2f(glc.context, C.GLint(location), C.GLfloat(v0), C.GLfloat(v1))
 	}
 
 	glc.Uniform3f = func(location int32, v0, v1, v2 float32) {
+		defer glc.trace("Uniform3f")
 		C.gl30Uniform3f(glc.context, C.GLint(location), C.GLfloat(v0), C.GLfloat(v1), C.GLfloat(v2))
 	}
 
 	glc.Uniform4f = func(location int32, v0, v1, v2, v3 float32) {
+		defer glc.trace("Uniform4f")
 		C.gl30Uniform4f(glc.context, C.GLint(location), C.GLfloat(v0), C.GLfloat(v1), C.GLfloat(v2), C.GLfloat(v3))
 	}
 
 	glc.Uniform1i = func(location, v0 int32) {
+		defer glc.trace("Uniform1i")
 		C.gl30Uniform1i(glc.context, C.GLint(location), C.GLint(v0))
 	}
 
 	glc.Uniform2i = func(location, v0, v1 int32) {
+		defer glc.trace("Uniform2i")
 		C.gl30Uniform2i(glc.context, C.GLint(location), C.GLint(v0), C.GLint(v1))
 	}
 
 	glc.Uniform3i = func(location, v0, v1, v2 int32) {
+		defer glc.trace("Uniform3i")
 		C.gl30Uniform3i(glc.context, C.GLint(location), C.GLint(v0), C.GLint(v1), C.GLint(v2))
 	}
 
 	glc.Uniform4i = func(location, v0, v1, v2, v3 int32) {
+		defer glc.trace("Uniform4i")
 		C.gl30Uniform4i(glc.context, C.GLint(location), C.GLint(v0), C.GLint(v1), C.GLint(v2), C.GLint(v3))
 	}
 
 	glc.Uniform1ui = func(location int32, v0 uint32) {
+		defer glc.trace("Uniform1ui")
 		C.gl30Uniform1ui(glc.context, C.GLint(location), C.GLuint(v0))
 	}
 
 	glc.Uniform2ui = func(location int32, v0, v1 uint32) {
+		defer glc.trace("Uniform2ui")
 		C.gl30Uniform2ui(glc.context, C.GLint(location), C.GLuint(v0), C.GLuint(v1))
 	}
 
 	glc.Uniform3ui = func(location int32, v0, v1, v2 uint32) {
+		defer glc.trace("Uniform3ui")
 		C.gl30Uniform3ui(glc.context, C.GLint(location), C.GLuint(v0), C.GLuint(v1), C.GLuint(v2))
 	}
 
 	glc.Uniform4ui = func(location int32, v0, v1, v2, v3 uint32) {
+		defer glc.trace("Uniform4ui")
 		C.gl30Uniform4ui(glc.context, C.GLint(location), C.GLuint(v0), C.GLuint(v1), C.GLuint(v2), C.GLuint(v3))
 	}
 
 	glc.Uniform1fv = func(location int32, count int32, value *float32) {
+		defer glc.trace("Uniform1fv")
 		C.gl30Uniform1fv(glc.context, C.GLint(location), C.GLsizei(count), (*C.GLfloat)(unsafe.Pointer(value)))
 	}
 
 	glc.Uniform2fv = func(location int32, count int32, value *float32) {
+		defer glc.trace("Uniform2fv")
 		C.gl30Uniform2fv(glc.context, C.GLint(location), C.GLsizei(count), (*C.GLfloat)(unsafe.Pointer(value)))
 	}
 
 	glc.Uniform3fv = func(location int32, count int32, value *float32) {
+		defer glc.trace("Uniform3fv")
 		C.gl30Uniform3fv(glc.context, C.GLint(location), C.GLsizei(count), (*C.GLfloat)(unsafe.Pointer(value)))
 	}
 
 	glc.Uniform4fv = func(location int32, count int32, value *float32) {
+		defer glc.trace("Uniform4fv")
 		C.gl30Uniform4fv(glc.context, C.GLint(location), C.GLsizei(count), (*C.GLfloat)(unsafe.Pointer(value)))
 	}
 
 	glc.Uniform1iv = func(location int32, count int32, value *int32) {
+		defer glc.trace("Uniform1iv")
 		C.gl30Uniform1iv(glc.context, C.GLint(location), C.GLsizei(count), (*C.GLint)(unsafe.Pointer(value)))
 	}
 
 	glc.Uniform2iv = func(location int32, count int32, value *int32) {
+		defer glc.trace("Uniform2iv")
 		C.gl30Uniform2iv(glc.context, C.GLint(location), C.GLsizei(count), (*C.GLint)(unsafe.Pointer(value)))
 	}
 
 	glc.Uniform3iv = func(location int32, count int32, value *int32) {
+		defer glc.trace("Uniform3iv")
 		C.gl30Uniform3iv(glc.context, C.GLint(location), C.GLsizei(count), (*C.GLint)(unsafe.Pointer(value)))
 	}
 
 	glc.Uniform4iv = func(location int32, count int32, value *int32) {
+		defer glc.trace("Uniform4iv")
 		C.gl30Uniform4iv(glc.context, C.GLint(location), C.GLsizei(count), (*C.GLint)(unsafe.Pointer(value)))
 	}
 
 	glc.Uniform1uiv = func(location int32, count int32, value *uint32) {
+		defer glc.trace("Uniform1uiv")
 		C.gl30Uniform1uiv(glc.context, C.GLint(location), C.GLsizei(count), (*C.GLuint)(unsafe.Pointer(value)))
 	}
 
 	glc.Uniform2uiv = func(location int32, count int32, value *uint32) {
+		defer glc.trace("Uniform2uiv")
 		C.gl30Uniform2uiv(glc.context, C.GLint(location), C.GLsizei(count), (*C.GLuint)(unsafe.Pointer(value)))
 	}
 
 	glc.Uniform3uiv = func(location int32, count int32, value *uint32) {
+		defer glc.trace("Uniform3uiv")
 		C.gl30Uniform3uiv(glc.context, C.GLint(location), C.GLsizei(count), (*C.GLuint)(unsafe.Pointer(value)))
 	}
 
 	glc.Uniform4uiv = func(location int32, count int32, value *uint32) {
+		defer glc.trace("Uniform4uiv")
 		C.gl30Uniform4uiv(glc.context, C.GLint(location), C.GLsizei(count), (*C.GLuint)(unsafe.Pointer(value)))
 	}
 
 	glc.UseProgram = func(program uint32) {
+		defer glc.trace("UseProgram")
 		C.gl30UseProgram(glc.context, C.GLuint(program))
 	}
 
 	glc.ValidateProgram = func(program uint32) {
+		defer glc.trace("ValidateProgram")
 		C.gl30ValidateProgram(glc.context, C.GLuint(program))
 	}
 
 	glc.VertexAttribPointer = func(index uint32, size int32, Type uint32, normalized bool, stride int32, pointer unsafe.Pointer) {
+		defer glc.trace("VertexAttribPointer")
 		C.gl30VertexAttribPointer(glc.context, C.GLuint(index), C.GLint(size), C.GLenum(Type), boolToGL(normalized), C.GLsizei(stride), pointer)
 	}
 
 	glc.VertexAttrib1f = func(index uint32, v0 float32) {
+		defer glc.trace("VertexAttrib1f")
 		C.gl30VertexAttrib1f(glc.context, C.GLuint(index), C.GLfloat(v0))
 	}
 
 	glc.VertexAttrib1s = func(index uint32, v0 int16) {
+		defer glc.trace("VertexAttrib1s")
 		C.gl30VertexAttrib1s(glc.context, C.GLuint(index), C.GLshort(v0))
 	}
 
 	glc.VertexAttrib1d = func(index uint32, v0 float64) {
+		defer glc.trace("VertexAttrib1d")
 		C.gl30VertexAttrib1d(glc.context, C.GLuint(index), C.GLdouble(v0))
 	}
 
 	glc.VertexAttrib2f = func(index uint32, v0, v1 float32) {
+		defer glc.trace("VertexAttrib2f")
 		C.gl30VertexAttrib2f(glc.context, C.GLuint(index), C.GLfloat(v0), C.GLfloat(v1))
 	}
 
 	glc.VertexAttrib2s = func(index uint32, v0, v1 int16) {
+		defer glc.trace("VertexAttrib2s")
 		C.gl30VertexAttrib2s(glc.context, C.GLuint(index), C.GLshort(v0), C.GLshort(v1))
 	}
 
 	glc.VertexAttrib2d = func(index uint32, v0, v1 float64) {
+		defer glc.trace("VertexAttrib2d")
 		C.gl30VertexAttrib2d(glc.context, C.GLuint(index), C.GLdouble(v0), C.GLdouble(v1))
 	}
 
 	glc.VertexAttrib3f = func(index uint32, v0, v1, v2 float32) {
+		defer glc.trace("VertexAttrib3f")
 		C.gl30VertexAttrib3f(glc.context, C.GLuint(index), C.GLfloat(v0), C.GLfloat(v1), C.GLfloat(v2))
 	}
 
 	glc.VertexAttrib3s = func(index uint32, v0, v1, v2 int16) {
+		defer glc.trace("VertexAttrib3s")
 		C.gl30VertexAttrib3s(glc.context, C.GLuint(index), C.GLshort(v0), C.GLshort(v1), C.GLshort(v2))
 	}
 
 	glc.VertexAttrib3d = func(index uint32, v0, v1, v2 float64) {
+		defer glc.trace("VertexAttrib3d")
 		C.gl30VertexAttrib3d(glc.context, C.GLuint(index), C.GLdouble(v0), C.GLdouble(v1), C.GLdouble(v2))
 	}
 
 	glc.VertexAttrib4f = func(index uint32, v0, v1, v2, v3 float32) {
+		defer glc.trace("VertexAttrib4f")
 		C.gl30VertexAttrib4f(glc.context, C.GLuint(index), C.GLfloat(v0), C.GLfloat(v1), C.GLfloat(v2), C.GLfloat(v3))
 	}
 
 	glc.VertexAttrib4s = func(index uint32, v0, v1, v2, v3 int16) {
+		defer glc.trace("VertexAttrib4s")
 		C.gl30VertexAttrib4s(glc.context, C.GLuint(index), C.GLshort(v0), C.GLshort(v1), C.GLshort(v2), C.GLshort(v3))
 	}
 
 	glc.VertexAttrib4d = func(index uint32, v0, v1, v2, v3 float64) {
+		defer glc.trace("VertexAttrib4d")
 		C.gl30VertexAttrib4d(glc.context, C.GLuint(index), C.GLdouble(v0), C.GLdouble(v1), C.GLdouble(v2), C.GLdouble(v3))
 	}
 
 	glc.VertexAttrib4Nuv = func(index uint32, v0, v1, v2, v3 uint8) {
+		defer glc.trace("VertexAttrib4Nuv")
 		C.gl30VertexAttrib4Nuv(glc.context, C.GLuint(index), C.GLubyte(v0), C.GLubyte(v1), C.GLubyte(v2), C.GLubyte(v3))
 	}
 
 	glc.VertexAttrib1fv = func(index uint32, v *float32) {
+		defer glc.trace("VertexAttrib1fv")
 		C.gl30VertexAttrib1fv(glc.context, C.GLuint(index), (*C.GLfloat)(unsafe.Pointer(v)))
 	}
 
 	glc.VertexAttrib1sv = func(index uint32, v *int16) {
+		defer glc.trace("VertexAttrib1sv")
 		C.gl30VertexAttrib1sv(glc.context, C.GLuint(index), (*C.GLshort)(unsafe.Pointer(v)))
 	}
 
 	glc.VertexAttrib1dv = func(index uint32, v *float64) {
+		defer glc.trace("VertexAttrib1dv")
 		C.gl30VertexAttrib1dv(glc.context, C.GLuint(index), (*C.GLdouble)(unsafe.Pointer(v)))
 	}
 
 	glc.VertexAttrib2fv = func(index uint32, v *float32) {
+		defer glc.trace("VertexAttrib2fv")
 		C.gl30VertexAttrib2fv(glc.context, C.GLuint(index), (*C.GLfloat)(unsafe.Pointer(v)))
 	}
 
 	glc.VertexAttrib2sv = func(index uint32, v *int16) {
+		defer glc.trace("VertexAttrib2sv")
 		C.gl30VertexAttrib2sv(glc.context, C.GLuint(index), (*C.GLshort)(unsafe.Pointer(v)))
 	}
 
 	glc.VertexAttrib2dv = func(index uint32, v *float64) {
+		defer glc.trace("VertexAttrib2dv")
 		C.gl30VertexAttrib2dv(glc.context, C.GLuint(index), (*C.GLdouble)(unsafe.Pointer(v)))
 	}
 
 	glc.VertexAttrib3fv = func(index uint32, v *float32) {
+		defer glc.trace("VertexAttrib3fv")
 		C.gl30VertexAttrib3fv(glc.context, C.GLuint(index), (*C.GLfloat)(unsafe.Pointer(v)))
 	}
 
 	glc.VertexAttrib3sv = func(index uint32, v *int16) {
+		defer glc.trace("VertexAttrib3sv")
 		C.gl30VertexAttrib3sv(glc.context, C.GLuint(index), (*C.GLshort)(unsafe.Pointer(v)))
 	}
 
 	glc.VertexAttrib3dv = func(index uint32, v *float64) {
+		defer glc.trace("VertexAttrib3dv")
 		C.gl30VertexAttrib3dv(glc.context, C.GLuint(index), (*C.GLdouble)(unsafe.Pointer(v)))
 	}
 
 	glc.VertexAttrib4fv = func(index uint32, v *float32) {
+		defer glc.trace("VertexAttrib4fv")
 		C.gl30VertexAttrib4fv(glc.context, C.GLuint(index), (*C.GLfloat)(unsafe.Pointer(v)))
 	}
 
 	glc.VertexAttrib4sv = func(index uint32, v *int16) {
+		defer glc.trace("VertexAttrib4sv")
 		C.gl30VertexAttrib4sv(glc.context, C.GLuint(index), (*C.GLshort)(unsafe.Pointer(v)))
 	}
 
 	glc.VertexAttrib4dv = func(index uint32, v *float64) {
+		defer glc.trace("VertexAttrib4dv")
 		C.gl30VertexAttrib4dv(glc.context, C.GLuint(index), (*C.GLdouble)(unsafe.Pointer(v)))
 	}
 
 	glc.VertexAttrib4iv = func(index uint32, v *int32) {
+		defer glc.trace("VertexAttrib4iv")
 		C.gl30VertexAttrib4iv(glc.context, C.GLuint(index), (*C.GLint)(unsafe.Pointer(v)))
 	}
 
 	glc.VertexAttrib4bv = func(index uint32, v *int8) {
+		defer glc.trace("VertexAttrib4bv")
 		C.gl30VertexAttrib4bv(glc.context, C.GLuint(index), (*C.GLbyte)(unsafe.Pointer(v)))
 	}
 
 	glc.VertexAttrib4ubv = func(index uint32, v *uint8) {
+		defer glc.trace("VertexAttrib4ubv")
 		C.gl30VertexAttrib4ubv(glc.context, C.GLuint(index), (*C.GLubyte)(unsafe.Pointer(v)))
 	}
 
 	glc.VertexAttrib4usv = func(index uint32, v *uint16) {
+		defer glc.trace("VertexAttrib4usv")
 		C.gl30VertexAttrib4usv(glc.context, C.GLuint(index), (*C.GLushort)(unsafe.Pointer(v)))
 	}
 
 	glc.VertexAttrib4uiv = func(index uint32, v *uint32) {
+		defer glc.trace("VertexAttrib4uiv")
 		C.gl30VertexAttrib4uiv(glc.context, C.GLuint(index), (*C.GLuint)(unsafe.Pointer(v)))
 	}
 
 	glc.VertexAttrib4Nbv = func(index uint32, v *int8) {
+		defer glc.trace("VertexAttrib4Nbv")
 		C.gl30VertexAttrib4Nbv(glc.context, C.GLuint(index), (*C.GLbyte)(unsafe.Pointer(v)))
 	}
 
 	glc.VertexAttrib4Nsv = func(index uint32, v *int16) {
+		defer glc.trace("VertexAttrib4Nsv")
 		C.gl30VertexAttrib4Nsv(glc.context, C.GLuint(index), (*C.GLshort)(unsafe.Pointer(v)))
 	}
 
 	glc.VertexAttrib4Niv = func(index uint32, v *int32) {
+		defer glc.trace("VertexAttrib4Niv")
 		C.gl30VertexAttrib4Niv(glc.context, C.GLuint(index), (*C.GLint)(unsafe.Pointer(v)))
 	}
 
 	glc.VertexAttrib4Nubv = func(index uint32, v *uint8) {
+		defer glc.trace("VertexAttrib4Nubv")
 		C.gl30VertexAttrib4Nubv(glc.context, C.GLuint(index), (*C.GLubyte)(unsafe.Pointer(v)))
 	}
 
 	glc.VertexAttrib4Nusv = func(index uint32, v *uint16) {
+		defer glc.trace("VertexAttrib4Nusv")
 		C.gl30VertexAttrib4Nusv(glc.context, C.GLuint(index), (*C.GLushort)(unsafe.Pointer(v)))
 	}
 
 	glc.VertexAttrib4Nuiv = func(index uint32, v *uint32) {
+		defer glc.trace("VertexAttrib4Nuiv")
 		C.gl30VertexAttrib4Nuiv(glc.context, C.GLuint(index), (*C.GLuint)(unsafe.Pointer(v)))
 	}
 
 	glc.UniformMatrix2fv = func(location int32, count int32, transpose bool, value *float32) {
+		defer glc.trace("UniformMatrix2fv")
 		C.gl30UniformMatrix2fv(glc.context, C.GLint(location), C.GLsizei(count), boolToGL(transpose), (*C.GLfloat)(unsafe.Pointer(value)))
 	}
 
 	glc.UniformMatrix3fv = func(location int32, count int32, transpose bool, value *float32) {
+		defer glc.trace("UniformMatrix3fv")
 		C.gl30UniformMatrix3fv(glc.context, C.GLint(location), C.GLsizei(count), boolToGL(transpose), (*C.GLfloat)(unsafe.Pointer(value)))
 	}
 
 	glc.UniformMatrix4fv = func(location int32, count int32, transpose bool, value *float32) {
+		defer glc.trace("UniformMatrix4fv")
 		C.gl30UniformMatrix4fv(glc.context, C.GLint(location), C.GLsizei(count), boolToGL(transpose), (*C.GLfloat)(unsafe.Pointer(value)))
 	}
 
 	glc.UniformMatrix2x3fv = func(location int32, count int32, transpose bool, value *float32) {
+		defer glc.trace("UniformMatrix2x3fv")
 		C.gl30UniformMatrix2x3fv(glc.context, C.GLint(location), C.GLsizei(count), boolToGL(transpose), (*C.GLfloat)(unsafe.Pointer(value)))
 	}
 
 	glc.UniformMatrix3x2fv = func(location int32, count int32, transpose bool, value *float32) {
+		defer glc.trace("UniformMatrix3x2fv")
 		C.gl30UniformMatrix3x2fv(glc.context, C.GLint(location), C.GLsizei(count), boolToGL(transpose), (*C.GLfloat)(unsafe.Pointer(value)))
 	}
 
 	glc.UniformMatrix2x4fv = func(location int32, count int32, transpose bool, value *float32) {
+		defer glc.trace("UniformMatrix2x4fv")
 		C.gl30UniformMatrix2x4fv(glc.context, C.GLint(location), C.GLsizei(count), boolToGL(transpose), (*C.GLfloat)(unsafe.Pointer(value)))
 	}
 
 	glc.UniformMatrix4x2fv = func(location int32, count int32, transpose bool, value *float32) {
+		defer glc.trace("UniformMatrix4x2fv")
 		C.gl30UniformMatrix4x2fv(glc.context, C.GLint(location), C.GLsizei(count), boolToGL(transpose), (*C.GLfloat)(unsafe.Pointer(value)))
 	}
 
 	glc.UniformMatrix3x4fv = func(location int32, count int32, transpose bool, value *float32) {
+		defer glc.trace("UniformMatrix3x4fv")
 		C.gl30UniformMatrix3x4fv(glc.context, C.GLint(location), C.GLsizei(count), boolToGL(transpose), (*C.GLfloat)(unsafe.Pointer(value)))
 	}
 
 	glc.UniformMatrix4x3fv = func(location int32, count int32, transpose bool, value *float32) {
+		defer glc.trace("UniformMatrix4x3fv")
 		C.gl30UniformMatrix4x3fv(glc.context, C.GLint(location), C.GLsizei(count), boolToGL(transpose), (*C.GLfloat)(unsafe.Pointer(value)))
 	}
 

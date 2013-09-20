@@ -15,9 +15,21 @@ import (
 	"strings"
 )
 
-const goHelperCode = `// Package 'opengl' implements OpenGL version <VERSION>
-package opengl
+const goNormalHeader = `//
+// +build !opengl_debug
 
+// Package 'opengl' implements OpenGL version <VERSION>
+package opengl
+`
+
+const goDebugHeader = `//
+// +build opengl_debug
+
+// Package 'opengl' implements OpenGL version <VERSION>
+package opengl
+`
+
+const goHelperCode = `
 // #cgo LDFLAGS: -lopengl32
 // #include "gl<VERSION_WITHOUT_DOTS>.h"
 import "C"
@@ -26,6 +38,7 @@ import(
 	"strconv"
 	"strings"
 	"unsafe"
+	"sync"
 	"fmt"
 )
 
@@ -90,11 +103,11 @@ func versionSupported(glc *Context) bool {
 		}
 		if n == 2 {
 			fmt.Printf("OpenGL: *** Driver reported version has no revision! %q ***\n", ver)
-			if major == wantedMajor && minor >= wantedMinor {
+			if major >= wantedMajor && minor >= wantedMinor {
 				return true
 			}
 		} else {
-			if major == wantedMajor && minor == wantedMinor && rev >= wantedRev {
+			if major >= wantedMajor && minor >= wantedMinor && rev >= wantedRev {
 				return true
 			}
 		}
@@ -118,6 +131,49 @@ func (glc *Context) queryExtensions() {
 	}
 }
 
+func (glc *Context) trace(name string) {
+	glc.access.Lock()
+	defer glc.access.Unlock()
+
+	glc.traceback = append(glc.traceback, name)
+	l := len(glc.traceback)
+	if l > 100 {
+		glc.traceback = glc.traceback[l-100:l]
+	}
+
+	if glc.inBeginEnd {
+		return
+	}
+	err := glc.GetError()
+	if err != NO_ERROR {
+		fmt.Println("OpenGL call stack (last 100 - most recent first).")
+
+		// Print stack now
+		count := 0
+		for i := len(glc.traceback); i > 0; i-- {
+			count++
+			fmt.Printf("%3.d. %s\n", count, glc.traceback[i-1])
+		}
+
+		switch err {
+		case INVALID_ENUM:
+			panic("GL_INVALID_ENUM: An unacceptable value was specified for an enumerated argument.")
+		case INVALID_VALUE:
+			panic("GL_INVALID_VALUE: A numeric argument is out of range.")
+		case INVALID_OPERATION:
+			panic("GL_INVALID_OPERATION: The specified operation is not allowed in the current state.")
+		case INVALID_FRAMEBUFFER_OPERATION:
+			panic("GL_INVALID_FRAMEBUFFER_OPERATION: The framebuffer object is not complete.")
+		case OUT_OF_MEMORY:
+			panic("GL_OUT_OF_MEMORY: There is not enough memory left to execute the command.")
+		case STACK_UNDERFLOW:
+			panic("GL_STACK_UNDERFLOW: An attempt has been made to perform an operation that would cause an internal stack to underflow.")
+		case STACK_OVERFLOW:
+			panic("GL_STACK_OVERFLOW: An attempt has been made to perform an operation that would cause an internal stack to overflow.")
+		}
+	}
+}
+
 // Extension tells if the specified extension is supported by the OpenGL
 // context.
 //
@@ -135,7 +191,7 @@ func (glc *Context) Extension(ext string) bool {
 
 `
 
-func generateGo(packageDir, prefix, version, versionWithoutDots string, versionProcs, possibleProcs []*Procedure, constants map[string]string) {
+func generateGo(packageDir, prefix, version, versionWithoutDots string, versionProcs, possibleProcs []*Procedure, constants map[string]string, trace bool) {
 	// Build list of all procedures (version required procedures + possible procedures)
 	var allProcs []*Procedure
 
@@ -143,11 +199,29 @@ func generateGo(packageDir, prefix, version, versionWithoutDots string, versionP
 	allProcs = append(allProcs, possibleProcs...)
 
 	// Create Go file
-	code, err := os.Create(filepath.Join(packageDir, "gl"+versionWithoutDots+".go"))
+	var name string
+	if trace {
+		name = "gl" + versionWithoutDots + "debug.go"
+	} else {
+		name = "gl" + versionWithoutDots + ".go"
+	}
+	code, err := os.Create(filepath.Join(packageDir, name))
 	if err != nil {
 		log.Fatal(err)
 	}
 	defer code.Close()
+
+	// Write license to file
+	code.Write([]byte(licenseHeader))
+
+	// Write trace / !trace header
+	if trace {
+		debugHeader := strings.Replace(goDebugHeader, "<VERSION>", version, -1)
+		code.Write([]byte(debugHeader))
+	} else {
+		normalHeader := strings.Replace(goNormalHeader, "<VERSION>", version, -1)
+		code.Write([]byte(normalHeader))
+	}
 
 	// Write helper code to file
 	helperCode := strings.Replace(goHelperCode, "<VERSION>", version, -1)
@@ -163,8 +237,11 @@ func generateGo(packageDir, prefix, version, versionWithoutDots string, versionP
 
 	// Write out the Context type
 	fmt.Fprintf(code, "type Context struct {\n")
+	fmt.Fprintf(code, "\taccess sync.Mutex\n")
 	fmt.Fprintf(code, "\tcontext *C.%sContext\n", prefix)
 	fmt.Fprintf(code, "\textensions map[string]bool\n")
+	fmt.Fprintf(code, "\tinBeginEnd bool\n")
+	fmt.Fprintf(code, "\ttraceback []string\n")
 	for _, p := range allProcs {
 		var name, args, returns string
 
@@ -215,6 +292,9 @@ func generateGo(packageDir, prefix, version, versionWithoutDots string, versionP
 		}
 
 		fmt.Fprintf(code, "\tglc.%s = func(%s)%s {\n", name, args, returns)
+		if trace && name != "GetError" {
+			fmt.Fprintf(code, "\t\tdefer glc.trace(\"%s\")\n", name)
+		}
 		for _, line := range strings.Split(body, "\n") {
 			if len(line) > 0 {
 				fmt.Fprintf(code, "\t%s\n", line)

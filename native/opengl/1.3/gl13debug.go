@@ -2,13 +2,13 @@
 // This source code is subject to the terms and
 // conditions defined in the "License.txt" file.
 //
-// +build !opengl_debug
+// +build opengl_debug
 
-// Package 'opengl' implements OpenGL version 1.2
+// Package 'opengl' implements OpenGL version 1.3
 package opengl
 
 // #cgo LDFLAGS: -lopengl32
-// #include "gl12.h"
+// #include "gl13.h"
 import "C"
 
 import (
@@ -62,9 +62,9 @@ func parseVersions(s string) (n, major, minor, rev int) {
 func versionSupported(glc *Context) bool {
 	ver := glc.GetString(VERSION)
 	if len(ver) > 0 {
-		n, wantedMajor, wantedMinor, wantedRev := parseVersions("1.2")
+		n, wantedMajor, wantedMinor, wantedRev := parseVersions("1.3")
 		if n < 2 {
-			fmt.Printf("OpenGL: *** JSON version parsing failed for %q ***\n", "1.2")
+			fmt.Printf("OpenGL: *** JSON version parsing failed for %q ***\n", "1.3")
 			return false
 		}
 
@@ -166,104 +166,6 @@ func (glc *Context) Extension(ext string) bool {
 }
 
 const (
-	EXT_convolution                                            = 1
-	TEXTURE_COLOR_WRITEMASK_SGIS                               = 0x81EF
-	FRAMEBUFFER_ATTACHMENT_DEPTH_SIZE                          = 0x8216
-	TEXTURE10                                                  = 0x84CA
-	MIRROR_CLAMP_ATI                                           = 0x8742
-	QUADRATIC_CURVE_TO_NV                                      = 0x0A
-	TEXTURE_GEN_Q                                              = 0x0C63
-	OBJECT_LINEAR                                              = 0x2401
-	LOSE_CONTEXT_ON_RESET_ARB                                  = 0x8252
-	SOURCE1_ALPHA_EXT                                          = 0x8589
-	MAX_PROGRAM_NATIVE_TEX_INSTRUCTIONS_ARB                    = 0x880F
-	PACK_COMPRESSED_BLOCK_DEPTH                                = 0x912D
-	QUAD_TEXTURE_SELECT_SGIS                                   = 0x8125
-	INCR_WRAP_OES                                              = 0x8507
-	READ_ONLY                                                  = 0x88B8
-	PIXEL_PACK_BUFFER_ARB                                      = 0x88EB
-	SHADER_TYPE                                                = 0x8B4F
-	READ_FRAMEBUFFER_EXT                                       = 0x8CA8
-	MAX_VERTEX_ATOMIC_COUNTERS                                 = 0x92D2
-	CURRENT_BINORMAL_EXT                                       = 0x843C
-	TEXTURE_CUBE_MAP_NEGATIVE_X_EXT                            = 0x8516
-	EVAL_VERTEX_ATTRIB11_NV                                    = 0x86D1
-	COMPRESSED_SIGNED_RG_RGTC2                                 = 0x8DBE
-	PATCH_VERTICES                                             = 0x8E72
-	MAX_TESS_EVALUATION_UNIFORM_COMPONENTS                     = 0x8E80
-	EXT_polygon_offset                                         = 1
-	SGIX_tag_sample_buffer                                     = 1
-	TRANSFORM_BIT                                              = 0x00001000
-	MAP1_TEXTURE_COORD_4                                       = 0x0D96
-	SPECULAR                                                   = 0x1202
-	UNSIGNED_INT_VEC2_EXT                                      = 0x8DC6
-	NORMAL_ARRAY_EXT                                           = 0x8075
-	TEXTURE_CUBE_MAP                                           = 0x8513
-	INT_VEC3_ARB                                               = 0x8B54
-	FACTOR_MIN_AMD                                             = 0x901C
-	VIDEO_CAPTURE_FIELD_UPPER_HEIGHT_NV                        = 0x903A
-	T2F_C3F_V3F                                                = 0x2A2A
-	COMPRESSED_INTENSITY_ARB                                   = 0x84EC
-	TEXTURE_CUBE_MAP_NEGATIVE_X                                = 0x8516
-	GEOMETRY_VERTICES_OUT_EXT                                  = 0x8DDA
-	DONT_CARE                                                  = 0x1100
-	MAX_CONVOLUTION_HEIGHT                                     = 0x801B
-	SAMPLE_ALPHA_TO_ONE_EXT                                    = 0x809F
-	UNDEFINED_VERTEX                                           = 0x8260
-	EDGE_FLAG_ARRAY_STRIDE                                     = 0x808C
-	SLUMINANCE_ALPHA_EXT                                       = 0x8C44
-	STENCIL_BACK_REF                                           = 0x8CA3
-	DOUBLE_MAT4_EXT                                            = 0x8F48
-	INT_IMAGE_BUFFER_EXT                                       = 0x905C
-	ALPHA_BIAS                                                 = 0x0D1D
-	GL_4PASS_3_SGIS                                            = 0x80A7
-	COMPRESSED_SIGNED_LUMINANCE_LATC1_EXT                      = 0x8C71
-	FONT_UNDERLINE_POSITION_BIT_NV                             = 0x04000000
-	MAX_FRAGMENT_ATOMIC_COUNTER_BUFFERS                        = 0x92D0
-	POINT_FADE_THRESHOLD_SIZE_ARB                              = 0x8128
-	NUM_PROGRAM_BINARY_FORMATS_OES                             = 0x87FE
-	CURRENT_OCCLUSION_QUERY_ID_NV                              = 0x8865
-	RGBA                                                       = 0x1908
-	INTENSITY_EXT                                              = 0x8049
-	ALPHA_MAX_SGIX                                             = 0x8321
-	IDENTITY_NV                                                = 0x862A
-	DEPTH_COMPONENT32F                                         = 0x8CAC
-	FRAMEBUFFER_COMPLETE                                       = 0x8CD5
-	SGIS_texture_lod                                           = 1
-	STORAGE_CLIENT_APPLE                                       = 0x85B4
-	OUTPUT_TEXTURE_COORD3_EXT                                  = 0x87A0
-	FRAMEBUFFER_ATTACHMENT_OBJECT_NAME_EXT                     = 0x8CD1
-	OFFSET_HILO_PROJECTIVE_TEXTURE_2D_NV                       = 0x8856
-	OBJECT_LINK_STATUS_ARB                                     = 0x8B82
-	TEXTURE_3D_BINDING_OES                                     = 0x806A
-	SOURCE0_ALPHA_EXT                                          = 0x8588
-	FOG_COORDINATE_ARRAY_BUFFER_BINDING_ARB                    = 0x889D
-	INT_IMAGE_2D_ARRAY_EXT                                     = 0x905E
-	UNPACK_COMPRESSED_BLOCK_HEIGHT                             = 0x9128
-	TEXTURE_WRAP_R_OES                                         = 0x8072
-	SGIX_ir_instrument1                                        = 1
-	TEXTURE_NORMAL_EXT                                         = 0x85AF
-	REG_21_ATI                                                 = 0x8936
-	COLOR_ATTACHMENT8_NV                                       = 0x8CE8
-	TESS_EVALUATION_SHADER_BIT                                 = 0x00000010
-	POSITION                                                   = 0x1203
-	GL_4PASS_1_SGIS                                            = 0x80A5
-	COLOR_TABLE_ALPHA_SIZE_SGI                                 = 0x80DD
-	BOOL_VEC4_ARB                                              = 0x8B59
-	GEOMETRY_INPUT_TYPE_ARB                                    = 0x8DDB
-	DRAW_INDIRECT_ADDRESS_NV                                   = 0x8F41
-	INTENSITY16_SNORM                                          = 0x901B
-	MAX_VERTEX_HINT_PGI                                        = 0x1A22D
-	INTENSITY16                                                = 0x804D
-	ONE_MINUS_CONSTANT_ALPHA_EXT                               = 0x8004
-	MAX_DEBUG_GROUP_STACK_DEPTH                                = 0x826C
-	MAX_TEXTURE_UNITS_ARB                                      = 0x84E2
-	RENDERBUFFER_RED_SIZE_OES                                  = 0x8D50
-	MAX_COMBINED_TESS_CONTROL_UNIFORM_COMPONENTS               = 0x8E1E
-	MAX_MULTIVIEW_BUFFERS_EXT                                  = 0x90F2
-	RGBA4                                                      = 0x8056
-	COLOR_TABLE_BLUE_SIZE_SGI                                  = 0x80DC
-	RGB32F                                                     = 0x8815
 	TEXTURE_RESIDENT                                           = 0x8067
 	VIEW_CLASS_8_BITS                                          = 0x82CB
 	GEOMETRY_PROGRAM_PARAMETER_BUFFER_NV                       = 0x8DA3
@@ -5000,11 +4902,109 @@ const (
 	TEXTURE_COORD_ARRAY_BUFFER_BINDING_ARB                     = 0x889A
 	FRAGMENT_SHADER                                            = 0x8B30
 	SAMPLER_RENDERBUFFER_NV                                    = 0x8E56
+	EXT_convolution                                            = 1
+	TEXTURE_COLOR_WRITEMASK_SGIS                               = 0x81EF
+	FRAMEBUFFER_ATTACHMENT_DEPTH_SIZE                          = 0x8216
+	TEXTURE10                                                  = 0x84CA
+	MIRROR_CLAMP_ATI                                           = 0x8742
+	QUADRATIC_CURVE_TO_NV                                      = 0x0A
+	TEXTURE_GEN_Q                                              = 0x0C63
+	OBJECT_LINEAR                                              = 0x2401
+	LOSE_CONTEXT_ON_RESET_ARB                                  = 0x8252
+	SOURCE1_ALPHA_EXT                                          = 0x8589
+	MAX_PROGRAM_NATIVE_TEX_INSTRUCTIONS_ARB                    = 0x880F
+	PACK_COMPRESSED_BLOCK_DEPTH                                = 0x912D
+	QUAD_TEXTURE_SELECT_SGIS                                   = 0x8125
+	INCR_WRAP_OES                                              = 0x8507
+	READ_ONLY                                                  = 0x88B8
+	PIXEL_PACK_BUFFER_ARB                                      = 0x88EB
+	SHADER_TYPE                                                = 0x8B4F
+	READ_FRAMEBUFFER_EXT                                       = 0x8CA8
+	MAX_VERTEX_ATOMIC_COUNTERS                                 = 0x92D2
+	CURRENT_BINORMAL_EXT                                       = 0x843C
+	TEXTURE_CUBE_MAP_NEGATIVE_X_EXT                            = 0x8516
+	EVAL_VERTEX_ATTRIB11_NV                                    = 0x86D1
+	COMPRESSED_SIGNED_RG_RGTC2                                 = 0x8DBE
+	PATCH_VERTICES                                             = 0x8E72
+	MAX_TESS_EVALUATION_UNIFORM_COMPONENTS                     = 0x8E80
+	EXT_polygon_offset                                         = 1
+	SGIX_tag_sample_buffer                                     = 1
+	TRANSFORM_BIT                                              = 0x00001000
+	MAP1_TEXTURE_COORD_4                                       = 0x0D96
+	SPECULAR                                                   = 0x1202
+	UNSIGNED_INT_VEC2_EXT                                      = 0x8DC6
+	NORMAL_ARRAY_EXT                                           = 0x8075
+	TEXTURE_CUBE_MAP                                           = 0x8513
+	INT_VEC3_ARB                                               = 0x8B54
+	FACTOR_MIN_AMD                                             = 0x901C
+	VIDEO_CAPTURE_FIELD_UPPER_HEIGHT_NV                        = 0x903A
+	T2F_C3F_V3F                                                = 0x2A2A
+	COMPRESSED_INTENSITY_ARB                                   = 0x84EC
+	TEXTURE_CUBE_MAP_NEGATIVE_X                                = 0x8516
+	GEOMETRY_VERTICES_OUT_EXT                                  = 0x8DDA
+	DONT_CARE                                                  = 0x1100
+	MAX_CONVOLUTION_HEIGHT                                     = 0x801B
+	SAMPLE_ALPHA_TO_ONE_EXT                                    = 0x809F
+	UNDEFINED_VERTEX                                           = 0x8260
+	EDGE_FLAG_ARRAY_STRIDE                                     = 0x808C
+	SLUMINANCE_ALPHA_EXT                                       = 0x8C44
+	STENCIL_BACK_REF                                           = 0x8CA3
+	DOUBLE_MAT4_EXT                                            = 0x8F48
+	INT_IMAGE_BUFFER_EXT                                       = 0x905C
+	ALPHA_BIAS                                                 = 0x0D1D
+	GL_4PASS_3_SGIS                                            = 0x80A7
+	COMPRESSED_SIGNED_LUMINANCE_LATC1_EXT                      = 0x8C71
+	FONT_UNDERLINE_POSITION_BIT_NV                             = 0x04000000
+	MAX_FRAGMENT_ATOMIC_COUNTER_BUFFERS                        = 0x92D0
+	POINT_FADE_THRESHOLD_SIZE_ARB                              = 0x8128
+	NUM_PROGRAM_BINARY_FORMATS_OES                             = 0x87FE
+	CURRENT_OCCLUSION_QUERY_ID_NV                              = 0x8865
+	RGBA                                                       = 0x1908
+	INTENSITY_EXT                                              = 0x8049
+	ALPHA_MAX_SGIX                                             = 0x8321
+	IDENTITY_NV                                                = 0x862A
+	DEPTH_COMPONENT32F                                         = 0x8CAC
+	FRAMEBUFFER_COMPLETE                                       = 0x8CD5
+	SGIS_texture_lod                                           = 1
+	STORAGE_CLIENT_APPLE                                       = 0x85B4
+	OUTPUT_TEXTURE_COORD3_EXT                                  = 0x87A0
+	FRAMEBUFFER_ATTACHMENT_OBJECT_NAME_EXT                     = 0x8CD1
+	OFFSET_HILO_PROJECTIVE_TEXTURE_2D_NV                       = 0x8856
+	OBJECT_LINK_STATUS_ARB                                     = 0x8B82
+	TEXTURE_3D_BINDING_OES                                     = 0x806A
+	SOURCE0_ALPHA_EXT                                          = 0x8588
+	FOG_COORDINATE_ARRAY_BUFFER_BINDING_ARB                    = 0x889D
+	INT_IMAGE_2D_ARRAY_EXT                                     = 0x905E
+	UNPACK_COMPRESSED_BLOCK_HEIGHT                             = 0x9128
+	TEXTURE_WRAP_R_OES                                         = 0x8072
+	SGIX_ir_instrument1                                        = 1
+	TEXTURE_NORMAL_EXT                                         = 0x85AF
+	REG_21_ATI                                                 = 0x8936
+	COLOR_ATTACHMENT8_NV                                       = 0x8CE8
+	TESS_EVALUATION_SHADER_BIT                                 = 0x00000010
+	POSITION                                                   = 0x1203
+	GL_4PASS_1_SGIS                                            = 0x80A5
+	COLOR_TABLE_ALPHA_SIZE_SGI                                 = 0x80DD
+	BOOL_VEC4_ARB                                              = 0x8B59
+	GEOMETRY_INPUT_TYPE_ARB                                    = 0x8DDB
+	DRAW_INDIRECT_ADDRESS_NV                                   = 0x8F41
+	INTENSITY16_SNORM                                          = 0x901B
+	MAX_VERTEX_HINT_PGI                                        = 0x1A22D
+	INTENSITY16                                                = 0x804D
+	ONE_MINUS_CONSTANT_ALPHA_EXT                               = 0x8004
+	MAX_DEBUG_GROUP_STACK_DEPTH                                = 0x826C
+	MAX_TEXTURE_UNITS_ARB                                      = 0x84E2
+	RENDERBUFFER_RED_SIZE_OES                                  = 0x8D50
+	MAX_COMBINED_TESS_CONTROL_UNIFORM_COMPONENTS               = 0x8E1E
+	MAX_MULTIVIEW_BUFFERS_EXT                                  = 0x90F2
+	RGBA4                                                      = 0x8056
+	COLOR_TABLE_BLUE_SIZE_SGI                                  = 0x80DC
+	RGB32F                                                     = 0x8815
 )
 
 type Context struct {
 	access                    sync.Mutex
-	context                   *C.gl12Context
+	context                   *C.gl13Context
 	extensions                map[string]bool
 	inBeginEnd                bool
 	traceback                 []string
@@ -5583,1208 +5583,1506 @@ type Context struct {
 
 func New() *Context {
 	glc := new(Context)
-	glc.context = C.gl12NewContext()
+	glc.context = C.gl13NewContext()
 
 	glc.Accum = func(op uint32, value float32) {
-		C.gl12Accum(glc.context, C.GLenum(op), C.GLfloat(value))
+		defer glc.trace("Accum")
+		C.gl13Accum(glc.context, C.GLenum(op), C.GLfloat(value))
 	}
 
 	glc.AlphaFunc = func(Func uint32, ref float32) {
-		C.gl12AlphaFunc(glc.context, C.GLenum(Func), C.GLclampf(ref))
+		defer glc.trace("AlphaFunc")
+		C.gl13AlphaFunc(glc.context, C.GLenum(Func), C.GLclampf(ref))
 	}
 
 	glc.Begin = func(mode uint32) {
+		defer glc.trace("Begin")
 		glc.inBeginEnd = true
-		C.gl12Begin(glc.context, C.GLenum(mode))
+		C.gl13Begin(glc.context, C.GLenum(mode))
 		return
 	}
 
 	glc.End = func() {
-		C.gl12End(glc.context)
+		defer glc.trace("End")
+		C.gl13End(glc.context)
 		glc.inBeginEnd = false
 		return
 	}
 
 	glc.Bitmap = func(width, height int32, xorig, yorig, xmove, ymove float32, bitmap *uint8) {
-		C.gl12Bitmap(glc.context, C.GLsizei(width), C.GLsizei(height), C.GLfloat(xorig), C.GLfloat(yorig), C.GLfloat(xmove), C.GLfloat(ymove), (*C.GLubyte)(unsafe.Pointer(bitmap)))
+		defer glc.trace("Bitmap")
+		C.gl13Bitmap(glc.context, C.GLsizei(width), C.GLsizei(height), C.GLfloat(xorig), C.GLfloat(yorig), C.GLfloat(xmove), C.GLfloat(ymove), (*C.GLubyte)(unsafe.Pointer(bitmap)))
 	}
 
 	glc.BlendFunc = func(sfactor, dfactor uint32) {
-		C.gl12BlendFunc(glc.context, C.GLenum(sfactor), C.GLenum(dfactor))
+		defer glc.trace("BlendFunc")
+		C.gl13BlendFunc(glc.context, C.GLenum(sfactor), C.GLenum(dfactor))
 	}
 
 	glc.CallList = func(list uint32) {
-		C.gl12CallList(glc.context, C.GLuint(list))
+		defer glc.trace("CallList")
+		C.gl13CallList(glc.context, C.GLuint(list))
 	}
 
 	glc.CallLists = func(n int32, Type uint32, lists unsafe.Pointer) {
-		C.gl12CallLists(glc.context, C.GLsizei(n), C.GLenum(Type), lists)
+		defer glc.trace("CallLists")
+		C.gl13CallLists(glc.context, C.GLsizei(n), C.GLenum(Type), lists)
 	}
 
 	glc.Clear = func(mask uint32) {
-		C.gl12Clear(glc.context, C.GLbitfield(mask))
+		defer glc.trace("Clear")
+		C.gl13Clear(glc.context, C.GLbitfield(mask))
 	}
 
 	glc.ClearAccum = func(red, green, blue, alpha float32) {
-		C.gl12ClearAccum(glc.context, C.GLfloat(red), C.GLfloat(green), C.GLfloat(blue), C.GLfloat(alpha))
+		defer glc.trace("ClearAccum")
+		C.gl13ClearAccum(glc.context, C.GLfloat(red), C.GLfloat(green), C.GLfloat(blue), C.GLfloat(alpha))
 	}
 
 	glc.ClearColor = func(red, green, blue, alpha float32) {
-		C.gl12ClearColor(glc.context, C.GLclampf(red), C.GLclampf(green), C.GLclampf(blue), C.GLclampf(alpha))
+		defer glc.trace("ClearColor")
+		C.gl13ClearColor(glc.context, C.GLclampf(red), C.GLclampf(green), C.GLclampf(blue), C.GLclampf(alpha))
 	}
 
 	glc.ClearDepth = func(depth float64) {
-		C.gl12ClearDepth(glc.context, C.GLclampd(depth))
+		defer glc.trace("ClearDepth")
+		C.gl13ClearDepth(glc.context, C.GLclampd(depth))
 	}
 
 	glc.ClearIndex = func(c float32) {
-		C.gl12ClearIndex(glc.context, C.GLfloat(c))
+		defer glc.trace("ClearIndex")
+		C.gl13ClearIndex(glc.context, C.GLfloat(c))
 	}
 
 	glc.ClearStencil = func(s int32) {
-		C.gl12ClearStencil(glc.context, C.GLint(s))
+		defer glc.trace("ClearStencil")
+		C.gl13ClearStencil(glc.context, C.GLint(s))
 	}
 
 	glc.ClipPlane = func(plane uint32, equation *float64) {
-		C.gl12ClipPlane(glc.context, C.GLenum(plane), (*C.GLdouble)(unsafe.Pointer(equation)))
+		defer glc.trace("ClipPlane")
+		C.gl13ClipPlane(glc.context, C.GLenum(plane), (*C.GLdouble)(unsafe.Pointer(equation)))
 	}
 
 	glc.Color3b = func(red, green, blue int8) {
-		C.gl12Color3b(glc.context, C.GLbyte(red), C.GLbyte(green), C.GLbyte(blue))
+		defer glc.trace("Color3b")
+		C.gl13Color3b(glc.context, C.GLbyte(red), C.GLbyte(green), C.GLbyte(blue))
 	}
 
 	glc.Color3d = func(red, green, blue float64) {
-		C.gl12Color3d(glc.context, C.GLdouble(red), C.GLdouble(green), C.GLdouble(blue))
+		defer glc.trace("Color3d")
+		C.gl13Color3d(glc.context, C.GLdouble(red), C.GLdouble(green), C.GLdouble(blue))
 	}
 
 	glc.Color3f = func(red, green, blue float32) {
-		C.gl12Color3f(glc.context, C.GLfloat(red), C.GLfloat(green), C.GLfloat(blue))
+		defer glc.trace("Color3f")
+		C.gl13Color3f(glc.context, C.GLfloat(red), C.GLfloat(green), C.GLfloat(blue))
 	}
 
 	glc.Color3i = func(red, green, blue int32) {
-		C.gl12Color3i(glc.context, C.GLint(red), C.GLint(green), C.GLint(blue))
+		defer glc.trace("Color3i")
+		C.gl13Color3i(glc.context, C.GLint(red), C.GLint(green), C.GLint(blue))
 	}
 
 	glc.Color3s = func(red, green, blue int16) {
-		C.gl12Color3s(glc.context, C.GLshort(red), C.GLshort(green), C.GLshort(blue))
+		defer glc.trace("Color3s")
+		C.gl13Color3s(glc.context, C.GLshort(red), C.GLshort(green), C.GLshort(blue))
 	}
 
 	glc.Color3ub = func(red, green, blue uint8) {
-		C.gl12Color3ub(glc.context, C.GLubyte(red), C.GLubyte(green), C.GLubyte(blue))
+		defer glc.trace("Color3ub")
+		C.gl13Color3ub(glc.context, C.GLubyte(red), C.GLubyte(green), C.GLubyte(blue))
 	}
 
 	glc.Color3ui = func(red, green, blue uint32) {
-		C.gl12Color3ui(glc.context, C.GLuint(red), C.GLuint(green), C.GLuint(blue))
+		defer glc.trace("Color3ui")
+		C.gl13Color3ui(glc.context, C.GLuint(red), C.GLuint(green), C.GLuint(blue))
 	}
 
 	glc.Color3us = func(red, green, blue uint16) {
-		C.gl12Color3us(glc.context, C.GLushort(red), C.GLushort(green), C.GLushort(blue))
+		defer glc.trace("Color3us")
+		C.gl13Color3us(glc.context, C.GLushort(red), C.GLushort(green), C.GLushort(blue))
 	}
 
 	glc.Color4b = func(red, green, blue, alpha int8) {
-		C.gl12Color4b(glc.context, C.GLbyte(red), C.GLbyte(green), C.GLbyte(blue), C.GLbyte(alpha))
+		defer glc.trace("Color4b")
+		C.gl13Color4b(glc.context, C.GLbyte(red), C.GLbyte(green), C.GLbyte(blue), C.GLbyte(alpha))
 	}
 
 	glc.Color4d = func(red, green, blue, alpha float64) {
-		C.gl12Color4d(glc.context, C.GLdouble(red), C.GLdouble(green), C.GLdouble(blue), C.GLdouble(alpha))
+		defer glc.trace("Color4d")
+		C.gl13Color4d(glc.context, C.GLdouble(red), C.GLdouble(green), C.GLdouble(blue), C.GLdouble(alpha))
 	}
 
 	glc.Color4f = func(red, green, blue, alpha float32) {
-		C.gl12Color4f(glc.context, C.GLfloat(red), C.GLfloat(green), C.GLfloat(blue), C.GLfloat(alpha))
+		defer glc.trace("Color4f")
+		C.gl13Color4f(glc.context, C.GLfloat(red), C.GLfloat(green), C.GLfloat(blue), C.GLfloat(alpha))
 	}
 
 	glc.Color4i = func(red, green, blue, alpha int32) {
-		C.gl12Color4i(glc.context, C.GLint(red), C.GLint(green), C.GLint(blue), C.GLint(alpha))
+		defer glc.trace("Color4i")
+		C.gl13Color4i(glc.context, C.GLint(red), C.GLint(green), C.GLint(blue), C.GLint(alpha))
 	}
 
 	glc.Color4s = func(red, green, blue, alpha int16) {
-		C.gl12Color4s(glc.context, C.GLshort(red), C.GLshort(green), C.GLshort(blue), C.GLshort(alpha))
+		defer glc.trace("Color4s")
+		C.gl13Color4s(glc.context, C.GLshort(red), C.GLshort(green), C.GLshort(blue), C.GLshort(alpha))
 	}
 
 	glc.Color4ub = func(red, green, blue, alpha uint8) {
-		C.gl12Color4ub(glc.context, C.GLubyte(red), C.GLubyte(green), C.GLubyte(blue), C.GLubyte(alpha))
+		defer glc.trace("Color4ub")
+		C.gl13Color4ub(glc.context, C.GLubyte(red), C.GLubyte(green), C.GLubyte(blue), C.GLubyte(alpha))
 	}
 
 	glc.Color4ui = func(red, green, blue, alpha uint32) {
-		C.gl12Color4ui(glc.context, C.GLuint(red), C.GLuint(green), C.GLuint(blue), C.GLuint(alpha))
+		defer glc.trace("Color4ui")
+		C.gl13Color4ui(glc.context, C.GLuint(red), C.GLuint(green), C.GLuint(blue), C.GLuint(alpha))
 	}
 
 	glc.Color4us = func(red, green, blue, alpha uint16) {
-		C.gl12Color4us(glc.context, C.GLushort(red), C.GLushort(green), C.GLushort(blue), C.GLushort(alpha))
+		defer glc.trace("Color4us")
+		C.gl13Color4us(glc.context, C.GLushort(red), C.GLushort(green), C.GLushort(blue), C.GLushort(alpha))
 	}
 
 	glc.Color3bv = func(v *int8) {
-		C.gl12Color3bv(glc.context, (*C.GLbyte)(unsafe.Pointer(v)))
+		defer glc.trace("Color3bv")
+		C.gl13Color3bv(glc.context, (*C.GLbyte)(unsafe.Pointer(v)))
 	}
 
 	glc.Color3dv = func(v *float64) {
-		C.gl12Color3dv(glc.context, (*C.GLdouble)(unsafe.Pointer(v)))
+		defer glc.trace("Color3dv")
+		C.gl13Color3dv(glc.context, (*C.GLdouble)(unsafe.Pointer(v)))
 	}
 
 	glc.Color3fv = func(v *float32) {
-		C.gl12Color3fv(glc.context, (*C.GLfloat)(unsafe.Pointer(v)))
+		defer glc.trace("Color3fv")
+		C.gl13Color3fv(glc.context, (*C.GLfloat)(unsafe.Pointer(v)))
 	}
 
 	glc.Color3iv = func(v *int32) {
-		C.gl12Color3iv(glc.context, (*C.GLint)(unsafe.Pointer(v)))
+		defer glc.trace("Color3iv")
+		C.gl13Color3iv(glc.context, (*C.GLint)(unsafe.Pointer(v)))
 	}
 
 	glc.Color3sv = func(v *int16) {
-		C.gl12Color3sv(glc.context, (*C.GLshort)(unsafe.Pointer(v)))
+		defer glc.trace("Color3sv")
+		C.gl13Color3sv(glc.context, (*C.GLshort)(unsafe.Pointer(v)))
 	}
 
 	glc.Color3ubv = func(v *uint8) {
-		C.gl12Color3ubv(glc.context, (*C.GLubyte)(unsafe.Pointer(v)))
+		defer glc.trace("Color3ubv")
+		C.gl13Color3ubv(glc.context, (*C.GLubyte)(unsafe.Pointer(v)))
 	}
 
 	glc.Color3uiv = func(v *uint32) {
-		C.gl12Color3uiv(glc.context, (*C.GLuint)(unsafe.Pointer(v)))
+		defer glc.trace("Color3uiv")
+		C.gl13Color3uiv(glc.context, (*C.GLuint)(unsafe.Pointer(v)))
 	}
 
 	glc.Color3usv = func(v *uint16) {
-		C.gl12Color3usv(glc.context, (*C.GLushort)(unsafe.Pointer(v)))
+		defer glc.trace("Color3usv")
+		C.gl13Color3usv(glc.context, (*C.GLushort)(unsafe.Pointer(v)))
 	}
 
 	glc.Color4bv = func(v *int8) {
-		C.gl12Color4bv(glc.context, (*C.GLbyte)(unsafe.Pointer(v)))
+		defer glc.trace("Color4bv")
+		C.gl13Color4bv(glc.context, (*C.GLbyte)(unsafe.Pointer(v)))
 	}
 
 	glc.Color4dv = func(v *float64) {
-		C.gl12Color4dv(glc.context, (*C.GLdouble)(unsafe.Pointer(v)))
+		defer glc.trace("Color4dv")
+		C.gl13Color4dv(glc.context, (*C.GLdouble)(unsafe.Pointer(v)))
 	}
 
 	glc.Color4fv = func(v *float32) {
-		C.gl12Color4fv(glc.context, (*C.GLfloat)(unsafe.Pointer(v)))
+		defer glc.trace("Color4fv")
+		C.gl13Color4fv(glc.context, (*C.GLfloat)(unsafe.Pointer(v)))
 	}
 
 	glc.Color4iv = func(v *int32) {
-		C.gl12Color4iv(glc.context, (*C.GLint)(unsafe.Pointer(v)))
+		defer glc.trace("Color4iv")
+		C.gl13Color4iv(glc.context, (*C.GLint)(unsafe.Pointer(v)))
 	}
 
 	glc.Color4sv = func(v *int16) {
-		C.gl12Color4sv(glc.context, (*C.GLshort)(unsafe.Pointer(v)))
+		defer glc.trace("Color4sv")
+		C.gl13Color4sv(glc.context, (*C.GLshort)(unsafe.Pointer(v)))
 	}
 
 	glc.Color4ubv = func(v *uint8) {
-		C.gl12Color4ubv(glc.context, (*C.GLubyte)(unsafe.Pointer(v)))
+		defer glc.trace("Color4ubv")
+		C.gl13Color4ubv(glc.context, (*C.GLubyte)(unsafe.Pointer(v)))
 	}
 
 	glc.Color4uiv = func(v *uint32) {
-		C.gl12Color4uiv(glc.context, (*C.GLuint)(unsafe.Pointer(v)))
+		defer glc.trace("Color4uiv")
+		C.gl13Color4uiv(glc.context, (*C.GLuint)(unsafe.Pointer(v)))
 	}
 
 	glc.Color4usv = func(v *uint16) {
-		C.gl12Color4usv(glc.context, (*C.GLushort)(unsafe.Pointer(v)))
+		defer glc.trace("Color4usv")
+		C.gl13Color4usv(glc.context, (*C.GLushort)(unsafe.Pointer(v)))
 	}
 
 	glc.ColorMask = func(red, green, blue, alpha bool) {
-		C.gl12ColorMask(glc.context, boolToGL(red), boolToGL(green), boolToGL(blue), boolToGL(alpha))
+		defer glc.trace("ColorMask")
+		C.gl13ColorMask(glc.context, boolToGL(red), boolToGL(green), boolToGL(blue), boolToGL(alpha))
 	}
 
 	glc.ColorMaterial = func(face, mode uint32) {
-		C.gl12ColorMaterial(glc.context, C.GLenum(face), C.GLenum(mode))
+		defer glc.trace("ColorMaterial")
+		C.gl13ColorMaterial(glc.context, C.GLenum(face), C.GLenum(mode))
 	}
 
 	glc.CopyPixels = func(x, y int32, width, height int32, Type uint32) {
-		C.gl12CopyPixels(glc.context, C.GLint(x), C.GLint(y), C.GLsizei(width), C.GLsizei(height), C.GLenum(Type))
+		defer glc.trace("CopyPixels")
+		C.gl13CopyPixels(glc.context, C.GLint(x), C.GLint(y), C.GLsizei(width), C.GLsizei(height), C.GLenum(Type))
 	}
 
 	glc.CullFace = func(mode uint32) {
-		C.gl12CullFace(glc.context, C.GLenum(mode))
+		defer glc.trace("CullFace")
+		C.gl13CullFace(glc.context, C.GLenum(mode))
 	}
 
 	glc.DeleteLists = func(list uint32, Range int32) {
-		C.gl12DeleteLists(glc.context, C.GLuint(list), C.GLsizei(Range))
+		defer glc.trace("DeleteLists")
+		C.gl13DeleteLists(glc.context, C.GLuint(list), C.GLsizei(Range))
 	}
 
 	glc.DepthFunc = func(Func uint32) {
-		C.gl12DepthFunc(glc.context, C.GLenum(Func))
+		defer glc.trace("DepthFunc")
+		C.gl13DepthFunc(glc.context, C.GLenum(Func))
 	}
 
 	glc.DepthMask = func(flag bool) {
-		C.gl12DepthMask(glc.context, boolToGL(flag))
+		defer glc.trace("DepthMask")
+		C.gl13DepthMask(glc.context, boolToGL(flag))
 	}
 
 	glc.DepthRange = func(zNear, zFar float64) {
-		C.gl12DepthRange(glc.context, C.GLclampd(zNear), C.GLclampd(zFar))
+		defer glc.trace("DepthRange")
+		C.gl13DepthRange(glc.context, C.GLclampd(zNear), C.GLclampd(zFar))
 	}
 
 	glc.Enable = func(cap uint32) {
-		C.gl12Enable(glc.context, C.GLenum(cap))
+		defer glc.trace("Enable")
+		C.gl13Enable(glc.context, C.GLenum(cap))
 	}
 
 	glc.Disable = func(cap uint32) {
-		C.gl12Disable(glc.context, C.GLenum(cap))
+		defer glc.trace("Disable")
+		C.gl13Disable(glc.context, C.GLenum(cap))
 	}
 
 	glc.DrawBuffer = func(mode uint32) {
-		C.gl12DrawBuffer(glc.context, C.GLenum(mode))
+		defer glc.trace("DrawBuffer")
+		C.gl13DrawBuffer(glc.context, C.GLenum(mode))
 	}
 
 	glc.DrawPixels = func(width, height int32, format, Type uint32, data unsafe.Pointer) {
-		C.gl12DrawPixels(glc.context, C.GLsizei(width), C.GLsizei(height), C.GLenum(format), C.GLenum(Type), data)
+		defer glc.trace("DrawPixels")
+		C.gl13DrawPixels(glc.context, C.GLsizei(width), C.GLsizei(height), C.GLenum(format), C.GLenum(Type), data)
 	}
 
 	glc.EdgeFlag = func(flag bool) {
-		C.gl12EdgeFlag(glc.context, boolToGL(flag))
+		defer glc.trace("EdgeFlag")
+		C.gl13EdgeFlag(glc.context, boolToGL(flag))
 	}
 
 	glc.EdgeFlagv = func(flag *bool) {
-		C.gl12EdgeFlagv(glc.context, (*C.GLboolean)(unsafe.Pointer(flag)))
+		defer glc.trace("EdgeFlagv")
+		C.gl13EdgeFlagv(glc.context, (*C.GLboolean)(unsafe.Pointer(flag)))
 	}
 
 	glc.EdgeFlagPointer = func(stride int32, pointer unsafe.Pointer) {
-		C.gl12EdgeFlagPointer(glc.context, C.GLsizei(stride), pointer)
+		defer glc.trace("EdgeFlagPointer")
+		C.gl13EdgeFlagPointer(glc.context, C.GLsizei(stride), pointer)
 	}
 
 	glc.EvalCoord1d = func(u float64) {
-		C.gl12EvalCoord1d(glc.context, C.GLdouble(u))
+		defer glc.trace("EvalCoord1d")
+		C.gl13EvalCoord1d(glc.context, C.GLdouble(u))
 	}
 
 	glc.EvalCoord1f = func(u float32) {
-		C.gl12EvalCoord1f(glc.context, C.GLfloat(u))
+		defer glc.trace("EvalCoord1f")
+		C.gl13EvalCoord1f(glc.context, C.GLfloat(u))
 	}
 
 	glc.EvalCoord2d = func(u, v float64) {
-		C.gl12EvalCoord2d(glc.context, C.GLdouble(u), C.GLdouble(v))
+		defer glc.trace("EvalCoord2d")
+		C.gl13EvalCoord2d(glc.context, C.GLdouble(u), C.GLdouble(v))
 	}
 
 	glc.EvalCoord2f = func(u, v float32) {
-		C.gl12EvalCoord2f(glc.context, C.GLfloat(u), C.GLfloat(v))
+		defer glc.trace("EvalCoord2f")
+		C.gl13EvalCoord2f(glc.context, C.GLfloat(u), C.GLfloat(v))
 	}
 
 	glc.EvalCoord1dv = func(u *float64) {
-		C.gl12EvalCoord1dv(glc.context, (*C.GLdouble)(unsafe.Pointer(u)))
+		defer glc.trace("EvalCoord1dv")
+		C.gl13EvalCoord1dv(glc.context, (*C.GLdouble)(unsafe.Pointer(u)))
 	}
 
 	glc.EvalCoord1fv = func(u *float32) {
-		C.gl12EvalCoord1fv(glc.context, (*C.GLfloat)(unsafe.Pointer(u)))
+		defer glc.trace("EvalCoord1fv")
+		C.gl13EvalCoord1fv(glc.context, (*C.GLfloat)(unsafe.Pointer(u)))
 	}
 
 	glc.EvalCoord2dv = func(u *float64) {
-		C.gl12EvalCoord2dv(glc.context, (*C.GLdouble)(unsafe.Pointer(u)))
+		defer glc.trace("EvalCoord2dv")
+		C.gl13EvalCoord2dv(glc.context, (*C.GLdouble)(unsafe.Pointer(u)))
 	}
 
 	glc.EvalCoord2fv = func(u *float32) {
-		C.gl12EvalCoord2fv(glc.context, (*C.GLfloat)(unsafe.Pointer(u)))
+		defer glc.trace("EvalCoord2fv")
+		C.gl13EvalCoord2fv(glc.context, (*C.GLfloat)(unsafe.Pointer(u)))
 	}
 
 	glc.EvalMesh1 = func(mode uint32, i1, i2 int32) {
-		C.gl12EvalMesh1(glc.context, C.GLenum(mode), C.GLint(i1), C.GLint(i2))
+		defer glc.trace("EvalMesh1")
+		C.gl13EvalMesh1(glc.context, C.GLenum(mode), C.GLint(i1), C.GLint(i2))
 	}
 
 	glc.EvalMesh2 = func(mode uint32, i1, i2, j1, j2 int32) {
-		C.gl12EvalMesh2(glc.context, C.GLenum(mode), C.GLint(i1), C.GLint(i2), C.GLint(j1), C.GLint(j2))
+		defer glc.trace("EvalMesh2")
+		C.gl13EvalMesh2(glc.context, C.GLenum(mode), C.GLint(i1), C.GLint(i2), C.GLint(j1), C.GLint(j2))
 	}
 
 	glc.EvalPoint1 = func(i int32) {
-		C.gl12EvalPoint1(glc.context, C.GLint(i))
+		defer glc.trace("EvalPoint1")
+		C.gl13EvalPoint1(glc.context, C.GLint(i))
 	}
 
 	glc.EvalPoint2 = func(i, j int32) {
-		C.gl12EvalPoint2(glc.context, C.GLint(i), C.GLint(j))
+		defer glc.trace("EvalPoint2")
+		C.gl13EvalPoint2(glc.context, C.GLint(i), C.GLint(j))
 	}
 
 	glc.FeedbackBuffer = func(size int32, Type uint32, buffer *float32) {
-		C.gl12FeedbackBuffer(glc.context, C.GLsizei(size), C.GLenum(Type), (*C.GLfloat)(unsafe.Pointer(buffer)))
+		defer glc.trace("FeedbackBuffer")
+		C.gl13FeedbackBuffer(glc.context, C.GLsizei(size), C.GLenum(Type), (*C.GLfloat)(unsafe.Pointer(buffer)))
 	}
 
 	glc.Finish = func() {
-		C.gl12Finish(glc.context)
+		defer glc.trace("Finish")
+		C.gl13Finish(glc.context)
 	}
 
 	glc.Flush = func() {
-		C.gl12Flush(glc.context)
+		defer glc.trace("Flush")
+		C.gl13Flush(glc.context)
 	}
 
 	glc.Fogf = func(pname uint32, param float32) {
-		C.gl12Fogf(glc.context, C.GLenum(pname), C.GLfloat(param))
+		defer glc.trace("Fogf")
+		C.gl13Fogf(glc.context, C.GLenum(pname), C.GLfloat(param))
 	}
 
 	glc.Fogi = func(pname uint32, param int32) {
-		C.gl12Fogi(glc.context, C.GLenum(pname), C.GLint(param))
+		defer glc.trace("Fogi")
+		C.gl13Fogi(glc.context, C.GLenum(pname), C.GLint(param))
 	}
 
 	glc.Fogfv = func(pname uint32, params *float32) {
-		C.gl12Fogfv(glc.context, C.GLenum(pname), (*C.GLfloat)(unsafe.Pointer(params)))
+		defer glc.trace("Fogfv")
+		C.gl13Fogfv(glc.context, C.GLenum(pname), (*C.GLfloat)(unsafe.Pointer(params)))
 	}
 
 	glc.Fogiv = func(pname uint32, params *int32) {
-		C.gl12Fogiv(glc.context, C.GLenum(pname), (*C.GLint)(unsafe.Pointer(params)))
+		defer glc.trace("Fogiv")
+		C.gl13Fogiv(glc.context, C.GLenum(pname), (*C.GLint)(unsafe.Pointer(params)))
 	}
 
 	glc.FrontFace = func(mode uint32) {
-		C.gl12FrontFace(glc.context, C.GLenum(mode))
+		defer glc.trace("FrontFace")
+		C.gl13FrontFace(glc.context, C.GLenum(mode))
 	}
 
 	glc.Frustum = func(left, right, bottom, top, zNear, zFar float64) {
-		C.gl12Frustum(glc.context, C.GLdouble(left), C.GLdouble(right), C.GLdouble(bottom), C.GLdouble(top), C.GLdouble(zNear), C.GLdouble(zFar))
+		defer glc.trace("Frustum")
+		C.gl13Frustum(glc.context, C.GLdouble(left), C.GLdouble(right), C.GLdouble(bottom), C.GLdouble(top), C.GLdouble(zNear), C.GLdouble(zFar))
 	}
 
 	glc.GenLists = func(Range int32) uint32 {
-		return uint32(C.gl12GenLists(glc.context, C.GLsizei(Range)))
+		defer glc.trace("GenLists")
+		return uint32(C.gl13GenLists(glc.context, C.GLsizei(Range)))
 	}
 
 	glc.GetBooleanv = func(pname uint32, params *bool) {
-		C.gl12GetBooleanv(glc.context, C.GLenum(pname), (*C.GLboolean)(unsafe.Pointer(params)))
+		defer glc.trace("GetBooleanv")
+		C.gl13GetBooleanv(glc.context, C.GLenum(pname), (*C.GLboolean)(unsafe.Pointer(params)))
 	}
 
 	glc.GetDoublev = func(pname uint32, params *float64) {
-		C.gl12GetDoublev(glc.context, C.GLenum(pname), (*C.GLdouble)(unsafe.Pointer(params)))
+		defer glc.trace("GetDoublev")
+		C.gl13GetDoublev(glc.context, C.GLenum(pname), (*C.GLdouble)(unsafe.Pointer(params)))
 	}
 
 	glc.GetFloatv = func(pname uint32, params *float32) {
-		C.gl12GetFloatv(glc.context, C.GLenum(pname), (*C.GLfloat)(unsafe.Pointer(params)))
+		defer glc.trace("GetFloatv")
+		C.gl13GetFloatv(glc.context, C.GLenum(pname), (*C.GLfloat)(unsafe.Pointer(params)))
 	}
 
 	glc.GetIntegerv = func(pname uint32, params *int32) {
-		C.gl12GetIntegerv(glc.context, C.GLenum(pname), (*C.GLint)(unsafe.Pointer(params)))
+		defer glc.trace("GetIntegerv")
+		C.gl13GetIntegerv(glc.context, C.GLenum(pname), (*C.GLint)(unsafe.Pointer(params)))
 	}
 
 	glc.GetClipPlane = func(plane uint32, equation *float64) {
-		C.gl12GetClipPlane(glc.context, C.GLenum(plane), (*C.GLdouble)(unsafe.Pointer(equation)))
+		defer glc.trace("GetClipPlane")
+		C.gl13GetClipPlane(glc.context, C.GLenum(plane), (*C.GLdouble)(unsafe.Pointer(equation)))
 	}
 
 	glc.GetError = func() uint32 {
-		return uint32(C.gl12GetError(glc.context))
+		return uint32(C.gl13GetError(glc.context))
 	}
 
 	glc.GetLightfv = func(light, pname uint32, params *float32) {
-		C.gl12GetLightfv(glc.context, C.GLenum(light), C.GLenum(pname), (*C.GLfloat)(unsafe.Pointer(params)))
+		defer glc.trace("GetLightfv")
+		C.gl13GetLightfv(glc.context, C.GLenum(light), C.GLenum(pname), (*C.GLfloat)(unsafe.Pointer(params)))
 	}
 
 	glc.GetLightiv = func(light, pname uint32, params *int32) {
-		C.gl12GetLightiv(glc.context, C.GLenum(light), C.GLenum(pname), (*C.GLint)(unsafe.Pointer(params)))
+		defer glc.trace("GetLightiv")
+		C.gl13GetLightiv(glc.context, C.GLenum(light), C.GLenum(pname), (*C.GLint)(unsafe.Pointer(params)))
 	}
 
 	glc.GetMapdv = func(target, query uint32, v *float64) {
-		C.gl12GetMapdv(glc.context, C.GLenum(target), C.GLenum(query), (*C.GLdouble)(unsafe.Pointer(v)))
+		defer glc.trace("GetMapdv")
+		C.gl13GetMapdv(glc.context, C.GLenum(target), C.GLenum(query), (*C.GLdouble)(unsafe.Pointer(v)))
 	}
 
 	glc.GetMapfv = func(target, query uint32, v *float32) {
-		C.gl12GetMapfv(glc.context, C.GLenum(target), C.GLenum(query), (*C.GLfloat)(unsafe.Pointer(v)))
+		defer glc.trace("GetMapfv")
+		C.gl13GetMapfv(glc.context, C.GLenum(target), C.GLenum(query), (*C.GLfloat)(unsafe.Pointer(v)))
 	}
 
 	glc.GetMapiv = func(target, query uint32, v *int32) {
-		C.gl12GetMapiv(glc.context, C.GLenum(target), C.GLenum(query), (*C.GLint)(unsafe.Pointer(v)))
+		defer glc.trace("GetMapiv")
+		C.gl13GetMapiv(glc.context, C.GLenum(target), C.GLenum(query), (*C.GLint)(unsafe.Pointer(v)))
 	}
 
 	glc.GetMaterialfv = func(face, pname uint32, params *float32) {
-		C.gl12GetMaterialfv(glc.context, C.GLenum(face), C.GLenum(pname), (*C.GLfloat)(unsafe.Pointer(params)))
+		defer glc.trace("GetMaterialfv")
+		C.gl13GetMaterialfv(glc.context, C.GLenum(face), C.GLenum(pname), (*C.GLfloat)(unsafe.Pointer(params)))
 	}
 
 	glc.GetMaterialiv = func(face, pname uint32, params *int32) {
-		C.gl12GetMaterialiv(glc.context, C.GLenum(face), C.GLenum(pname), (*C.GLint)(unsafe.Pointer(params)))
+		defer glc.trace("GetMaterialiv")
+		C.gl13GetMaterialiv(glc.context, C.GLenum(face), C.GLenum(pname), (*C.GLint)(unsafe.Pointer(params)))
 	}
 
 	glc.GetPixelMapfv = func(Map uint32, values *float32) {
-		C.gl12GetPixelMapfv(glc.context, C.GLenum(Map), (*C.GLfloat)(unsafe.Pointer(values)))
+		defer glc.trace("GetPixelMapfv")
+		C.gl13GetPixelMapfv(glc.context, C.GLenum(Map), (*C.GLfloat)(unsafe.Pointer(values)))
 	}
 
 	glc.GetPixelMapuiv = func(Map uint32, values *uint32) {
-		C.gl12GetPixelMapuiv(glc.context, C.GLenum(Map), (*C.GLuint)(unsafe.Pointer(values)))
+		defer glc.trace("GetPixelMapuiv")
+		C.gl13GetPixelMapuiv(glc.context, C.GLenum(Map), (*C.GLuint)(unsafe.Pointer(values)))
 	}
 
 	glc.GetPixelMapusv = func(Map uint32, values *uint16) {
-		C.gl12GetPixelMapusv(glc.context, C.GLenum(Map), (*C.GLushort)(unsafe.Pointer(values)))
+		defer glc.trace("GetPixelMapusv")
+		C.gl13GetPixelMapusv(glc.context, C.GLenum(Map), (*C.GLushort)(unsafe.Pointer(values)))
 	}
 
 	glc.GetPolygonStipple = func(pattern *uint8) {
-		C.gl12GetPolygonStipple(glc.context, (*C.GLubyte)(unsafe.Pointer(pattern)))
+		defer glc.trace("GetPolygonStipple")
+		C.gl13GetPolygonStipple(glc.context, (*C.GLubyte)(unsafe.Pointer(pattern)))
 	}
 
 	glc.GetString = func(name uint32) string {
-		cstr := C.gl12GetString(glc.context, C.GLenum(name))
+		defer glc.trace("GetString")
+		cstr := C.gl13GetString(glc.context, C.GLenum(name))
 		return C.GoString((*C.char)(unsafe.Pointer(cstr)))
 	}
 
 	glc.GetTexEnvfv = func(target, pname uint32, params *float32) {
-		C.gl12GetTexEnvfv(glc.context, C.GLenum(target), C.GLenum(pname), (*C.GLfloat)(unsafe.Pointer(params)))
+		defer glc.trace("GetTexEnvfv")
+		C.gl13GetTexEnvfv(glc.context, C.GLenum(target), C.GLenum(pname), (*C.GLfloat)(unsafe.Pointer(params)))
 	}
 
 	glc.GetTexEnviv = func(target, pname uint32, params *int32) {
-		C.gl12GetTexEnviv(glc.context, C.GLenum(target), C.GLenum(pname), (*C.GLint)(unsafe.Pointer(params)))
+		defer glc.trace("GetTexEnviv")
+		C.gl13GetTexEnviv(glc.context, C.GLenum(target), C.GLenum(pname), (*C.GLint)(unsafe.Pointer(params)))
 	}
 
 	glc.GetTexGendv = func(coord, pname uint32, params *float64) {
-		C.gl12GetTexGendv(glc.context, C.GLenum(coord), C.GLenum(pname), (*C.GLdouble)(unsafe.Pointer(params)))
+		defer glc.trace("GetTexGendv")
+		C.gl13GetTexGendv(glc.context, C.GLenum(coord), C.GLenum(pname), (*C.GLdouble)(unsafe.Pointer(params)))
 	}
 
 	glc.GetTexGenfv = func(coord, pname uint32, params *float32) {
-		C.gl12GetTexGenfv(glc.context, C.GLenum(coord), C.GLenum(pname), (*C.GLfloat)(unsafe.Pointer(params)))
+		defer glc.trace("GetTexGenfv")
+		C.gl13GetTexGenfv(glc.context, C.GLenum(coord), C.GLenum(pname), (*C.GLfloat)(unsafe.Pointer(params)))
 	}
 
 	glc.GetTexGeniv = func(coord, pname uint32, params *int32) {
-		C.gl12GetTexGeniv(glc.context, C.GLenum(coord), C.GLenum(pname), (*C.GLint)(unsafe.Pointer(params)))
+		defer glc.trace("GetTexGeniv")
+		C.gl13GetTexGeniv(glc.context, C.GLenum(coord), C.GLenum(pname), (*C.GLint)(unsafe.Pointer(params)))
 	}
 
 	glc.GetTexImage = func(target uint32, level int32, format, Type uint32, pixels unsafe.Pointer) {
-		C.gl12GetTexImage(glc.context, C.GLenum(target), C.GLint(level), C.GLenum(format), C.GLenum(Type), pixels)
+		defer glc.trace("GetTexImage")
+		C.gl13GetTexImage(glc.context, C.GLenum(target), C.GLint(level), C.GLenum(format), C.GLenum(Type), pixels)
 	}
 
 	glc.GetTexLevelParameterfv = func(target uint32, level int32, pname uint32, params *float32) {
-		C.gl12GetTexLevelParameterfv(glc.context, C.GLenum(target), C.GLint(level), C.GLenum(pname), (*C.GLfloat)(unsafe.Pointer(params)))
+		defer glc.trace("GetTexLevelParameterfv")
+		C.gl13GetTexLevelParameterfv(glc.context, C.GLenum(target), C.GLint(level), C.GLenum(pname), (*C.GLfloat)(unsafe.Pointer(params)))
 	}
 
 	glc.GetTexLevelParameteriv = func(target uint32, level int32, pname uint32, params *int32) {
-		C.gl12GetTexLevelParameteriv(glc.context, C.GLenum(target), C.GLint(level), C.GLenum(pname), (*C.GLint)(unsafe.Pointer(params)))
+		defer glc.trace("GetTexLevelParameteriv")
+		C.gl13GetTexLevelParameteriv(glc.context, C.GLenum(target), C.GLint(level), C.GLenum(pname), (*C.GLint)(unsafe.Pointer(params)))
 	}
 
 	glc.GetTexParameterfv = func(target, pname uint32, params *float32) {
-		C.gl12GetTexParameterfv(glc.context, C.GLenum(target), C.GLenum(pname), (*C.GLfloat)(unsafe.Pointer(params)))
+		defer glc.trace("GetTexParameterfv")
+		C.gl13GetTexParameterfv(glc.context, C.GLenum(target), C.GLenum(pname), (*C.GLfloat)(unsafe.Pointer(params)))
 	}
 
 	glc.GetTexParameteriv = func(target, pname uint32, params *int32) {
-		C.gl12GetTexParameteriv(glc.context, C.GLenum(target), C.GLenum(pname), (*C.GLint)(unsafe.Pointer(params)))
+		defer glc.trace("GetTexParameteriv")
+		C.gl13GetTexParameteriv(glc.context, C.GLenum(target), C.GLenum(pname), (*C.GLint)(unsafe.Pointer(params)))
 	}
 
 	glc.Hint = func(target, mode uint32) {
-		C.gl12Hint(glc.context, C.GLenum(target), C.GLenum(mode))
+		defer glc.trace("Hint")
+		C.gl13Hint(glc.context, C.GLenum(target), C.GLenum(mode))
 	}
 
 	glc.Indexd = func(c float64) {
-		C.gl12Indexd(glc.context, C.GLdouble(c))
+		defer glc.trace("Indexd")
+		C.gl13Indexd(glc.context, C.GLdouble(c))
 	}
 
 	glc.Indexf = func(c float32) {
-		C.gl12Indexf(glc.context, C.GLfloat(c))
+		defer glc.trace("Indexf")
+		C.gl13Indexf(glc.context, C.GLfloat(c))
 	}
 
 	glc.Indexi = func(c int32) {
-		C.gl12Indexi(glc.context, C.GLint(c))
+		defer glc.trace("Indexi")
+		C.gl13Indexi(glc.context, C.GLint(c))
 	}
 
 	glc.Indexs = func(c int16) {
-		C.gl12Indexs(glc.context, C.GLshort(c))
+		defer glc.trace("Indexs")
+		C.gl13Indexs(glc.context, C.GLshort(c))
 	}
 
 	glc.Indexdv = func(c *float64) {
-		C.gl12Indexdv(glc.context, (*C.GLdouble)(unsafe.Pointer(c)))
+		defer glc.trace("Indexdv")
+		C.gl13Indexdv(glc.context, (*C.GLdouble)(unsafe.Pointer(c)))
 	}
 
 	glc.Indexfv = func(c *float32) {
-		C.gl12Indexfv(glc.context, (*C.GLfloat)(unsafe.Pointer(c)))
+		defer glc.trace("Indexfv")
+		C.gl13Indexfv(glc.context, (*C.GLfloat)(unsafe.Pointer(c)))
 	}
 
 	glc.Indexiv = func(c *int32) {
-		C.gl12Indexiv(glc.context, (*C.GLint)(unsafe.Pointer(c)))
+		defer glc.trace("Indexiv")
+		C.gl13Indexiv(glc.context, (*C.GLint)(unsafe.Pointer(c)))
 	}
 
 	glc.Indexsv = func(c *int16) {
-		C.gl12Indexsv(glc.context, (*C.GLshort)(unsafe.Pointer(c)))
+		defer glc.trace("Indexsv")
+		C.gl13Indexsv(glc.context, (*C.GLshort)(unsafe.Pointer(c)))
 	}
 
 	glc.IndexMask = func(mask uint32) {
-		C.gl12IndexMask(glc.context, C.GLuint(mask))
+		defer glc.trace("IndexMask")
+		C.gl13IndexMask(glc.context, C.GLuint(mask))
 	}
 
 	glc.IndexPointer = func(Type uint32, stride int32, pointer unsafe.Pointer) {
-		C.gl12IndexPointer(glc.context, C.GLenum(Type), C.GLsizei(stride), pointer)
+		defer glc.trace("IndexPointer")
+		C.gl13IndexPointer(glc.context, C.GLenum(Type), C.GLsizei(stride), pointer)
 	}
 
 	glc.InitNames = func() {
-		C.gl12InitNames(glc.context)
+		defer glc.trace("InitNames")
+		C.gl13InitNames(glc.context)
 	}
 
 	glc.IsEnabled = func(cap uint32) {
-		C.gl12IsEnabled(glc.context, C.GLenum(cap))
+		defer glc.trace("IsEnabled")
+		C.gl13IsEnabled(glc.context, C.GLenum(cap))
 	}
 
 	glc.IsList = func(list uint32) bool {
-		return C.gl12IsList(glc.context, C.GLuint(list)) != 0
+		defer glc.trace("IsList")
+		return C.gl13IsList(glc.context, C.GLuint(list)) != 0
 	}
 
 	glc.Lightf = func(light, pname uint32, param float32) {
-		C.gl12Lightf(glc.context, C.GLenum(light), C.GLenum(pname), C.GLfloat(param))
+		defer glc.trace("Lightf")
+		C.gl13Lightf(glc.context, C.GLenum(light), C.GLenum(pname), C.GLfloat(param))
 	}
 
 	glc.Lighti = func(light, pname uint32, param int32) {
-		C.gl12Lighti(glc.context, C.GLenum(light), C.GLenum(pname), C.GLint(param))
+		defer glc.trace("Lighti")
+		C.gl13Lighti(glc.context, C.GLenum(light), C.GLenum(pname), C.GLint(param))
 	}
 
 	glc.Lightfv = func(light, pname uint32, params *float32) {
-		C.gl12Lightfv(glc.context, C.GLenum(light), C.GLenum(pname), (*C.GLfloat)(unsafe.Pointer(params)))
+		defer glc.trace("Lightfv")
+		C.gl13Lightfv(glc.context, C.GLenum(light), C.GLenum(pname), (*C.GLfloat)(unsafe.Pointer(params)))
 	}
 
 	glc.Lightiv = func(light, pname uint32, params *int32) {
-		C.gl12Lightiv(glc.context, C.GLenum(light), C.GLenum(pname), (*C.GLint)(unsafe.Pointer(params)))
+		defer glc.trace("Lightiv")
+		C.gl13Lightiv(glc.context, C.GLenum(light), C.GLenum(pname), (*C.GLint)(unsafe.Pointer(params)))
 	}
 
 	glc.LightModelf = func(pname uint32, param float32) {
-		C.gl12LightModelf(glc.context, C.GLenum(pname), C.GLfloat(param))
+		defer glc.trace("LightModelf")
+		C.gl13LightModelf(glc.context, C.GLenum(pname), C.GLfloat(param))
 	}
 
 	glc.LightModeli = func(pname uint32, param int32) {
-		C.gl12LightModeli(glc.context, C.GLenum(pname), C.GLint(param))
+		defer glc.trace("LightModeli")
+		C.gl13LightModeli(glc.context, C.GLenum(pname), C.GLint(param))
 	}
 
 	glc.LightModelfv = func(pname uint32, params *float32) {
-		C.gl12LightModelfv(glc.context, C.GLenum(pname), (*C.GLfloat)(unsafe.Pointer(params)))
+		defer glc.trace("LightModelfv")
+		C.gl13LightModelfv(glc.context, C.GLenum(pname), (*C.GLfloat)(unsafe.Pointer(params)))
 	}
 
 	glc.LightModeliv = func(pname uint32, params *int32) {
-		C.gl12LightModeliv(glc.context, C.GLenum(pname), (*C.GLint)(unsafe.Pointer(params)))
+		defer glc.trace("LightModeliv")
+		C.gl13LightModeliv(glc.context, C.GLenum(pname), (*C.GLint)(unsafe.Pointer(params)))
 	}
 
 	glc.LineStipple = func(factor int32, pattern uint16) {
-		C.gl12LineStipple(glc.context, C.GLint(factor), C.GLushort(pattern))
+		defer glc.trace("LineStipple")
+		C.gl13LineStipple(glc.context, C.GLint(factor), C.GLushort(pattern))
 	}
 
 	glc.LineWidth = func(width float32) {
-		C.gl12LineWidth(glc.context, C.GLfloat(width))
+		defer glc.trace("LineWidth")
+		C.gl13LineWidth(glc.context, C.GLfloat(width))
 	}
 
 	glc.ListBase = func(base uint32) {
-		C.gl12ListBase(glc.context, C.GLuint(base))
+		defer glc.trace("ListBase")
+		C.gl13ListBase(glc.context, C.GLuint(base))
 	}
 
 	glc.LoadIdentity = func() {
-		C.gl12LoadIdentity(glc.context)
+		defer glc.trace("LoadIdentity")
+		C.gl13LoadIdentity(glc.context)
 	}
 
 	glc.LoadMatrixd = func(m *float64) {
-		C.gl12LoadMatrixd(glc.context, (*C.GLdouble)(unsafe.Pointer(m)))
+		defer glc.trace("LoadMatrixd")
+		C.gl13LoadMatrixd(glc.context, (*C.GLdouble)(unsafe.Pointer(m)))
 	}
 
 	glc.LoadMatrixf = func(m *float32) {
-		C.gl12LoadMatrixf(glc.context, (*C.GLfloat)(unsafe.Pointer(m)))
+		defer glc.trace("LoadMatrixf")
+		C.gl13LoadMatrixf(glc.context, (*C.GLfloat)(unsafe.Pointer(m)))
 	}
 
 	glc.LoadName = func(name uint32) {
-		C.gl12LoadName(glc.context, C.GLuint(name))
+		defer glc.trace("LoadName")
+		C.gl13LoadName(glc.context, C.GLuint(name))
 	}
 
 	glc.LogicOp = func(opcode uint32) {
-		C.gl12LogicOp(glc.context, C.GLenum(opcode))
+		defer glc.trace("LogicOp")
+		C.gl13LogicOp(glc.context, C.GLenum(opcode))
 	}
 
 	glc.Map1d = func(target uint32, u1, u2 float64, stride, order int32, points *float64) {
-		C.gl12Map1d(glc.context, C.GLenum(target), C.GLdouble(u1), C.GLdouble(u2), C.GLint(stride), C.GLint(order), (*C.GLdouble)(unsafe.Pointer(points)))
+		defer glc.trace("Map1d")
+		C.gl13Map1d(glc.context, C.GLenum(target), C.GLdouble(u1), C.GLdouble(u2), C.GLint(stride), C.GLint(order), (*C.GLdouble)(unsafe.Pointer(points)))
 	}
 
 	glc.Map1f = func(target uint32, u1, u2 float32, stride, order int32, points *float32) {
-		C.gl12Map1f(glc.context, C.GLenum(target), C.GLfloat(u1), C.GLfloat(u2), C.GLint(stride), C.GLint(order), (*C.GLfloat)(unsafe.Pointer(points)))
+		defer glc.trace("Map1f")
+		C.gl13Map1f(glc.context, C.GLenum(target), C.GLfloat(u1), C.GLfloat(u2), C.GLint(stride), C.GLint(order), (*C.GLfloat)(unsafe.Pointer(points)))
 	}
 
 	glc.Map2d = func(target uint32, u1, u2 float64, ustride, uorder int32, v1, v2 float64, vstride, vorder int32, points *float64) {
-		C.gl12Map2d(glc.context, C.GLenum(target), C.GLdouble(u1), C.GLdouble(u2), C.GLint(ustride), C.GLint(uorder), C.GLdouble(v1), C.GLdouble(v2), C.GLint(vstride), C.GLint(vorder), (*C.GLdouble)(unsafe.Pointer(points)))
+		defer glc.trace("Map2d")
+		C.gl13Map2d(glc.context, C.GLenum(target), C.GLdouble(u1), C.GLdouble(u2), C.GLint(ustride), C.GLint(uorder), C.GLdouble(v1), C.GLdouble(v2), C.GLint(vstride), C.GLint(vorder), (*C.GLdouble)(unsafe.Pointer(points)))
 	}
 
 	glc.Map2f = func(target uint32, u1, u2 float32, ustride, uorder int32, v1, v2 float32, vstride, vorder int32, points *float32) {
-		C.gl12Map2f(glc.context, C.GLenum(target), C.GLfloat(u1), C.GLfloat(u2), C.GLint(ustride), C.GLint(uorder), C.GLfloat(v1), C.GLfloat(v2), C.GLint(vstride), C.GLint(vorder), (*C.GLfloat)(unsafe.Pointer(points)))
+		defer glc.trace("Map2f")
+		C.gl13Map2f(glc.context, C.GLenum(target), C.GLfloat(u1), C.GLfloat(u2), C.GLint(ustride), C.GLint(uorder), C.GLfloat(v1), C.GLfloat(v2), C.GLint(vstride), C.GLint(vorder), (*C.GLfloat)(unsafe.Pointer(points)))
 	}
 
 	glc.MapGrid1d = func(un int32, u1, u2 float64) {
-		C.gl12MapGrid1d(glc.context, C.GLint(un), C.GLdouble(u1), C.GLdouble(u2))
+		defer glc.trace("MapGrid1d")
+		C.gl13MapGrid1d(glc.context, C.GLint(un), C.GLdouble(u1), C.GLdouble(u2))
 	}
 
 	glc.MapGrid1f = func(un int32, u1, u2 float32) {
-		C.gl12MapGrid1f(glc.context, C.GLint(un), C.GLfloat(u1), C.GLfloat(u2))
+		defer glc.trace("MapGrid1f")
+		C.gl13MapGrid1f(glc.context, C.GLint(un), C.GLfloat(u1), C.GLfloat(u2))
 	}
 
 	glc.MapGrid2d = func(un int32, u1, u2 float64, vn int32, v1, v2 float64) {
-		C.gl12MapGrid2d(glc.context, C.GLint(un), C.GLdouble(u1), C.GLdouble(u2), C.GLint(vn), C.GLdouble(v1), C.GLdouble(v2))
+		defer glc.trace("MapGrid2d")
+		C.gl13MapGrid2d(glc.context, C.GLint(un), C.GLdouble(u1), C.GLdouble(u2), C.GLint(vn), C.GLdouble(v1), C.GLdouble(v2))
 	}
 
 	glc.MapGrid2f = func(un int32, u1, u2 float32, vn int32, v1, v2 float32) {
-		C.gl12MapGrid2f(glc.context, C.GLint(un), C.GLfloat(u1), C.GLfloat(u2), C.GLint(vn), C.GLfloat(v1), C.GLfloat(v2))
+		defer glc.trace("MapGrid2f")
+		C.gl13MapGrid2f(glc.context, C.GLint(un), C.GLfloat(u1), C.GLfloat(u2), C.GLint(vn), C.GLfloat(v1), C.GLfloat(v2))
 	}
 
 	glc.Materialf = func(face, pname uint32, param float32) {
-		C.gl12Materialf(glc.context, C.GLenum(face), C.GLenum(pname), C.GLfloat(param))
+		defer glc.trace("Materialf")
+		C.gl13Materialf(glc.context, C.GLenum(face), C.GLenum(pname), C.GLfloat(param))
 	}
 
 	glc.Materiali = func(face, pname uint32, param int32) {
-		C.gl12Materiali(glc.context, C.GLenum(face), C.GLenum(pname), C.GLint(param))
+		defer glc.trace("Materiali")
+		C.gl13Materiali(glc.context, C.GLenum(face), C.GLenum(pname), C.GLint(param))
 	}
 
 	glc.Materialfv = func(face, pname uint32, params *float32) {
-		C.gl12Materialfv(glc.context, C.GLenum(face), C.GLenum(pname), (*C.GLfloat)(unsafe.Pointer(params)))
+		defer glc.trace("Materialfv")
+		C.gl13Materialfv(glc.context, C.GLenum(face), C.GLenum(pname), (*C.GLfloat)(unsafe.Pointer(params)))
 	}
 
 	glc.Materialiv = func(face, pname uint32, params *int32) {
-		C.gl12Materialiv(glc.context, C.GLenum(face), C.GLenum(pname), (*C.GLint)(unsafe.Pointer(params)))
+		defer glc.trace("Materialiv")
+		C.gl13Materialiv(glc.context, C.GLenum(face), C.GLenum(pname), (*C.GLint)(unsafe.Pointer(params)))
 	}
 
 	glc.MatrixMode = func(mode uint32) {
-		C.gl12MatrixMode(glc.context, C.GLenum(mode))
+		defer glc.trace("MatrixMode")
+		C.gl13MatrixMode(glc.context, C.GLenum(mode))
 	}
 
 	glc.MultMatrixd = func(m *float64) {
-		C.gl12MultMatrixd(glc.context, (*C.GLdouble)(unsafe.Pointer(m)))
+		defer glc.trace("MultMatrixd")
+		C.gl13MultMatrixd(glc.context, (*C.GLdouble)(unsafe.Pointer(m)))
 	}
 
 	glc.MultMatrixf = func(m *float32) {
-		C.gl12MultMatrixf(glc.context, (*C.GLfloat)(unsafe.Pointer(m)))
+		defer glc.trace("MultMatrixf")
+		C.gl13MultMatrixf(glc.context, (*C.GLfloat)(unsafe.Pointer(m)))
 	}
 
 	glc.NewList = func(list uint32, mode uint32) {
-		C.gl12NewList(glc.context, C.GLuint(list), C.GLenum(mode))
+		defer glc.trace("NewList")
+		C.gl13NewList(glc.context, C.GLuint(list), C.GLenum(mode))
 	}
 
 	glc.EndList = func() {
-		C.gl12EndList(glc.context)
+		defer glc.trace("EndList")
+		C.gl13EndList(glc.context)
 	}
 
 	glc.Normal3b = func(nx, ny, nz int8) {
-		C.gl12Normal3b(glc.context, C.GLbyte(nx), C.GLbyte(ny), C.GLbyte(nz))
+		defer glc.trace("Normal3b")
+		C.gl13Normal3b(glc.context, C.GLbyte(nx), C.GLbyte(ny), C.GLbyte(nz))
 	}
 
 	glc.Normal3d = func(nx, ny, nz float64) {
-		C.gl12Normal3d(glc.context, C.GLdouble(nx), C.GLdouble(ny), C.GLdouble(nz))
+		defer glc.trace("Normal3d")
+		C.gl13Normal3d(glc.context, C.GLdouble(nx), C.GLdouble(ny), C.GLdouble(nz))
 	}
 
 	glc.Normal3f = func(nx, ny, nz float32) {
-		C.gl12Normal3f(glc.context, C.GLfloat(nx), C.GLfloat(ny), C.GLfloat(nz))
+		defer glc.trace("Normal3f")
+		C.gl13Normal3f(glc.context, C.GLfloat(nx), C.GLfloat(ny), C.GLfloat(nz))
 	}
 
 	glc.Normal3i = func(nx, ny, nz int32) {
-		C.gl12Normal3i(glc.context, C.GLint(nx), C.GLint(ny), C.GLint(nz))
+		defer glc.trace("Normal3i")
+		C.gl13Normal3i(glc.context, C.GLint(nx), C.GLint(ny), C.GLint(nz))
 	}
 
 	glc.Normal3s = func(nx, ny, nz int16) {
-		C.gl12Normal3s(glc.context, C.GLshort(nx), C.GLshort(ny), C.GLshort(nz))
+		defer glc.trace("Normal3s")
+		C.gl13Normal3s(glc.context, C.GLshort(nx), C.GLshort(ny), C.GLshort(nz))
 	}
 
 	glc.Normal3bv = func(v *int8) {
-		C.gl12Normal3bv(glc.context, (*C.GLbyte)(unsafe.Pointer(v)))
+		defer glc.trace("Normal3bv")
+		C.gl13Normal3bv(glc.context, (*C.GLbyte)(unsafe.Pointer(v)))
 	}
 
 	glc.Normal3dv = func(v *float64) {
-		C.gl12Normal3dv(glc.context, (*C.GLdouble)(unsafe.Pointer(v)))
+		defer glc.trace("Normal3dv")
+		C.gl13Normal3dv(glc.context, (*C.GLdouble)(unsafe.Pointer(v)))
 	}
 
 	glc.Normal3fv = func(v *float32) {
-		C.gl12Normal3fv(glc.context, (*C.GLfloat)(unsafe.Pointer(v)))
+		defer glc.trace("Normal3fv")
+		C.gl13Normal3fv(glc.context, (*C.GLfloat)(unsafe.Pointer(v)))
 	}
 
 	glc.Normal3iv = func(v *int32) {
-		C.gl12Normal3iv(glc.context, (*C.GLint)(unsafe.Pointer(v)))
+		defer glc.trace("Normal3iv")
+		C.gl13Normal3iv(glc.context, (*C.GLint)(unsafe.Pointer(v)))
 	}
 
 	glc.Normal3sv = func(v *int16) {
-		C.gl12Normal3sv(glc.context, (*C.GLshort)(unsafe.Pointer(v)))
+		defer glc.trace("Normal3sv")
+		C.gl13Normal3sv(glc.context, (*C.GLshort)(unsafe.Pointer(v)))
 	}
 
 	glc.Ortho = func(left, right, bottom, top, zNear, zfar float64) {
-		C.gl12Ortho(glc.context, C.GLdouble(left), C.GLdouble(right), C.GLdouble(bottom), C.GLdouble(top), C.GLdouble(zNear), C.GLdouble(zfar))
+		defer glc.trace("Ortho")
+		C.gl13Ortho(glc.context, C.GLdouble(left), C.GLdouble(right), C.GLdouble(bottom), C.GLdouble(top), C.GLdouble(zNear), C.GLdouble(zfar))
 	}
 
 	glc.PassThrough = func(token float32) {
-		C.gl12PassThrough(glc.context, C.GLfloat(token))
+		defer glc.trace("PassThrough")
+		C.gl13PassThrough(glc.context, C.GLfloat(token))
 	}
 
 	glc.PixelMapfv = func(Map uint32, mapsize int32, values *float32) {
-		C.gl12PixelMapfv(glc.context, C.GLenum(Map), C.GLsizei(mapsize), (*C.GLfloat)(unsafe.Pointer(values)))
+		defer glc.trace("PixelMapfv")
+		C.gl13PixelMapfv(glc.context, C.GLenum(Map), C.GLsizei(mapsize), (*C.GLfloat)(unsafe.Pointer(values)))
 	}
 
 	glc.PixelMapuiv = func(Map uint32, mapsize int32, values *uint32) {
-		C.gl12PixelMapuiv(glc.context, C.GLenum(Map), C.GLsizei(mapsize), (*C.GLuint)(unsafe.Pointer(values)))
+		defer glc.trace("PixelMapuiv")
+		C.gl13PixelMapuiv(glc.context, C.GLenum(Map), C.GLsizei(mapsize), (*C.GLuint)(unsafe.Pointer(values)))
 	}
 
 	glc.PixelMapusv = func(Map uint32, mapsize int32, values *uint16) {
-		C.gl12PixelMapusv(glc.context, C.GLenum(Map), C.GLsizei(mapsize), (*C.GLushort)(unsafe.Pointer(values)))
+		defer glc.trace("PixelMapusv")
+		C.gl13PixelMapusv(glc.context, C.GLenum(Map), C.GLsizei(mapsize), (*C.GLushort)(unsafe.Pointer(values)))
 	}
 
 	glc.PixelStoref = func(pname uint32, param float32) {
-		C.gl12PixelStoref(glc.context, C.GLenum(pname), C.GLfloat(param))
+		defer glc.trace("PixelStoref")
+		C.gl13PixelStoref(glc.context, C.GLenum(pname), C.GLfloat(param))
 	}
 
 	glc.PixelStorei = func(pname uint32, param int32) {
-		C.gl12PixelStorei(glc.context, C.GLenum(pname), C.GLint(param))
+		defer glc.trace("PixelStorei")
+		C.gl13PixelStorei(glc.context, C.GLenum(pname), C.GLint(param))
 	}
 
 	glc.PixelTransferf = func(pname uint32, param float32) {
-		C.gl12PixelTransferf(glc.context, C.GLenum(pname), C.GLfloat(param))
+		defer glc.trace("PixelTransferf")
+		C.gl13PixelTransferf(glc.context, C.GLenum(pname), C.GLfloat(param))
 	}
 
 	glc.PixelTransferi = func(pname uint32, param int32) {
-		C.gl12PixelTransferi(glc.context, C.GLenum(pname), C.GLint(param))
+		defer glc.trace("PixelTransferi")
+		C.gl13PixelTransferi(glc.context, C.GLenum(pname), C.GLint(param))
 	}
 
 	glc.PixelZoom = func(xfactor, yfactor float32) {
-		C.gl12PixelZoom(glc.context, C.GLfloat(xfactor), C.GLfloat(yfactor))
+		defer glc.trace("PixelZoom")
+		C.gl13PixelZoom(glc.context, C.GLfloat(xfactor), C.GLfloat(yfactor))
 	}
 
 	glc.PointSize = func(size float32) {
-		C.gl12PointSize(glc.context, C.GLfloat(size))
+		defer glc.trace("PointSize")
+		C.gl13PointSize(glc.context, C.GLfloat(size))
 	}
 
 	glc.PolygonMode = func(face, mode uint32) {
-		C.gl12PolygonMode(glc.context, C.GLenum(face), C.GLenum(mode))
+		defer glc.trace("PolygonMode")
+		C.gl13PolygonMode(glc.context, C.GLenum(face), C.GLenum(mode))
 	}
 
 	glc.PolygonStipple = func(mask *uint8) {
-		C.gl12PolygonStipple(glc.context, (*C.GLubyte)(unsafe.Pointer(mask)))
+		defer glc.trace("PolygonStipple")
+		C.gl13PolygonStipple(glc.context, (*C.GLubyte)(unsafe.Pointer(mask)))
 	}
 
 	glc.PushAttrib = func(mask uint32) {
-		C.gl12PushAttrib(glc.context, C.GLbitfield(mask))
+		defer glc.trace("PushAttrib")
+		C.gl13PushAttrib(glc.context, C.GLbitfield(mask))
 	}
 
 	glc.PopAttrib = func() {
-		C.gl12PopAttrib(glc.context)
+		defer glc.trace("PopAttrib")
+		C.gl13PopAttrib(glc.context)
 	}
 
 	glc.PushMatrix = func() {
-		C.gl12PushMatrix(glc.context)
+		defer glc.trace("PushMatrix")
+		C.gl13PushMatrix(glc.context)
 	}
 
 	glc.PopMatrix = func() {
-		C.gl12PopMatrix(glc.context)
+		defer glc.trace("PopMatrix")
+		C.gl13PopMatrix(glc.context)
 	}
 
 	glc.PushName = func(name uint32) {
-		C.gl12PushName(glc.context, C.GLuint(name))
+		defer glc.trace("PushName")
+		C.gl13PushName(glc.context, C.GLuint(name))
 	}
 
 	glc.PopName = func() {
-		C.gl12PopName(glc.context)
+		defer glc.trace("PopName")
+		C.gl13PopName(glc.context)
 	}
 
 	glc.RasterPos2d = func(x, y float64) {
-		C.gl12RasterPos2d(glc.context, C.GLdouble(x), C.GLdouble(y))
+		defer glc.trace("RasterPos2d")
+		C.gl13RasterPos2d(glc.context, C.GLdouble(x), C.GLdouble(y))
 	}
 
 	glc.RasterPos2f = func(x, y float32) {
-		C.gl12RasterPos2f(glc.context, C.GLfloat(x), C.GLfloat(y))
+		defer glc.trace("RasterPos2f")
+		C.gl13RasterPos2f(glc.context, C.GLfloat(x), C.GLfloat(y))
 	}
 
 	glc.RasterPos2i = func(x, y int32) {
-		C.gl12RasterPos2i(glc.context, C.GLint(x), C.GLint(y))
+		defer glc.trace("RasterPos2i")
+		C.gl13RasterPos2i(glc.context, C.GLint(x), C.GLint(y))
 	}
 
 	glc.RasterPos2s = func(x, y int16) {
-		C.gl12RasterPos2s(glc.context, C.GLshort(x), C.GLshort(y))
+		defer glc.trace("RasterPos2s")
+		C.gl13RasterPos2s(glc.context, C.GLshort(x), C.GLshort(y))
 	}
 
 	glc.RasterPos3d = func(x, y, z float64) {
-		C.gl12RasterPos3d(glc.context, C.GLdouble(x), C.GLdouble(y), C.GLdouble(z))
+		defer glc.trace("RasterPos3d")
+		C.gl13RasterPos3d(glc.context, C.GLdouble(x), C.GLdouble(y), C.GLdouble(z))
 	}
 
 	glc.RasterPos3f = func(x, y, z float32) {
-		C.gl12RasterPos3f(glc.context, C.GLfloat(x), C.GLfloat(y), C.GLfloat(z))
+		defer glc.trace("RasterPos3f")
+		C.gl13RasterPos3f(glc.context, C.GLfloat(x), C.GLfloat(y), C.GLfloat(z))
 	}
 
 	glc.RasterPos3i = func(x, y, z int32) {
-		C.gl12RasterPos3i(glc.context, C.GLint(x), C.GLint(y), C.GLint(z))
+		defer glc.trace("RasterPos3i")
+		C.gl13RasterPos3i(glc.context, C.GLint(x), C.GLint(y), C.GLint(z))
 	}
 
 	glc.RasterPos3s = func(x, y, z int16) {
-		C.gl12RasterPos3s(glc.context, C.GLshort(x), C.GLshort(y), C.GLshort(z))
+		defer glc.trace("RasterPos3s")
+		C.gl13RasterPos3s(glc.context, C.GLshort(x), C.GLshort(y), C.GLshort(z))
 	}
 
 	glc.RasterPos4d = func(x, y, z, w float64) {
-		C.gl12RasterPos4d(glc.context, C.GLdouble(x), C.GLdouble(y), C.GLdouble(z), C.GLdouble(w))
+		defer glc.trace("RasterPos4d")
+		C.gl13RasterPos4d(glc.context, C.GLdouble(x), C.GLdouble(y), C.GLdouble(z), C.GLdouble(w))
 	}
 
 	glc.RasterPos4f = func(x, y, z, w float32) {
-		C.gl12RasterPos4f(glc.context, C.GLfloat(x), C.GLfloat(y), C.GLfloat(z), C.GLfloat(w))
+		defer glc.trace("RasterPos4f")
+		C.gl13RasterPos4f(glc.context, C.GLfloat(x), C.GLfloat(y), C.GLfloat(z), C.GLfloat(w))
 	}
 
 	glc.RasterPos4i = func(x, y, z, w int32) {
-		C.gl12RasterPos4i(glc.context, C.GLint(x), C.GLint(y), C.GLint(z), C.GLint(w))
+		defer glc.trace("RasterPos4i")
+		C.gl13RasterPos4i(glc.context, C.GLint(x), C.GLint(y), C.GLint(z), C.GLint(w))
 	}
 
 	glc.RasterPos4s = func(x, y, z, w int16) {
-		C.gl12RasterPos4s(glc.context, C.GLshort(x), C.GLshort(y), C.GLshort(z), C.GLshort(w))
+		defer glc.trace("RasterPos4s")
+		C.gl13RasterPos4s(glc.context, C.GLshort(x), C.GLshort(y), C.GLshort(z), C.GLshort(w))
 	}
 
 	glc.RasterPos2dv = func(v *float64) {
-		C.gl12RasterPos2dv(glc.context, (*C.GLdouble)(unsafe.Pointer(v)))
+		defer glc.trace("RasterPos2dv")
+		C.gl13RasterPos2dv(glc.context, (*C.GLdouble)(unsafe.Pointer(v)))
 	}
 
 	glc.RasterPos2fv = func(v *float32) {
-		C.gl12RasterPos2fv(glc.context, (*C.GLfloat)(unsafe.Pointer(v)))
+		defer glc.trace("RasterPos2fv")
+		C.gl13RasterPos2fv(glc.context, (*C.GLfloat)(unsafe.Pointer(v)))
 	}
 
 	glc.RasterPos2iv = func(v *int32) {
-		C.gl12RasterPos2iv(glc.context, (*C.GLint)(unsafe.Pointer(v)))
+		defer glc.trace("RasterPos2iv")
+		C.gl13RasterPos2iv(glc.context, (*C.GLint)(unsafe.Pointer(v)))
 	}
 
 	glc.RasterPos2sv = func(v *int16) {
-		C.gl12RasterPos2sv(glc.context, (*C.GLshort)(unsafe.Pointer(v)))
+		defer glc.trace("RasterPos2sv")
+		C.gl13RasterPos2sv(glc.context, (*C.GLshort)(unsafe.Pointer(v)))
 	}
 
 	glc.RasterPos3dv = func(v *float64) {
-		C.gl12RasterPos3dv(glc.context, (*C.GLdouble)(unsafe.Pointer(v)))
+		defer glc.trace("RasterPos3dv")
+		C.gl13RasterPos3dv(glc.context, (*C.GLdouble)(unsafe.Pointer(v)))
 	}
 
 	glc.RasterPos3fv = func(v *float32) {
-		C.gl12RasterPos3fv(glc.context, (*C.GLfloat)(unsafe.Pointer(v)))
+		defer glc.trace("RasterPos3fv")
+		C.gl13RasterPos3fv(glc.context, (*C.GLfloat)(unsafe.Pointer(v)))
 	}
 
 	glc.RasterPos3iv = func(v *int32) {
-		C.gl12RasterPos3iv(glc.context, (*C.GLint)(unsafe.Pointer(v)))
+		defer glc.trace("RasterPos3iv")
+		C.gl13RasterPos3iv(glc.context, (*C.GLint)(unsafe.Pointer(v)))
 	}
 
 	glc.RasterPos3sv = func(v *int16) {
-		C.gl12RasterPos3sv(glc.context, (*C.GLshort)(unsafe.Pointer(v)))
+		defer glc.trace("RasterPos3sv")
+		C.gl13RasterPos3sv(glc.context, (*C.GLshort)(unsafe.Pointer(v)))
 	}
 
 	glc.RasterPos4dv = func(v *float64) {
-		C.gl12RasterPos4dv(glc.context, (*C.GLdouble)(unsafe.Pointer(v)))
+		defer glc.trace("RasterPos4dv")
+		C.gl13RasterPos4dv(glc.context, (*C.GLdouble)(unsafe.Pointer(v)))
 	}
 
 	glc.RasterPos4fv = func(v *float32) {
-		C.gl12RasterPos4fv(glc.context, (*C.GLfloat)(unsafe.Pointer(v)))
+		defer glc.trace("RasterPos4fv")
+		C.gl13RasterPos4fv(glc.context, (*C.GLfloat)(unsafe.Pointer(v)))
 	}
 
 	glc.RasterPos4iv = func(v *int32) {
-		C.gl12RasterPos4iv(glc.context, (*C.GLint)(unsafe.Pointer(v)))
+		defer glc.trace("RasterPos4iv")
+		C.gl13RasterPos4iv(glc.context, (*C.GLint)(unsafe.Pointer(v)))
 	}
 
 	glc.RasterPos4sv = func(v *int16) {
-		C.gl12RasterPos4sv(glc.context, (*C.GLshort)(unsafe.Pointer(v)))
+		defer glc.trace("RasterPos4sv")
+		C.gl13RasterPos4sv(glc.context, (*C.GLshort)(unsafe.Pointer(v)))
 	}
 
 	glc.ReadBuffer = func(mode uint32) {
-		C.gl12ReadBuffer(glc.context, C.GLenum(mode))
+		defer glc.trace("ReadBuffer")
+		C.gl13ReadBuffer(glc.context, C.GLenum(mode))
 	}
 
 	glc.ReadPixels = func(x, y int32, width, height int32, format, Type uint32, pixels unsafe.Pointer) {
-		C.gl12ReadPixels(glc.context, C.GLint(x), C.GLint(y), C.GLsizei(width), C.GLsizei(height), C.GLenum(format), C.GLenum(Type), pixels)
+		defer glc.trace("ReadPixels")
+		C.gl13ReadPixels(glc.context, C.GLint(x), C.GLint(y), C.GLsizei(width), C.GLsizei(height), C.GLenum(format), C.GLenum(Type), pixels)
 	}
 
 	glc.Rectd = func(x1, y1, x2, y2 float64) {
-		C.gl12Rectd(glc.context, C.GLdouble(x1), C.GLdouble(y1), C.GLdouble(x2), C.GLdouble(y2))
+		defer glc.trace("Rectd")
+		C.gl13Rectd(glc.context, C.GLdouble(x1), C.GLdouble(y1), C.GLdouble(x2), C.GLdouble(y2))
 	}
 
 	glc.Rectf = func(x1, y1, x2, y2 float32) {
-		C.gl12Rectf(glc.context, C.GLfloat(x1), C.GLfloat(y1), C.GLfloat(x2), C.GLfloat(y2))
+		defer glc.trace("Rectf")
+		C.gl13Rectf(glc.context, C.GLfloat(x1), C.GLfloat(y1), C.GLfloat(x2), C.GLfloat(y2))
 	}
 
 	glc.Recti = func(x1, y1, x2, y2 int32) {
-		C.gl12Recti(glc.context, C.GLint(x1), C.GLint(y1), C.GLint(x2), C.GLint(y2))
+		defer glc.trace("Recti")
+		C.gl13Recti(glc.context, C.GLint(x1), C.GLint(y1), C.GLint(x2), C.GLint(y2))
 	}
 
 	glc.Rects = func(x1, y1, x2, y2 int16) {
-		C.gl12Rects(glc.context, C.GLshort(x1), C.GLshort(y1), C.GLshort(x2), C.GLshort(y2))
+		defer glc.trace("Rects")
+		C.gl13Rects(glc.context, C.GLshort(x1), C.GLshort(y1), C.GLshort(x2), C.GLshort(y2))
 	}
 
 	glc.Rectdv = func(v1, v2 *float64) {
-		C.gl12Rectdv(glc.context, (*C.GLdouble)(unsafe.Pointer(v1)), (*C.GLdouble)(unsafe.Pointer(v2)))
+		defer glc.trace("Rectdv")
+		C.gl13Rectdv(glc.context, (*C.GLdouble)(unsafe.Pointer(v1)), (*C.GLdouble)(unsafe.Pointer(v2)))
 	}
 
 	glc.Rectfv = func(v1, v2 *float32) {
-		C.gl12Rectfv(glc.context, (*C.GLfloat)(unsafe.Pointer(v1)), (*C.GLfloat)(unsafe.Pointer(v2)))
+		defer glc.trace("Rectfv")
+		C.gl13Rectfv(glc.context, (*C.GLfloat)(unsafe.Pointer(v1)), (*C.GLfloat)(unsafe.Pointer(v2)))
 	}
 
 	glc.Rectiv = func(v1, v2 *int32) {
-		C.gl12Rectiv(glc.context, (*C.GLint)(unsafe.Pointer(v1)), (*C.GLint)(unsafe.Pointer(v2)))
+		defer glc.trace("Rectiv")
+		C.gl13Rectiv(glc.context, (*C.GLint)(unsafe.Pointer(v1)), (*C.GLint)(unsafe.Pointer(v2)))
 	}
 
 	glc.Rectsv = func(v1, v2 *int16) {
-		C.gl12Rectsv(glc.context, (*C.GLshort)(unsafe.Pointer(v1)), (*C.GLshort)(unsafe.Pointer(v2)))
+		defer glc.trace("Rectsv")
+		C.gl13Rectsv(glc.context, (*C.GLshort)(unsafe.Pointer(v1)), (*C.GLshort)(unsafe.Pointer(v2)))
 	}
 
 	glc.RenderMode = func(mode uint32) int32 {
-		return int32(C.gl12RenderMode(glc.context, C.GLenum(mode)))
+		defer glc.trace("RenderMode")
+		return int32(C.gl13RenderMode(glc.context, C.GLenum(mode)))
 	}
 
 	glc.Rotated = func(angle, x, y, z float64) {
-		C.gl12Rotated(glc.context, C.GLdouble(angle), C.GLdouble(x), C.GLdouble(y), C.GLdouble(z))
+		defer glc.trace("Rotated")
+		C.gl13Rotated(glc.context, C.GLdouble(angle), C.GLdouble(x), C.GLdouble(y), C.GLdouble(z))
 	}
 
 	glc.Rotatef = func(angle, x, y, z float32) {
-		C.gl12Rotatef(glc.context, C.GLfloat(angle), C.GLfloat(x), C.GLfloat(y), C.GLfloat(z))
+		defer glc.trace("Rotatef")
+		C.gl13Rotatef(glc.context, C.GLfloat(angle), C.GLfloat(x), C.GLfloat(y), C.GLfloat(z))
 	}
 
 	glc.Scaled = func(x, y, z float64) {
-		C.gl12Scaled(glc.context, C.GLdouble(x), C.GLdouble(y), C.GLdouble(z))
+		defer glc.trace("Scaled")
+		C.gl13Scaled(glc.context, C.GLdouble(x), C.GLdouble(y), C.GLdouble(z))
 	}
 
 	glc.Scalef = func(x, y, z float32) {
-		C.gl12Scalef(glc.context, C.GLfloat(x), C.GLfloat(y), C.GLfloat(z))
+		defer glc.trace("Scalef")
+		C.gl13Scalef(glc.context, C.GLfloat(x), C.GLfloat(y), C.GLfloat(z))
 	}
 
 	glc.Scissor = func(x, y int32, width, height int32) {
-		C.gl12Scissor(glc.context, C.GLint(x), C.GLint(y), C.GLsizei(width), C.GLsizei(height))
+		defer glc.trace("Scissor")
+		C.gl13Scissor(glc.context, C.GLint(x), C.GLint(y), C.GLsizei(width), C.GLsizei(height))
 	}
 
 	glc.SelectBuffer = func(size int32, buffer *uint32) {
-		C.gl12SelectBuffer(glc.context, C.GLsizei(size), (*C.GLuint)(unsafe.Pointer(buffer)))
+		defer glc.trace("SelectBuffer")
+		C.gl13SelectBuffer(glc.context, C.GLsizei(size), (*C.GLuint)(unsafe.Pointer(buffer)))
 	}
 
 	glc.ShadeModel = func(mode uint32) {
-		C.gl12ShadeModel(glc.context, C.GLenum(mode))
+		defer glc.trace("ShadeModel")
+		C.gl13ShadeModel(glc.context, C.GLenum(mode))
 	}
 
 	glc.StencilFunc = func(Func uint32, ref int32, mask uint32) {
-		C.gl12StencilFunc(glc.context, C.GLenum(Func), C.GLint(ref), C.GLuint(mask))
+		defer glc.trace("StencilFunc")
+		C.gl13StencilFunc(glc.context, C.GLenum(Func), C.GLint(ref), C.GLuint(mask))
 	}
 
 	glc.StencilMask = func(mask uint32) {
-		C.gl12StencilMask(glc.context, C.GLuint(mask))
+		defer glc.trace("StencilMask")
+		C.gl13StencilMask(glc.context, C.GLuint(mask))
 	}
 
 	glc.StencilOp = func(fail, zfail, zpass uint32) {
-		C.gl12StencilOp(glc.context, C.GLenum(fail), C.GLenum(zfail), C.GLenum(zpass))
+		defer glc.trace("StencilOp")
+		C.gl13StencilOp(glc.context, C.GLenum(fail), C.GLenum(zfail), C.GLenum(zpass))
 	}
 
 	glc.TexCoord1d = func(s float64) {
-		C.gl12TexCoord1d(glc.context, C.GLdouble(s))
+		defer glc.trace("TexCoord1d")
+		C.gl13TexCoord1d(glc.context, C.GLdouble(s))
 	}
 
 	glc.TexCoord1f = func(s float32) {
-		C.gl12TexCoord1f(glc.context, C.GLfloat(s))
+		defer glc.trace("TexCoord1f")
+		C.gl13TexCoord1f(glc.context, C.GLfloat(s))
 	}
 
 	glc.TexCoord1i = func(s int32) {
-		C.gl12TexCoord1i(glc.context, C.GLint(s))
+		defer glc.trace("TexCoord1i")
+		C.gl13TexCoord1i(glc.context, C.GLint(s))
 	}
 
 	glc.TexCoord1s = func(s int16) {
-		C.gl12TexCoord1s(glc.context, C.GLshort(s))
+		defer glc.trace("TexCoord1s")
+		C.gl13TexCoord1s(glc.context, C.GLshort(s))
 	}
 
 	glc.TexCoord2d = func(s, t float64) {
-		C.gl12TexCoord2d(glc.context, C.GLdouble(s), C.GLdouble(t))
+		defer glc.trace("TexCoord2d")
+		C.gl13TexCoord2d(glc.context, C.GLdouble(s), C.GLdouble(t))
 	}
 
 	glc.TexCoord2f = func(s, t float32) {
-		C.gl12TexCoord2f(glc.context, C.GLfloat(s), C.GLfloat(t))
+		defer glc.trace("TexCoord2f")
+		C.gl13TexCoord2f(glc.context, C.GLfloat(s), C.GLfloat(t))
 	}
 
 	glc.TexCoord2i = func(s, t int32) {
-		C.gl12TexCoord2i(glc.context, C.GLint(s), C.GLint(t))
+		defer glc.trace("TexCoord2i")
+		C.gl13TexCoord2i(glc.context, C.GLint(s), C.GLint(t))
 	}
 
 	glc.TexCoord2s = func(s, t int16) {
-		C.gl12TexCoord2s(glc.context, C.GLshort(s), C.GLshort(t))
+		defer glc.trace("TexCoord2s")
+		C.gl13TexCoord2s(glc.context, C.GLshort(s), C.GLshort(t))
 	}
 
 	glc.TexCoord3d = func(s, t, r float64) {
-		C.gl12TexCoord3d(glc.context, C.GLdouble(s), C.GLdouble(t), C.GLdouble(r))
+		defer glc.trace("TexCoord3d")
+		C.gl13TexCoord3d(glc.context, C.GLdouble(s), C.GLdouble(t), C.GLdouble(r))
 	}
 
 	glc.TexCoord3f = func(s, t, r float32) {
-		C.gl12TexCoord3f(glc.context, C.GLfloat(s), C.GLfloat(t), C.GLfloat(r))
+		defer glc.trace("TexCoord3f")
+		C.gl13TexCoord3f(glc.context, C.GLfloat(s), C.GLfloat(t), C.GLfloat(r))
 	}
 
 	glc.TexCoord3i = func(s, t, r int32) {
-		C.gl12TexCoord3i(glc.context, C.GLint(s), C.GLint(t), C.GLint(r))
+		defer glc.trace("TexCoord3i")
+		C.gl13TexCoord3i(glc.context, C.GLint(s), C.GLint(t), C.GLint(r))
 	}
 
 	glc.TexCoord3s = func(s, t, r int16) {
-		C.gl12TexCoord3s(glc.context, C.GLshort(s), C.GLshort(t), C.GLshort(r))
+		defer glc.trace("TexCoord3s")
+		C.gl13TexCoord3s(glc.context, C.GLshort(s), C.GLshort(t), C.GLshort(r))
 	}
 
 	glc.TexCoord4d = func(s, t, r, q float64) {
-		C.gl12TexCoord4d(glc.context, C.GLdouble(s), C.GLdouble(t), C.GLdouble(r), C.GLdouble(q))
+		defer glc.trace("TexCoord4d")
+		C.gl13TexCoord4d(glc.context, C.GLdouble(s), C.GLdouble(t), C.GLdouble(r), C.GLdouble(q))
 	}
 
 	glc.TexCoord4f = func(s, t, r, q float32) {
-		C.gl12TexCoord4f(glc.context, C.GLfloat(s), C.GLfloat(t), C.GLfloat(r), C.GLfloat(q))
+		defer glc.trace("TexCoord4f")
+		C.gl13TexCoord4f(glc.context, C.GLfloat(s), C.GLfloat(t), C.GLfloat(r), C.GLfloat(q))
 	}
 
 	glc.TexCoord4i = func(s, t, r, q int32) {
-		C.gl12TexCoord4i(glc.context, C.GLint(s), C.GLint(t), C.GLint(r), C.GLint(q))
+		defer glc.trace("TexCoord4i")
+		C.gl13TexCoord4i(glc.context, C.GLint(s), C.GLint(t), C.GLint(r), C.GLint(q))
 	}
 
 	glc.TexCoord4s = func(s, t, r, q int16) {
-		C.gl12TexCoord4s(glc.context, C.GLshort(s), C.GLshort(t), C.GLshort(r), C.GLshort(q))
+		defer glc.trace("TexCoord4s")
+		C.gl13TexCoord4s(glc.context, C.GLshort(s), C.GLshort(t), C.GLshort(r), C.GLshort(q))
 	}
 
 	glc.TexCoord1dv = func(v *float64) {
-		C.gl12TexCoord1dv(glc.context, (*C.GLdouble)(unsafe.Pointer(v)))
+		defer glc.trace("TexCoord1dv")
+		C.gl13TexCoord1dv(glc.context, (*C.GLdouble)(unsafe.Pointer(v)))
 	}
 
 	glc.TexCoord1fv = func(v *float32) {
-		C.gl12TexCoord1fv(glc.context, (*C.GLfloat)(unsafe.Pointer(v)))
+		defer glc.trace("TexCoord1fv")
+		C.gl13TexCoord1fv(glc.context, (*C.GLfloat)(unsafe.Pointer(v)))
 	}
 
 	glc.TexCoord1iv = func(v *int32) {
-		C.gl12TexCoord1iv(glc.context, (*C.GLint)(unsafe.Pointer(v)))
+		defer glc.trace("TexCoord1iv")
+		C.gl13TexCoord1iv(glc.context, (*C.GLint)(unsafe.Pointer(v)))
 	}
 
 	glc.TexCoord1sv = func(v *int16) {
-		C.gl12TexCoord1sv(glc.context, (*C.GLshort)(unsafe.Pointer(v)))
+		defer glc.trace("TexCoord1sv")
+		C.gl13TexCoord1sv(glc.context, (*C.GLshort)(unsafe.Pointer(v)))
 	}
 
 	glc.TexCoord2dv = func(v *float64) {
-		C.gl12TexCoord2dv(glc.context, (*C.GLdouble)(unsafe.Pointer(v)))
+		defer glc.trace("TexCoord2dv")
+		C.gl13TexCoord2dv(glc.context, (*C.GLdouble)(unsafe.Pointer(v)))
 	}
 
 	glc.TexCoord2fv = func(v *float32) {
-		C.gl12TexCoord2fv(glc.context, (*C.GLfloat)(unsafe.Pointer(v)))
+		defer glc.trace("TexCoord2fv")
+		C.gl13TexCoord2fv(glc.context, (*C.GLfloat)(unsafe.Pointer(v)))
 	}
 
 	glc.TexCoord2iv = func(v *int32) {
-		C.gl12TexCoord2iv(glc.context, (*C.GLint)(unsafe.Pointer(v)))
+		defer glc.trace("TexCoord2iv")
+		C.gl13TexCoord2iv(glc.context, (*C.GLint)(unsafe.Pointer(v)))
 	}
 
 	glc.TexCoord2sv = func(v *int16) {
-		C.gl12TexCoord2sv(glc.context, (*C.GLshort)(unsafe.Pointer(v)))
+		defer glc.trace("TexCoord2sv")
+		C.gl13TexCoord2sv(glc.context, (*C.GLshort)(unsafe.Pointer(v)))
 	}
 
 	glc.TexCoord3dv = func(v *float64) {
-		C.gl12TexCoord3dv(glc.context, (*C.GLdouble)(unsafe.Pointer(v)))
+		defer glc.trace("TexCoord3dv")
+		C.gl13TexCoord3dv(glc.context, (*C.GLdouble)(unsafe.Pointer(v)))
 	}
 
 	glc.TexCoord3fv = func(v *float32) {
-		C.gl12TexCoord3fv(glc.context, (*C.GLfloat)(unsafe.Pointer(v)))
+		defer glc.trace("TexCoord3fv")
+		C.gl13TexCoord3fv(glc.context, (*C.GLfloat)(unsafe.Pointer(v)))
 	}
 
 	glc.TexCoord3iv = func(v *int32) {
-		C.gl12TexCoord3iv(glc.context, (*C.GLint)(unsafe.Pointer(v)))
+		defer glc.trace("TexCoord3iv")
+		C.gl13TexCoord3iv(glc.context, (*C.GLint)(unsafe.Pointer(v)))
 	}
 
 	glc.TexCoord3sv = func(v *int16) {
-		C.gl12TexCoord3sv(glc.context, (*C.GLshort)(unsafe.Pointer(v)))
+		defer glc.trace("TexCoord3sv")
+		C.gl13TexCoord3sv(glc.context, (*C.GLshort)(unsafe.Pointer(v)))
 	}
 
 	glc.TexCoord4dv = func(v *float64) {
-		C.gl12TexCoord4dv(glc.context, (*C.GLdouble)(unsafe.Pointer(v)))
+		defer glc.trace("TexCoord4dv")
+		C.gl13TexCoord4dv(glc.context, (*C.GLdouble)(unsafe.Pointer(v)))
 	}
 
 	glc.TexCoord4fv = func(v *float32) {
-		C.gl12TexCoord4fv(glc.context, (*C.GLfloat)(unsafe.Pointer(v)))
+		defer glc.trace("TexCoord4fv")
+		C.gl13TexCoord4fv(glc.context, (*C.GLfloat)(unsafe.Pointer(v)))
 	}
 
 	glc.TexCoord4iv = func(v *int32) {
-		C.gl12TexCoord4iv(glc.context, (*C.GLint)(unsafe.Pointer(v)))
+		defer glc.trace("TexCoord4iv")
+		C.gl13TexCoord4iv(glc.context, (*C.GLint)(unsafe.Pointer(v)))
 	}
 
 	glc.TexCoord4sv = func(v *int16) {
-		C.gl12TexCoord4sv(glc.context, (*C.GLshort)(unsafe.Pointer(v)))
+		defer glc.trace("TexCoord4sv")
+		C.gl13TexCoord4sv(glc.context, (*C.GLshort)(unsafe.Pointer(v)))
 	}
 
 	glc.TexEnvf = func(target, pname uint32, param float32) {
-		C.gl12TexEnvf(glc.context, C.GLenum(target), C.GLenum(pname), C.GLfloat(param))
+		defer glc.trace("TexEnvf")
+		C.gl13TexEnvf(glc.context, C.GLenum(target), C.GLenum(pname), C.GLfloat(param))
 	}
 
 	glc.TexEnvi = func(target, pname uint32, param int32) {
-		C.gl12TexEnvi(glc.context, C.GLenum(target), C.GLenum(pname), C.GLint(param))
+		defer glc.trace("TexEnvi")
+		C.gl13TexEnvi(glc.context, C.GLenum(target), C.GLenum(pname), C.GLint(param))
 	}
 
 	glc.TexEnvfv = func(target, pname uint32, params *float32) {
-		C.gl12TexEnvfv(glc.context, C.GLenum(target), C.GLenum(pname), (*C.GLfloat)(unsafe.Pointer(params)))
+		defer glc.trace("TexEnvfv")
+		C.gl13TexEnvfv(glc.context, C.GLenum(target), C.GLenum(pname), (*C.GLfloat)(unsafe.Pointer(params)))
 	}
 
 	glc.TexEnviv = func(target, pname uint32, params *int32) {
-		C.gl12TexEnviv(glc.context, C.GLenum(target), C.GLenum(pname), (*C.GLint)(unsafe.Pointer(params)))
+		defer glc.trace("TexEnviv")
+		C.gl13TexEnviv(glc.context, C.GLenum(target), C.GLenum(pname), (*C.GLint)(unsafe.Pointer(params)))
 	}
 
 	glc.TexGend = func(coord, pname uint32, param float64) {
-		C.gl12TexGend(glc.context, C.GLenum(coord), C.GLenum(pname), C.GLdouble(param))
+		defer glc.trace("TexGend")
+		C.gl13TexGend(glc.context, C.GLenum(coord), C.GLenum(pname), C.GLdouble(param))
 	}
 
 	glc.TexGenf = func(coord, pname uint32, param float32) {
-		C.gl12TexGenf(glc.context, C.GLenum(coord), C.GLenum(pname), C.GLfloat(param))
+		defer glc.trace("TexGenf")
+		C.gl13TexGenf(glc.context, C.GLenum(coord), C.GLenum(pname), C.GLfloat(param))
 	}
 
 	glc.TexGeni = func(coord, pname uint32, param int32) {
-		C.gl12TexGeni(glc.context, C.GLenum(coord), C.GLenum(pname), C.GLint(param))
+		defer glc.trace("TexGeni")
+		C.gl13TexGeni(glc.context, C.GLenum(coord), C.GLenum(pname), C.GLint(param))
 	}
 
 	glc.TexGendv = func(coord, pname uint32, params *float64) {
-		C.gl12TexGendv(glc.context, C.GLenum(coord), C.GLenum(pname), (*C.GLdouble)(unsafe.Pointer(params)))
+		defer glc.trace("TexGendv")
+		C.gl13TexGendv(glc.context, C.GLenum(coord), C.GLenum(pname), (*C.GLdouble)(unsafe.Pointer(params)))
 	}
 
 	glc.TexGenfv = func(coord, pname uint32, params *float32) {
-		C.gl12TexGenfv(glc.context, C.GLenum(coord), C.GLenum(pname), (*C.GLfloat)(unsafe.Pointer(params)))
+		defer glc.trace("TexGenfv")
+		C.gl13TexGenfv(glc.context, C.GLenum(coord), C.GLenum(pname), (*C.GLfloat)(unsafe.Pointer(params)))
 	}
 
 	glc.TexGeniv = func(coord, pname uint32, params *int32) {
-		C.gl12TexGeniv(glc.context, C.GLenum(coord), C.GLenum(pname), (*C.GLint)(unsafe.Pointer(params)))
+		defer glc.trace("TexGeniv")
+		C.gl13TexGeniv(glc.context, C.GLenum(coord), C.GLenum(pname), (*C.GLint)(unsafe.Pointer(params)))
 	}
 
 	glc.TexImage1D = func(target uint32, level, internalformat int32, width int32, border int32, format, Type uint32, pixels unsafe.Pointer) {
-		C.gl12TexImage1D(glc.context, C.GLenum(target), C.GLint(level), C.GLint(internalformat), C.GLsizei(width), C.GLint(border), C.GLenum(format), C.GLenum(Type), pixels)
+		defer glc.trace("TexImage1D")
+		C.gl13TexImage1D(glc.context, C.GLenum(target), C.GLint(level), C.GLint(internalformat), C.GLsizei(width), C.GLint(border), C.GLenum(format), C.GLenum(Type), pixels)
 	}
 
 	glc.TexImage2D = func(target uint32, level, internalformat int32, width, height int32, border int32, format, Type uint32, pixels unsafe.Pointer) {
-		C.gl12TexImage2D(glc.context, C.GLenum(target), C.GLint(level), C.GLint(internalformat), C.GLsizei(width), C.GLsizei(height), C.GLint(border), C.GLenum(format), C.GLenum(Type), pixels)
+		defer glc.trace("TexImage2D")
+		C.gl13TexImage2D(glc.context, C.GLenum(target), C.GLint(level), C.GLint(internalformat), C.GLsizei(width), C.GLsizei(height), C.GLint(border), C.GLenum(format), C.GLenum(Type), pixels)
 	}
 
 	glc.TexParameterf = func(target, pname uint32, param float32) {
-		C.gl12TexParameterf(glc.context, C.GLenum(target), C.GLenum(pname), C.GLfloat(param))
+		defer glc.trace("TexParameterf")
+		C.gl13TexParameterf(glc.context, C.GLenum(target), C.GLenum(pname), C.GLfloat(param))
 	}
 
 	glc.TexParameteri = func(target, pname uint32, param int32) {
-		C.gl12TexParameteri(glc.context, C.GLenum(target), C.GLenum(pname), C.GLint(param))
+		defer glc.trace("TexParameteri")
+		C.gl13TexParameteri(glc.context, C.GLenum(target), C.GLenum(pname), C.GLint(param))
 	}
 
 	glc.TexParameterfv = func(target, pname uint32, params *float32) {
-		C.gl12TexParameterfv(glc.context, C.GLenum(target), C.GLenum(pname), (*C.GLfloat)(unsafe.Pointer(params)))
+		defer glc.trace("TexParameterfv")
+		C.gl13TexParameterfv(glc.context, C.GLenum(target), C.GLenum(pname), (*C.GLfloat)(unsafe.Pointer(params)))
 	}
 
 	glc.TexParameteriv = func(target, pname uint32, params *int32) {
-		C.gl12TexParameteriv(glc.context, C.GLenum(target), C.GLenum(pname), (*C.GLint)(unsafe.Pointer(params)))
+		defer glc.trace("TexParameteriv")
+		C.gl13TexParameteriv(glc.context, C.GLenum(target), C.GLenum(pname), (*C.GLint)(unsafe.Pointer(params)))
 	}
 
 	glc.Translated = func(x, y, z float64) {
-		C.gl12Translated(glc.context, C.GLdouble(x), C.GLdouble(y), C.GLdouble(z))
+		defer glc.trace("Translated")
+		C.gl13Translated(glc.context, C.GLdouble(x), C.GLdouble(y), C.GLdouble(z))
 	}
 
 	glc.Translatef = func(x, y, z float32) {
-		C.gl12Translatef(glc.context, C.GLfloat(x), C.GLfloat(y), C.GLfloat(z))
+		defer glc.trace("Translatef")
+		C.gl13Translatef(glc.context, C.GLfloat(x), C.GLfloat(y), C.GLfloat(z))
 	}
 
 	glc.Vertex2s = func(x, y int16) {
-		C.gl12Vertex2s(glc.context, C.GLshort(x), C.GLshort(y))
+		defer glc.trace("Vertex2s")
+		C.gl13Vertex2s(glc.context, C.GLshort(x), C.GLshort(y))
 	}
 
 	glc.Vertex2i = func(x, y int32) {
-		C.gl12Vertex2i(glc.context, C.GLint(x), C.GLint(y))
+		defer glc.trace("Vertex2i")
+		C.gl13Vertex2i(glc.context, C.GLint(x), C.GLint(y))
 	}
 
 	glc.Vertex2f = func(x, y float32) {
-		C.gl12Vertex2f(glc.context, C.GLfloat(x), C.GLfloat(y))
+		defer glc.trace("Vertex2f")
+		C.gl13Vertex2f(glc.context, C.GLfloat(x), C.GLfloat(y))
 	}
 
 	glc.Vertex2d = func(x, y float64) {
-		C.gl12Vertex2d(glc.context, C.GLdouble(x), C.GLdouble(y))
+		defer glc.trace("Vertex2d")
+		C.gl13Vertex2d(glc.context, C.GLdouble(x), C.GLdouble(y))
 	}
 
 	glc.Vertex3s = func(x, y, z int16) {
-		C.gl12Vertex3s(glc.context, C.GLshort(x), C.GLshort(y), C.GLshort(z))
+		defer glc.trace("Vertex3s")
+		C.gl13Vertex3s(glc.context, C.GLshort(x), C.GLshort(y), C.GLshort(z))
 	}
 
 	glc.Vertex3i = func(x, y, z int32) {
-		C.gl12Vertex3i(glc.context, C.GLint(x), C.GLint(y), C.GLint(z))
+		defer glc.trace("Vertex3i")
+		C.gl13Vertex3i(glc.context, C.GLint(x), C.GLint(y), C.GLint(z))
 	}
 
 	glc.Vertex3f = func(x, y, z float32) {
-		C.gl12Vertex3f(glc.context, C.GLfloat(x), C.GLfloat(y), C.GLfloat(z))
+		defer glc.trace("Vertex3f")
+		C.gl13Vertex3f(glc.context, C.GLfloat(x), C.GLfloat(y), C.GLfloat(z))
 	}
 
 	glc.Vertex3d = func(x, y, z float64) {
-		C.gl12Vertex3d(glc.context, C.GLdouble(x), C.GLdouble(y), C.GLdouble(z))
+		defer glc.trace("Vertex3d")
+		C.gl13Vertex3d(glc.context, C.GLdouble(x), C.GLdouble(y), C.GLdouble(z))
 	}
 
 	glc.Vertex4s = func(x, y, z, w int16) {
-		C.gl12Vertex4s(glc.context, C.GLshort(x), C.GLshort(y), C.GLshort(z), C.GLshort(w))
+		defer glc.trace("Vertex4s")
+		C.gl13Vertex4s(glc.context, C.GLshort(x), C.GLshort(y), C.GLshort(z), C.GLshort(w))
 	}
 
 	glc.Vertex4i = func(x, y, z, w int32) {
-		C.gl12Vertex4i(glc.context, C.GLint(x), C.GLint(y), C.GLint(z), C.GLint(w))
+		defer glc.trace("Vertex4i")
+		C.gl13Vertex4i(glc.context, C.GLint(x), C.GLint(y), C.GLint(z), C.GLint(w))
 	}
 
 	glc.Vertex4f = func(x, y, z, w float32) {
-		C.gl12Vertex4f(glc.context, C.GLfloat(x), C.GLfloat(y), C.GLfloat(z), C.GLfloat(w))
+		defer glc.trace("Vertex4f")
+		C.gl13Vertex4f(glc.context, C.GLfloat(x), C.GLfloat(y), C.GLfloat(z), C.GLfloat(w))
 	}
 
 	glc.Vertex4d = func(x, y, z, w float64) {
-		C.gl12Vertex4d(glc.context, C.GLdouble(x), C.GLdouble(y), C.GLdouble(z), C.GLdouble(w))
+		defer glc.trace("Vertex4d")
+		C.gl13Vertex4d(glc.context, C.GLdouble(x), C.GLdouble(y), C.GLdouble(z), C.GLdouble(w))
 	}
 
 	glc.Viewport = func(x, y int32, width, height int32) {
-		C.gl12Viewport(glc.context, C.GLint(x), C.GLint(y), C.GLsizei(width), C.GLsizei(height))
+		defer glc.trace("Viewport")
+		C.gl13Viewport(glc.context, C.GLint(x), C.GLint(y), C.GLsizei(width), C.GLsizei(height))
 	}
 
 	glc.GetConvolutionParameterfv = func(target, pname uint32, params *float32) {
-		C.gl12GetConvolutionParameterfv(glc.context, C.GLenum(target), C.GLenum(pname), (*C.GLfloat)(unsafe.Pointer(params)))
+		defer glc.trace("GetConvolutionParameterfv")
+		C.gl13GetConvolutionParameterfv(glc.context, C.GLenum(target), C.GLenum(pname), (*C.GLfloat)(unsafe.Pointer(params)))
 	}
 
 	glc.GetConvolutionParameteriv = func(target, pname uint32, params *int32) {
-		C.gl12GetConvolutionParameteriv(glc.context, C.GLenum(target), C.GLenum(pname), (*C.GLint)(unsafe.Pointer(params)))
+		defer glc.trace("GetConvolutionParameteriv")
+		C.gl13GetConvolutionParameteriv(glc.context, C.GLenum(target), C.GLenum(pname), (*C.GLint)(unsafe.Pointer(params)))
 	}
 
 	glc.AreTexturesResident = func(textures []uint32) (status bool, residencies []bool) {
+		defer glc.trace("AreTexturesResident")
 		var cRes *C.GLboolean
-		status = C.gl12AreTexturesResident(glc.context, C.GLsizei(len(textures)), (*C.GLuint)(unsafe.Pointer(&textures[0])), cRes) != 0
+		status = C.gl13AreTexturesResident(glc.context, C.GLsizei(len(textures)), (*C.GLuint)(unsafe.Pointer(&textures[0])), cRes) != 0
 		residencies = make([]bool, len(textures))
 		for i := 0; i < len(textures); i++ {
 			residencies[i] = (*(*C.GLboolean)(unsafe.Pointer(uintptr(unsafe.Pointer(cRes)) + uintptr(i)))) != 0
@@ -6793,1099 +7091,1371 @@ func New() *Context {
 	}
 
 	glc.ArrayElement = func(i int32) {
-		C.gl12ArrayElement(glc.context, C.GLint(i))
+		defer glc.trace("ArrayElement")
+		C.gl13ArrayElement(glc.context, C.GLint(i))
 	}
 
 	glc.DrawArrays = func(mode uint32, first int32, count int32) {
-		C.gl12DrawArrays(glc.context, C.GLenum(mode), C.GLint(first), C.GLsizei(count))
+		defer glc.trace("DrawArrays")
+		C.gl13DrawArrays(glc.context, C.GLenum(mode), C.GLint(first), C.GLsizei(count))
 	}
 
 	glc.DrawElements = func(mode uint32, count int32, Type uint32, indices unsafe.Pointer) {
-		C.gl12DrawElements(glc.context, C.GLenum(mode), C.GLsizei(count), C.GLenum(Type), indices)
+		defer glc.trace("DrawElements")
+		C.gl13DrawElements(glc.context, C.GLenum(mode), C.GLsizei(count), C.GLenum(Type), indices)
 	}
 
 	glc.GetPointerv = func(pname uint32, params unsafe.Pointer) {
-		C.gl12GetPointerv(glc.context, C.GLenum(pname), params)
+		defer glc.trace("GetPointerv")
+		C.gl13GetPointerv(glc.context, C.GLenum(pname), params)
 	}
 
 	glc.PolygonOffset = func(factor, units float32) {
-		C.gl12PolygonOffset(glc.context, C.GLfloat(factor), C.GLfloat(units))
+		defer glc.trace("PolygonOffset")
+		C.gl13PolygonOffset(glc.context, C.GLfloat(factor), C.GLfloat(units))
 	}
 
 	glc.CopyTexImage1D = func(target uint32, level int32, internalFormat uint32, x, y int32, width int32, border int32) {
-		C.gl12CopyTexImage1D(glc.context, C.GLenum(target), C.GLint(level), C.GLenum(internalFormat), C.GLint(x), C.GLint(y), C.GLsizei(width), C.GLint(border))
+		defer glc.trace("CopyTexImage1D")
+		C.gl13CopyTexImage1D(glc.context, C.GLenum(target), C.GLint(level), C.GLenum(internalFormat), C.GLint(x), C.GLint(y), C.GLsizei(width), C.GLint(border))
 	}
 
 	glc.CopyTexImage2D = func(target uint32, level int32, internalFormat uint32, x, y int32, width, height int32, border int32) {
-		C.gl12CopyTexImage2D(glc.context, C.GLenum(target), C.GLint(level), C.GLenum(internalFormat), C.GLint(x), C.GLint(y), C.GLsizei(width), C.GLsizei(height), C.GLint(border))
+		defer glc.trace("CopyTexImage2D")
+		C.gl13CopyTexImage2D(glc.context, C.GLenum(target), C.GLint(level), C.GLenum(internalFormat), C.GLint(x), C.GLint(y), C.GLsizei(width), C.GLsizei(height), C.GLint(border))
 	}
 
 	glc.CopyTexSubImage1D = func(target uint32, level, xoffset, x, y int32, width int32) {
-		C.gl12CopyTexSubImage1D(glc.context, C.GLenum(target), C.GLint(level), C.GLint(xoffset), C.GLint(x), C.GLint(y), C.GLsizei(width))
+		defer glc.trace("CopyTexSubImage1D")
+		C.gl13CopyTexSubImage1D(glc.context, C.GLenum(target), C.GLint(level), C.GLint(xoffset), C.GLint(x), C.GLint(y), C.GLsizei(width))
 	}
 
 	glc.CopyTexSubImage2D = func(target uint32, level, xoffset, yoffset, x, y int32, width, height int32) {
-		C.gl12CopyTexSubImage2D(glc.context, C.GLenum(target), C.GLint(level), C.GLint(xoffset), C.GLint(yoffset), C.GLint(x), C.GLint(y), C.GLsizei(width), C.GLsizei(height))
+		defer glc.trace("CopyTexSubImage2D")
+		C.gl13CopyTexSubImage2D(glc.context, C.GLenum(target), C.GLint(level), C.GLint(xoffset), C.GLint(yoffset), C.GLint(x), C.GLint(y), C.GLsizei(width), C.GLsizei(height))
 	}
 
 	glc.BindTexture = func(target uint32, texture uint32) {
-		C.gl12BindTexture(glc.context, C.GLenum(target), C.GLuint(texture))
+		defer glc.trace("BindTexture")
+		C.gl13BindTexture(glc.context, C.GLenum(target), C.GLuint(texture))
 	}
 
 	glc.DeleteTextures = func(n int32, textures *uint32) {
-		C.gl12DeleteTextures(glc.context, C.GLsizei(n), (*C.GLuint)(unsafe.Pointer(textures)))
+		defer glc.trace("DeleteTextures")
+		C.gl13DeleteTextures(glc.context, C.GLsizei(n), (*C.GLuint)(unsafe.Pointer(textures)))
 	}
 
 	glc.GenTextures = func(n int32, textures *uint32) {
-		C.gl12GenTextures(glc.context, C.GLsizei(n), (*C.GLuint)(unsafe.Pointer(textures)))
+		defer glc.trace("GenTextures")
+		C.gl13GenTextures(glc.context, C.GLsizei(n), (*C.GLuint)(unsafe.Pointer(textures)))
 	}
 
 	glc.IsTexture = func(texture uint32) bool {
-		return C.gl12IsTexture(glc.context, C.GLuint(texture)) != 0
+		defer glc.trace("IsTexture")
+		return C.gl13IsTexture(glc.context, C.GLuint(texture)) != 0
 	}
 
 	glc.ColorPointer = func(size int32, Type uint32, stride int32, pointer unsafe.Pointer) {
-		C.gl12ColorPointer(glc.context, C.GLint(size), C.GLenum(Type), C.GLsizei(stride), pointer)
+		defer glc.trace("ColorPointer")
+		C.gl13ColorPointer(glc.context, C.GLint(size), C.GLenum(Type), C.GLsizei(stride), pointer)
 	}
 
 	glc.EnableClientState = func(cap uint32) {
-		C.gl12EnableClientState(glc.context, C.GLenum(cap))
+		defer glc.trace("EnableClientState")
+		C.gl13EnableClientState(glc.context, C.GLenum(cap))
 	}
 
 	glc.DisableClientState = func(cap uint32) {
-		C.gl12DisableClientState(glc.context, C.GLenum(cap))
+		defer glc.trace("DisableClientState")
+		C.gl13DisableClientState(glc.context, C.GLenum(cap))
 	}
 
 	glc.Indexub = func(c uint8) {
-		C.gl12Indexub(glc.context, C.GLubyte(c))
+		defer glc.trace("Indexub")
+		C.gl13Indexub(glc.context, C.GLubyte(c))
 	}
 
 	glc.Indexubv = func(c *uint8) {
-		C.gl12Indexubv(glc.context, (*C.GLubyte)(unsafe.Pointer(c)))
+		defer glc.trace("Indexubv")
+		C.gl13Indexubv(glc.context, (*C.GLubyte)(unsafe.Pointer(c)))
 	}
 
 	glc.InterleavedArrays = func(format uint32, stride int32, pointer unsafe.Pointer) {
-		C.gl12InterleavedArrays(glc.context, C.GLenum(format), C.GLsizei(stride), pointer)
+		defer glc.trace("InterleavedArrays")
+		C.gl13InterleavedArrays(glc.context, C.GLenum(format), C.GLsizei(stride), pointer)
 	}
 
 	glc.NormalPointer = func(Type uint32, stride int32, pointer unsafe.Pointer) {
-		C.gl12NormalPointer(glc.context, C.GLenum(Type), C.GLsizei(stride), pointer)
+		defer glc.trace("NormalPointer")
+		C.gl13NormalPointer(glc.context, C.GLenum(Type), C.GLsizei(stride), pointer)
 	}
 
 	glc.PushClientAttrib = func(mask uint32) {
-		C.gl12PushClientAttrib(glc.context, C.GLbitfield(mask))
+		defer glc.trace("PushClientAttrib")
+		C.gl13PushClientAttrib(glc.context, C.GLbitfield(mask))
 	}
 
 	glc.PrioritizeTextures = func(n int32, textures *uint32, priorities *float32) {
-		C.gl12PrioritizeTextures(glc.context, C.GLsizei(n), (*C.GLuint)(unsafe.Pointer(textures)), (*C.GLclampf)(unsafe.Pointer(priorities)))
+		defer glc.trace("PrioritizeTextures")
+		C.gl13PrioritizeTextures(glc.context, C.GLsizei(n), (*C.GLuint)(unsafe.Pointer(textures)), (*C.GLclampf)(unsafe.Pointer(priorities)))
 	}
 
 	glc.PopClientAttrib = func() {
-		C.gl12PopClientAttrib(glc.context)
+		defer glc.trace("PopClientAttrib")
+		C.gl13PopClientAttrib(glc.context)
 	}
 
 	glc.TexCoordPointer = func(size int32, Type uint32, stride int32, pointer unsafe.Pointer) {
-		C.gl12TexCoordPointer(glc.context, C.GLint(size), C.GLenum(Type), C.GLsizei(stride), pointer)
+		defer glc.trace("TexCoordPointer")
+		C.gl13TexCoordPointer(glc.context, C.GLint(size), C.GLenum(Type), C.GLsizei(stride), pointer)
 	}
 
 	glc.TexSubImage1D = func(target uint32, level, xoffset int32, width int32, format, Type uint32, pixels unsafe.Pointer) {
-		C.gl12TexSubImage1D(glc.context, C.GLenum(target), C.GLint(level), C.GLint(xoffset), C.GLsizei(width), C.GLenum(format), C.GLenum(Type), pixels)
+		defer glc.trace("TexSubImage1D")
+		C.gl13TexSubImage1D(glc.context, C.GLenum(target), C.GLint(level), C.GLint(xoffset), C.GLsizei(width), C.GLenum(format), C.GLenum(Type), pixels)
 	}
 
 	glc.TexSubImage2D = func(target uint32, level, xoffset, yoffset int32, width, height int32, format, Type uint32, pixels unsafe.Pointer) {
-		C.gl12TexSubImage2D(glc.context, C.GLenum(target), C.GLint(level), C.GLint(xoffset), C.GLint(yoffset), C.GLsizei(width), C.GLsizei(height), C.GLenum(format), C.GLenum(Type), pixels)
+		defer glc.trace("TexSubImage2D")
+		C.gl13TexSubImage2D(glc.context, C.GLenum(target), C.GLint(level), C.GLint(xoffset), C.GLint(yoffset), C.GLsizei(width), C.GLsizei(height), C.GLenum(format), C.GLenum(Type), pixels)
 	}
 
 	glc.VertexPointer = func(size int32, Type uint32, stride int32, pointer unsafe.Pointer) {
-		C.gl12VertexPointer(glc.context, C.GLint(size), C.GLenum(Type), C.GLsizei(stride), pointer)
+		defer glc.trace("VertexPointer")
+		C.gl13VertexPointer(glc.context, C.GLint(size), C.GLenum(Type), C.GLsizei(stride), pointer)
 	}
 
 	glc.ColorTable = func(target, internalformat uint32, width int32, format, Type uint32, data unsafe.Pointer) {
-		C.gl12ColorTable(glc.context, C.GLenum(target), C.GLenum(internalformat), C.GLsizei(width), C.GLenum(format), C.GLenum(Type), data)
+		defer glc.trace("ColorTable")
+		C.gl13ColorTable(glc.context, C.GLenum(target), C.GLenum(internalformat), C.GLsizei(width), C.GLenum(format), C.GLenum(Type), data)
 	}
 
 	glc.ColorTableParameterfv = func(target, pname uint32, params *float32) {
-		C.gl12ColorTableParameterfv(glc.context, C.GLenum(target), C.GLenum(pname), (*C.GLfloat)(unsafe.Pointer(params)))
+		defer glc.trace("ColorTableParameterfv")
+		C.gl13ColorTableParameterfv(glc.context, C.GLenum(target), C.GLenum(pname), (*C.GLfloat)(unsafe.Pointer(params)))
 	}
 
 	glc.ColorTableParameteriv = func(target, pname uint32, params *int32) {
-		C.gl12ColorTableParameteriv(glc.context, C.GLenum(target), C.GLenum(pname), (*C.GLint)(unsafe.Pointer(params)))
+		defer glc.trace("ColorTableParameteriv")
+		C.gl13ColorTableParameteriv(glc.context, C.GLenum(target), C.GLenum(pname), (*C.GLint)(unsafe.Pointer(params)))
 	}
 
 	glc.ColorSubTable = func(target uint32, start, count int32, format, Type uint32, data unsafe.Pointer) {
-		C.gl12ColorSubTable(glc.context, C.GLenum(target), C.GLsizei(start), C.GLsizei(count), C.GLenum(format), C.GLenum(Type), data)
+		defer glc.trace("ColorSubTable")
+		C.gl13ColorSubTable(glc.context, C.GLenum(target), C.GLsizei(start), C.GLsizei(count), C.GLenum(format), C.GLenum(Type), data)
 	}
 
 	glc.ConvolutionFilter1D = func(target, internalformat uint32, width int32, format, Type uint32, data unsafe.Pointer) {
-		C.gl12ConvolutionFilter1D(glc.context, C.GLenum(target), C.GLenum(internalformat), C.GLsizei(width), C.GLenum(format), C.GLenum(Type), data)
+		defer glc.trace("ConvolutionFilter1D")
+		C.gl13ConvolutionFilter1D(glc.context, C.GLenum(target), C.GLenum(internalformat), C.GLsizei(width), C.GLenum(format), C.GLenum(Type), data)
 	}
 
 	glc.ConvolutionFilter2D = func(target, internalformat uint32, width, height int32, format, Type uint32, data unsafe.Pointer) {
-		C.gl12ConvolutionFilter2D(glc.context, C.GLenum(target), C.GLenum(internalformat), C.GLsizei(width), C.GLsizei(height), C.GLenum(format), C.GLenum(Type), data)
+		defer glc.trace("ConvolutionFilter2D")
+		C.gl13ConvolutionFilter2D(glc.context, C.GLenum(target), C.GLenum(internalformat), C.GLsizei(width), C.GLsizei(height), C.GLenum(format), C.GLenum(Type), data)
 	}
 
 	glc.ConvolutionParameterf = func(target, pname uint32, params float32) {
-		C.gl12ConvolutionParameterf(glc.context, C.GLenum(target), C.GLenum(pname), C.GLfloat(params))
+		defer glc.trace("ConvolutionParameterf")
+		C.gl13ConvolutionParameterf(glc.context, C.GLenum(target), C.GLenum(pname), C.GLfloat(params))
 	}
 
 	glc.ConvolutionParameteri = func(target, pname uint32, params int32) {
-		C.gl12ConvolutionParameteri(glc.context, C.GLenum(target), C.GLenum(pname), C.GLint(params))
+		defer glc.trace("ConvolutionParameteri")
+		C.gl13ConvolutionParameteri(glc.context, C.GLenum(target), C.GLenum(pname), C.GLint(params))
 	}
 
 	glc.CopyColorTable = func(target, internalformat uint32, x, y int32, width int32) {
-		C.gl12CopyColorTable(glc.context, C.GLenum(target), C.GLenum(internalformat), C.GLint(x), C.GLint(y), C.GLsizei(width))
+		defer glc.trace("CopyColorTable")
+		C.gl13CopyColorTable(glc.context, C.GLenum(target), C.GLenum(internalformat), C.GLint(x), C.GLint(y), C.GLsizei(width))
 	}
 
 	glc.CopyColorSubTable = func(target uint32, start int32, x, y int32, width int32) {
-		C.gl12CopyColorSubTable(glc.context, C.GLenum(target), C.GLsizei(start), C.GLint(x), C.GLint(y), C.GLsizei(width))
+		defer glc.trace("CopyColorSubTable")
+		C.gl13CopyColorSubTable(glc.context, C.GLenum(target), C.GLsizei(start), C.GLint(x), C.GLint(y), C.GLsizei(width))
 	}
 
 	glc.CopyConvolutionFilter1D = func(target, internalformat uint32, x, y int32, width int32) {
-		C.gl12CopyConvolutionFilter1D(glc.context, C.GLenum(target), C.GLenum(internalformat), C.GLint(x), C.GLint(y), C.GLsizei(width))
+		defer glc.trace("CopyConvolutionFilter1D")
+		C.gl13CopyConvolutionFilter1D(glc.context, C.GLenum(target), C.GLenum(internalformat), C.GLint(x), C.GLint(y), C.GLsizei(width))
 	}
 
 	glc.CopyConvolutionFilter2D = func(target, internalformat uint32, x, y int32, width, height int32) {
-		C.gl12CopyConvolutionFilter2D(glc.context, C.GLenum(target), C.GLenum(internalformat), C.GLint(x), C.GLint(y), C.GLsizei(width), C.GLsizei(height))
+		defer glc.trace("CopyConvolutionFilter2D")
+		C.gl13CopyConvolutionFilter2D(glc.context, C.GLenum(target), C.GLenum(internalformat), C.GLint(x), C.GLint(y), C.GLsizei(width), C.GLsizei(height))
 	}
 
 	glc.GetColorTable = func(target, format, Type uint32, table unsafe.Pointer) {
-		C.gl12GetColorTable(glc.context, C.GLenum(target), C.GLenum(format), C.GLenum(Type), table)
+		defer glc.trace("GetColorTable")
+		C.gl13GetColorTable(glc.context, C.GLenum(target), C.GLenum(format), C.GLenum(Type), table)
 	}
 
 	glc.GetColorTableParameterfv = func(target, pname uint32, params *float32) {
-		C.gl12GetColorTableParameterfv(glc.context, C.GLenum(target), C.GLenum(pname), (*C.GLfloat)(unsafe.Pointer(params)))
+		defer glc.trace("GetColorTableParameterfv")
+		C.gl13GetColorTableParameterfv(glc.context, C.GLenum(target), C.GLenum(pname), (*C.GLfloat)(unsafe.Pointer(params)))
 	}
 
 	glc.GetColorTableParameteriv = func(target, pname uint32, params *int32) {
-		C.gl12GetColorTableParameteriv(glc.context, C.GLenum(target), C.GLenum(pname), (*C.GLint)(unsafe.Pointer(params)))
+		defer glc.trace("GetColorTableParameteriv")
+		C.gl13GetColorTableParameteriv(glc.context, C.GLenum(target), C.GLenum(pname), (*C.GLint)(unsafe.Pointer(params)))
 	}
 
 	glc.GetConvolutionFilter = func(target, format, Type uint32, image unsafe.Pointer) {
-		C.gl12GetConvolutionFilter(glc.context, C.GLenum(target), C.GLenum(format), C.GLenum(Type), image)
+		defer glc.trace("GetConvolutionFilter")
+		C.gl13GetConvolutionFilter(glc.context, C.GLenum(target), C.GLenum(format), C.GLenum(Type), image)
 	}
 
 	glc.GetHistogram = func(target uint32, reset bool, format, Type uint32, values unsafe.Pointer) {
-		C.gl12GetHistogram(glc.context, C.GLenum(target), boolToGL(reset), C.GLenum(format), C.GLenum(Type), values)
+		defer glc.trace("GetHistogram")
+		C.gl13GetHistogram(glc.context, C.GLenum(target), boolToGL(reset), C.GLenum(format), C.GLenum(Type), values)
 	}
 
 	glc.GetHistogramParameterfv = func(target, pname uint32, params *float32) {
-		C.gl12GetHistogramParameterfv(glc.context, C.GLenum(target), C.GLenum(pname), (*C.GLfloat)(unsafe.Pointer(params)))
+		defer glc.trace("GetHistogramParameterfv")
+		C.gl13GetHistogramParameterfv(glc.context, C.GLenum(target), C.GLenum(pname), (*C.GLfloat)(unsafe.Pointer(params)))
 	}
 
 	glc.GetHistogramParameteriv = func(target, pname uint32, params *int32) {
-		C.gl12GetHistogramParameteriv(glc.context, C.GLenum(target), C.GLenum(pname), (*C.GLint)(unsafe.Pointer(params)))
+		defer glc.trace("GetHistogramParameteriv")
+		C.gl13GetHistogramParameteriv(glc.context, C.GLenum(target), C.GLenum(pname), (*C.GLint)(unsafe.Pointer(params)))
 	}
 
 	glc.GetSeparableFilter = func(target, format, Type uint32, row, column, span unsafe.Pointer) {
-		C.gl12GetSeparableFilter(glc.context, C.GLenum(target), C.GLenum(format), C.GLenum(Type), row, column, span)
+		defer glc.trace("GetSeparableFilter")
+		C.gl13GetSeparableFilter(glc.context, C.GLenum(target), C.GLenum(format), C.GLenum(Type), row, column, span)
 	}
 
 	glc.Histogram = func(target uint32, width int32, internalformat uint32, sink bool) {
-		C.gl12Histogram(glc.context, C.GLenum(target), C.GLsizei(width), C.GLenum(internalformat), boolToGL(sink))
+		defer glc.trace("Histogram")
+		C.gl13Histogram(glc.context, C.GLenum(target), C.GLsizei(width), C.GLenum(internalformat), boolToGL(sink))
 	}
 
 	glc.Minmax = func(target, internalformat uint32, sink bool) {
-		C.gl12Minmax(glc.context, C.GLenum(target), C.GLenum(internalformat), boolToGL(sink))
+		defer glc.trace("Minmax")
+		C.gl13Minmax(glc.context, C.GLenum(target), C.GLenum(internalformat), boolToGL(sink))
 	}
 
 	glc.MultiTexCoord1s = func(target uint32, s int16) {
-		C.gl12MultiTexCoord1s(glc.context, C.GLenum(target), C.GLshort(s))
+		defer glc.trace("MultiTexCoord1s")
+		C.gl13MultiTexCoord1s(glc.context, C.GLenum(target), C.GLshort(s))
 	}
 
 	glc.MultiTexCoord1i = func(target uint32, s int32) {
-		C.gl12MultiTexCoord1i(glc.context, C.GLenum(target), C.GLint(s))
+		defer glc.trace("MultiTexCoord1i")
+		C.gl13MultiTexCoord1i(glc.context, C.GLenum(target), C.GLint(s))
 	}
 
 	glc.MultiTexCoord1f = func(target uint32, s float32) {
-		C.gl12MultiTexCoord1f(glc.context, C.GLenum(target), C.GLfloat(s))
+		defer glc.trace("MultiTexCoord1f")
+		C.gl13MultiTexCoord1f(glc.context, C.GLenum(target), C.GLfloat(s))
 	}
 
 	glc.MultiTexCoord1d = func(target uint32, s float64) {
-		C.gl12MultiTexCoord1d(glc.context, C.GLenum(target), C.GLdouble(s))
+		defer glc.trace("MultiTexCoord1d")
+		C.gl13MultiTexCoord1d(glc.context, C.GLenum(target), C.GLdouble(s))
 	}
 
 	glc.MultiTexCoord2s = func(target uint32, s, t int16) {
-		C.gl12MultiTexCoord2s(glc.context, C.GLenum(target), C.GLshort(s), C.GLshort(t))
+		defer glc.trace("MultiTexCoord2s")
+		C.gl13MultiTexCoord2s(glc.context, C.GLenum(target), C.GLshort(s), C.GLshort(t))
 	}
 
 	glc.MultiTexCoord2i = func(target uint32, s, t int32) {
-		C.gl12MultiTexCoord2i(glc.context, C.GLenum(target), C.GLint(s), C.GLint(t))
+		defer glc.trace("MultiTexCoord2i")
+		C.gl13MultiTexCoord2i(glc.context, C.GLenum(target), C.GLint(s), C.GLint(t))
 	}
 
 	glc.MultiTexCoord2f = func(target uint32, s, t float32) {
-		C.gl12MultiTexCoord2f(glc.context, C.GLenum(target), C.GLfloat(s), C.GLfloat(t))
+		defer glc.trace("MultiTexCoord2f")
+		C.gl13MultiTexCoord2f(glc.context, C.GLenum(target), C.GLfloat(s), C.GLfloat(t))
 	}
 
 	glc.MultiTexCoord2d = func(target uint32, s, t float64) {
-		C.gl12MultiTexCoord2d(glc.context, C.GLenum(target), C.GLdouble(s), C.GLdouble(t))
+		defer glc.trace("MultiTexCoord2d")
+		C.gl13MultiTexCoord2d(glc.context, C.GLenum(target), C.GLdouble(s), C.GLdouble(t))
 	}
 
 	glc.MultiTexCoord3s = func(target uint32, s, t, r int16) {
-		C.gl12MultiTexCoord3s(glc.context, C.GLenum(target), C.GLshort(s), C.GLshort(t), C.GLshort(r))
+		defer glc.trace("MultiTexCoord3s")
+		C.gl13MultiTexCoord3s(glc.context, C.GLenum(target), C.GLshort(s), C.GLshort(t), C.GLshort(r))
 	}
 
 	glc.MultiTexCoord3i = func(target uint32, s, t, r int32) {
-		C.gl12MultiTexCoord3i(glc.context, C.GLenum(target), C.GLint(s), C.GLint(t), C.GLint(r))
+		defer glc.trace("MultiTexCoord3i")
+		C.gl13MultiTexCoord3i(glc.context, C.GLenum(target), C.GLint(s), C.GLint(t), C.GLint(r))
 	}
 
 	glc.MultiTexCoord3f = func(target uint32, s, t, r float32) {
-		C.gl12MultiTexCoord3f(glc.context, C.GLenum(target), C.GLfloat(s), C.GLfloat(t), C.GLfloat(r))
+		defer glc.trace("MultiTexCoord3f")
+		C.gl13MultiTexCoord3f(glc.context, C.GLenum(target), C.GLfloat(s), C.GLfloat(t), C.GLfloat(r))
 	}
 
 	glc.MultiTexCoord3d = func(target uint32, s, t, r float64) {
-		C.gl12MultiTexCoord3d(glc.context, C.GLenum(target), C.GLdouble(s), C.GLdouble(t), C.GLdouble(r))
+		defer glc.trace("MultiTexCoord3d")
+		C.gl13MultiTexCoord3d(glc.context, C.GLenum(target), C.GLdouble(s), C.GLdouble(t), C.GLdouble(r))
 	}
 
 	glc.MultiTexCoord4s = func(target uint32, s, t, r, q int16) {
-		C.gl12MultiTexCoord4s(glc.context, C.GLenum(target), C.GLshort(s), C.GLshort(t), C.GLshort(r), C.GLshort(q))
+		defer glc.trace("MultiTexCoord4s")
+		C.gl13MultiTexCoord4s(glc.context, C.GLenum(target), C.GLshort(s), C.GLshort(t), C.GLshort(r), C.GLshort(q))
 	}
 
 	glc.MultiTexCoord4i = func(target uint32, s, t, r, q int32) {
-		C.gl12MultiTexCoord4i(glc.context, C.GLenum(target), C.GLint(s), C.GLint(t), C.GLint(r), C.GLint(q))
+		defer glc.trace("MultiTexCoord4i")
+		C.gl13MultiTexCoord4i(glc.context, C.GLenum(target), C.GLint(s), C.GLint(t), C.GLint(r), C.GLint(q))
 	}
 
 	glc.MultiTexCoord4f = func(target uint32, s, t, r, q float32) {
-		C.gl12MultiTexCoord4f(glc.context, C.GLenum(target), C.GLfloat(s), C.GLfloat(t), C.GLfloat(r), C.GLfloat(q))
+		defer glc.trace("MultiTexCoord4f")
+		C.gl13MultiTexCoord4f(glc.context, C.GLenum(target), C.GLfloat(s), C.GLfloat(t), C.GLfloat(r), C.GLfloat(q))
 	}
 
 	glc.MultiTexCoord4d = func(target uint32, s, t, r, q float64) {
-		C.gl12MultiTexCoord4d(glc.context, C.GLenum(target), C.GLdouble(s), C.GLdouble(t), C.GLdouble(r), C.GLdouble(q))
+		defer glc.trace("MultiTexCoord4d")
+		C.gl13MultiTexCoord4d(glc.context, C.GLenum(target), C.GLdouble(s), C.GLdouble(t), C.GLdouble(r), C.GLdouble(q))
 	}
 
 	glc.MultiTexCoord1sv = func(target uint32, v *int16) {
-		C.gl12MultiTexCoord1sv(glc.context, C.GLenum(target), (*C.GLshort)(unsafe.Pointer(v)))
+		defer glc.trace("MultiTexCoord1sv")
+		C.gl13MultiTexCoord1sv(glc.context, C.GLenum(target), (*C.GLshort)(unsafe.Pointer(v)))
 	}
 
 	glc.MultiTexCoord1iv = func(target uint32, v *int32) {
-		C.gl12MultiTexCoord1iv(glc.context, C.GLenum(target), (*C.GLint)(unsafe.Pointer(v)))
+		defer glc.trace("MultiTexCoord1iv")
+		C.gl13MultiTexCoord1iv(glc.context, C.GLenum(target), (*C.GLint)(unsafe.Pointer(v)))
 	}
 
 	glc.MultiTexCoord1fv = func(target uint32, v *float32) {
-		C.gl12MultiTexCoord1fv(glc.context, C.GLenum(target), (*C.GLfloat)(unsafe.Pointer(v)))
+		defer glc.trace("MultiTexCoord1fv")
+		C.gl13MultiTexCoord1fv(glc.context, C.GLenum(target), (*C.GLfloat)(unsafe.Pointer(v)))
 	}
 
 	glc.MultiTexCoord1dv = func(target uint32, v *float64) {
-		C.gl12MultiTexCoord1dv(glc.context, C.GLenum(target), (*C.GLdouble)(unsafe.Pointer(v)))
+		defer glc.trace("MultiTexCoord1dv")
+		C.gl13MultiTexCoord1dv(glc.context, C.GLenum(target), (*C.GLdouble)(unsafe.Pointer(v)))
 	}
 
 	glc.MultiTexCoord2sv = func(target uint32, v *int16) {
-		C.gl12MultiTexCoord2sv(glc.context, C.GLenum(target), (*C.GLshort)(unsafe.Pointer(v)))
+		defer glc.trace("MultiTexCoord2sv")
+		C.gl13MultiTexCoord2sv(glc.context, C.GLenum(target), (*C.GLshort)(unsafe.Pointer(v)))
 	}
 
 	glc.MultiTexCoord2iv = func(target uint32, v *int32) {
-		C.gl12MultiTexCoord2iv(glc.context, C.GLenum(target), (*C.GLint)(unsafe.Pointer(v)))
+		defer glc.trace("MultiTexCoord2iv")
+		C.gl13MultiTexCoord2iv(glc.context, C.GLenum(target), (*C.GLint)(unsafe.Pointer(v)))
 	}
 
 	glc.MultiTexCoord2fv = func(target uint32, v *float32) {
-		C.gl12MultiTexCoord2fv(glc.context, C.GLenum(target), (*C.GLfloat)(unsafe.Pointer(v)))
+		defer glc.trace("MultiTexCoord2fv")
+		C.gl13MultiTexCoord2fv(glc.context, C.GLenum(target), (*C.GLfloat)(unsafe.Pointer(v)))
 	}
 
 	glc.MultiTexCoord2dv = func(target uint32, v *float64) {
-		C.gl12MultiTexCoord2dv(glc.context, C.GLenum(target), (*C.GLdouble)(unsafe.Pointer(v)))
+		defer glc.trace("MultiTexCoord2dv")
+		C.gl13MultiTexCoord2dv(glc.context, C.GLenum(target), (*C.GLdouble)(unsafe.Pointer(v)))
 	}
 
 	glc.MultiTexCoord3sv = func(target uint32, v *int16) {
-		C.gl12MultiTexCoord3sv(glc.context, C.GLenum(target), (*C.GLshort)(unsafe.Pointer(v)))
+		defer glc.trace("MultiTexCoord3sv")
+		C.gl13MultiTexCoord3sv(glc.context, C.GLenum(target), (*C.GLshort)(unsafe.Pointer(v)))
 	}
 
 	glc.MultiTexCoord3iv = func(target uint32, v *int32) {
-		C.gl12MultiTexCoord3iv(glc.context, C.GLenum(target), (*C.GLint)(unsafe.Pointer(v)))
+		defer glc.trace("MultiTexCoord3iv")
+		C.gl13MultiTexCoord3iv(glc.context, C.GLenum(target), (*C.GLint)(unsafe.Pointer(v)))
 	}
 
 	glc.MultiTexCoord3fv = func(target uint32, v *float32) {
-		C.gl12MultiTexCoord3fv(glc.context, C.GLenum(target), (*C.GLfloat)(unsafe.Pointer(v)))
+		defer glc.trace("MultiTexCoord3fv")
+		C.gl13MultiTexCoord3fv(glc.context, C.GLenum(target), (*C.GLfloat)(unsafe.Pointer(v)))
 	}
 
 	glc.MultiTexCoord3dv = func(target uint32, v *float64) {
-		C.gl12MultiTexCoord3dv(glc.context, C.GLenum(target), (*C.GLdouble)(unsafe.Pointer(v)))
+		defer glc.trace("MultiTexCoord3dv")
+		C.gl13MultiTexCoord3dv(glc.context, C.GLenum(target), (*C.GLdouble)(unsafe.Pointer(v)))
 	}
 
 	glc.MultiTexCoord4sv = func(target uint32, v *int16) {
-		C.gl12MultiTexCoord4sv(glc.context, C.GLenum(target), (*C.GLshort)(unsafe.Pointer(v)))
+		defer glc.trace("MultiTexCoord4sv")
+		C.gl13MultiTexCoord4sv(glc.context, C.GLenum(target), (*C.GLshort)(unsafe.Pointer(v)))
 	}
 
 	glc.MultiTexCoord4iv = func(target uint32, v *int32) {
-		C.gl12MultiTexCoord4iv(glc.context, C.GLenum(target), (*C.GLint)(unsafe.Pointer(v)))
+		defer glc.trace("MultiTexCoord4iv")
+		C.gl13MultiTexCoord4iv(glc.context, C.GLenum(target), (*C.GLint)(unsafe.Pointer(v)))
 	}
 
 	glc.MultiTexCoord4fv = func(target uint32, v *float32) {
-		C.gl12MultiTexCoord4fv(glc.context, C.GLenum(target), (*C.GLfloat)(unsafe.Pointer(v)))
+		defer glc.trace("MultiTexCoord4fv")
+		C.gl13MultiTexCoord4fv(glc.context, C.GLenum(target), (*C.GLfloat)(unsafe.Pointer(v)))
 	}
 
 	glc.MultiTexCoord4dv = func(target uint32, v *float64) {
-		C.gl12MultiTexCoord4dv(glc.context, C.GLenum(target), (*C.GLdouble)(unsafe.Pointer(v)))
+		defer glc.trace("MultiTexCoord4dv")
+		C.gl13MultiTexCoord4dv(glc.context, C.GLenum(target), (*C.GLdouble)(unsafe.Pointer(v)))
 	}
 
 	glc.ResetHistogram = func(target uint32) {
-		C.gl12ResetHistogram(glc.context, C.GLenum(target))
+		defer glc.trace("ResetHistogram")
+		C.gl13ResetHistogram(glc.context, C.GLenum(target))
 	}
 
 	glc.ResetMinmax = func(target uint32) {
-		C.gl12ResetMinmax(glc.context, C.GLenum(target))
+		defer glc.trace("ResetMinmax")
+		C.gl13ResetMinmax(glc.context, C.GLenum(target))
 	}
 
 	glc.SeparableFilter2D = func(target, internalformat uint32, width, height int32, format, Type uint32, row, column unsafe.Pointer) {
-		C.gl12SeparableFilter2D(glc.context, C.GLenum(target), C.GLenum(internalformat), C.GLsizei(width), C.GLsizei(height), C.GLenum(format), C.GLenum(Type), row, column)
+		defer glc.trace("SeparableFilter2D")
+		C.gl13SeparableFilter2D(glc.context, C.GLenum(target), C.GLenum(internalformat), C.GLsizei(width), C.GLsizei(height), C.GLenum(format), C.GLenum(Type), row, column)
 	}
 
 	glc.BlendColor = func(red, green, blue, alpha float32) {
-		C.gl12BlendColor(glc.context, C.GLclampf(red), C.GLclampf(green), C.GLclampf(blue), C.GLclampf(alpha))
+		defer glc.trace("BlendColor")
+		C.gl13BlendColor(glc.context, C.GLclampf(red), C.GLclampf(green), C.GLclampf(blue), C.GLclampf(alpha))
 	}
 
 	glc.BlendEquation = func(mode uint32) {
-		C.gl12BlendEquation(glc.context, C.GLenum(mode))
+		defer glc.trace("BlendEquation")
+		C.gl13BlendEquation(glc.context, C.GLenum(mode))
 	}
 
 	glc.CopyTexSubImage3D = func(target uint32, level, xoffset, yoffset, zoffset, x, y int32, width, height int32) {
-		C.gl12CopyTexSubImage3D(glc.context, C.GLenum(target), C.GLint(level), C.GLint(xoffset), C.GLint(yoffset), C.GLint(zoffset), C.GLint(x), C.GLint(y), C.GLsizei(width), C.GLsizei(height))
+		defer glc.trace("CopyTexSubImage3D")
+		C.gl13CopyTexSubImage3D(glc.context, C.GLenum(target), C.GLint(level), C.GLint(xoffset), C.GLint(yoffset), C.GLint(zoffset), C.GLint(x), C.GLint(y), C.GLsizei(width), C.GLsizei(height))
 	}
 
 	glc.DrawRangeElements = func(mode uint32, start, end uint32, count int32, Type uint32, indices unsafe.Pointer) {
-		C.gl12DrawRangeElements(glc.context, C.GLenum(mode), C.GLuint(start), C.GLuint(end), C.GLsizei(count), C.GLenum(Type), indices)
+		defer glc.trace("DrawRangeElements")
+		C.gl13DrawRangeElements(glc.context, C.GLenum(mode), C.GLuint(start), C.GLuint(end), C.GLsizei(count), C.GLenum(Type), indices)
 	}
 
 	glc.TexImage3D = func(target uint32, level, internalformat int32, width, height, depth int32, border int32, format, Type uint32, pixels unsafe.Pointer) {
-		C.gl12TexImage3D(glc.context, C.GLenum(target), C.GLint(level), C.GLint(internalformat), C.GLsizei(width), C.GLsizei(height), C.GLsizei(depth), C.GLint(border), C.GLenum(format), C.GLenum(Type), pixels)
+		defer glc.trace("TexImage3D")
+		C.gl13TexImage3D(glc.context, C.GLenum(target), C.GLint(level), C.GLint(internalformat), C.GLsizei(width), C.GLsizei(height), C.GLsizei(depth), C.GLint(border), C.GLenum(format), C.GLenum(Type), pixels)
 	}
 
 	glc.TexSubImage3D = func(target uint32, level, xoffset, yoffset, zoffset int32, width, height, depth int32, format, Type uint32, pixels unsafe.Pointer) {
-		C.gl12TexSubImage3D(glc.context, C.GLenum(target), C.GLint(level), C.GLint(xoffset), C.GLint(yoffset), C.GLint(zoffset), C.GLsizei(width), C.GLsizei(height), C.GLsizei(depth), C.GLenum(format), C.GLenum(Type), pixels)
+		defer glc.trace("TexSubImage3D")
+		C.gl13TexSubImage3D(glc.context, C.GLenum(target), C.GLint(level), C.GLint(xoffset), C.GLint(yoffset), C.GLint(zoffset), C.GLsizei(width), C.GLsizei(height), C.GLsizei(depth), C.GLenum(format), C.GLenum(Type), pixels)
 	}
 
 	glc.ActiveTexture = func(texture uint32) {
-		C.gl12ActiveTexture(glc.context, C.GLenum(texture))
+		defer glc.trace("ActiveTexture")
+		C.gl13ActiveTexture(glc.context, C.GLenum(texture))
 	}
 
 	glc.ClientActiveTexture = func(texture uint32) {
-		C.gl12ClientActiveTexture(glc.context, C.GLenum(texture))
+		defer glc.trace("ClientActiveTexture")
+		C.gl13ClientActiveTexture(glc.context, C.GLenum(texture))
 	}
 
 	glc.CompressedTexImage1D = func(target uint32, level int32, internalformat uint32, width int32, border int32, imageSize int32, data unsafe.Pointer) {
-		C.gl12CompressedTexImage1D(glc.context, C.GLenum(target), C.GLint(level), C.GLenum(internalformat), C.GLsizei(width), C.GLint(border), C.GLsizei(imageSize), data)
+		defer glc.trace("CompressedTexImage1D")
+		C.gl13CompressedTexImage1D(glc.context, C.GLenum(target), C.GLint(level), C.GLenum(internalformat), C.GLsizei(width), C.GLint(border), C.GLsizei(imageSize), data)
 	}
 
 	glc.CompressedTexImage2D = func(target uint32, level int32, internalformat uint32, width, height int32, border int32, imageSize int32, data unsafe.Pointer) {
-		C.gl12CompressedTexImage2D(glc.context, C.GLenum(target), C.GLint(level), C.GLenum(internalformat), C.GLsizei(width), C.GLsizei(height), C.GLint(border), C.GLsizei(imageSize), data)
+		defer glc.trace("CompressedTexImage2D")
+		C.gl13CompressedTexImage2D(glc.context, C.GLenum(target), C.GLint(level), C.GLenum(internalformat), C.GLsizei(width), C.GLsizei(height), C.GLint(border), C.GLsizei(imageSize), data)
 	}
 
 	glc.CompressedTexImage3D = func(target uint32, level int32, internalformat uint32, width, height, depth int32, border int32, imageSize int32, data unsafe.Pointer) {
-		C.gl12CompressedTexImage3D(glc.context, C.GLenum(target), C.GLint(level), C.GLenum(internalformat), C.GLsizei(width), C.GLsizei(height), C.GLsizei(depth), C.GLint(border), C.GLsizei(imageSize), data)
+		defer glc.trace("CompressedTexImage3D")
+		C.gl13CompressedTexImage3D(glc.context, C.GLenum(target), C.GLint(level), C.GLenum(internalformat), C.GLsizei(width), C.GLsizei(height), C.GLsizei(depth), C.GLint(border), C.GLsizei(imageSize), data)
 	}
 
 	glc.CompressedTexSubImage1D = func(target uint32, level, xoffset int32, width int32, format uint32, imageSize int32, data unsafe.Pointer) {
-		C.gl12CompressedTexSubImage1D(glc.context, C.GLenum(target), C.GLint(level), C.GLint(xoffset), C.GLsizei(width), C.GLenum(format), C.GLsizei(imageSize), data)
+		defer glc.trace("CompressedTexSubImage1D")
+		C.gl13CompressedTexSubImage1D(glc.context, C.GLenum(target), C.GLint(level), C.GLint(xoffset), C.GLsizei(width), C.GLenum(format), C.GLsizei(imageSize), data)
 	}
 
 	glc.CompressedTexSubImage2D = func(target uint32, level, xoffset, yoffset int32, width, height int32, format uint32, imageSize int32, data unsafe.Pointer) {
-		C.gl12CompressedTexSubImage2D(glc.context, C.GLenum(target), C.GLint(level), C.GLint(xoffset), C.GLint(yoffset), C.GLsizei(width), C.GLsizei(height), C.GLenum(format), C.GLsizei(imageSize), data)
+		defer glc.trace("CompressedTexSubImage2D")
+		C.gl13CompressedTexSubImage2D(glc.context, C.GLenum(target), C.GLint(level), C.GLint(xoffset), C.GLint(yoffset), C.GLsizei(width), C.GLsizei(height), C.GLenum(format), C.GLsizei(imageSize), data)
 	}
 
 	glc.CompressedTexSubImage3D = func(target uint32, level, xoffset, yoffset, zoffset int32, width, height, depth int32, format uint32, imageSize int32, data unsafe.Pointer) {
-		C.gl12CompressedTexSubImage3D(glc.context, C.GLenum(target), C.GLint(level), C.GLint(xoffset), C.GLint(yoffset), C.GLint(zoffset), C.GLsizei(width), C.GLsizei(height), C.GLsizei(depth), C.GLenum(format), C.GLsizei(imageSize), data)
+		defer glc.trace("CompressedTexSubImage3D")
+		C.gl13CompressedTexSubImage3D(glc.context, C.GLenum(target), C.GLint(level), C.GLint(xoffset), C.GLint(yoffset), C.GLint(zoffset), C.GLsizei(width), C.GLsizei(height), C.GLsizei(depth), C.GLenum(format), C.GLsizei(imageSize), data)
 	}
 
 	glc.GetCompressedTexImage = func(target uint32, lod int32, img unsafe.Pointer) {
-		C.gl12GetCompressedTexImage(glc.context, C.GLenum(target), C.GLint(lod), img)
+		defer glc.trace("GetCompressedTexImage")
+		C.gl13GetCompressedTexImage(glc.context, C.GLenum(target), C.GLint(lod), img)
 	}
 
 	glc.LoadTransposeMatrixd = func(m *float64) {
-		C.gl12LoadTransposeMatrixd(glc.context, (*C.GLdouble)(unsafe.Pointer(m)))
+		defer glc.trace("LoadTransposeMatrixd")
+		C.gl13LoadTransposeMatrixd(glc.context, (*C.GLdouble)(unsafe.Pointer(m)))
 	}
 
 	glc.LoadTransposeMatrixf = func(m *float64) {
-		C.gl12LoadTransposeMatrixf(glc.context, (*C.GLdouble)(unsafe.Pointer(m)))
+		defer glc.trace("LoadTransposeMatrixf")
+		C.gl13LoadTransposeMatrixf(glc.context, (*C.GLdouble)(unsafe.Pointer(m)))
 	}
 
 	glc.MultTransposeMatrixd = func(m *float64) {
-		C.gl12MultTransposeMatrixd(glc.context, (*C.GLdouble)(unsafe.Pointer(m)))
+		defer glc.trace("MultTransposeMatrixd")
+		C.gl13MultTransposeMatrixd(glc.context, (*C.GLdouble)(unsafe.Pointer(m)))
 	}
 
 	glc.MultTransposeMatrixf = func(m *float32) {
-		C.gl12MultTransposeMatrixf(glc.context, (*C.GLfloat)(unsafe.Pointer(m)))
+		defer glc.trace("MultTransposeMatrixf")
+		C.gl13MultTransposeMatrixf(glc.context, (*C.GLfloat)(unsafe.Pointer(m)))
 	}
 
 	glc.SampleCoverage = func(value float32, invert bool) {
-		C.gl12SampleCoverage(glc.context, C.GLclampf(value), boolToGL(invert))
+		defer glc.trace("SampleCoverage")
+		C.gl13SampleCoverage(glc.context, C.GLclampf(value), boolToGL(invert))
 	}
 
 	glc.BlendFuncSeparate = func(srcRGB, dstRGB, srcAlpha, dstAlpha uint32) {
-		C.gl12BlendFuncSeparate(glc.context, C.GLenum(srcRGB), C.GLenum(dstRGB), C.GLenum(srcAlpha), C.GLenum(dstAlpha))
+		defer glc.trace("BlendFuncSeparate")
+		C.gl13BlendFuncSeparate(glc.context, C.GLenum(srcRGB), C.GLenum(dstRGB), C.GLenum(srcAlpha), C.GLenum(dstAlpha))
 	}
 
 	glc.FogCoordPointer = func(Type uint32, stride int32, pointer unsafe.Pointer) {
-		C.gl12FogCoordPointer(glc.context, C.GLenum(Type), C.GLsizei(stride), pointer)
+		defer glc.trace("FogCoordPointer")
+		C.gl13FogCoordPointer(glc.context, C.GLenum(Type), C.GLsizei(stride), pointer)
 	}
 
 	glc.FogCoordd = func(coord float64) {
-		C.gl12FogCoordd(glc.context, C.GLdouble(coord))
+		defer glc.trace("FogCoordd")
+		C.gl13FogCoordd(glc.context, C.GLdouble(coord))
 	}
 
 	glc.FogCoordf = func(coord float32) {
-		C.gl12FogCoordf(glc.context, C.GLfloat(coord))
+		defer glc.trace("FogCoordf")
+		C.gl13FogCoordf(glc.context, C.GLfloat(coord))
 	}
 
 	glc.FogCoorddv = func(coord *float64) {
-		C.gl12FogCoorddv(glc.context, (*C.GLdouble)(unsafe.Pointer(coord)))
+		defer glc.trace("FogCoorddv")
+		C.gl13FogCoorddv(glc.context, (*C.GLdouble)(unsafe.Pointer(coord)))
 	}
 
 	glc.FogCoordfv = func(coord *float32) {
-		C.gl12FogCoordfv(glc.context, (*C.GLfloat)(unsafe.Pointer(coord)))
+		defer glc.trace("FogCoordfv")
+		C.gl13FogCoordfv(glc.context, (*C.GLfloat)(unsafe.Pointer(coord)))
 	}
 
 	glc.MultiDrawArrays = func(mode uint32, first *int32, count *int32, primcount int32) {
-		C.gl12MultiDrawArrays(glc.context, C.GLenum(mode), (*C.GLint)(unsafe.Pointer(first)), (*C.GLsizei)(unsafe.Pointer(count)), C.GLsizei(primcount))
+		defer glc.trace("MultiDrawArrays")
+		C.gl13MultiDrawArrays(glc.context, C.GLenum(mode), (*C.GLint)(unsafe.Pointer(first)), (*C.GLsizei)(unsafe.Pointer(count)), C.GLsizei(primcount))
 	}
 
 	glc.MultiDrawElements = func(mode uint32, count *int32, Type uint32, indices unsafe.Pointer, primcount int32) {
-		C.gl12MultiDrawElements(glc.context, C.GLenum(mode), (*C.GLsizei)(unsafe.Pointer(count)), C.GLenum(Type), indices, C.GLsizei(primcount))
+		defer glc.trace("MultiDrawElements")
+		C.gl13MultiDrawElements(glc.context, C.GLenum(mode), (*C.GLsizei)(unsafe.Pointer(count)), C.GLenum(Type), indices, C.GLsizei(primcount))
 	}
 
 	glc.PointParameterf = func(pname uint32, param float32) {
-		C.gl12PointParameterf(glc.context, C.GLenum(pname), C.GLfloat(param))
+		defer glc.trace("PointParameterf")
+		C.gl13PointParameterf(glc.context, C.GLenum(pname), C.GLfloat(param))
 	}
 
 	glc.PointParameteri = func(pname uint32, param int32) {
-		C.gl12PointParameteri(glc.context, C.GLenum(pname), C.GLint(param))
+		defer glc.trace("PointParameteri")
+		C.gl13PointParameteri(glc.context, C.GLenum(pname), C.GLint(param))
 	}
 
 	glc.SecondaryColor3b = func(red, green, blue int8) {
-		C.gl12SecondaryColor3b(glc.context, C.GLbyte(red), C.GLbyte(green), C.GLbyte(blue))
+		defer glc.trace("SecondaryColor3b")
+		C.gl13SecondaryColor3b(glc.context, C.GLbyte(red), C.GLbyte(green), C.GLbyte(blue))
 	}
 
 	glc.SecondaryColor3s = func(red, green, blue int16) {
-		C.gl12SecondaryColor3s(glc.context, C.GLshort(red), C.GLshort(green), C.GLshort(blue))
+		defer glc.trace("SecondaryColor3s")
+		C.gl13SecondaryColor3s(glc.context, C.GLshort(red), C.GLshort(green), C.GLshort(blue))
 	}
 
 	glc.SecondaryColor3i = func(red, green, blue int32) {
-		C.gl12SecondaryColor3i(glc.context, C.GLint(red), C.GLint(green), C.GLint(blue))
+		defer glc.trace("SecondaryColor3i")
+		C.gl13SecondaryColor3i(glc.context, C.GLint(red), C.GLint(green), C.GLint(blue))
 	}
 
 	glc.SecondaryColor3f = func(red, green, blue float32) {
-		C.gl12SecondaryColor3f(glc.context, C.GLfloat(red), C.GLfloat(green), C.GLfloat(blue))
+		defer glc.trace("SecondaryColor3f")
+		C.gl13SecondaryColor3f(glc.context, C.GLfloat(red), C.GLfloat(green), C.GLfloat(blue))
 	}
 
 	glc.SecondaryColor3d = func(red, green, blue float64) {
-		C.gl12SecondaryColor3d(glc.context, C.GLdouble(red), C.GLdouble(green), C.GLdouble(blue))
+		defer glc.trace("SecondaryColor3d")
+		C.gl13SecondaryColor3d(glc.context, C.GLdouble(red), C.GLdouble(green), C.GLdouble(blue))
 	}
 
 	glc.SecondaryColor3ub = func(red, green, blue uint8) {
-		C.gl12SecondaryColor3ub(glc.context, C.GLubyte(red), C.GLubyte(green), C.GLubyte(blue))
+		defer glc.trace("SecondaryColor3ub")
+		C.gl13SecondaryColor3ub(glc.context, C.GLubyte(red), C.GLubyte(green), C.GLubyte(blue))
 	}
 
 	glc.SecondaryColor3us = func(red, green, blue uint16) {
-		C.gl12SecondaryColor3us(glc.context, C.GLushort(red), C.GLushort(green), C.GLushort(blue))
+		defer glc.trace("SecondaryColor3us")
+		C.gl13SecondaryColor3us(glc.context, C.GLushort(red), C.GLushort(green), C.GLushort(blue))
 	}
 
 	glc.SecondaryColor3ui = func(red, green, blue uint32) {
-		C.gl12SecondaryColor3ui(glc.context, C.GLuint(red), C.GLuint(green), C.GLuint(blue))
+		defer glc.trace("SecondaryColor3ui")
+		C.gl13SecondaryColor3ui(glc.context, C.GLuint(red), C.GLuint(green), C.GLuint(blue))
 	}
 
 	glc.SecondaryColor3bv = func(v *int8) {
-		C.gl12SecondaryColor3bv(glc.context, (*C.GLbyte)(unsafe.Pointer(v)))
+		defer glc.trace("SecondaryColor3bv")
+		C.gl13SecondaryColor3bv(glc.context, (*C.GLbyte)(unsafe.Pointer(v)))
 	}
 
 	glc.SecondaryColor3sv = func(v *int16) {
-		C.gl12SecondaryColor3sv(glc.context, (*C.GLshort)(unsafe.Pointer(v)))
+		defer glc.trace("SecondaryColor3sv")
+		C.gl13SecondaryColor3sv(glc.context, (*C.GLshort)(unsafe.Pointer(v)))
 	}
 
 	glc.SecondaryColor3iv = func(v *int32) {
-		C.gl12SecondaryColor3iv(glc.context, (*C.GLint)(unsafe.Pointer(v)))
+		defer glc.trace("SecondaryColor3iv")
+		C.gl13SecondaryColor3iv(glc.context, (*C.GLint)(unsafe.Pointer(v)))
 	}
 
 	glc.SecondaryColor3fv = func(v *float32) {
-		C.gl12SecondaryColor3fv(glc.context, (*C.GLfloat)(unsafe.Pointer(v)))
+		defer glc.trace("SecondaryColor3fv")
+		C.gl13SecondaryColor3fv(glc.context, (*C.GLfloat)(unsafe.Pointer(v)))
 	}
 
 	glc.SecondaryColor3dv = func(v *float64) {
-		C.gl12SecondaryColor3dv(glc.context, (*C.GLdouble)(unsafe.Pointer(v)))
+		defer glc.trace("SecondaryColor3dv")
+		C.gl13SecondaryColor3dv(glc.context, (*C.GLdouble)(unsafe.Pointer(v)))
 	}
 
 	glc.SecondaryColor3ubv = func(v *uint8) {
-		C.gl12SecondaryColor3ubv(glc.context, (*C.GLubyte)(unsafe.Pointer(v)))
+		defer glc.trace("SecondaryColor3ubv")
+		C.gl13SecondaryColor3ubv(glc.context, (*C.GLubyte)(unsafe.Pointer(v)))
 	}
 
 	glc.SecondaryColor3usv = func(v *uint16) {
-		C.gl12SecondaryColor3usv(glc.context, (*C.GLushort)(unsafe.Pointer(v)))
+		defer glc.trace("SecondaryColor3usv")
+		C.gl13SecondaryColor3usv(glc.context, (*C.GLushort)(unsafe.Pointer(v)))
 	}
 
 	glc.SecondaryColor3uiv = func(v *uint32) {
-		C.gl12SecondaryColor3uiv(glc.context, (*C.GLuint)(unsafe.Pointer(v)))
+		defer glc.trace("SecondaryColor3uiv")
+		C.gl13SecondaryColor3uiv(glc.context, (*C.GLuint)(unsafe.Pointer(v)))
 	}
 
 	glc.SecondaryColorPointer = func(size int32, Type uint32, stride int32, pointer unsafe.Pointer) {
-		C.gl12SecondaryColorPointer(glc.context, C.GLint(size), C.GLenum(Type), C.GLsizei(stride), pointer)
+		defer glc.trace("SecondaryColorPointer")
+		C.gl13SecondaryColorPointer(glc.context, C.GLint(size), C.GLenum(Type), C.GLsizei(stride), pointer)
 	}
 
 	glc.WindowPos2s = func(x, y int16) {
-		C.gl12WindowPos2s(glc.context, C.GLshort(x), C.GLshort(y))
+		defer glc.trace("WindowPos2s")
+		C.gl13WindowPos2s(glc.context, C.GLshort(x), C.GLshort(y))
 	}
 
 	glc.WindowPos2i = func(x, y int32) {
-		C.gl12WindowPos2i(glc.context, C.GLint(x), C.GLint(y))
+		defer glc.trace("WindowPos2i")
+		C.gl13WindowPos2i(glc.context, C.GLint(x), C.GLint(y))
 	}
 
 	glc.WindowPos2f = func(x, y float32) {
-		C.gl12WindowPos2f(glc.context, C.GLfloat(x), C.GLfloat(y))
+		defer glc.trace("WindowPos2f")
+		C.gl13WindowPos2f(glc.context, C.GLfloat(x), C.GLfloat(y))
 	}
 
 	glc.WindowPos2d = func(x, y float64) {
-		C.gl12WindowPos2d(glc.context, C.GLdouble(x), C.GLdouble(y))
+		defer glc.trace("WindowPos2d")
+		C.gl13WindowPos2d(glc.context, C.GLdouble(x), C.GLdouble(y))
 	}
 
 	glc.WindowPos3s = func(x, y, z int16) {
-		C.gl12WindowPos3s(glc.context, C.GLshort(x), C.GLshort(y), C.GLshort(z))
+		defer glc.trace("WindowPos3s")
+		C.gl13WindowPos3s(glc.context, C.GLshort(x), C.GLshort(y), C.GLshort(z))
 	}
 
 	glc.WindowPos3i = func(x, y, z int32) {
-		C.gl12WindowPos3i(glc.context, C.GLint(x), C.GLint(y), C.GLint(z))
+		defer glc.trace("WindowPos3i")
+		C.gl13WindowPos3i(glc.context, C.GLint(x), C.GLint(y), C.GLint(z))
 	}
 
 	glc.WindowPos3f = func(x, y, z float32) {
-		C.gl12WindowPos3f(glc.context, C.GLfloat(x), C.GLfloat(y), C.GLfloat(z))
+		defer glc.trace("WindowPos3f")
+		C.gl13WindowPos3f(glc.context, C.GLfloat(x), C.GLfloat(y), C.GLfloat(z))
 	}
 
 	glc.WindowPos3d = func(x, y, z float64) {
-		C.gl12WindowPos3d(glc.context, C.GLdouble(x), C.GLdouble(y), C.GLdouble(z))
+		defer glc.trace("WindowPos3d")
+		C.gl13WindowPos3d(glc.context, C.GLdouble(x), C.GLdouble(y), C.GLdouble(z))
 	}
 
 	glc.WindowPos2sv = func(v *int16) {
-		C.gl12WindowPos2sv(glc.context, (*C.GLshort)(unsafe.Pointer(v)))
+		defer glc.trace("WindowPos2sv")
+		C.gl13WindowPos2sv(glc.context, (*C.GLshort)(unsafe.Pointer(v)))
 	}
 
 	glc.WindowPos2iv = func(v *int32) {
-		C.gl12WindowPos2iv(glc.context, (*C.GLint)(unsafe.Pointer(v)))
+		defer glc.trace("WindowPos2iv")
+		C.gl13WindowPos2iv(glc.context, (*C.GLint)(unsafe.Pointer(v)))
 	}
 
 	glc.WindowPos2fv = func(v *float32) {
-		C.gl12WindowPos2fv(glc.context, (*C.GLfloat)(unsafe.Pointer(v)))
+		defer glc.trace("WindowPos2fv")
+		C.gl13WindowPos2fv(glc.context, (*C.GLfloat)(unsafe.Pointer(v)))
 	}
 
 	glc.WindowPos2dv = func(v *float64) {
-		C.gl12WindowPos2dv(glc.context, (*C.GLdouble)(unsafe.Pointer(v)))
+		defer glc.trace("WindowPos2dv")
+		C.gl13WindowPos2dv(glc.context, (*C.GLdouble)(unsafe.Pointer(v)))
 	}
 
 	glc.WindowPos3sv = func(v *int16) {
-		C.gl12WindowPos3sv(glc.context, (*C.GLshort)(unsafe.Pointer(v)))
+		defer glc.trace("WindowPos3sv")
+		C.gl13WindowPos3sv(glc.context, (*C.GLshort)(unsafe.Pointer(v)))
 	}
 
 	glc.WindowPos3iv = func(v *int32) {
-		C.gl12WindowPos3iv(glc.context, (*C.GLint)(unsafe.Pointer(v)))
+		defer glc.trace("WindowPos3iv")
+		C.gl13WindowPos3iv(glc.context, (*C.GLint)(unsafe.Pointer(v)))
 	}
 
 	glc.WindowPos3fv = func(v *float32) {
-		C.gl12WindowPos3fv(glc.context, (*C.GLfloat)(unsafe.Pointer(v)))
+		defer glc.trace("WindowPos3fv")
+		C.gl13WindowPos3fv(glc.context, (*C.GLfloat)(unsafe.Pointer(v)))
 	}
 
 	glc.WindowPos3dv = func(v *float64) {
-		C.gl12WindowPos3dv(glc.context, (*C.GLdouble)(unsafe.Pointer(v)))
+		defer glc.trace("WindowPos3dv")
+		C.gl13WindowPos3dv(glc.context, (*C.GLdouble)(unsafe.Pointer(v)))
 	}
 
 	glc.BeginQuery = func(target uint32, id uint32) {
-		C.gl12BeginQuery(glc.context, C.GLenum(target), C.GLuint(id))
+		defer glc.trace("BeginQuery")
+		C.gl13BeginQuery(glc.context, C.GLenum(target), C.GLuint(id))
 	}
 
 	glc.BindBuffer = func(target uint32, buffer uint32) {
-		C.gl12BindBuffer(glc.context, C.GLenum(target), C.GLuint(buffer))
+		defer glc.trace("BindBuffer")
+		C.gl13BindBuffer(glc.context, C.GLenum(target), C.GLuint(buffer))
 	}
 
 	glc.BufferData = func(target uint32, size int32, data unsafe.Pointer, usage uint32) {
-		C.gl12BufferData(glc.context, C.GLenum(target), C.GLsizeiptr(size), data, C.GLenum(usage))
+		defer glc.trace("BufferData")
+		C.gl13BufferData(glc.context, C.GLenum(target), C.GLsizeiptr(size), data, C.GLenum(usage))
 	}
 
 	glc.BufferSubData = func(target, offset uint32, size int32, data unsafe.Pointer) {
-		C.gl12BufferSubData(glc.context, C.GLenum(target), C.GLenum(offset), C.GLsizeiptr(size), data)
+		defer glc.trace("BufferSubData")
+		C.gl13BufferSubData(glc.context, C.GLenum(target), C.GLenum(offset), C.GLsizeiptr(size), data)
 	}
 
 	glc.DeleteBuffers = func(n int32, buffers *uint32) {
-		C.gl12DeleteBuffers(glc.context, C.GLsizei(n), (*C.GLuint)(unsafe.Pointer(buffers)))
+		defer glc.trace("DeleteBuffers")
+		C.gl13DeleteBuffers(glc.context, C.GLsizei(n), (*C.GLuint)(unsafe.Pointer(buffers)))
 	}
 
 	glc.DeleteQueries = func(n int32, ids *uint32) {
-		C.gl12DeleteQueries(glc.context, C.GLsizei(n), (*C.GLuint)(unsafe.Pointer(ids)))
+		defer glc.trace("DeleteQueries")
+		C.gl13DeleteQueries(glc.context, C.GLsizei(n), (*C.GLuint)(unsafe.Pointer(ids)))
 	}
 
 	glc.GenBuffers = func(n int32, buffers *uint32) {
-		C.gl12GenBuffers(glc.context, C.GLsizei(n), (*C.GLuint)(unsafe.Pointer(buffers)))
+		defer glc.trace("GenBuffers")
+		C.gl13GenBuffers(glc.context, C.GLsizei(n), (*C.GLuint)(unsafe.Pointer(buffers)))
 	}
 
 	glc.GenQueries = func(n int32, ids *uint32) {
-		C.gl12GenQueries(glc.context, C.GLsizei(n), (*C.GLuint)(unsafe.Pointer(ids)))
+		defer glc.trace("GenQueries")
+		C.gl13GenQueries(glc.context, C.GLsizei(n), (*C.GLuint)(unsafe.Pointer(ids)))
 	}
 
 	glc.GetBufferParameteriv = func(target, value uint32, data *int32) {
-		C.gl12GetBufferParameteriv(glc.context, C.GLenum(target), C.GLenum(value), (*C.GLint)(unsafe.Pointer(data)))
+		defer glc.trace("GetBufferParameteriv")
+		C.gl13GetBufferParameteriv(glc.context, C.GLenum(target), C.GLenum(value), (*C.GLint)(unsafe.Pointer(data)))
 	}
 
 	glc.GetBufferPointerv = func(target, pname uint32, params unsafe.Pointer) {
-		C.gl12GetBufferPointerv(glc.context, C.GLenum(target), C.GLenum(pname), params)
+		defer glc.trace("GetBufferPointerv")
+		C.gl13GetBufferPointerv(glc.context, C.GLenum(target), C.GLenum(pname), params)
 	}
 
 	glc.GetBufferSubData = func(target uint32, offset int32, size int32, data unsafe.Pointer) {
-		C.gl12GetBufferSubData(glc.context, C.GLenum(target), C.GLintptr(offset), C.GLsizeiptr(size), data)
+		defer glc.trace("GetBufferSubData")
+		C.gl13GetBufferSubData(glc.context, C.GLenum(target), C.GLintptr(offset), C.GLsizeiptr(size), data)
 	}
 
 	glc.GetQueryObjectiv = func(id uint32, pname uint32, params *int32) {
-		C.gl12GetQueryObjectiv(glc.context, C.GLuint(id), C.GLenum(pname), (*C.GLint)(unsafe.Pointer(params)))
+		defer glc.trace("GetQueryObjectiv")
+		C.gl13GetQueryObjectiv(glc.context, C.GLuint(id), C.GLenum(pname), (*C.GLint)(unsafe.Pointer(params)))
 	}
 
 	glc.GetQueryObjectuiv = func(id uint32, pname uint32, params *uint32) {
-		C.gl12GetQueryObjectuiv(glc.context, C.GLuint(id), C.GLenum(pname), (*C.GLuint)(unsafe.Pointer(params)))
+		defer glc.trace("GetQueryObjectuiv")
+		C.gl13GetQueryObjectuiv(glc.context, C.GLuint(id), C.GLenum(pname), (*C.GLuint)(unsafe.Pointer(params)))
 	}
 
 	glc.GetQueryiv = func(target, pname uint32, params *int32) {
-		C.gl12GetQueryiv(glc.context, C.GLenum(target), C.GLenum(pname), (*C.GLint)(unsafe.Pointer(params)))
+		defer glc.trace("GetQueryiv")
+		C.gl13GetQueryiv(glc.context, C.GLenum(target), C.GLenum(pname), (*C.GLint)(unsafe.Pointer(params)))
 	}
 
 	glc.IsBuffer = func(buffer uint32) bool {
-		return C.gl12IsBuffer(glc.context, C.GLuint(buffer)) != 0
+		defer glc.trace("IsBuffer")
+		return C.gl13IsBuffer(glc.context, C.GLuint(buffer)) != 0
 	}
 
 	glc.IsQuery = func(id uint32) bool {
-		return C.gl12IsQuery(glc.context, C.GLuint(id)) != 0
+		defer glc.trace("IsQuery")
+		return C.gl13IsQuery(glc.context, C.GLuint(id)) != 0
 	}
 
 	glc.MapBuffer = func(target, access uint32) unsafe.Pointer {
-		return unsafe.Pointer(C.gl12MapBuffer(glc.context, C.GLenum(target), C.GLenum(access)))
+		defer glc.trace("MapBuffer")
+		return unsafe.Pointer(C.gl13MapBuffer(glc.context, C.GLenum(target), C.GLenum(access)))
 	}
 
 	glc.UnmapBuffer = func(target uint32) bool {
-		return C.gl12UnmapBuffer(glc.context, C.GLenum(target)) != 0
+		defer glc.trace("UnmapBuffer")
+		return C.gl13UnmapBuffer(glc.context, C.GLenum(target)) != 0
 	}
 
 	glc.AttachShader = func(program, shader uint32) {
-		C.gl12AttachShader(glc.context, C.GLuint(program), C.GLuint(shader))
+		defer glc.trace("AttachShader")
+		C.gl13AttachShader(glc.context, C.GLuint(program), C.GLuint(shader))
 	}
 
 	glc.BindAttribLocation = func(program, index uint32, name string) {
+		defer glc.trace("BindAttribLocation")
 		cstr := C.CString(name)
 		defer C.free(unsafe.Pointer(&cstr))
-		C.gl12BindAttribLocation(glc.context, C.GLuint(program), C.GLuint(index), (*C.GLchar)(unsafe.Pointer(cstr)))
+		C.gl13BindAttribLocation(glc.context, C.GLuint(program), C.GLuint(index), (*C.GLchar)(unsafe.Pointer(cstr)))
 		return
 	}
 
 	glc.BlendEquationSeperate = func(modeRGB, modeAlpha uint32) {
-		C.gl12BlendEquationSeperate(glc.context, C.GLenum(modeRGB), C.GLenum(modeAlpha))
+		defer glc.trace("BlendEquationSeperate")
+		C.gl13BlendEquationSeperate(glc.context, C.GLenum(modeRGB), C.GLenum(modeAlpha))
 	}
 
 	glc.CompileShader = func(shader uint32) {
-		C.gl12CompileShader(glc.context, C.GLuint(shader))
+		defer glc.trace("CompileShader")
+		C.gl13CompileShader(glc.context, C.GLuint(shader))
 	}
 
 	glc.CreateProgram = func() uint32 {
-		return uint32(C.gl12CreateProgram(glc.context))
+		defer glc.trace("CreateProgram")
+		return uint32(C.gl13CreateProgram(glc.context))
 	}
 
 	glc.CreateShader = func(shaderType uint32) uint32 {
-		return uint32(C.gl12CreateShader(glc.context, C.GLenum(shaderType)))
+		defer glc.trace("CreateShader")
+		return uint32(C.gl13CreateShader(glc.context, C.GLenum(shaderType)))
 	}
 
 	glc.DeleteProgram = func(program uint32) {
-		C.gl12DeleteProgram(glc.context, C.GLuint(program))
+		defer glc.trace("DeleteProgram")
+		C.gl13DeleteProgram(glc.context, C.GLuint(program))
 	}
 
 	glc.DeleteShader = func(shader uint32) {
-		C.gl12DeleteShader(glc.context, C.GLuint(shader))
+		defer glc.trace("DeleteShader")
+		C.gl13DeleteShader(glc.context, C.GLuint(shader))
 	}
 
 	glc.DetachShader = func(program, shader uint32) {
-		C.gl12DetachShader(glc.context, C.GLuint(program), C.GLuint(shader))
+		defer glc.trace("DetachShader")
+		C.gl13DetachShader(glc.context, C.GLuint(program), C.GLuint(shader))
 	}
 
 	glc.EnableVertexAttribArray = func(index uint32) {
-		C.gl12EnableVertexAttribArray(glc.context, C.GLuint(index))
+		defer glc.trace("EnableVertexAttribArray")
+		C.gl13EnableVertexAttribArray(glc.context, C.GLuint(index))
 	}
 
 	glc.DisableVertexAttribArray = func(index uint32) {
-		C.gl12DisableVertexAttribArray(glc.context, C.GLuint(index))
+		defer glc.trace("DisableVertexAttribArray")
+		C.gl13DisableVertexAttribArray(glc.context, C.GLuint(index))
 	}
 
 	glc.DrawBuffers = func(n int32, bufs *uint32) {
-		C.gl12DrawBuffers(glc.context, C.GLsizei(n), (*C.GLenum)(unsafe.Pointer(bufs)))
+		defer glc.trace("DrawBuffers")
+		C.gl13DrawBuffers(glc.context, C.GLsizei(n), (*C.GLenum)(unsafe.Pointer(bufs)))
 	}
 
 	glc.GetActiveAttrib = func(program, index uint32, bufSize int32) (length int32, size int32, Type uint32, name string) {
+		defer glc.trace("GetActiveAttrib")
 		var (
 			cname C.GLchar
 		)
-		C.gl12GetActiveAttrib(glc.context, C.GLuint(program), C.GLuint(index), C.GLsizei(bufSize), (*C.GLsizei)(unsafe.Pointer(&length)), (*C.GLint)(unsafe.Pointer(&size)), (*C.GLenum)(unsafe.Pointer(&Type)), &cname)
+		C.gl13GetActiveAttrib(glc.context, C.GLuint(program), C.GLuint(index), C.GLsizei(bufSize), (*C.GLsizei)(unsafe.Pointer(&length)), (*C.GLint)(unsafe.Pointer(&size)), (*C.GLenum)(unsafe.Pointer(&Type)), &cname)
 		name = C.GoString((*C.char)(unsafe.Pointer(&cname)))
 		return
 	}
 
 	glc.GetActiveUniform = func(program, index uint32, bufSize int32, length *int32, size *int32, Type *uint32, name *byte) {
-		C.gl12GetActiveUniform(glc.context, C.GLuint(program), C.GLuint(index), C.GLsizei(bufSize), (*C.GLsizei)(unsafe.Pointer(length)), (*C.GLint)(unsafe.Pointer(size)), (*C.GLenum)(unsafe.Pointer(Type)), (*C.GLchar)(unsafe.Pointer(name)))
+		defer glc.trace("GetActiveUniform")
+		C.gl13GetActiveUniform(glc.context, C.GLuint(program), C.GLuint(index), C.GLsizei(bufSize), (*C.GLsizei)(unsafe.Pointer(length)), (*C.GLint)(unsafe.Pointer(size)), (*C.GLenum)(unsafe.Pointer(Type)), (*C.GLchar)(unsafe.Pointer(name)))
 	}
 
 	glc.GetAttachedShaders = func(program uint32, maxCount int32, count *int32, shaders *uint32) {
-		C.gl12GetAttachedShaders(glc.context, C.GLuint(program), C.GLsizei(maxCount), (*C.GLsizei)(unsafe.Pointer(count)), (*C.GLuint)(unsafe.Pointer(shaders)))
+		defer glc.trace("GetAttachedShaders")
+		C.gl13GetAttachedShaders(glc.context, C.GLuint(program), C.GLsizei(maxCount), (*C.GLsizei)(unsafe.Pointer(count)), (*C.GLuint)(unsafe.Pointer(shaders)))
 	}
 
 	glc.GetAttribLocation = func(program uint32, name *byte) int32 {
-		return int32(C.gl12GetAttribLocation(glc.context, C.GLuint(program), (*C.GLchar)(unsafe.Pointer(name))))
+		defer glc.trace("GetAttribLocation")
+		return int32(C.gl13GetAttribLocation(glc.context, C.GLuint(program), (*C.GLchar)(unsafe.Pointer(name))))
 	}
 
 	glc.GetProgramiv = func(program uint32, pname uint32, params *int32) {
-		C.gl12GetProgramiv(glc.context, C.GLuint(program), C.GLenum(pname), (*C.GLint)(unsafe.Pointer(params)))
+		defer glc.trace("GetProgramiv")
+		C.gl13GetProgramiv(glc.context, C.GLuint(program), C.GLenum(pname), (*C.GLint)(unsafe.Pointer(params)))
 	}
 
 	glc.GetProgramInfoLog = func(program uint32, maxLength int32, length *int32, infoLog *byte) {
-		C.gl12GetProgramInfoLog(glc.context, C.GLuint(program), C.GLsizei(maxLength), (*C.GLsizei)(unsafe.Pointer(length)), (*C.GLchar)(unsafe.Pointer(infoLog)))
+		defer glc.trace("GetProgramInfoLog")
+		C.gl13GetProgramInfoLog(glc.context, C.GLuint(program), C.GLsizei(maxLength), (*C.GLsizei)(unsafe.Pointer(length)), (*C.GLchar)(unsafe.Pointer(infoLog)))
 	}
 
 	glc.GetShaderiv = func(program uint32, pname uint32, params *int32) {
-		C.gl12GetShaderiv(glc.context, C.GLuint(program), C.GLenum(pname), (*C.GLint)(unsafe.Pointer(params)))
+		defer glc.trace("GetShaderiv")
+		C.gl13GetShaderiv(glc.context, C.GLuint(program), C.GLenum(pname), (*C.GLint)(unsafe.Pointer(params)))
 	}
 
 	glc.GetShaderInfoLog = func(shader uint32, maxLength int32, length *int32, infoLog *byte) {
-		C.gl12GetShaderInfoLog(glc.context, C.GLuint(shader), C.GLsizei(maxLength), (*C.GLsizei)(unsafe.Pointer(length)), (*C.GLchar)(unsafe.Pointer(infoLog)))
+		defer glc.trace("GetShaderInfoLog")
+		C.gl13GetShaderInfoLog(glc.context, C.GLuint(shader), C.GLsizei(maxLength), (*C.GLsizei)(unsafe.Pointer(length)), (*C.GLchar)(unsafe.Pointer(infoLog)))
 	}
 
 	glc.GetShaderSource = func(shader uint32, bufSize int32, length *int32, source *byte) {
-		C.gl12GetShaderSource(glc.context, C.GLuint(shader), C.GLsizei(bufSize), (*C.GLsizei)(unsafe.Pointer(length)), (*C.GLchar)(unsafe.Pointer(source)))
+		defer glc.trace("GetShaderSource")
+		C.gl13GetShaderSource(glc.context, C.GLuint(shader), C.GLsizei(bufSize), (*C.GLsizei)(unsafe.Pointer(length)), (*C.GLchar)(unsafe.Pointer(source)))
 	}
 
 	glc.GetUniformfv = func(program uint32, location int32, params *float32) {
-		C.gl12GetUniformfv(glc.context, C.GLuint(program), C.GLint(location), (*C.GLfloat)(unsafe.Pointer(params)))
+		defer glc.trace("GetUniformfv")
+		C.gl13GetUniformfv(glc.context, C.GLuint(program), C.GLint(location), (*C.GLfloat)(unsafe.Pointer(params)))
 	}
 
 	glc.GetUniformiv = func(program uint32, location int32, params *int32) {
-		C.gl12GetUniformiv(glc.context, C.GLuint(program), C.GLint(location), (*C.GLint)(unsafe.Pointer(params)))
+		defer glc.trace("GetUniformiv")
+		C.gl13GetUniformiv(glc.context, C.GLuint(program), C.GLint(location), (*C.GLint)(unsafe.Pointer(params)))
 	}
 
 	glc.GetUniformLocation = func(program uint32, name *byte) int32 {
-		return int32(C.gl12GetUniformLocation(glc.context, C.GLuint(program), (*C.GLchar)(unsafe.Pointer(name))))
+		defer glc.trace("GetUniformLocation")
+		return int32(C.gl13GetUniformLocation(glc.context, C.GLuint(program), (*C.GLchar)(unsafe.Pointer(name))))
 	}
 
 	glc.GetVertexAttribdv = func(index uint32, pname uint32, params *float64) {
-		C.gl12GetVertexAttribdv(glc.context, C.GLuint(index), C.GLenum(pname), (*C.GLdouble)(unsafe.Pointer(params)))
+		defer glc.trace("GetVertexAttribdv")
+		C.gl13GetVertexAttribdv(glc.context, C.GLuint(index), C.GLenum(pname), (*C.GLdouble)(unsafe.Pointer(params)))
 	}
 
 	glc.GetVertexAttribfv = func(index uint32, pname uint32, params *float32) {
-		C.gl12GetVertexAttribfv(glc.context, C.GLuint(index), C.GLenum(pname), (*C.GLfloat)(unsafe.Pointer(params)))
+		defer glc.trace("GetVertexAttribfv")
+		C.gl13GetVertexAttribfv(glc.context, C.GLuint(index), C.GLenum(pname), (*C.GLfloat)(unsafe.Pointer(params)))
 	}
 
 	glc.GetVertexAttribiv = func(index uint32, pname uint32, params *int32) {
-		C.gl12GetVertexAttribiv(glc.context, C.GLuint(index), C.GLenum(pname), (*C.GLint)(unsafe.Pointer(params)))
+		defer glc.trace("GetVertexAttribiv")
+		C.gl13GetVertexAttribiv(glc.context, C.GLuint(index), C.GLenum(pname), (*C.GLint)(unsafe.Pointer(params)))
 	}
 
 	glc.GetVertexAttribPointerv = func(index uint32, pname uint32, pointer unsafe.Pointer) {
-		C.gl12GetVertexAttribPointerv(glc.context, C.GLuint(index), C.GLenum(pname), pointer)
+		defer glc.trace("GetVertexAttribPointerv")
+		C.gl13GetVertexAttribPointerv(glc.context, C.GLuint(index), C.GLenum(pname), pointer)
 	}
 
 	glc.IsProgram = func(program uint32) bool {
-		return C.gl12IsProgram(glc.context, C.GLuint(program)) != 0
+		defer glc.trace("IsProgram")
+		return C.gl13IsProgram(glc.context, C.GLuint(program)) != 0
 	}
 
 	glc.IsShader = func(shader uint32) bool {
-		return C.gl12IsShader(glc.context, C.GLuint(shader)) != 0
+		defer glc.trace("IsShader")
+		return C.gl13IsShader(glc.context, C.GLuint(shader)) != 0
 	}
 
 	glc.LinkProgram = func(program uint32) {
-		C.gl12LinkProgram(glc.context, C.GLuint(program))
+		defer glc.trace("LinkProgram")
+		C.gl13LinkProgram(glc.context, C.GLuint(program))
 	}
 
 	glc.ShaderSource = func(shader uint32, count int32, string **byte, length *int32) {
-		C.gl12ShaderSource(glc.context, C.GLuint(shader), C.GLsizei(count), (**C.GLchar)(unsafe.Pointer(string)), (*C.GLint)(unsafe.Pointer(length)))
+		defer glc.trace("ShaderSource")
+		C.gl13ShaderSource(glc.context, C.GLuint(shader), C.GLsizei(count), (**C.GLchar)(unsafe.Pointer(string)), (*C.GLint)(unsafe.Pointer(length)))
 	}
 
 	glc.StencilFuncSeparate = func(face, Func uint32, ref int32, mask uint32) {
-		C.gl12StencilFuncSeparate(glc.context, C.GLenum(face), C.GLenum(Func), C.GLint(ref), C.GLuint(mask))
+		defer glc.trace("StencilFuncSeparate")
+		C.gl13StencilFuncSeparate(glc.context, C.GLenum(face), C.GLenum(Func), C.GLint(ref), C.GLuint(mask))
 	}
 
 	glc.StencilMaskSeparate = func(face uint32, mask uint32) {
-		C.gl12StencilMaskSeparate(glc.context, C.GLenum(face), C.GLuint(mask))
+		defer glc.trace("StencilMaskSeparate")
+		C.gl13StencilMaskSeparate(glc.context, C.GLenum(face), C.GLuint(mask))
 	}
 
 	glc.StencilOpSeparate = func(face, sfail, dpfail, dppass uint32) {
-		C.gl12StencilOpSeparate(glc.context, C.GLenum(face), C.GLenum(sfail), C.GLenum(dpfail), C.GLenum(dppass))
+		defer glc.trace("StencilOpSeparate")
+		C.gl13StencilOpSeparate(glc.context, C.GLenum(face), C.GLenum(sfail), C.GLenum(dpfail), C.GLenum(dppass))
 	}
 
 	glc.Uniform1f = func(location int32, v0 float32) {
-		C.gl12Uniform1f(glc.context, C.GLint(location), C.GLfloat(v0))
+		defer glc.trace("Uniform1f")
+		C.gl13Uniform1f(glc.context, C.GLint(location), C.GLfloat(v0))
 	}
 
 	glc.Uniform2f = func(location int32, v0, v1 float32) {
-		C.gl12Uniform2f(glc.context, C.GLint(location), C.GLfloat(v0), C.GLfloat(v1))
+		defer glc.trace("Uniform2f")
+		C.gl13Uniform2f(glc.context, C.GLint(location), C.GLfloat(v0), C.GLfloat(v1))
 	}
 
 	glc.Uniform3f = func(location int32, v0, v1, v2 float32) {
-		C.gl12Uniform3f(glc.context, C.GLint(location), C.GLfloat(v0), C.GLfloat(v1), C.GLfloat(v2))
+		defer glc.trace("Uniform3f")
+		C.gl13Uniform3f(glc.context, C.GLint(location), C.GLfloat(v0), C.GLfloat(v1), C.GLfloat(v2))
 	}
 
 	glc.Uniform4f = func(location int32, v0, v1, v2, v3 float32) {
-		C.gl12Uniform4f(glc.context, C.GLint(location), C.GLfloat(v0), C.GLfloat(v1), C.GLfloat(v2), C.GLfloat(v3))
+		defer glc.trace("Uniform4f")
+		C.gl13Uniform4f(glc.context, C.GLint(location), C.GLfloat(v0), C.GLfloat(v1), C.GLfloat(v2), C.GLfloat(v3))
 	}
 
 	glc.Uniform1i = func(location, v0 int32) {
-		C.gl12Uniform1i(glc.context, C.GLint(location), C.GLint(v0))
+		defer glc.trace("Uniform1i")
+		C.gl13Uniform1i(glc.context, C.GLint(location), C.GLint(v0))
 	}
 
 	glc.Uniform2i = func(location, v0, v1 int32) {
-		C.gl12Uniform2i(glc.context, C.GLint(location), C.GLint(v0), C.GLint(v1))
+		defer glc.trace("Uniform2i")
+		C.gl13Uniform2i(glc.context, C.GLint(location), C.GLint(v0), C.GLint(v1))
 	}
 
 	glc.Uniform3i = func(location, v0, v1, v2 int32) {
-		C.gl12Uniform3i(glc.context, C.GLint(location), C.GLint(v0), C.GLint(v1), C.GLint(v2))
+		defer glc.trace("Uniform3i")
+		C.gl13Uniform3i(glc.context, C.GLint(location), C.GLint(v0), C.GLint(v1), C.GLint(v2))
 	}
 
 	glc.Uniform4i = func(location, v0, v1, v2, v3 int32) {
-		C.gl12Uniform4i(glc.context, C.GLint(location), C.GLint(v0), C.GLint(v1), C.GLint(v2), C.GLint(v3))
+		defer glc.trace("Uniform4i")
+		C.gl13Uniform4i(glc.context, C.GLint(location), C.GLint(v0), C.GLint(v1), C.GLint(v2), C.GLint(v3))
 	}
 
 	glc.Uniform1ui = func(location int32, v0 uint32) {
-		C.gl12Uniform1ui(glc.context, C.GLint(location), C.GLuint(v0))
+		defer glc.trace("Uniform1ui")
+		C.gl13Uniform1ui(glc.context, C.GLint(location), C.GLuint(v0))
 	}
 
 	glc.Uniform2ui = func(location int32, v0, v1 uint32) {
-		C.gl12Uniform2ui(glc.context, C.GLint(location), C.GLuint(v0), C.GLuint(v1))
+		defer glc.trace("Uniform2ui")
+		C.gl13Uniform2ui(glc.context, C.GLint(location), C.GLuint(v0), C.GLuint(v1))
 	}
 
 	glc.Uniform3ui = func(location int32, v0, v1, v2 uint32) {
-		C.gl12Uniform3ui(glc.context, C.GLint(location), C.GLuint(v0), C.GLuint(v1), C.GLuint(v2))
+		defer glc.trace("Uniform3ui")
+		C.gl13Uniform3ui(glc.context, C.GLint(location), C.GLuint(v0), C.GLuint(v1), C.GLuint(v2))
 	}
 
 	glc.Uniform4ui = func(location int32, v0, v1, v2, v3 uint32) {
-		C.gl12Uniform4ui(glc.context, C.GLint(location), C.GLuint(v0), C.GLuint(v1), C.GLuint(v2), C.GLuint(v3))
+		defer glc.trace("Uniform4ui")
+		C.gl13Uniform4ui(glc.context, C.GLint(location), C.GLuint(v0), C.GLuint(v1), C.GLuint(v2), C.GLuint(v3))
 	}
 
 	glc.Uniform1fv = func(location int32, count int32, value *float32) {
-		C.gl12Uniform1fv(glc.context, C.GLint(location), C.GLsizei(count), (*C.GLfloat)(unsafe.Pointer(value)))
+		defer glc.trace("Uniform1fv")
+		C.gl13Uniform1fv(glc.context, C.GLint(location), C.GLsizei(count), (*C.GLfloat)(unsafe.Pointer(value)))
 	}
 
 	glc.Uniform2fv = func(location int32, count int32, value *float32) {
-		C.gl12Uniform2fv(glc.context, C.GLint(location), C.GLsizei(count), (*C.GLfloat)(unsafe.Pointer(value)))
+		defer glc.trace("Uniform2fv")
+		C.gl13Uniform2fv(glc.context, C.GLint(location), C.GLsizei(count), (*C.GLfloat)(unsafe.Pointer(value)))
 	}
 
 	glc.Uniform3fv = func(location int32, count int32, value *float32) {
-		C.gl12Uniform3fv(glc.context, C.GLint(location), C.GLsizei(count), (*C.GLfloat)(unsafe.Pointer(value)))
+		defer glc.trace("Uniform3fv")
+		C.gl13Uniform3fv(glc.context, C.GLint(location), C.GLsizei(count), (*C.GLfloat)(unsafe.Pointer(value)))
 	}
 
 	glc.Uniform4fv = func(location int32, count int32, value *float32) {
-		C.gl12Uniform4fv(glc.context, C.GLint(location), C.GLsizei(count), (*C.GLfloat)(unsafe.Pointer(value)))
+		defer glc.trace("Uniform4fv")
+		C.gl13Uniform4fv(glc.context, C.GLint(location), C.GLsizei(count), (*C.GLfloat)(unsafe.Pointer(value)))
 	}
 
 	glc.Uniform1iv = func(location int32, count int32, value *int32) {
-		C.gl12Uniform1iv(glc.context, C.GLint(location), C.GLsizei(count), (*C.GLint)(unsafe.Pointer(value)))
+		defer glc.trace("Uniform1iv")
+		C.gl13Uniform1iv(glc.context, C.GLint(location), C.GLsizei(count), (*C.GLint)(unsafe.Pointer(value)))
 	}
 
 	glc.Uniform2iv = func(location int32, count int32, value *int32) {
-		C.gl12Uniform2iv(glc.context, C.GLint(location), C.GLsizei(count), (*C.GLint)(unsafe.Pointer(value)))
+		defer glc.trace("Uniform2iv")
+		C.gl13Uniform2iv(glc.context, C.GLint(location), C.GLsizei(count), (*C.GLint)(unsafe.Pointer(value)))
 	}
 
 	glc.Uniform3iv = func(location int32, count int32, value *int32) {
-		C.gl12Uniform3iv(glc.context, C.GLint(location), C.GLsizei(count), (*C.GLint)(unsafe.Pointer(value)))
+		defer glc.trace("Uniform3iv")
+		C.gl13Uniform3iv(glc.context, C.GLint(location), C.GLsizei(count), (*C.GLint)(unsafe.Pointer(value)))
 	}
 
 	glc.Uniform4iv = func(location int32, count int32, value *int32) {
-		C.gl12Uniform4iv(glc.context, C.GLint(location), C.GLsizei(count), (*C.GLint)(unsafe.Pointer(value)))
+		defer glc.trace("Uniform4iv")
+		C.gl13Uniform4iv(glc.context, C.GLint(location), C.GLsizei(count), (*C.GLint)(unsafe.Pointer(value)))
 	}
 
 	glc.Uniform1uiv = func(location int32, count int32, value *uint32) {
-		C.gl12Uniform1uiv(glc.context, C.GLint(location), C.GLsizei(count), (*C.GLuint)(unsafe.Pointer(value)))
+		defer glc.trace("Uniform1uiv")
+		C.gl13Uniform1uiv(glc.context, C.GLint(location), C.GLsizei(count), (*C.GLuint)(unsafe.Pointer(value)))
 	}
 
 	glc.Uniform2uiv = func(location int32, count int32, value *uint32) {
-		C.gl12Uniform2uiv(glc.context, C.GLint(location), C.GLsizei(count), (*C.GLuint)(unsafe.Pointer(value)))
+		defer glc.trace("Uniform2uiv")
+		C.gl13Uniform2uiv(glc.context, C.GLint(location), C.GLsizei(count), (*C.GLuint)(unsafe.Pointer(value)))
 	}
 
 	glc.Uniform3uiv = func(location int32, count int32, value *uint32) {
-		C.gl12Uniform3uiv(glc.context, C.GLint(location), C.GLsizei(count), (*C.GLuint)(unsafe.Pointer(value)))
+		defer glc.trace("Uniform3uiv")
+		C.gl13Uniform3uiv(glc.context, C.GLint(location), C.GLsizei(count), (*C.GLuint)(unsafe.Pointer(value)))
 	}
 
 	glc.Uniform4uiv = func(location int32, count int32, value *uint32) {
-		C.gl12Uniform4uiv(glc.context, C.GLint(location), C.GLsizei(count), (*C.GLuint)(unsafe.Pointer(value)))
+		defer glc.trace("Uniform4uiv")
+		C.gl13Uniform4uiv(glc.context, C.GLint(location), C.GLsizei(count), (*C.GLuint)(unsafe.Pointer(value)))
 	}
 
 	glc.UseProgram = func(program uint32) {
-		C.gl12UseProgram(glc.context, C.GLuint(program))
+		defer glc.trace("UseProgram")
+		C.gl13UseProgram(glc.context, C.GLuint(program))
 	}
 
 	glc.ValidateProgram = func(program uint32) {
-		C.gl12ValidateProgram(glc.context, C.GLuint(program))
+		defer glc.trace("ValidateProgram")
+		C.gl13ValidateProgram(glc.context, C.GLuint(program))
 	}
 
 	glc.VertexAttribPointer = func(index uint32, size int32, Type uint32, normalized bool, stride int32, pointer unsafe.Pointer) {
-		C.gl12VertexAttribPointer(glc.context, C.GLuint(index), C.GLint(size), C.GLenum(Type), boolToGL(normalized), C.GLsizei(stride), pointer)
+		defer glc.trace("VertexAttribPointer")
+		C.gl13VertexAttribPointer(glc.context, C.GLuint(index), C.GLint(size), C.GLenum(Type), boolToGL(normalized), C.GLsizei(stride), pointer)
 	}
 
 	glc.VertexAttrib1f = func(index uint32, v0 float32) {
-		C.gl12VertexAttrib1f(glc.context, C.GLuint(index), C.GLfloat(v0))
+		defer glc.trace("VertexAttrib1f")
+		C.gl13VertexAttrib1f(glc.context, C.GLuint(index), C.GLfloat(v0))
 	}
 
 	glc.VertexAttrib1s = func(index uint32, v0 int16) {
-		C.gl12VertexAttrib1s(glc.context, C.GLuint(index), C.GLshort(v0))
+		defer glc.trace("VertexAttrib1s")
+		C.gl13VertexAttrib1s(glc.context, C.GLuint(index), C.GLshort(v0))
 	}
 
 	glc.VertexAttrib1d = func(index uint32, v0 float64) {
-		C.gl12VertexAttrib1d(glc.context, C.GLuint(index), C.GLdouble(v0))
+		defer glc.trace("VertexAttrib1d")
+		C.gl13VertexAttrib1d(glc.context, C.GLuint(index), C.GLdouble(v0))
 	}
 
 	glc.VertexAttrib2f = func(index uint32, v0, v1 float32) {
-		C.gl12VertexAttrib2f(glc.context, C.GLuint(index), C.GLfloat(v0), C.GLfloat(v1))
+		defer glc.trace("VertexAttrib2f")
+		C.gl13VertexAttrib2f(glc.context, C.GLuint(index), C.GLfloat(v0), C.GLfloat(v1))
 	}
 
 	glc.VertexAttrib2s = func(index uint32, v0, v1 int16) {
-		C.gl12VertexAttrib2s(glc.context, C.GLuint(index), C.GLshort(v0), C.GLshort(v1))
+		defer glc.trace("VertexAttrib2s")
+		C.gl13VertexAttrib2s(glc.context, C.GLuint(index), C.GLshort(v0), C.GLshort(v1))
 	}
 
 	glc.VertexAttrib2d = func(index uint32, v0, v1 float64) {
-		C.gl12VertexAttrib2d(glc.context, C.GLuint(index), C.GLdouble(v0), C.GLdouble(v1))
+		defer glc.trace("VertexAttrib2d")
+		C.gl13VertexAttrib2d(glc.context, C.GLuint(index), C.GLdouble(v0), C.GLdouble(v1))
 	}
 
 	glc.VertexAttrib3f = func(index uint32, v0, v1, v2 float32) {
-		C.gl12VertexAttrib3f(glc.context, C.GLuint(index), C.GLfloat(v0), C.GLfloat(v1), C.GLfloat(v2))
+		defer glc.trace("VertexAttrib3f")
+		C.gl13VertexAttrib3f(glc.context, C.GLuint(index), C.GLfloat(v0), C.GLfloat(v1), C.GLfloat(v2))
 	}
 
 	glc.VertexAttrib3s = func(index uint32, v0, v1, v2 int16) {
-		C.gl12VertexAttrib3s(glc.context, C.GLuint(index), C.GLshort(v0), C.GLshort(v1), C.GLshort(v2))
+		defer glc.trace("VertexAttrib3s")
+		C.gl13VertexAttrib3s(glc.context, C.GLuint(index), C.GLshort(v0), C.GLshort(v1), C.GLshort(v2))
 	}
 
 	glc.VertexAttrib3d = func(index uint32, v0, v1, v2 float64) {
-		C.gl12VertexAttrib3d(glc.context, C.GLuint(index), C.GLdouble(v0), C.GLdouble(v1), C.GLdouble(v2))
+		defer glc.trace("VertexAttrib3d")
+		C.gl13VertexAttrib3d(glc.context, C.GLuint(index), C.GLdouble(v0), C.GLdouble(v1), C.GLdouble(v2))
 	}
 
 	glc.VertexAttrib4f = func(index uint32, v0, v1, v2, v3 float32) {
-		C.gl12VertexAttrib4f(glc.context, C.GLuint(index), C.GLfloat(v0), C.GLfloat(v1), C.GLfloat(v2), C.GLfloat(v3))
+		defer glc.trace("VertexAttrib4f")
+		C.gl13VertexAttrib4f(glc.context, C.GLuint(index), C.GLfloat(v0), C.GLfloat(v1), C.GLfloat(v2), C.GLfloat(v3))
 	}
 
 	glc.VertexAttrib4s = func(index uint32, v0, v1, v2, v3 int16) {
-		C.gl12VertexAttrib4s(glc.context, C.GLuint(index), C.GLshort(v0), C.GLshort(v1), C.GLshort(v2), C.GLshort(v3))
+		defer glc.trace("VertexAttrib4s")
+		C.gl13VertexAttrib4s(glc.context, C.GLuint(index), C.GLshort(v0), C.GLshort(v1), C.GLshort(v2), C.GLshort(v3))
 	}
 
 	glc.VertexAttrib4d = func(index uint32, v0, v1, v2, v3 float64) {
-		C.gl12VertexAttrib4d(glc.context, C.GLuint(index), C.GLdouble(v0), C.GLdouble(v1), C.GLdouble(v2), C.GLdouble(v3))
+		defer glc.trace("VertexAttrib4d")
+		C.gl13VertexAttrib4d(glc.context, C.GLuint(index), C.GLdouble(v0), C.GLdouble(v1), C.GLdouble(v2), C.GLdouble(v3))
 	}
 
 	glc.VertexAttrib4Nuv = func(index uint32, v0, v1, v2, v3 uint8) {
-		C.gl12VertexAttrib4Nuv(glc.context, C.GLuint(index), C.GLubyte(v0), C.GLubyte(v1), C.GLubyte(v2), C.GLubyte(v3))
+		defer glc.trace("VertexAttrib4Nuv")
+		C.gl13VertexAttrib4Nuv(glc.context, C.GLuint(index), C.GLubyte(v0), C.GLubyte(v1), C.GLubyte(v2), C.GLubyte(v3))
 	}
 
 	glc.VertexAttrib1fv = func(index uint32, v *float32) {
-		C.gl12VertexAttrib1fv(glc.context, C.GLuint(index), (*C.GLfloat)(unsafe.Pointer(v)))
+		defer glc.trace("VertexAttrib1fv")
+		C.gl13VertexAttrib1fv(glc.context, C.GLuint(index), (*C.GLfloat)(unsafe.Pointer(v)))
 	}
 
 	glc.VertexAttrib1sv = func(index uint32, v *int16) {
-		C.gl12VertexAttrib1sv(glc.context, C.GLuint(index), (*C.GLshort)(unsafe.Pointer(v)))
+		defer glc.trace("VertexAttrib1sv")
+		C.gl13VertexAttrib1sv(glc.context, C.GLuint(index), (*C.GLshort)(unsafe.Pointer(v)))
 	}
 
 	glc.VertexAttrib1dv = func(index uint32, v *float64) {
-		C.gl12VertexAttrib1dv(glc.context, C.GLuint(index), (*C.GLdouble)(unsafe.Pointer(v)))
+		defer glc.trace("VertexAttrib1dv")
+		C.gl13VertexAttrib1dv(glc.context, C.GLuint(index), (*C.GLdouble)(unsafe.Pointer(v)))
 	}
 
 	glc.VertexAttrib2fv = func(index uint32, v *float32) {
-		C.gl12VertexAttrib2fv(glc.context, C.GLuint(index), (*C.GLfloat)(unsafe.Pointer(v)))
+		defer glc.trace("VertexAttrib2fv")
+		C.gl13VertexAttrib2fv(glc.context, C.GLuint(index), (*C.GLfloat)(unsafe.Pointer(v)))
 	}
 
 	glc.VertexAttrib2sv = func(index uint32, v *int16) {
-		C.gl12VertexAttrib2sv(glc.context, C.GLuint(index), (*C.GLshort)(unsafe.Pointer(v)))
+		defer glc.trace("VertexAttrib2sv")
+		C.gl13VertexAttrib2sv(glc.context, C.GLuint(index), (*C.GLshort)(unsafe.Pointer(v)))
 	}
 
 	glc.VertexAttrib2dv = func(index uint32, v *float64) {
-		C.gl12VertexAttrib2dv(glc.context, C.GLuint(index), (*C.GLdouble)(unsafe.Pointer(v)))
+		defer glc.trace("VertexAttrib2dv")
+		C.gl13VertexAttrib2dv(glc.context, C.GLuint(index), (*C.GLdouble)(unsafe.Pointer(v)))
 	}
 
 	glc.VertexAttrib3fv = func(index uint32, v *float32) {
-		C.gl12VertexAttrib3fv(glc.context, C.GLuint(index), (*C.GLfloat)(unsafe.Pointer(v)))
+		defer glc.trace("VertexAttrib3fv")
+		C.gl13VertexAttrib3fv(glc.context, C.GLuint(index), (*C.GLfloat)(unsafe.Pointer(v)))
 	}
 
 	glc.VertexAttrib3sv = func(index uint32, v *int16) {
-		C.gl12VertexAttrib3sv(glc.context, C.GLuint(index), (*C.GLshort)(unsafe.Pointer(v)))
+		defer glc.trace("VertexAttrib3sv")
+		C.gl13VertexAttrib3sv(glc.context, C.GLuint(index), (*C.GLshort)(unsafe.Pointer(v)))
 	}
 
 	glc.VertexAttrib3dv = func(index uint32, v *float64) {
-		C.gl12VertexAttrib3dv(glc.context, C.GLuint(index), (*C.GLdouble)(unsafe.Pointer(v)))
+		defer glc.trace("VertexAttrib3dv")
+		C.gl13VertexAttrib3dv(glc.context, C.GLuint(index), (*C.GLdouble)(unsafe.Pointer(v)))
 	}
 
 	glc.VertexAttrib4fv = func(index uint32, v *float32) {
-		C.gl12VertexAttrib4fv(glc.context, C.GLuint(index), (*C.GLfloat)(unsafe.Pointer(v)))
+		defer glc.trace("VertexAttrib4fv")
+		C.gl13VertexAttrib4fv(glc.context, C.GLuint(index), (*C.GLfloat)(unsafe.Pointer(v)))
 	}
 
 	glc.VertexAttrib4sv = func(index uint32, v *int16) {
-		C.gl12VertexAttrib4sv(glc.context, C.GLuint(index), (*C.GLshort)(unsafe.Pointer(v)))
+		defer glc.trace("VertexAttrib4sv")
+		C.gl13VertexAttrib4sv(glc.context, C.GLuint(index), (*C.GLshort)(unsafe.Pointer(v)))
 	}
 
 	glc.VertexAttrib4dv = func(index uint32, v *float64) {
-		C.gl12VertexAttrib4dv(glc.context, C.GLuint(index), (*C.GLdouble)(unsafe.Pointer(v)))
+		defer glc.trace("VertexAttrib4dv")
+		C.gl13VertexAttrib4dv(glc.context, C.GLuint(index), (*C.GLdouble)(unsafe.Pointer(v)))
 	}
 
 	glc.VertexAttrib4iv = func(index uint32, v *int32) {
-		C.gl12VertexAttrib4iv(glc.context, C.GLuint(index), (*C.GLint)(unsafe.Pointer(v)))
+		defer glc.trace("VertexAttrib4iv")
+		C.gl13VertexAttrib4iv(glc.context, C.GLuint(index), (*C.GLint)(unsafe.Pointer(v)))
 	}
 
 	glc.VertexAttrib4bv = func(index uint32, v *int8) {
-		C.gl12VertexAttrib4bv(glc.context, C.GLuint(index), (*C.GLbyte)(unsafe.Pointer(v)))
+		defer glc.trace("VertexAttrib4bv")
+		C.gl13VertexAttrib4bv(glc.context, C.GLuint(index), (*C.GLbyte)(unsafe.Pointer(v)))
 	}
 
 	glc.VertexAttrib4ubv = func(index uint32, v *uint8) {
-		C.gl12VertexAttrib4ubv(glc.context, C.GLuint(index), (*C.GLubyte)(unsafe.Pointer(v)))
+		defer glc.trace("VertexAttrib4ubv")
+		C.gl13VertexAttrib4ubv(glc.context, C.GLuint(index), (*C.GLubyte)(unsafe.Pointer(v)))
 	}
 
 	glc.VertexAttrib4usv = func(index uint32, v *uint16) {
-		C.gl12VertexAttrib4usv(glc.context, C.GLuint(index), (*C.GLushort)(unsafe.Pointer(v)))
+		defer glc.trace("VertexAttrib4usv")
+		C.gl13VertexAttrib4usv(glc.context, C.GLuint(index), (*C.GLushort)(unsafe.Pointer(v)))
 	}
 
 	glc.VertexAttrib4uiv = func(index uint32, v *uint32) {
-		C.gl12VertexAttrib4uiv(glc.context, C.GLuint(index), (*C.GLuint)(unsafe.Pointer(v)))
+		defer glc.trace("VertexAttrib4uiv")
+		C.gl13VertexAttrib4uiv(glc.context, C.GLuint(index), (*C.GLuint)(unsafe.Pointer(v)))
 	}
 
 	glc.VertexAttrib4Nbv = func(index uint32, v *int8) {
-		C.gl12VertexAttrib4Nbv(glc.context, C.GLuint(index), (*C.GLbyte)(unsafe.Pointer(v)))
+		defer glc.trace("VertexAttrib4Nbv")
+		C.gl13VertexAttrib4Nbv(glc.context, C.GLuint(index), (*C.GLbyte)(unsafe.Pointer(v)))
 	}
 
 	glc.VertexAttrib4Nsv = func(index uint32, v *int16) {
-		C.gl12VertexAttrib4Nsv(glc.context, C.GLuint(index), (*C.GLshort)(unsafe.Pointer(v)))
+		defer glc.trace("VertexAttrib4Nsv")
+		C.gl13VertexAttrib4Nsv(glc.context, C.GLuint(index), (*C.GLshort)(unsafe.Pointer(v)))
 	}
 
 	glc.VertexAttrib4Niv = func(index uint32, v *int32) {
-		C.gl12VertexAttrib4Niv(glc.context, C.GLuint(index), (*C.GLint)(unsafe.Pointer(v)))
+		defer glc.trace("VertexAttrib4Niv")
+		C.gl13VertexAttrib4Niv(glc.context, C.GLuint(index), (*C.GLint)(unsafe.Pointer(v)))
 	}
 
 	glc.VertexAttrib4Nubv = func(index uint32, v *uint8) {
-		C.gl12VertexAttrib4Nubv(glc.context, C.GLuint(index), (*C.GLubyte)(unsafe.Pointer(v)))
+		defer glc.trace("VertexAttrib4Nubv")
+		C.gl13VertexAttrib4Nubv(glc.context, C.GLuint(index), (*C.GLubyte)(unsafe.Pointer(v)))
 	}
 
 	glc.VertexAttrib4Nusv = func(index uint32, v *uint16) {
-		C.gl12VertexAttrib4Nusv(glc.context, C.GLuint(index), (*C.GLushort)(unsafe.Pointer(v)))
+		defer glc.trace("VertexAttrib4Nusv")
+		C.gl13VertexAttrib4Nusv(glc.context, C.GLuint(index), (*C.GLushort)(unsafe.Pointer(v)))
 	}
 
 	glc.VertexAttrib4Nuiv = func(index uint32, v *uint32) {
-		C.gl12VertexAttrib4Nuiv(glc.context, C.GLuint(index), (*C.GLuint)(unsafe.Pointer(v)))
+		defer glc.trace("VertexAttrib4Nuiv")
+		C.gl13VertexAttrib4Nuiv(glc.context, C.GLuint(index), (*C.GLuint)(unsafe.Pointer(v)))
 	}
 
 	glc.UniformMatrix2fv = func(location int32, count int32, transpose bool, value *float32) {
-		C.gl12UniformMatrix2fv(glc.context, C.GLint(location), C.GLsizei(count), boolToGL(transpose), (*C.GLfloat)(unsafe.Pointer(value)))
+		defer glc.trace("UniformMatrix2fv")
+		C.gl13UniformMatrix2fv(glc.context, C.GLint(location), C.GLsizei(count), boolToGL(transpose), (*C.GLfloat)(unsafe.Pointer(value)))
 	}
 
 	glc.UniformMatrix3fv = func(location int32, count int32, transpose bool, value *float32) {
-		C.gl12UniformMatrix3fv(glc.context, C.GLint(location), C.GLsizei(count), boolToGL(transpose), (*C.GLfloat)(unsafe.Pointer(value)))
+		defer glc.trace("UniformMatrix3fv")
+		C.gl13UniformMatrix3fv(glc.context, C.GLint(location), C.GLsizei(count), boolToGL(transpose), (*C.GLfloat)(unsafe.Pointer(value)))
 	}
 
 	glc.UniformMatrix4fv = func(location int32, count int32, transpose bool, value *float32) {
-		C.gl12UniformMatrix4fv(glc.context, C.GLint(location), C.GLsizei(count), boolToGL(transpose), (*C.GLfloat)(unsafe.Pointer(value)))
+		defer glc.trace("UniformMatrix4fv")
+		C.gl13UniformMatrix4fv(glc.context, C.GLint(location), C.GLsizei(count), boolToGL(transpose), (*C.GLfloat)(unsafe.Pointer(value)))
 	}
 
 	glc.UniformMatrix2x3fv = func(location int32, count int32, transpose bool, value *float32) {
-		C.gl12UniformMatrix2x3fv(glc.context, C.GLint(location), C.GLsizei(count), boolToGL(transpose), (*C.GLfloat)(unsafe.Pointer(value)))
+		defer glc.trace("UniformMatrix2x3fv")
+		C.gl13UniformMatrix2x3fv(glc.context, C.GLint(location), C.GLsizei(count), boolToGL(transpose), (*C.GLfloat)(unsafe.Pointer(value)))
 	}
 
 	glc.UniformMatrix3x2fv = func(location int32, count int32, transpose bool, value *float32) {
-		C.gl12UniformMatrix3x2fv(glc.context, C.GLint(location), C.GLsizei(count), boolToGL(transpose), (*C.GLfloat)(unsafe.Pointer(value)))
+		defer glc.trace("UniformMatrix3x2fv")
+		C.gl13UniformMatrix3x2fv(glc.context, C.GLint(location), C.GLsizei(count), boolToGL(transpose), (*C.GLfloat)(unsafe.Pointer(value)))
 	}
 
 	glc.UniformMatrix2x4fv = func(location int32, count int32, transpose bool, value *float32) {
-		C.gl12UniformMatrix2x4fv(glc.context, C.GLint(location), C.GLsizei(count), boolToGL(transpose), (*C.GLfloat)(unsafe.Pointer(value)))
+		defer glc.trace("UniformMatrix2x4fv")
+		C.gl13UniformMatrix2x4fv(glc.context, C.GLint(location), C.GLsizei(count), boolToGL(transpose), (*C.GLfloat)(unsafe.Pointer(value)))
 	}
 
 	glc.UniformMatrix4x2fv = func(location int32, count int32, transpose bool, value *float32) {
-		C.gl12UniformMatrix4x2fv(glc.context, C.GLint(location), C.GLsizei(count), boolToGL(transpose), (*C.GLfloat)(unsafe.Pointer(value)))
+		defer glc.trace("UniformMatrix4x2fv")
+		C.gl13UniformMatrix4x2fv(glc.context, C.GLint(location), C.GLsizei(count), boolToGL(transpose), (*C.GLfloat)(unsafe.Pointer(value)))
 	}
 
 	glc.UniformMatrix3x4fv = func(location int32, count int32, transpose bool, value *float32) {
-		C.gl12UniformMatrix3x4fv(glc.context, C.GLint(location), C.GLsizei(count), boolToGL(transpose), (*C.GLfloat)(unsafe.Pointer(value)))
+		defer glc.trace("UniformMatrix3x4fv")
+		C.gl13UniformMatrix3x4fv(glc.context, C.GLint(location), C.GLsizei(count), boolToGL(transpose), (*C.GLfloat)(unsafe.Pointer(value)))
 	}
 
 	glc.UniformMatrix4x3fv = func(location int32, count int32, transpose bool, value *float32) {
-		C.gl12UniformMatrix4x3fv(glc.context, C.GLint(location), C.GLsizei(count), boolToGL(transpose), (*C.GLfloat)(unsafe.Pointer(value)))
+		defer glc.trace("UniformMatrix4x3fv")
+		C.gl13UniformMatrix4x3fv(glc.context, C.GLint(location), C.GLsizei(count), boolToGL(transpose), (*C.GLfloat)(unsafe.Pointer(value)))
 	}
 
 	if !versionSupported(glc) {

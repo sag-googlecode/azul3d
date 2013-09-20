@@ -27,6 +27,9 @@ func generateC(packageDir, prefix, version, versionWithoutDots string, versionPr
 	}
 	defer api.Close()
 
+	// Write license to file
+	api.Write([]byte(licenseHeader))
+
 	cHelperCode := `
 #include <stdbool.h>
 #include <stdlib.h>

@@ -8242,301 +8242,357 @@
 		"Returns": "void",
 		"Takes": ["GLsizei n", "GLenum* bufs"],
 		"Versions": ["2.0", "2.1"],
-		"Extension": false,
+		"Extension": true,
 		"Reference": "http://www.opengl.org/sdk/docs/man2/xhtml/glDrawBuffers.xml"
 	},{
 		"Name": "glGetActiveAttrib",
 		"Returns": "void",
 		"Takes": ["GLuint program", "GLuint index", "GLsizei bufSize", "GLsizei* length", "GLint* size", "GLenum* type", "GLchar* name"],
 		"Versions": ["2.0", "2.1"],
-		"Extension": false,
+		"Extension": true,
 		"Reference": "http://www.opengl.org/sdk/docs/man2/xhtml/glGetActiveAttrib.xml"
 	},{
 		"Name": "glGetActiveUniform",
 		"Returns": "void",
 		"Takes": ["GLuint program", "GLuint index", "GLsizei bufSize", "GLsizei* length", "GLint* size", "GLenum* type", "GLchar* name"],
 		"Versions": ["2.0", "2.1"],
-		"Extension": false,
+		"Extension": true,
 		"Reference": "http://www.opengl.org/sdk/docs/man2/xhtml/glGetActiveAttrib.xml"
 	},{
 		"Name": "glGetAttachedShaders",
 		"Returns": "void",
 		"Takes": ["GLuint program", "GLsizei maxCount", "GLsizei* count", "GLuint* shaders"],
 		"Versions": ["2.0", "2.1"],
-		"Extension": false,
+		"Extension": true,
 		"Reference": "http://www.opengl.org/sdk/docs/man2/xhtml/glGetAttachedShaders.xml"
 	},{
 		"Name": "glGetAttribLocation",
 		"Returns": "GLint",
 		"Takes": ["GLuint program", "GLchar* name"],
 		"Versions": ["2.0", "2.1"],
-		"Extension": false,
+		"Extension": true,
 		"Reference": "http://www.opengl.org/sdk/docs/man2/xhtml/glGetAttribLocation.xml"
 	},{
 		"Name": "glGetProgramiv",
 		"Returns": "void",
 		"Takes": ["GLuint program", "GLenum pname", "GLint* params"],
 		"Versions": ["2.0", "2.1"],
-		"Extension": false,
+		"Extension": true,
 		"Reference": "http://www.opengl.org/sdk/docs/man2/xhtml/glGetProgram.xml"
 	},{
 		"Name": "glGetProgramInfoLog",
 		"Returns": "void",
 		"Takes": ["GLuint program", "GLsizei maxLength", "GLsizei* length", "GLchar* infoLog"],
 		"Versions": ["2.0", "2.1"],
-		"Extension": false,
+		"Extension": true,
 		"Reference": "http://www.opengl.org/sdk/docs/man2/xhtml/glGetProgramInfoLog.xml"
 	},{
 		"Name": "glGetShaderiv",
 		"Returns": "void",
 		"Takes": ["GLuint program", "GLenum pname", "GLint* params"],
 		"Versions": ["2.0", "2.1"],
-		"Extension": false,
+		"Extension": true,
 		"Reference": "http://www.opengl.org/sdk/docs/man2/xhtml/glGetShader.xml"
 	},{
 		"Name": "glGetShaderInfoLog",
 		"Returns": "void",
 		"Takes": ["GLuint shader", "GLsizei maxLength", "GLsizei* length", "GLchar* infoLog"],
 		"Versions": ["2.0", "2.1"],
-		"Extension": false,
+		"Extension": true,
 		"Reference": "http://www.opengl.org/sdk/docs/man2/xhtml/glGetShaderInfoLog.xml"
 	},{
 		"Name": "glGetShaderSource",
 		"Returns": "void",
 		"Takes": ["GLuint shader", "GLsizei bufSize", "GLsizei* length", "GLchar* source"],
 		"Versions": ["2.0", "2.1"],
-		"Extension": false,
+		"Extension": true,
 		"Reference": "http://www.opengl.org/sdk/docs/man2/xhtml/glGetShaderSource.xml"
 	},{
 		"Name": "glGetUniformfv",
 		"Returns": "void",
 		"Takes": ["GLuint program", "GLint location", "GLfloat* params"],
 		"Versions": ["2.0", "2.1"],
-		"Extension": false,
+		"Extension": true,
 		"Reference": "http://www.opengl.org/sdk/docs/man2/xhtml/glGetUniform.xml"
 	},{
 		"Name": "glGetUniformiv",
 		"Returns": "void",
 		"Takes": ["GLuint program", "GLint location", "GLint* params"],
 		"Versions": ["2.0", "2.1"],
-		"Extension": false,
+		"Extension": true,
 		"Reference": "http://www.opengl.org/sdk/docs/man2/xhtml/glGetUniform.xml"
 	},{
 		"Name": "glGetUniformLocation",
 		"Returns": "GLint",
 		"Takes": ["GLuint program", "GLchar* name"],
 		"Versions": ["2.0", "2.1"],
-		"Extension": false,
+		"Extension": true,
 		"Reference": "http://www.opengl.org/sdk/docs/man2/xhtml/glGetUniformLocation.xml"
 	},{
 		"Name": "glGetVertexAttribdv",
 		"Returns": "void",
 		"Takes": ["GLuint index", "GLenum pname", "GLdouble* params"],
 		"Versions": ["2.0", "2.1"],
-		"Extension": false,
+		"Extension": true,
 		"Reference": "http://www.opengl.org/sdk/docs/man2/xhtml/glGetVertexAttrib.xml"
 	},{
 		"Name": "glGetVertexAttribfv",
 		"Returns": "void",
 		"Takes": ["GLuint index", "GLenum pname", "GLfloat* params"],
 		"Versions": ["2.0", "2.1"],
-		"Extension": false,
+		"Extension": true,
 		"Reference": "http://www.opengl.org/sdk/docs/man2/xhtml/glGetVertexAttrib.xml"
 	},{
 		"Name": "glGetVertexAttribiv",
 		"Returns": "void",
 		"Takes": ["GLuint index", "GLenum pname", "GLint* params"],
 		"Versions": ["2.0", "2.1"],
-		"Extension": false,
+		"Extension": true,
 		"Reference": "http://www.opengl.org/sdk/docs/man2/xhtml/glGetVertexAttrib.xml"
 	},{
 		"Name": "glGetVertexAttribPointerv",
 		"Returns": "void",
 		"Takes": ["GLuint index", "GLenum pname", "GLvoid* pointer"],
 		"Versions": ["2.0", "2.1"],
-		"Extension": false,
+		"Extension": true,
 		"Reference": "http://www.opengl.org/sdk/docs/man2/xhtml/glGetVertexAttribPointerv.xml"
 	},{
 		"Name": "glIsProgram",
 		"Returns": "GLboolean",
 		"Takes": ["GLuint program"],
 		"Versions": ["2.0", "2.1"],
-		"Extension": false,
+		"Extension": true,
 		"Reference": "http://www.opengl.org/sdk/docs/man2/xhtml/glIsProgram.xml"
 	},{
 		"Name": "glIsShader",
 		"Returns": "GLboolean",
 		"Takes": ["GLuint shader"],
 		"Versions": ["2.0", "2.1"],
-		"Extension": false,
+		"Extension": true,
 		"Reference": "http://www.opengl.org/sdk/docs/man2/xhtml/glIsShader.xml"
 	},{
 		"Name": "glLinkProgram",
 		"Returns": "void",
 		"Takes": ["GLuint program"],
 		"Versions": ["2.0", "2.1"],
-		"Extension": false,
+		"Extension": true,
 		"Reference": "http://www.opengl.org/sdk/docs/man2/xhtml/glLinkProgram.xml"
 	},{
 		"Name": "glShaderSource",
 		"Returns": "void",
 		"Takes": ["GLuint shader", "GLsizei count", "GLchar** string", "GLint* length"],
 		"Versions": ["2.0", "2.1"],
-		"Extension": false,
+		"Extension": true,
 		"Reference": "http://www.opengl.org/sdk/docs/man2/xhtml/glShaderSource.xml"
 	},{
 		"Name": "glStencilFuncSeparate",
 		"Returns": "void",
 		"Takes": ["GLenum face", "GLenum func", "GLint ref", "GLuint mask"],
 		"Versions": ["2.0", "2.1"],
-		"Extension": false,
+		"Extension": true,
 		"Reference": "http://www.opengl.org/sdk/docs/man2/xhtml/glStencilFuncSeparate.xml"
 	},{
 		"Name": "glStencilMaskSeparate",
 		"Returns": "void",
 		"Takes": ["GLenum face", "GLuint mask"],
 		"Versions": ["2.0", "2.1"],
-		"Extension": false,
+		"Extension": true,
 		"Reference": "http://www.opengl.org/sdk/docs/man2/xhtml/glStencilMaskSeparate.xml"
 	},{
 		"Name": "glStencilOpSeparate",
 		"Returns": "void",
 		"Takes": ["GLenum face", "GLenum sfail", "GLenum dpfail", "GLenum dppass"],
 		"Versions": ["2.0", "2.1"],
-		"Extension": false,
+		"Extension": true,
 		"Reference": "http://www.opengl.org/sdk/docs/man2/xhtml/glStencilOpSeparate.xml"
 	},{
 		"Name": "glUniform1f",
 		"Returns": "void",
 		"Takes": ["GLint location", "GLfloat v0"],
 		"Versions": ["2.0", "2.1"],
-		"Extension": false,
+		"Extension": true,
 		"Reference": "http://www.opengl.org/sdk/docs/man2/xhtml/glUniform.xml"
 	},{
 		"Name": "glUniform2f",
 		"Returns": "void",
 		"Takes": ["GLint location", "GLfloat v0", "GLfloat v1"],
 		"Versions": ["2.0", "2.1"],
-		"Extension": false,
+		"Extension": true,
 		"Reference": "http://www.opengl.org/sdk/docs/man2/xhtml/glUniform.xml"
 	},{
 		"Name": "glUniform3f",
 		"Returns": "void",
 		"Takes": ["GLint location", "GLfloat v0", "GLfloat v1", "GLfloat v2"],
 		"Versions": ["2.0", "2.1"],
-		"Extension": false,
+		"Extension": true,
 		"Reference": "http://www.opengl.org/sdk/docs/man2/xhtml/glUniform.xml"
 	},{
 		"Name": "glUniform4f",
 		"Returns": "void",
 		"Takes": ["GLint location", "GLfloat v0", "GLfloat v1", "GLfloat v2", "GLfloat v3"],
 		"Versions": ["2.0", "2.1"],
-		"Extension": false,
+		"Extension": true,
 		"Reference": "http://www.opengl.org/sdk/docs/man2/xhtml/glUniform.xml"
 	},{
 		"Name": "glUniform1i",
 		"Returns": "void",
 		"Takes": ["GLint location", "GLint v0"],
 		"Versions": ["2.0", "2.1"],
-		"Extension": false,
+		"Extension": true,
 		"Reference": "http://www.opengl.org/sdk/docs/man2/xhtml/glUniform.xml"
 	},{
 		"Name": "glUniform2i",
 		"Returns": "void",
 		"Takes": ["GLint location", "GLint v0", "GLint v1"],
 		"Versions": ["2.0", "2.1"],
-		"Extension": false,
+		"Extension": true,
 		"Reference": "http://www.opengl.org/sdk/docs/man2/xhtml/glUniform.xml"
 	},{
 		"Name": "glUniform3i",
 		"Returns": "void",
 		"Takes": ["GLint location", "GLint v0", "GLint v1", "GLint v2"],
 		"Versions": ["2.0", "2.1"],
-		"Extension": false,
+		"Extension": true,
 		"Reference": "http://www.opengl.org/sdk/docs/man2/xhtml/glUniform.xml"
 	},{
 		"Name": "glUniform4i",
 		"Returns": "void",
 		"Takes": ["GLint location", "GLint v0", "GLint v1", "GLint v2", "GLint v3"],
 		"Versions": ["2.0", "2.1"],
-		"Extension": false,
+		"Extension": true,
+		"Reference": "http://www.opengl.org/sdk/docs/man2/xhtml/glUniform.xml"
+	},{
+		"Name": "glUniform1ui",
+		"Returns": "void",
+		"Takes": ["GLint location", "GLuint v0"],
+		"Versions": ["2.0", "2.1"],
+		"Extension": true,
+		"Reference": "http://www.opengl.org/sdk/docs/man2/xhtml/glUniform.xml"
+	},{
+		"Name": "glUniform2ui",
+		"Returns": "void",
+		"Takes": ["GLint location", "GLuint v0", "GLuint v1"],
+		"Versions": ["2.0", "2.1"],
+		"Extension": true,
+		"Reference": "http://www.opengl.org/sdk/docs/man2/xhtml/glUniform.xml"
+	},{
+		"Name": "glUniform3ui",
+		"Returns": "void",
+		"Takes": ["GLint location", "GLuint v0", "GLuint v1", "GLuint v2"],
+		"Versions": ["2.0", "2.1"],
+		"Extension": true,
+		"Reference": "http://www.opengl.org/sdk/docs/man2/xhtml/glUniform.xml"
+	},{
+		"Name": "glUniform4ui",
+		"Returns": "void",
+		"Takes": ["GLint location", "GLuint v0", "GLuint v1", "GLuint v2", "GLuint v3"],
+		"Versions": ["2.0", "2.1"],
+		"Extension": true,
 		"Reference": "http://www.opengl.org/sdk/docs/man2/xhtml/glUniform.xml"
 	},{
 		"Name": "glUniform1fv",
 		"Returns": "void",
 		"Takes": ["GLint location", "GLsizei count", "GLfloat* value"],
 		"Versions": ["2.0", "2.1"],
-		"Extension": false,
+		"Extension": true,
 		"Reference": "http://www.opengl.org/sdk/docs/man2/xhtml/glUniform.xml"
 	},{
 		"Name": "glUniform2fv",
 		"Returns": "void",
 		"Takes": ["GLint location", "GLsizei count", "GLfloat* value"],
 		"Versions": ["2.0", "2.1"],
-		"Extension": false,
+		"Extension": true,
 		"Reference": "http://www.opengl.org/sdk/docs/man2/xhtml/glUniform.xml"
 	},{
 		"Name": "glUniform3fv",
 		"Returns": "void",
 		"Takes": ["GLint location", "GLsizei count", "GLfloat* value"],
 		"Versions": ["2.0", "2.1"],
-		"Extension": false,
+		"Extension": true,
 		"Reference": "http://www.opengl.org/sdk/docs/man2/xhtml/glUniform.xml"
 	},{
 		"Name": "glUniform4fv",
 		"Returns": "void",
 		"Takes": ["GLint location", "GLsizei count", "GLfloat* value"],
 		"Versions": ["2.0", "2.1"],
-		"Extension": false,
+		"Extension": true,
 		"Reference": "http://www.opengl.org/sdk/docs/man2/xhtml/glUniform.xml"
 	},{
 		"Name": "glUniform1iv",
 		"Returns": "void",
 		"Takes": ["GLint location", "GLsizei count", "GLint* value"],
 		"Versions": ["2.0", "2.1"],
-		"Extension": false,
+		"Extension": true,
 		"Reference": "http://www.opengl.org/sdk/docs/man2/xhtml/glUniform.xml"
 	},{
 		"Name": "glUniform2iv",
 		"Returns": "void",
 		"Takes": ["GLint location", "GLsizei count", "GLint* value"],
 		"Versions": ["2.0", "2.1"],
-		"Extension": false,
+		"Extension": true,
 		"Reference": "http://www.opengl.org/sdk/docs/man2/xhtml/glUniform.xml"
 	},{
 		"Name": "glUniform3iv",
 		"Returns": "void",
 		"Takes": ["GLint location", "GLsizei count", "GLint* value"],
 		"Versions": ["2.0", "2.1"],
-		"Extension": false,
+		"Extension": true,
 		"Reference": "http://www.opengl.org/sdk/docs/man2/xhtml/glUniform.xml"
 	},{
 		"Name": "glUniform4iv",
 		"Returns": "void",
 		"Takes": ["GLint location", "GLsizei count", "GLint* value"],
 		"Versions": ["2.0", "2.1"],
-		"Extension": false,
+		"Extension": true,
+		"Reference": "http://www.opengl.org/sdk/docs/man2/xhtml/glUniform.xml"
+	},{
+		"Name": "glUniform1uiv",
+		"Returns": "void",
+		"Takes": ["GLint location", "GLsizei count", "GLuint* value"],
+		"Versions": ["2.0", "2.1"],
+		"Extension": true,
+		"Reference": "http://www.opengl.org/sdk/docs/man2/xhtml/glUniform.xml"
+	},{
+		"Name": "glUniform2uiv",
+		"Returns": "void",
+		"Takes": ["GLint location", "GLsizei count", "GLuint* value"],
+		"Versions": ["2.0", "2.1"],
+		"Extension": true,
+		"Reference": "http://www.opengl.org/sdk/docs/man2/xhtml/glUniform.xml"
+	},{
+		"Name": "glUniform3uiv",
+		"Returns": "void",
+		"Takes": ["GLint location", "GLsizei count", "GLuint* value"],
+		"Versions": ["2.0", "2.1"],
+		"Extension": true,
+		"Reference": "http://www.opengl.org/sdk/docs/man2/xhtml/glUniform.xml"
+	},{
+		"Name": "glUniform4uiv",
+		"Returns": "void",
+		"Takes": ["GLint location", "GLsizei count", "GLuint* value"],
+		"Versions": ["2.0", "2.1"],
+		"Extension": true,
 		"Reference": "http://www.opengl.org/sdk/docs/man2/xhtml/glUniform.xml"
 	},{
 		"Name": "glUseProgram",
 		"Returns": "void",
 		"Takes": ["GLuint program"],
 		"Versions": ["2.0", "2.1"],
-		"Extension": false,
+		"Extension": true,
 		"Reference": "http://www.opengl.org/sdk/docs/man2/xhtml/glUseProgram.xml"
 	},{
 		"Name": "glValidateProgram",
 		"Returns": "void",
 		"Takes": ["GLuint program"],
 		"Versions": ["2.0", "2.1"],
-		"Extension": false,
+		"Extension": true,
 		"Reference": "http://www.opengl.org/sdk/docs/man2/xhtml/glValidateProgram.xml"
 	},{
 		"Name": "glVertexAttribPointer",
 		"Returns": "void",
 		"Takes": ["GLuint index", "GLint size", "GLenum type", "GLboolean normalized", "GLsizei stride", "GLvoid* pointer"],
 		"Versions": ["2.0", "2.1"],
-		"Extension": false,
+		"Extension": true,
 		"Reference": "http://www.opengl.org/sdk/docs/man2/xhtml/glVertexAttribPointer.xml"
 
 
@@ -8552,252 +8608,252 @@
 		"Returns": "void",
 		"Takes": ["GLuint index", "GLfloat v0"],
 		"Versions": ["2.0", "2.1"],
-		"Extension": false,
+		"Extension": true,
 		"Reference": "http://www.opengl.org/sdk/docs/man2/xhtml/glVertexAttribPointer.xml"
 	},{
 		"Name": "glVertexAttrib1s",
 		"Returns": "void",
 		"Takes": ["GLuint index", "GLshort v0"],
 		"Versions": ["2.0", "2.1"],
-		"Extension": false,
+		"Extension": true,
 		"Reference": "http://www.opengl.org/sdk/docs/man2/xhtml/glVertexAttribPointer.xml"
 	},{
 		"Name": "glVertexAttrib1d",
 		"Returns": "void",
 		"Takes": ["GLuint index", "GLdouble v0"],
 		"Versions": ["2.0", "2.1"],
-		"Extension": false,
+		"Extension": true,
 		"Reference": "http://www.opengl.org/sdk/docs/man2/xhtml/glVertexAttribPointer.xml"
 	},{
 		"Name": "glVertexAttrib2f",
 		"Returns": "void",
 		"Takes": ["GLuint index", "GLfloat v0", "GLfloat v1"],
 		"Versions": ["2.0", "2.1"],
-		"Extension": false,
+		"Extension": true,
 		"Reference": "http://www.opengl.org/sdk/docs/man2/xhtml/glVertexAttribPointer.xml"
 	},{
 		"Name": "glVertexAttrib2s",
 		"Returns": "void",
 		"Takes": ["GLuint index", "GLshort v0", "GLshort v1"],
 		"Versions": ["2.0", "2.1"],
-		"Extension": false,
+		"Extension": true,
 		"Reference": "http://www.opengl.org/sdk/docs/man2/xhtml/glVertexAttribPointer.xml"
 	},{
 		"Name": "glVertexAttrib2d",
 		"Returns": "void",
 		"Takes": ["GLuint index", "GLdouble v0", "GLdouble v1"],
 		"Versions": ["2.0", "2.1"],
-		"Extension": false,
+		"Extension": true,
 		"Reference": "http://www.opengl.org/sdk/docs/man2/xhtml/glVertexAttribPointer.xml"
 	},{
 		"Name": "glVertexAttrib3f",
 		"Returns": "void",
 		"Takes": ["GLuint index", "GLfloat v0", "GLfloat v1", "GLfloat v2"],
 		"Versions": ["2.0", "2.1"],
-		"Extension": false,
+		"Extension": true,
 		"Reference": "http://www.opengl.org/sdk/docs/man2/xhtml/glVertexAttribPointer.xml"
 	},{
 		"Name": "glVertexAttrib3s",
 		"Returns": "void",
 		"Takes": ["GLuint index", "GLshort v0", "GLshort v1", "GLshort v2"],
 		"Versions": ["2.0", "2.1"],
-		"Extension": false,
+		"Extension": true,
 		"Reference": "http://www.opengl.org/sdk/docs/man2/xhtml/glVertexAttribPointer.xml"
 	},{
 		"Name": "glVertexAttrib3d",
 		"Returns": "void",
 		"Takes": ["GLuint index", "GLdouble v0", "GLdouble v1", "GLdouble v2"],
 		"Versions": ["2.0", "2.1"],
-		"Extension": false,
+		"Extension": true,
 		"Reference": "http://www.opengl.org/sdk/docs/man2/xhtml/glVertexAttribPointer.xml"
 	},{
 		"Name": "glVertexAttrib4f",
 		"Returns": "void",
 		"Takes": ["GLuint index", "GLfloat v0", "GLfloat v1", "GLfloat v2", "GLfloat v3"],
 		"Versions": ["2.0", "2.1"],
-		"Extension": false,
+		"Extension": true,
 		"Reference": "http://www.opengl.org/sdk/docs/man2/xhtml/glVertexAttribPointer.xml"
 	},{
 		"Name": "glVertexAttrib4s",
 		"Returns": "void",
 		"Takes": ["GLuint index", "GLshort v0", "GLshort v1", "GLshort v2", "GLshort v3"],
 		"Versions": ["2.0", "2.1"],
-		"Extension": false,
+		"Extension": true,
 		"Reference": "http://www.opengl.org/sdk/docs/man2/xhtml/glVertexAttribPointer.xml"
 	},{
 		"Name": "glVertexAttrib4d",
 		"Returns": "void",
 		"Takes": ["GLuint index", "GLdouble v0", "GLdouble v1", "GLdouble v2", "GLdouble v3"],
 		"Versions": ["2.0", "2.1"],
-		"Extension": false,
+		"Extension": true,
 		"Reference": "http://www.opengl.org/sdk/docs/man2/xhtml/glVertexAttribPointer.xml"
 	},{
 		"Name": "glVertexAttrib4Nuv",
 		"Returns": "void",
 		"Takes": ["GLuint index", "GLubyte v0", "GLubyte v1", "GLubyte v2", "GLubyte v3"],
 		"Versions": ["2.0", "2.1"],
-		"Extension": false,
+		"Extension": true,
 		"Reference": "http://www.opengl.org/sdk/docs/man2/xhtml/glVertexAttribPointer.xml"
 	},{
 		"Name": "glVertexAttrib1fv",
 		"Returns": "void",
 		"Takes": ["GLuint index", "GLfloat* v"],
 		"Versions": ["2.0", "2.1"],
-		"Extension": false,
+		"Extension": true,
 		"Reference": "http://www.opengl.org/sdk/docs/man2/xhtml/glVertexAttribPointer.xml"
 	},{
 		"Name": "glVertexAttrib1sv",
 		"Returns": "void",
 		"Takes": ["GLuint index", "GLshort* v"],
 		"Versions": ["2.0", "2.1"],
-		"Extension": false,
+		"Extension": true,
 		"Reference": "http://www.opengl.org/sdk/docs/man2/xhtml/glVertexAttribPointer.xml"
 	},{
 		"Name": "glVertexAttrib1dv",
 		"Returns": "void",
 		"Takes": ["GLuint index", "GLdouble* v"],
 		"Versions": ["2.0", "2.1"],
-		"Extension": false,
+		"Extension": true,
 		"Reference": "http://www.opengl.org/sdk/docs/man2/xhtml/glVertexAttribPointer.xml"
 	},{
 		"Name": "glVertexAttrib2fv",
 		"Returns": "void",
 		"Takes": ["GLuint index", "GLfloat* v"],
 		"Versions": ["2.0", "2.1"],
-		"Extension": false,
+		"Extension": true,
 		"Reference": "http://www.opengl.org/sdk/docs/man2/xhtml/glVertexAttribPointer.xml"
 	},{
 		"Name": "glVertexAttrib2sv",
 		"Returns": "void",
 		"Takes": ["GLuint index", "GLshort* v"],
 		"Versions": ["2.0", "2.1"],
-		"Extension": false,
+		"Extension": true,
 		"Reference": "http://www.opengl.org/sdk/docs/man2/xhtml/glVertexAttribPointer.xml"
 	},{
 		"Name": "glVertexAttrib2dv",
 		"Returns": "void",
 		"Takes": ["GLuint index", "GLdouble* v"],
 		"Versions": ["2.0", "2.1"],
-		"Extension": false,
+		"Extension": true,
 		"Reference": "http://www.opengl.org/sdk/docs/man2/xhtml/glVertexAttribPointer.xml"
 	},{
 		"Name": "glVertexAttrib3fv",
 		"Returns": "void",
 		"Takes": ["GLuint index", "GLfloat* v"],
 		"Versions": ["2.0", "2.1"],
-		"Extension": false,
+		"Extension": true,
 		"Reference": "http://www.opengl.org/sdk/docs/man2/xhtml/glVertexAttribPointer.xml"
 	},{
 		"Name": "glVertexAttrib3sv",
 		"Returns": "void",
 		"Takes": ["GLuint index", "GLshort* v"],
 		"Versions": ["2.0", "2.1"],
-		"Extension": false,
+		"Extension": true,
 		"Reference": "http://www.opengl.org/sdk/docs/man2/xhtml/glVertexAttribPointer.xml"
 	},{
 		"Name": "glVertexAttrib3dv",
 		"Returns": "void",
 		"Takes": ["GLuint index", "GLdouble* v"],
 		"Versions": ["2.0", "2.1"],
-		"Extension": false,
+		"Extension": true,
 		"Reference": "http://www.opengl.org/sdk/docs/man2/xhtml/glVertexAttribPointer.xml"
 	},{
 		"Name": "glVertexAttrib4fv",
 		"Returns": "void",
 		"Takes": ["GLuint index", "GLfloat* v"],
 		"Versions": ["2.0", "2.1"],
-		"Extension": false,
+		"Extension": true,
 		"Reference": "http://www.opengl.org/sdk/docs/man2/xhtml/glVertexAttribPointer.xml"
 	},{
 		"Name": "glVertexAttrib4sv",
 		"Returns": "void",
 		"Takes": ["GLuint index", "GLshort* v"],
 		"Versions": ["2.0", "2.1"],
-		"Extension": false,
+		"Extension": true,
 		"Reference": "http://www.opengl.org/sdk/docs/man2/xhtml/glVertexAttribPointer.xml"
 	},{
 		"Name": "glVertexAttrib4dv",
 		"Returns": "void",
 		"Takes": ["GLuint index", "GLdouble* v"],
 		"Versions": ["2.0", "2.1"],
-		"Extension": false,
+		"Extension": true,
 		"Reference": "http://www.opengl.org/sdk/docs/man2/xhtml/glVertexAttribPointer.xml"
 	},{
 		"Name": "glVertexAttrib4iv",
 		"Returns": "void",
 		"Takes": ["GLuint index", "GLint* v"],
 		"Versions": ["2.0", "2.1"],
-		"Extension": false,
+		"Extension": true,
 		"Reference": "http://www.opengl.org/sdk/docs/man2/xhtml/glVertexAttribPointer.xml"
 	},{
 		"Name": "glVertexAttrib4bv",
 		"Returns": "void",
 		"Takes": ["GLuint index", "GLbyte* v"],
 		"Versions": ["2.0", "2.1"],
-		"Extension": false,
+		"Extension": true,
 		"Reference": "http://www.opengl.org/sdk/docs/man2/xhtml/glVertexAttribPointer.xml"
 	},{
 		"Name": "glVertexAttrib4ubv",
 		"Returns": "void",
 		"Takes": ["GLuint index", "GLubyte* v"],
 		"Versions": ["2.0", "2.1"],
-		"Extension": false,
+		"Extension": true,
 		"Reference": "http://www.opengl.org/sdk/docs/man2/xhtml/glVertexAttribPointer.xml"
 	},{
 		"Name": "glVertexAttrib4usv",
 		"Returns": "void",
 		"Takes": ["GLuint index", "GLushort* v"],
 		"Versions": ["2.0", "2.1"],
-		"Extension": false,
+		"Extension": true,
 		"Reference": "http://www.opengl.org/sdk/docs/man2/xhtml/glVertexAttribPointer.xml"
 	},{
 		"Name": "glVertexAttrib4uiv",
 		"Returns": "void",
 		"Takes": ["GLuint index", "GLuint* v"],
 		"Versions": ["2.0", "2.1"],
-		"Extension": false,
+		"Extension": true,
 		"Reference": "http://www.opengl.org/sdk/docs/man2/xhtml/glVertexAttribPointer.xml"
 	},{
 		"Name": "glVertexAttrib4Nbv",
 		"Returns": "void",
 		"Takes": ["GLuint index", "GLbyte* v"],
 		"Versions": ["2.0", "2.1"],
-		"Extension": false,
+		"Extension": true,
 		"Reference": "http://www.opengl.org/sdk/docs/man2/xhtml/glVertexAttribPointer.xml"
 	},{
 		"Name": "glVertexAttrib4Nsv",
 		"Returns": "void",
 		"Takes": ["GLuint index", "GLshort* v"],
 		"Versions": ["2.0", "2.1"],
-		"Extension": false,
+		"Extension": true,
 		"Reference": "http://www.opengl.org/sdk/docs/man2/xhtml/glVertexAttribPointer.xml"
 	},{
 		"Name": "glVertexAttrib4Niv",
 		"Returns": "void",
 		"Takes": ["GLuint index", "GLint* v"],
 		"Versions": ["2.0", "2.1"],
-		"Extension": false,
+		"Extension": true,
 		"Reference": "http://www.opengl.org/sdk/docs/man2/xhtml/glVertexAttribPointer.xml"
 	},{
 		"Name": "glVertexAttrib4Nubv",
 		"Returns": "void",
 		"Takes": ["GLuint index", "GLubyte* v"],
 		"Versions": ["2.0", "2.1"],
-		"Extension": false,
+		"Extension": true,
 		"Reference": "http://www.opengl.org/sdk/docs/man2/xhtml/glVertexAttribPointer.xml"
 	},{
 		"Name": "glVertexAttrib4Nusv",
 		"Returns": "void",
 		"Takes": ["GLuint index", "GLushort* v"],
 		"Versions": ["2.0", "2.1"],
-		"Extension": false,
+		"Extension": true,
 		"Reference": "http://www.opengl.org/sdk/docs/man2/xhtml/glVertexAttribPointer.xml"
 	},{
 		"Name": "glVertexAttrib4Nuiv",
 		"Returns": "void",
 		"Takes": ["GLuint index", "GLuint* v"],
 		"Versions": ["2.0", "2.1"],
-		"Extension": false,
+		"Extension": true,
 		"Reference": "http://www.opengl.org/sdk/docs/man2/xhtml/glVertexAttribPointer.xml"
 
 
@@ -8810,63 +8866,63 @@
 		"Returns": "void",
 		"Takes": ["GLint location", "GLsizei count", "GLboolean transpose", "GLfloat* value"],
 		"Versions": ["2.1"],
-		"Extension": false,
+		"Extension": true,
 		"Reference": "http://www.opengl.org/sdk/docs/man2/xhtml/glUniform.xml"
 	},{
 		"Name": "glUniformMatrix3fv",
 		"Returns": "void",
 		"Takes": ["GLint location", "GLsizei count", "GLboolean transpose", "GLfloat* value"],
 		"Versions": ["2.1"],
-		"Extension": false,
+		"Extension": true,
 		"Reference": "http://www.opengl.org/sdk/docs/man2/xhtml/glUniform.xml"
 	},{
 		"Name": "glUniformMatrix4fv",
 		"Returns": "void",
 		"Takes": ["GLint location", "GLsizei count", "GLboolean transpose", "GLfloat* value"],
 		"Versions": ["2.1"],
-		"Extension": false,
+		"Extension": true,
 		"Reference": "http://www.opengl.org/sdk/docs/man2/xhtml/glUniform.xml"
 	},{
 		"Name": "glUniformMatrix2x3fv",
 		"Returns": "void",
 		"Takes": ["GLint location", "GLsizei count", "GLboolean transpose", "GLfloat* value"],
 		"Versions": ["2.1"],
-		"Extension": false,
+		"Extension": true,
 		"Reference": "http://www.opengl.org/sdk/docs/man2/xhtml/glUniform.xml"
 	},{
 		"Name": "glUniformMatrix3x2fv",
 		"Returns": "void",
 		"Takes": ["GLint location", "GLsizei count", "GLboolean transpose", "GLfloat* value"],
 		"Versions": ["2.1"],
-		"Extension": false,
+		"Extension": true,
 		"Reference": "http://www.opengl.org/sdk/docs/man2/xhtml/glUniform.xml"
 	},{
 		"Name": "glUniformMatrix2x4fv",
 		"Returns": "void",
 		"Takes": ["GLint location", "GLsizei count", "GLboolean transpose", "GLfloat* value"],
 		"Versions": ["2.1"],
-		"Extension": false,
+		"Extension": true,
 		"Reference": "http://www.opengl.org/sdk/docs/man2/xhtml/glUniform.xml"
 	},{
 		"Name": "glUniformMatrix4x2fv",
 		"Returns": "void",
 		"Takes": ["GLint location", "GLsizei count", "GLboolean transpose", "GLfloat* value"],
 		"Versions": ["2.1"],
-		"Extension": false,
+		"Extension": true,
 		"Reference": "http://www.opengl.org/sdk/docs/man2/xhtml/glUniform.xml"
 	},{
 		"Name": "glUniformMatrix3x4fv",
 		"Returns": "void",
 		"Takes": ["GLint location", "GLsizei count", "GLboolean transpose", "GLfloat* value"],
 		"Versions": ["2.1"],
-		"Extension": false,
+		"Extension": true,
 		"Reference": "http://www.opengl.org/sdk/docs/man2/xhtml/glUniform.xml"
 	},{
 		"Name": "glUniformMatrix4x3fv",
 		"Returns": "void",
 		"Takes": ["GLint location", "GLsizei count", "GLboolean transpose", "GLfloat* value"],
 		"Versions": ["2.1"],
-		"Extension": false,
+		"Extension": true,
 		"Reference": "http://www.opengl.org/sdk/docs/man2/xhtml/glUniform.xml"
 
 

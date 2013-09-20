@@ -1,3 +1,6 @@
+// Copyright 2012 Lightpoke. All rights reserved.
+// This source code is subject to the terms and
+// conditions defined in the "License.txt" file.
 
 #include <stdbool.h>
 #include <stdlib.h>
@@ -1335,322 +1338,6 @@ void gl20VertexPointer(gl20Context* glc, GLint size, GLenum type, GLsizei stride
     return glc->fnVertexPointer(size, type, stride, pointer);
 }
 
-void gl20DrawBuffers(gl20Context* glc, GLsizei n, GLenum* bufs) {
-    return glc->fnDrawBuffers(n, bufs);
-}
-
-void gl20GetActiveAttrib(gl20Context* glc, GLuint program, GLuint index, GLsizei bufSize, GLsizei* length, GLint* size, GLenum* type, GLchar* name) {
-    return glc->fnGetActiveAttrib(program, index, bufSize, length, size, type, name);
-}
-
-void gl20GetActiveUniform(gl20Context* glc, GLuint program, GLuint index, GLsizei bufSize, GLsizei* length, GLint* size, GLenum* type, GLchar* name) {
-    return glc->fnGetActiveUniform(program, index, bufSize, length, size, type, name);
-}
-
-void gl20GetAttachedShaders(gl20Context* glc, GLuint program, GLsizei maxCount, GLsizei* count, GLuint* shaders) {
-    return glc->fnGetAttachedShaders(program, maxCount, count, shaders);
-}
-
-GLint gl20GetAttribLocation(gl20Context* glc, GLuint program, GLchar* name) {
-    return glc->fnGetAttribLocation(program, name);
-}
-
-void gl20GetProgramiv(gl20Context* glc, GLuint program, GLenum pname, GLint* params) {
-    return glc->fnGetProgramiv(program, pname, params);
-}
-
-void gl20GetProgramInfoLog(gl20Context* glc, GLuint program, GLsizei maxLength, GLsizei* length, GLchar* infoLog) {
-    return glc->fnGetProgramInfoLog(program, maxLength, length, infoLog);
-}
-
-void gl20GetShaderiv(gl20Context* glc, GLuint program, GLenum pname, GLint* params) {
-    return glc->fnGetShaderiv(program, pname, params);
-}
-
-void gl20GetShaderInfoLog(gl20Context* glc, GLuint shader, GLsizei maxLength, GLsizei* length, GLchar* infoLog) {
-    return glc->fnGetShaderInfoLog(shader, maxLength, length, infoLog);
-}
-
-void gl20GetShaderSource(gl20Context* glc, GLuint shader, GLsizei bufSize, GLsizei* length, GLchar* source) {
-    return glc->fnGetShaderSource(shader, bufSize, length, source);
-}
-
-void gl20GetUniformfv(gl20Context* glc, GLuint program, GLint location, GLfloat* params) {
-    return glc->fnGetUniformfv(program, location, params);
-}
-
-void gl20GetUniformiv(gl20Context* glc, GLuint program, GLint location, GLint* params) {
-    return glc->fnGetUniformiv(program, location, params);
-}
-
-GLint gl20GetUniformLocation(gl20Context* glc, GLuint program, GLchar* name) {
-    return glc->fnGetUniformLocation(program, name);
-}
-
-void gl20GetVertexAttribdv(gl20Context* glc, GLuint index, GLenum pname, GLdouble* params) {
-    return glc->fnGetVertexAttribdv(index, pname, params);
-}
-
-void gl20GetVertexAttribfv(gl20Context* glc, GLuint index, GLenum pname, GLfloat* params) {
-    return glc->fnGetVertexAttribfv(index, pname, params);
-}
-
-void gl20GetVertexAttribiv(gl20Context* glc, GLuint index, GLenum pname, GLint* params) {
-    return glc->fnGetVertexAttribiv(index, pname, params);
-}
-
-void gl20GetVertexAttribPointerv(gl20Context* glc, GLuint index, GLenum pname, GLvoid* pointer) {
-    return glc->fnGetVertexAttribPointerv(index, pname, pointer);
-}
-
-GLboolean gl20IsProgram(gl20Context* glc, GLuint program) {
-    return glc->fnIsProgram(program);
-}
-
-GLboolean gl20IsShader(gl20Context* glc, GLuint shader) {
-    return glc->fnIsShader(shader);
-}
-
-void gl20LinkProgram(gl20Context* glc, GLuint program) {
-    return glc->fnLinkProgram(program);
-}
-
-void gl20ShaderSource(gl20Context* glc, GLuint shader, GLsizei count, GLchar** string, GLint* length) {
-    return glc->fnShaderSource(shader, count, string, length);
-}
-
-void gl20StencilFuncSeparate(gl20Context* glc, GLenum face, GLenum func, GLint ref, GLuint mask) {
-    return glc->fnStencilFuncSeparate(face, func, ref, mask);
-}
-
-void gl20StencilMaskSeparate(gl20Context* glc, GLenum face, GLuint mask) {
-    return glc->fnStencilMaskSeparate(face, mask);
-}
-
-void gl20StencilOpSeparate(gl20Context* glc, GLenum face, GLenum sfail, GLenum dpfail, GLenum dppass) {
-    return glc->fnStencilOpSeparate(face, sfail, dpfail, dppass);
-}
-
-void gl20Uniform1f(gl20Context* glc, GLint location, GLfloat v0) {
-    return glc->fnUniform1f(location, v0);
-}
-
-void gl20Uniform2f(gl20Context* glc, GLint location, GLfloat v0, GLfloat v1) {
-    return glc->fnUniform2f(location, v0, v1);
-}
-
-void gl20Uniform3f(gl20Context* glc, GLint location, GLfloat v0, GLfloat v1, GLfloat v2) {
-    return glc->fnUniform3f(location, v0, v1, v2);
-}
-
-void gl20Uniform4f(gl20Context* glc, GLint location, GLfloat v0, GLfloat v1, GLfloat v2, GLfloat v3) {
-    return glc->fnUniform4f(location, v0, v1, v2, v3);
-}
-
-void gl20Uniform1i(gl20Context* glc, GLint location, GLint v0) {
-    return glc->fnUniform1i(location, v0);
-}
-
-void gl20Uniform2i(gl20Context* glc, GLint location, GLint v0, GLint v1) {
-    return glc->fnUniform2i(location, v0, v1);
-}
-
-void gl20Uniform3i(gl20Context* glc, GLint location, GLint v0, GLint v1, GLint v2) {
-    return glc->fnUniform3i(location, v0, v1, v2);
-}
-
-void gl20Uniform4i(gl20Context* glc, GLint location, GLint v0, GLint v1, GLint v2, GLint v3) {
-    return glc->fnUniform4i(location, v0, v1, v2, v3);
-}
-
-void gl20Uniform1fv(gl20Context* glc, GLint location, GLsizei count, GLfloat* value) {
-    return glc->fnUniform1fv(location, count, value);
-}
-
-void gl20Uniform2fv(gl20Context* glc, GLint location, GLsizei count, GLfloat* value) {
-    return glc->fnUniform2fv(location, count, value);
-}
-
-void gl20Uniform3fv(gl20Context* glc, GLint location, GLsizei count, GLfloat* value) {
-    return glc->fnUniform3fv(location, count, value);
-}
-
-void gl20Uniform4fv(gl20Context* glc, GLint location, GLsizei count, GLfloat* value) {
-    return glc->fnUniform4fv(location, count, value);
-}
-
-void gl20Uniform1iv(gl20Context* glc, GLint location, GLsizei count, GLint* value) {
-    return glc->fnUniform1iv(location, count, value);
-}
-
-void gl20Uniform2iv(gl20Context* glc, GLint location, GLsizei count, GLint* value) {
-    return glc->fnUniform2iv(location, count, value);
-}
-
-void gl20Uniform3iv(gl20Context* glc, GLint location, GLsizei count, GLint* value) {
-    return glc->fnUniform3iv(location, count, value);
-}
-
-void gl20Uniform4iv(gl20Context* glc, GLint location, GLsizei count, GLint* value) {
-    return glc->fnUniform4iv(location, count, value);
-}
-
-void gl20UseProgram(gl20Context* glc, GLuint program) {
-    return glc->fnUseProgram(program);
-}
-
-void gl20ValidateProgram(gl20Context* glc, GLuint program) {
-    return glc->fnValidateProgram(program);
-}
-
-void gl20VertexAttribPointer(gl20Context* glc, GLuint index, GLint size, GLenum type, GLboolean normalized, GLsizei stride, GLvoid* pointer) {
-    return glc->fnVertexAttribPointer(index, size, type, normalized, stride, pointer);
-}
-
-void gl20VertexAttrib1f(gl20Context* glc, GLuint index, GLfloat v0) {
-    return glc->fnVertexAttrib1f(index, v0);
-}
-
-void gl20VertexAttrib1s(gl20Context* glc, GLuint index, GLshort v0) {
-    return glc->fnVertexAttrib1s(index, v0);
-}
-
-void gl20VertexAttrib1d(gl20Context* glc, GLuint index, GLdouble v0) {
-    return glc->fnVertexAttrib1d(index, v0);
-}
-
-void gl20VertexAttrib2f(gl20Context* glc, GLuint index, GLfloat v0, GLfloat v1) {
-    return glc->fnVertexAttrib2f(index, v0, v1);
-}
-
-void gl20VertexAttrib2s(gl20Context* glc, GLuint index, GLshort v0, GLshort v1) {
-    return glc->fnVertexAttrib2s(index, v0, v1);
-}
-
-void gl20VertexAttrib2d(gl20Context* glc, GLuint index, GLdouble v0, GLdouble v1) {
-    return glc->fnVertexAttrib2d(index, v0, v1);
-}
-
-void gl20VertexAttrib3f(gl20Context* glc, GLuint index, GLfloat v0, GLfloat v1, GLfloat v2) {
-    return glc->fnVertexAttrib3f(index, v0, v1, v2);
-}
-
-void gl20VertexAttrib3s(gl20Context* glc, GLuint index, GLshort v0, GLshort v1, GLshort v2) {
-    return glc->fnVertexAttrib3s(index, v0, v1, v2);
-}
-
-void gl20VertexAttrib3d(gl20Context* glc, GLuint index, GLdouble v0, GLdouble v1, GLdouble v2) {
-    return glc->fnVertexAttrib3d(index, v0, v1, v2);
-}
-
-void gl20VertexAttrib4f(gl20Context* glc, GLuint index, GLfloat v0, GLfloat v1, GLfloat v2, GLfloat v3) {
-    return glc->fnVertexAttrib4f(index, v0, v1, v2, v3);
-}
-
-void gl20VertexAttrib4s(gl20Context* glc, GLuint index, GLshort v0, GLshort v1, GLshort v2, GLshort v3) {
-    return glc->fnVertexAttrib4s(index, v0, v1, v2, v3);
-}
-
-void gl20VertexAttrib4d(gl20Context* glc, GLuint index, GLdouble v0, GLdouble v1, GLdouble v2, GLdouble v3) {
-    return glc->fnVertexAttrib4d(index, v0, v1, v2, v3);
-}
-
-void gl20VertexAttrib4Nuv(gl20Context* glc, GLuint index, GLubyte v0, GLubyte v1, GLubyte v2, GLubyte v3) {
-    return glc->fnVertexAttrib4Nuv(index, v0, v1, v2, v3);
-}
-
-void gl20VertexAttrib1fv(gl20Context* glc, GLuint index, GLfloat* v) {
-    return glc->fnVertexAttrib1fv(index, v);
-}
-
-void gl20VertexAttrib1sv(gl20Context* glc, GLuint index, GLshort* v) {
-    return glc->fnVertexAttrib1sv(index, v);
-}
-
-void gl20VertexAttrib1dv(gl20Context* glc, GLuint index, GLdouble* v) {
-    return glc->fnVertexAttrib1dv(index, v);
-}
-
-void gl20VertexAttrib2fv(gl20Context* glc, GLuint index, GLfloat* v) {
-    return glc->fnVertexAttrib2fv(index, v);
-}
-
-void gl20VertexAttrib2sv(gl20Context* glc, GLuint index, GLshort* v) {
-    return glc->fnVertexAttrib2sv(index, v);
-}
-
-void gl20VertexAttrib2dv(gl20Context* glc, GLuint index, GLdouble* v) {
-    return glc->fnVertexAttrib2dv(index, v);
-}
-
-void gl20VertexAttrib3fv(gl20Context* glc, GLuint index, GLfloat* v) {
-    return glc->fnVertexAttrib3fv(index, v);
-}
-
-void gl20VertexAttrib3sv(gl20Context* glc, GLuint index, GLshort* v) {
-    return glc->fnVertexAttrib3sv(index, v);
-}
-
-void gl20VertexAttrib3dv(gl20Context* glc, GLuint index, GLdouble* v) {
-    return glc->fnVertexAttrib3dv(index, v);
-}
-
-void gl20VertexAttrib4fv(gl20Context* glc, GLuint index, GLfloat* v) {
-    return glc->fnVertexAttrib4fv(index, v);
-}
-
-void gl20VertexAttrib4sv(gl20Context* glc, GLuint index, GLshort* v) {
-    return glc->fnVertexAttrib4sv(index, v);
-}
-
-void gl20VertexAttrib4dv(gl20Context* glc, GLuint index, GLdouble* v) {
-    return glc->fnVertexAttrib4dv(index, v);
-}
-
-void gl20VertexAttrib4iv(gl20Context* glc, GLuint index, GLint* v) {
-    return glc->fnVertexAttrib4iv(index, v);
-}
-
-void gl20VertexAttrib4bv(gl20Context* glc, GLuint index, GLbyte* v) {
-    return glc->fnVertexAttrib4bv(index, v);
-}
-
-void gl20VertexAttrib4ubv(gl20Context* glc, GLuint index, GLubyte* v) {
-    return glc->fnVertexAttrib4ubv(index, v);
-}
-
-void gl20VertexAttrib4usv(gl20Context* glc, GLuint index, GLushort* v) {
-    return glc->fnVertexAttrib4usv(index, v);
-}
-
-void gl20VertexAttrib4uiv(gl20Context* glc, GLuint index, GLuint* v) {
-    return glc->fnVertexAttrib4uiv(index, v);
-}
-
-void gl20VertexAttrib4Nbv(gl20Context* glc, GLuint index, GLbyte* v) {
-    return glc->fnVertexAttrib4Nbv(index, v);
-}
-
-void gl20VertexAttrib4Nsv(gl20Context* glc, GLuint index, GLshort* v) {
-    return glc->fnVertexAttrib4Nsv(index, v);
-}
-
-void gl20VertexAttrib4Niv(gl20Context* glc, GLuint index, GLint* v) {
-    return glc->fnVertexAttrib4Niv(index, v);
-}
-
-void gl20VertexAttrib4Nubv(gl20Context* glc, GLuint index, GLubyte* v) {
-    return glc->fnVertexAttrib4Nubv(index, v);
-}
-
-void gl20VertexAttrib4Nusv(gl20Context* glc, GLuint index, GLushort* v) {
-    return glc->fnVertexAttrib4Nusv(index, v);
-}
-
-void gl20VertexAttrib4Nuiv(gl20Context* glc, GLuint index, GLuint* v) {
-    return glc->fnVertexAttrib4Nuiv(index, v);
-}
-
 void gl20ColorTable(gl20Context* glc, GLenum target, GLenum internalformat, GLsizei width, GLenum format, GLenum type, GLvoid* data) {
     return glc->fnColorTable(target, internalformat, width, format, type, data);
 }
@@ -2247,6 +1934,354 @@ void gl20DisableVertexAttribArray(gl20Context* glc, GLuint index) {
     return glc->fnDisableVertexAttribArray(index);
 }
 
+void gl20DrawBuffers(gl20Context* glc, GLsizei n, GLenum* bufs) {
+    return glc->fnDrawBuffers(n, bufs);
+}
+
+void gl20GetActiveAttrib(gl20Context* glc, GLuint program, GLuint index, GLsizei bufSize, GLsizei* length, GLint* size, GLenum* type, GLchar* name) {
+    return glc->fnGetActiveAttrib(program, index, bufSize, length, size, type, name);
+}
+
+void gl20GetActiveUniform(gl20Context* glc, GLuint program, GLuint index, GLsizei bufSize, GLsizei* length, GLint* size, GLenum* type, GLchar* name) {
+    return glc->fnGetActiveUniform(program, index, bufSize, length, size, type, name);
+}
+
+void gl20GetAttachedShaders(gl20Context* glc, GLuint program, GLsizei maxCount, GLsizei* count, GLuint* shaders) {
+    return glc->fnGetAttachedShaders(program, maxCount, count, shaders);
+}
+
+GLint gl20GetAttribLocation(gl20Context* glc, GLuint program, GLchar* name) {
+    return glc->fnGetAttribLocation(program, name);
+}
+
+void gl20GetProgramiv(gl20Context* glc, GLuint program, GLenum pname, GLint* params) {
+    return glc->fnGetProgramiv(program, pname, params);
+}
+
+void gl20GetProgramInfoLog(gl20Context* glc, GLuint program, GLsizei maxLength, GLsizei* length, GLchar* infoLog) {
+    return glc->fnGetProgramInfoLog(program, maxLength, length, infoLog);
+}
+
+void gl20GetShaderiv(gl20Context* glc, GLuint program, GLenum pname, GLint* params) {
+    return glc->fnGetShaderiv(program, pname, params);
+}
+
+void gl20GetShaderInfoLog(gl20Context* glc, GLuint shader, GLsizei maxLength, GLsizei* length, GLchar* infoLog) {
+    return glc->fnGetShaderInfoLog(shader, maxLength, length, infoLog);
+}
+
+void gl20GetShaderSource(gl20Context* glc, GLuint shader, GLsizei bufSize, GLsizei* length, GLchar* source) {
+    return glc->fnGetShaderSource(shader, bufSize, length, source);
+}
+
+void gl20GetUniformfv(gl20Context* glc, GLuint program, GLint location, GLfloat* params) {
+    return glc->fnGetUniformfv(program, location, params);
+}
+
+void gl20GetUniformiv(gl20Context* glc, GLuint program, GLint location, GLint* params) {
+    return glc->fnGetUniformiv(program, location, params);
+}
+
+GLint gl20GetUniformLocation(gl20Context* glc, GLuint program, GLchar* name) {
+    return glc->fnGetUniformLocation(program, name);
+}
+
+void gl20GetVertexAttribdv(gl20Context* glc, GLuint index, GLenum pname, GLdouble* params) {
+    return glc->fnGetVertexAttribdv(index, pname, params);
+}
+
+void gl20GetVertexAttribfv(gl20Context* glc, GLuint index, GLenum pname, GLfloat* params) {
+    return glc->fnGetVertexAttribfv(index, pname, params);
+}
+
+void gl20GetVertexAttribiv(gl20Context* glc, GLuint index, GLenum pname, GLint* params) {
+    return glc->fnGetVertexAttribiv(index, pname, params);
+}
+
+void gl20GetVertexAttribPointerv(gl20Context* glc, GLuint index, GLenum pname, GLvoid* pointer) {
+    return glc->fnGetVertexAttribPointerv(index, pname, pointer);
+}
+
+GLboolean gl20IsProgram(gl20Context* glc, GLuint program) {
+    return glc->fnIsProgram(program);
+}
+
+GLboolean gl20IsShader(gl20Context* glc, GLuint shader) {
+    return glc->fnIsShader(shader);
+}
+
+void gl20LinkProgram(gl20Context* glc, GLuint program) {
+    return glc->fnLinkProgram(program);
+}
+
+void gl20ShaderSource(gl20Context* glc, GLuint shader, GLsizei count, GLchar** string, GLint* length) {
+    return glc->fnShaderSource(shader, count, string, length);
+}
+
+void gl20StencilFuncSeparate(gl20Context* glc, GLenum face, GLenum func, GLint ref, GLuint mask) {
+    return glc->fnStencilFuncSeparate(face, func, ref, mask);
+}
+
+void gl20StencilMaskSeparate(gl20Context* glc, GLenum face, GLuint mask) {
+    return glc->fnStencilMaskSeparate(face, mask);
+}
+
+void gl20StencilOpSeparate(gl20Context* glc, GLenum face, GLenum sfail, GLenum dpfail, GLenum dppass) {
+    return glc->fnStencilOpSeparate(face, sfail, dpfail, dppass);
+}
+
+void gl20Uniform1f(gl20Context* glc, GLint location, GLfloat v0) {
+    return glc->fnUniform1f(location, v0);
+}
+
+void gl20Uniform2f(gl20Context* glc, GLint location, GLfloat v0, GLfloat v1) {
+    return glc->fnUniform2f(location, v0, v1);
+}
+
+void gl20Uniform3f(gl20Context* glc, GLint location, GLfloat v0, GLfloat v1, GLfloat v2) {
+    return glc->fnUniform3f(location, v0, v1, v2);
+}
+
+void gl20Uniform4f(gl20Context* glc, GLint location, GLfloat v0, GLfloat v1, GLfloat v2, GLfloat v3) {
+    return glc->fnUniform4f(location, v0, v1, v2, v3);
+}
+
+void gl20Uniform1i(gl20Context* glc, GLint location, GLint v0) {
+    return glc->fnUniform1i(location, v0);
+}
+
+void gl20Uniform2i(gl20Context* glc, GLint location, GLint v0, GLint v1) {
+    return glc->fnUniform2i(location, v0, v1);
+}
+
+void gl20Uniform3i(gl20Context* glc, GLint location, GLint v0, GLint v1, GLint v2) {
+    return glc->fnUniform3i(location, v0, v1, v2);
+}
+
+void gl20Uniform4i(gl20Context* glc, GLint location, GLint v0, GLint v1, GLint v2, GLint v3) {
+    return glc->fnUniform4i(location, v0, v1, v2, v3);
+}
+
+void gl20Uniform1ui(gl20Context* glc, GLint location, GLuint v0) {
+    return glc->fnUniform1ui(location, v0);
+}
+
+void gl20Uniform2ui(gl20Context* glc, GLint location, GLuint v0, GLuint v1) {
+    return glc->fnUniform2ui(location, v0, v1);
+}
+
+void gl20Uniform3ui(gl20Context* glc, GLint location, GLuint v0, GLuint v1, GLuint v2) {
+    return glc->fnUniform3ui(location, v0, v1, v2);
+}
+
+void gl20Uniform4ui(gl20Context* glc, GLint location, GLuint v0, GLuint v1, GLuint v2, GLuint v3) {
+    return glc->fnUniform4ui(location, v0, v1, v2, v3);
+}
+
+void gl20Uniform1fv(gl20Context* glc, GLint location, GLsizei count, GLfloat* value) {
+    return glc->fnUniform1fv(location, count, value);
+}
+
+void gl20Uniform2fv(gl20Context* glc, GLint location, GLsizei count, GLfloat* value) {
+    return glc->fnUniform2fv(location, count, value);
+}
+
+void gl20Uniform3fv(gl20Context* glc, GLint location, GLsizei count, GLfloat* value) {
+    return glc->fnUniform3fv(location, count, value);
+}
+
+void gl20Uniform4fv(gl20Context* glc, GLint location, GLsizei count, GLfloat* value) {
+    return glc->fnUniform4fv(location, count, value);
+}
+
+void gl20Uniform1iv(gl20Context* glc, GLint location, GLsizei count, GLint* value) {
+    return glc->fnUniform1iv(location, count, value);
+}
+
+void gl20Uniform2iv(gl20Context* glc, GLint location, GLsizei count, GLint* value) {
+    return glc->fnUniform2iv(location, count, value);
+}
+
+void gl20Uniform3iv(gl20Context* glc, GLint location, GLsizei count, GLint* value) {
+    return glc->fnUniform3iv(location, count, value);
+}
+
+void gl20Uniform4iv(gl20Context* glc, GLint location, GLsizei count, GLint* value) {
+    return glc->fnUniform4iv(location, count, value);
+}
+
+void gl20Uniform1uiv(gl20Context* glc, GLint location, GLsizei count, GLuint* value) {
+    return glc->fnUniform1uiv(location, count, value);
+}
+
+void gl20Uniform2uiv(gl20Context* glc, GLint location, GLsizei count, GLuint* value) {
+    return glc->fnUniform2uiv(location, count, value);
+}
+
+void gl20Uniform3uiv(gl20Context* glc, GLint location, GLsizei count, GLuint* value) {
+    return glc->fnUniform3uiv(location, count, value);
+}
+
+void gl20Uniform4uiv(gl20Context* glc, GLint location, GLsizei count, GLuint* value) {
+    return glc->fnUniform4uiv(location, count, value);
+}
+
+void gl20UseProgram(gl20Context* glc, GLuint program) {
+    return glc->fnUseProgram(program);
+}
+
+void gl20ValidateProgram(gl20Context* glc, GLuint program) {
+    return glc->fnValidateProgram(program);
+}
+
+void gl20VertexAttribPointer(gl20Context* glc, GLuint index, GLint size, GLenum type, GLboolean normalized, GLsizei stride, GLvoid* pointer) {
+    return glc->fnVertexAttribPointer(index, size, type, normalized, stride, pointer);
+}
+
+void gl20VertexAttrib1f(gl20Context* glc, GLuint index, GLfloat v0) {
+    return glc->fnVertexAttrib1f(index, v0);
+}
+
+void gl20VertexAttrib1s(gl20Context* glc, GLuint index, GLshort v0) {
+    return glc->fnVertexAttrib1s(index, v0);
+}
+
+void gl20VertexAttrib1d(gl20Context* glc, GLuint index, GLdouble v0) {
+    return glc->fnVertexAttrib1d(index, v0);
+}
+
+void gl20VertexAttrib2f(gl20Context* glc, GLuint index, GLfloat v0, GLfloat v1) {
+    return glc->fnVertexAttrib2f(index, v0, v1);
+}
+
+void gl20VertexAttrib2s(gl20Context* glc, GLuint index, GLshort v0, GLshort v1) {
+    return glc->fnVertexAttrib2s(index, v0, v1);
+}
+
+void gl20VertexAttrib2d(gl20Context* glc, GLuint index, GLdouble v0, GLdouble v1) {
+    return glc->fnVertexAttrib2d(index, v0, v1);
+}
+
+void gl20VertexAttrib3f(gl20Context* glc, GLuint index, GLfloat v0, GLfloat v1, GLfloat v2) {
+    return glc->fnVertexAttrib3f(index, v0, v1, v2);
+}
+
+void gl20VertexAttrib3s(gl20Context* glc, GLuint index, GLshort v0, GLshort v1, GLshort v2) {
+    return glc->fnVertexAttrib3s(index, v0, v1, v2);
+}
+
+void gl20VertexAttrib3d(gl20Context* glc, GLuint index, GLdouble v0, GLdouble v1, GLdouble v2) {
+    return glc->fnVertexAttrib3d(index, v0, v1, v2);
+}
+
+void gl20VertexAttrib4f(gl20Context* glc, GLuint index, GLfloat v0, GLfloat v1, GLfloat v2, GLfloat v3) {
+    return glc->fnVertexAttrib4f(index, v0, v1, v2, v3);
+}
+
+void gl20VertexAttrib4s(gl20Context* glc, GLuint index, GLshort v0, GLshort v1, GLshort v2, GLshort v3) {
+    return glc->fnVertexAttrib4s(index, v0, v1, v2, v3);
+}
+
+void gl20VertexAttrib4d(gl20Context* glc, GLuint index, GLdouble v0, GLdouble v1, GLdouble v2, GLdouble v3) {
+    return glc->fnVertexAttrib4d(index, v0, v1, v2, v3);
+}
+
+void gl20VertexAttrib4Nuv(gl20Context* glc, GLuint index, GLubyte v0, GLubyte v1, GLubyte v2, GLubyte v3) {
+    return glc->fnVertexAttrib4Nuv(index, v0, v1, v2, v3);
+}
+
+void gl20VertexAttrib1fv(gl20Context* glc, GLuint index, GLfloat* v) {
+    return glc->fnVertexAttrib1fv(index, v);
+}
+
+void gl20VertexAttrib1sv(gl20Context* glc, GLuint index, GLshort* v) {
+    return glc->fnVertexAttrib1sv(index, v);
+}
+
+void gl20VertexAttrib1dv(gl20Context* glc, GLuint index, GLdouble* v) {
+    return glc->fnVertexAttrib1dv(index, v);
+}
+
+void gl20VertexAttrib2fv(gl20Context* glc, GLuint index, GLfloat* v) {
+    return glc->fnVertexAttrib2fv(index, v);
+}
+
+void gl20VertexAttrib2sv(gl20Context* glc, GLuint index, GLshort* v) {
+    return glc->fnVertexAttrib2sv(index, v);
+}
+
+void gl20VertexAttrib2dv(gl20Context* glc, GLuint index, GLdouble* v) {
+    return glc->fnVertexAttrib2dv(index, v);
+}
+
+void gl20VertexAttrib3fv(gl20Context* glc, GLuint index, GLfloat* v) {
+    return glc->fnVertexAttrib3fv(index, v);
+}
+
+void gl20VertexAttrib3sv(gl20Context* glc, GLuint index, GLshort* v) {
+    return glc->fnVertexAttrib3sv(index, v);
+}
+
+void gl20VertexAttrib3dv(gl20Context* glc, GLuint index, GLdouble* v) {
+    return glc->fnVertexAttrib3dv(index, v);
+}
+
+void gl20VertexAttrib4fv(gl20Context* glc, GLuint index, GLfloat* v) {
+    return glc->fnVertexAttrib4fv(index, v);
+}
+
+void gl20VertexAttrib4sv(gl20Context* glc, GLuint index, GLshort* v) {
+    return glc->fnVertexAttrib4sv(index, v);
+}
+
+void gl20VertexAttrib4dv(gl20Context* glc, GLuint index, GLdouble* v) {
+    return glc->fnVertexAttrib4dv(index, v);
+}
+
+void gl20VertexAttrib4iv(gl20Context* glc, GLuint index, GLint* v) {
+    return glc->fnVertexAttrib4iv(index, v);
+}
+
+void gl20VertexAttrib4bv(gl20Context* glc, GLuint index, GLbyte* v) {
+    return glc->fnVertexAttrib4bv(index, v);
+}
+
+void gl20VertexAttrib4ubv(gl20Context* glc, GLuint index, GLubyte* v) {
+    return glc->fnVertexAttrib4ubv(index, v);
+}
+
+void gl20VertexAttrib4usv(gl20Context* glc, GLuint index, GLushort* v) {
+    return glc->fnVertexAttrib4usv(index, v);
+}
+
+void gl20VertexAttrib4uiv(gl20Context* glc, GLuint index, GLuint* v) {
+    return glc->fnVertexAttrib4uiv(index, v);
+}
+
+void gl20VertexAttrib4Nbv(gl20Context* glc, GLuint index, GLbyte* v) {
+    return glc->fnVertexAttrib4Nbv(index, v);
+}
+
+void gl20VertexAttrib4Nsv(gl20Context* glc, GLuint index, GLshort* v) {
+    return glc->fnVertexAttrib4Nsv(index, v);
+}
+
+void gl20VertexAttrib4Niv(gl20Context* glc, GLuint index, GLint* v) {
+    return glc->fnVertexAttrib4Niv(index, v);
+}
+
+void gl20VertexAttrib4Nubv(gl20Context* glc, GLuint index, GLubyte* v) {
+    return glc->fnVertexAttrib4Nubv(index, v);
+}
+
+void gl20VertexAttrib4Nusv(gl20Context* glc, GLuint index, GLushort* v) {
+    return glc->fnVertexAttrib4Nusv(index, v);
+}
+
+void gl20VertexAttrib4Nuiv(gl20Context* glc, GLuint index, GLuint* v) {
+    return glc->fnVertexAttrib4Nuiv(index, v);
+}
+
 void gl20UniformMatrix2fv(gl20Context* glc, GLint location, GLsizei count, GLboolean transpose, GLfloat* value) {
     return glc->fnUniformMatrix2fv(location, count, transpose, value);
 }
@@ -2613,85 +2648,6 @@ gl20Context* gl20NewContext() {
     glc->fnTexSubImage1D = (gl20PTexSubImage1D)gl20LibGetProcAddress("glTexSubImage1D");
     glc->fnTexSubImage2D = (gl20PTexSubImage2D)gl20LibGetProcAddress("glTexSubImage2D");
     glc->fnVertexPointer = (gl20PVertexPointer)gl20LibGetProcAddress("glVertexPointer");
-    glc->fnDrawBuffers = (gl20PDrawBuffers)gl20LibGetProcAddress("glDrawBuffers");
-    glc->fnGetActiveAttrib = (gl20PGetActiveAttrib)gl20LibGetProcAddress("glGetActiveAttrib");
-    glc->fnGetActiveUniform = (gl20PGetActiveUniform)gl20LibGetProcAddress("glGetActiveUniform");
-    glc->fnGetAttachedShaders = (gl20PGetAttachedShaders)gl20LibGetProcAddress("glGetAttachedShaders");
-    glc->fnGetAttribLocation = (gl20PGetAttribLocation)gl20LibGetProcAddress("glGetAttribLocation");
-    glc->fnGetProgramiv = (gl20PGetProgramiv)gl20LibGetProcAddress("glGetProgramiv");
-    glc->fnGetProgramInfoLog = (gl20PGetProgramInfoLog)gl20LibGetProcAddress("glGetProgramInfoLog");
-    glc->fnGetShaderiv = (gl20PGetShaderiv)gl20LibGetProcAddress("glGetShaderiv");
-    glc->fnGetShaderInfoLog = (gl20PGetShaderInfoLog)gl20LibGetProcAddress("glGetShaderInfoLog");
-    glc->fnGetShaderSource = (gl20PGetShaderSource)gl20LibGetProcAddress("glGetShaderSource");
-    glc->fnGetUniformfv = (gl20PGetUniformfv)gl20LibGetProcAddress("glGetUniformfv");
-    glc->fnGetUniformiv = (gl20PGetUniformiv)gl20LibGetProcAddress("glGetUniformiv");
-    glc->fnGetUniformLocation = (gl20PGetUniformLocation)gl20LibGetProcAddress("glGetUniformLocation");
-    glc->fnGetVertexAttribdv = (gl20PGetVertexAttribdv)gl20LibGetProcAddress("glGetVertexAttribdv");
-    glc->fnGetVertexAttribfv = (gl20PGetVertexAttribfv)gl20LibGetProcAddress("glGetVertexAttribfv");
-    glc->fnGetVertexAttribiv = (gl20PGetVertexAttribiv)gl20LibGetProcAddress("glGetVertexAttribiv");
-    glc->fnGetVertexAttribPointerv = (gl20PGetVertexAttribPointerv)gl20LibGetProcAddress("glGetVertexAttribPointerv");
-    glc->fnIsProgram = (gl20PIsProgram)gl20LibGetProcAddress("glIsProgram");
-    glc->fnIsShader = (gl20PIsShader)gl20LibGetProcAddress("glIsShader");
-    glc->fnLinkProgram = (gl20PLinkProgram)gl20LibGetProcAddress("glLinkProgram");
-    glc->fnShaderSource = (gl20PShaderSource)gl20LibGetProcAddress("glShaderSource");
-    glc->fnStencilFuncSeparate = (gl20PStencilFuncSeparate)gl20LibGetProcAddress("glStencilFuncSeparate");
-    glc->fnStencilMaskSeparate = (gl20PStencilMaskSeparate)gl20LibGetProcAddress("glStencilMaskSeparate");
-    glc->fnStencilOpSeparate = (gl20PStencilOpSeparate)gl20LibGetProcAddress("glStencilOpSeparate");
-    glc->fnUniform1f = (gl20PUniform1f)gl20LibGetProcAddress("glUniform1f");
-    glc->fnUniform2f = (gl20PUniform2f)gl20LibGetProcAddress("glUniform2f");
-    glc->fnUniform3f = (gl20PUniform3f)gl20LibGetProcAddress("glUniform3f");
-    glc->fnUniform4f = (gl20PUniform4f)gl20LibGetProcAddress("glUniform4f");
-    glc->fnUniform1i = (gl20PUniform1i)gl20LibGetProcAddress("glUniform1i");
-    glc->fnUniform2i = (gl20PUniform2i)gl20LibGetProcAddress("glUniform2i");
-    glc->fnUniform3i = (gl20PUniform3i)gl20LibGetProcAddress("glUniform3i");
-    glc->fnUniform4i = (gl20PUniform4i)gl20LibGetProcAddress("glUniform4i");
-    glc->fnUniform1fv = (gl20PUniform1fv)gl20LibGetProcAddress("glUniform1fv");
-    glc->fnUniform2fv = (gl20PUniform2fv)gl20LibGetProcAddress("glUniform2fv");
-    glc->fnUniform3fv = (gl20PUniform3fv)gl20LibGetProcAddress("glUniform3fv");
-    glc->fnUniform4fv = (gl20PUniform4fv)gl20LibGetProcAddress("glUniform4fv");
-    glc->fnUniform1iv = (gl20PUniform1iv)gl20LibGetProcAddress("glUniform1iv");
-    glc->fnUniform2iv = (gl20PUniform2iv)gl20LibGetProcAddress("glUniform2iv");
-    glc->fnUniform3iv = (gl20PUniform3iv)gl20LibGetProcAddress("glUniform3iv");
-    glc->fnUniform4iv = (gl20PUniform4iv)gl20LibGetProcAddress("glUniform4iv");
-    glc->fnUseProgram = (gl20PUseProgram)gl20LibGetProcAddress("glUseProgram");
-    glc->fnValidateProgram = (gl20PValidateProgram)gl20LibGetProcAddress("glValidateProgram");
-    glc->fnVertexAttribPointer = (gl20PVertexAttribPointer)gl20LibGetProcAddress("glVertexAttribPointer");
-    glc->fnVertexAttrib1f = (gl20PVertexAttrib1f)gl20LibGetProcAddress("glVertexAttrib1f");
-    glc->fnVertexAttrib1s = (gl20PVertexAttrib1s)gl20LibGetProcAddress("glVertexAttrib1s");
-    glc->fnVertexAttrib1d = (gl20PVertexAttrib1d)gl20LibGetProcAddress("glVertexAttrib1d");
-    glc->fnVertexAttrib2f = (gl20PVertexAttrib2f)gl20LibGetProcAddress("glVertexAttrib2f");
-    glc->fnVertexAttrib2s = (gl20PVertexAttrib2s)gl20LibGetProcAddress("glVertexAttrib2s");
-    glc->fnVertexAttrib2d = (gl20PVertexAttrib2d)gl20LibGetProcAddress("glVertexAttrib2d");
-    glc->fnVertexAttrib3f = (gl20PVertexAttrib3f)gl20LibGetProcAddress("glVertexAttrib3f");
-    glc->fnVertexAttrib3s = (gl20PVertexAttrib3s)gl20LibGetProcAddress("glVertexAttrib3s");
-    glc->fnVertexAttrib3d = (gl20PVertexAttrib3d)gl20LibGetProcAddress("glVertexAttrib3d");
-    glc->fnVertexAttrib4f = (gl20PVertexAttrib4f)gl20LibGetProcAddress("glVertexAttrib4f");
-    glc->fnVertexAttrib4s = (gl20PVertexAttrib4s)gl20LibGetProcAddress("glVertexAttrib4s");
-    glc->fnVertexAttrib4d = (gl20PVertexAttrib4d)gl20LibGetProcAddress("glVertexAttrib4d");
-    glc->fnVertexAttrib4Nuv = (gl20PVertexAttrib4Nuv)gl20LibGetProcAddress("glVertexAttrib4Nuv");
-    glc->fnVertexAttrib1fv = (gl20PVertexAttrib1fv)gl20LibGetProcAddress("glVertexAttrib1fv");
-    glc->fnVertexAttrib1sv = (gl20PVertexAttrib1sv)gl20LibGetProcAddress("glVertexAttrib1sv");
-    glc->fnVertexAttrib1dv = (gl20PVertexAttrib1dv)gl20LibGetProcAddress("glVertexAttrib1dv");
-    glc->fnVertexAttrib2fv = (gl20PVertexAttrib2fv)gl20LibGetProcAddress("glVertexAttrib2fv");
-    glc->fnVertexAttrib2sv = (gl20PVertexAttrib2sv)gl20LibGetProcAddress("glVertexAttrib2sv");
-    glc->fnVertexAttrib2dv = (gl20PVertexAttrib2dv)gl20LibGetProcAddress("glVertexAttrib2dv");
-    glc->fnVertexAttrib3fv = (gl20PVertexAttrib3fv)gl20LibGetProcAddress("glVertexAttrib3fv");
-    glc->fnVertexAttrib3sv = (gl20PVertexAttrib3sv)gl20LibGetProcAddress("glVertexAttrib3sv");
-    glc->fnVertexAttrib3dv = (gl20PVertexAttrib3dv)gl20LibGetProcAddress("glVertexAttrib3dv");
-    glc->fnVertexAttrib4fv = (gl20PVertexAttrib4fv)gl20LibGetProcAddress("glVertexAttrib4fv");
-    glc->fnVertexAttrib4sv = (gl20PVertexAttrib4sv)gl20LibGetProcAddress("glVertexAttrib4sv");
-    glc->fnVertexAttrib4dv = (gl20PVertexAttrib4dv)gl20LibGetProcAddress("glVertexAttrib4dv");
-    glc->fnVertexAttrib4iv = (gl20PVertexAttrib4iv)gl20LibGetProcAddress("glVertexAttrib4iv");
-    glc->fnVertexAttrib4bv = (gl20PVertexAttrib4bv)gl20LibGetProcAddress("glVertexAttrib4bv");
-    glc->fnVertexAttrib4ubv = (gl20PVertexAttrib4ubv)gl20LibGetProcAddress("glVertexAttrib4ubv");
-    glc->fnVertexAttrib4usv = (gl20PVertexAttrib4usv)gl20LibGetProcAddress("glVertexAttrib4usv");
-    glc->fnVertexAttrib4uiv = (gl20PVertexAttrib4uiv)gl20LibGetProcAddress("glVertexAttrib4uiv");
-    glc->fnVertexAttrib4Nbv = (gl20PVertexAttrib4Nbv)gl20LibGetProcAddress("glVertexAttrib4Nbv");
-    glc->fnVertexAttrib4Nsv = (gl20PVertexAttrib4Nsv)gl20LibGetProcAddress("glVertexAttrib4Nsv");
-    glc->fnVertexAttrib4Niv = (gl20PVertexAttrib4Niv)gl20LibGetProcAddress("glVertexAttrib4Niv");
-    glc->fnVertexAttrib4Nubv = (gl20PVertexAttrib4Nubv)gl20LibGetProcAddress("glVertexAttrib4Nubv");
-    glc->fnVertexAttrib4Nusv = (gl20PVertexAttrib4Nusv)gl20LibGetProcAddress("glVertexAttrib4Nusv");
-    glc->fnVertexAttrib4Nuiv = (gl20PVertexAttrib4Nuiv)gl20LibGetProcAddress("glVertexAttrib4Nuiv");
     glc->fnColorTable = (gl20PColorTable)gl20GLGetProcAddress("glColorTable");
     glc->fnColorTableParameterfv = (gl20PColorTableParameterfv)gl20GLGetProcAddress("glColorTableParameterfv");
     glc->fnColorTableParameteriv = (gl20PColorTableParameteriv)gl20GLGetProcAddress("glColorTableParameteriv");
@@ -2841,15 +2797,102 @@ gl20Context* gl20NewContext() {
     glc->fnDetachShader = (gl20PDetachShader)gl20GLGetProcAddress("glDetachShader");
     glc->fnEnableVertexAttribArray = (gl20PEnableVertexAttribArray)gl20GLGetProcAddress("glEnableVertexAttribArray");
     glc->fnDisableVertexAttribArray = (gl20PDisableVertexAttribArray)gl20GLGetProcAddress("glDisableVertexAttribArray");
-    glc->fnUniformMatrix2fv = (gl20PUniformMatrix2fv)gl20LibGetProcAddress("glUniformMatrix2fv");
-    glc->fnUniformMatrix3fv = (gl20PUniformMatrix3fv)gl20LibGetProcAddress("glUniformMatrix3fv");
-    glc->fnUniformMatrix4fv = (gl20PUniformMatrix4fv)gl20LibGetProcAddress("glUniformMatrix4fv");
-    glc->fnUniformMatrix2x3fv = (gl20PUniformMatrix2x3fv)gl20LibGetProcAddress("glUniformMatrix2x3fv");
-    glc->fnUniformMatrix3x2fv = (gl20PUniformMatrix3x2fv)gl20LibGetProcAddress("glUniformMatrix3x2fv");
-    glc->fnUniformMatrix2x4fv = (gl20PUniformMatrix2x4fv)gl20LibGetProcAddress("glUniformMatrix2x4fv");
-    glc->fnUniformMatrix4x2fv = (gl20PUniformMatrix4x2fv)gl20LibGetProcAddress("glUniformMatrix4x2fv");
-    glc->fnUniformMatrix3x4fv = (gl20PUniformMatrix3x4fv)gl20LibGetProcAddress("glUniformMatrix3x4fv");
-    glc->fnUniformMatrix4x3fv = (gl20PUniformMatrix4x3fv)gl20LibGetProcAddress("glUniformMatrix4x3fv");
+    glc->fnDrawBuffers = (gl20PDrawBuffers)gl20GLGetProcAddress("glDrawBuffers");
+    glc->fnGetActiveAttrib = (gl20PGetActiveAttrib)gl20GLGetProcAddress("glGetActiveAttrib");
+    glc->fnGetActiveUniform = (gl20PGetActiveUniform)gl20GLGetProcAddress("glGetActiveUniform");
+    glc->fnGetAttachedShaders = (gl20PGetAttachedShaders)gl20GLGetProcAddress("glGetAttachedShaders");
+    glc->fnGetAttribLocation = (gl20PGetAttribLocation)gl20GLGetProcAddress("glGetAttribLocation");
+    glc->fnGetProgramiv = (gl20PGetProgramiv)gl20GLGetProcAddress("glGetProgramiv");
+    glc->fnGetProgramInfoLog = (gl20PGetProgramInfoLog)gl20GLGetProcAddress("glGetProgramInfoLog");
+    glc->fnGetShaderiv = (gl20PGetShaderiv)gl20GLGetProcAddress("glGetShaderiv");
+    glc->fnGetShaderInfoLog = (gl20PGetShaderInfoLog)gl20GLGetProcAddress("glGetShaderInfoLog");
+    glc->fnGetShaderSource = (gl20PGetShaderSource)gl20GLGetProcAddress("glGetShaderSource");
+    glc->fnGetUniformfv = (gl20PGetUniformfv)gl20GLGetProcAddress("glGetUniformfv");
+    glc->fnGetUniformiv = (gl20PGetUniformiv)gl20GLGetProcAddress("glGetUniformiv");
+    glc->fnGetUniformLocation = (gl20PGetUniformLocation)gl20GLGetProcAddress("glGetUniformLocation");
+    glc->fnGetVertexAttribdv = (gl20PGetVertexAttribdv)gl20GLGetProcAddress("glGetVertexAttribdv");
+    glc->fnGetVertexAttribfv = (gl20PGetVertexAttribfv)gl20GLGetProcAddress("glGetVertexAttribfv");
+    glc->fnGetVertexAttribiv = (gl20PGetVertexAttribiv)gl20GLGetProcAddress("glGetVertexAttribiv");
+    glc->fnGetVertexAttribPointerv = (gl20PGetVertexAttribPointerv)gl20GLGetProcAddress("glGetVertexAttribPointerv");
+    glc->fnIsProgram = (gl20PIsProgram)gl20GLGetProcAddress("glIsProgram");
+    glc->fnIsShader = (gl20PIsShader)gl20GLGetProcAddress("glIsShader");
+    glc->fnLinkProgram = (gl20PLinkProgram)gl20GLGetProcAddress("glLinkProgram");
+    glc->fnShaderSource = (gl20PShaderSource)gl20GLGetProcAddress("glShaderSource");
+    glc->fnStencilFuncSeparate = (gl20PStencilFuncSeparate)gl20GLGetProcAddress("glStencilFuncSeparate");
+    glc->fnStencilMaskSeparate = (gl20PStencilMaskSeparate)gl20GLGetProcAddress("glStencilMaskSeparate");
+    glc->fnStencilOpSeparate = (gl20PStencilOpSeparate)gl20GLGetProcAddress("glStencilOpSeparate");
+    glc->fnUniform1f = (gl20PUniform1f)gl20GLGetProcAddress("glUniform1f");
+    glc->fnUniform2f = (gl20PUniform2f)gl20GLGetProcAddress("glUniform2f");
+    glc->fnUniform3f = (gl20PUniform3f)gl20GLGetProcAddress("glUniform3f");
+    glc->fnUniform4f = (gl20PUniform4f)gl20GLGetProcAddress("glUniform4f");
+    glc->fnUniform1i = (gl20PUniform1i)gl20GLGetProcAddress("glUniform1i");
+    glc->fnUniform2i = (gl20PUniform2i)gl20GLGetProcAddress("glUniform2i");
+    glc->fnUniform3i = (gl20PUniform3i)gl20GLGetProcAddress("glUniform3i");
+    glc->fnUniform4i = (gl20PUniform4i)gl20GLGetProcAddress("glUniform4i");
+    glc->fnUniform1ui = (gl20PUniform1ui)gl20GLGetProcAddress("glUniform1ui");
+    glc->fnUniform2ui = (gl20PUniform2ui)gl20GLGetProcAddress("glUniform2ui");
+    glc->fnUniform3ui = (gl20PUniform3ui)gl20GLGetProcAddress("glUniform3ui");
+    glc->fnUniform4ui = (gl20PUniform4ui)gl20GLGetProcAddress("glUniform4ui");
+    glc->fnUniform1fv = (gl20PUniform1fv)gl20GLGetProcAddress("glUniform1fv");
+    glc->fnUniform2fv = (gl20PUniform2fv)gl20GLGetProcAddress("glUniform2fv");
+    glc->fnUniform3fv = (gl20PUniform3fv)gl20GLGetProcAddress("glUniform3fv");
+    glc->fnUniform4fv = (gl20PUniform4fv)gl20GLGetProcAddress("glUniform4fv");
+    glc->fnUniform1iv = (gl20PUniform1iv)gl20GLGetProcAddress("glUniform1iv");
+    glc->fnUniform2iv = (gl20PUniform2iv)gl20GLGetProcAddress("glUniform2iv");
+    glc->fnUniform3iv = (gl20PUniform3iv)gl20GLGetProcAddress("glUniform3iv");
+    glc->fnUniform4iv = (gl20PUniform4iv)gl20GLGetProcAddress("glUniform4iv");
+    glc->fnUniform1uiv = (gl20PUniform1uiv)gl20GLGetProcAddress("glUniform1uiv");
+    glc->fnUniform2uiv = (gl20PUniform2uiv)gl20GLGetProcAddress("glUniform2uiv");
+    glc->fnUniform3uiv = (gl20PUniform3uiv)gl20GLGetProcAddress("glUniform3uiv");
+    glc->fnUniform4uiv = (gl20PUniform4uiv)gl20GLGetProcAddress("glUniform4uiv");
+    glc->fnUseProgram = (gl20PUseProgram)gl20GLGetProcAddress("glUseProgram");
+    glc->fnValidateProgram = (gl20PValidateProgram)gl20GLGetProcAddress("glValidateProgram");
+    glc->fnVertexAttribPointer = (gl20PVertexAttribPointer)gl20GLGetProcAddress("glVertexAttribPointer");
+    glc->fnVertexAttrib1f = (gl20PVertexAttrib1f)gl20GLGetProcAddress("glVertexAttrib1f");
+    glc->fnVertexAttrib1s = (gl20PVertexAttrib1s)gl20GLGetProcAddress("glVertexAttrib1s");
+    glc->fnVertexAttrib1d = (gl20PVertexAttrib1d)gl20GLGetProcAddress("glVertexAttrib1d");
+    glc->fnVertexAttrib2f = (gl20PVertexAttrib2f)gl20GLGetProcAddress("glVertexAttrib2f");
+    glc->fnVertexAttrib2s = (gl20PVertexAttrib2s)gl20GLGetProcAddress("glVertexAttrib2s");
+    glc->fnVertexAttrib2d = (gl20PVertexAttrib2d)gl20GLGetProcAddress("glVertexAttrib2d");
+    glc->fnVertexAttrib3f = (gl20PVertexAttrib3f)gl20GLGetProcAddress("glVertexAttrib3f");
+    glc->fnVertexAttrib3s = (gl20PVertexAttrib3s)gl20GLGetProcAddress("glVertexAttrib3s");
+    glc->fnVertexAttrib3d = (gl20PVertexAttrib3d)gl20GLGetProcAddress("glVertexAttrib3d");
+    glc->fnVertexAttrib4f = (gl20PVertexAttrib4f)gl20GLGetProcAddress("glVertexAttrib4f");
+    glc->fnVertexAttrib4s = (gl20PVertexAttrib4s)gl20GLGetProcAddress("glVertexAttrib4s");
+    glc->fnVertexAttrib4d = (gl20PVertexAttrib4d)gl20GLGetProcAddress("glVertexAttrib4d");
+    glc->fnVertexAttrib4Nuv = (gl20PVertexAttrib4Nuv)gl20GLGetProcAddress("glVertexAttrib4Nuv");
+    glc->fnVertexAttrib1fv = (gl20PVertexAttrib1fv)gl20GLGetProcAddress("glVertexAttrib1fv");
+    glc->fnVertexAttrib1sv = (gl20PVertexAttrib1sv)gl20GLGetProcAddress("glVertexAttrib1sv");
+    glc->fnVertexAttrib1dv = (gl20PVertexAttrib1dv)gl20GLGetProcAddress("glVertexAttrib1dv");
+    glc->fnVertexAttrib2fv = (gl20PVertexAttrib2fv)gl20GLGetProcAddress("glVertexAttrib2fv");
+    glc->fnVertexAttrib2sv = (gl20PVertexAttrib2sv)gl20GLGetProcAddress("glVertexAttrib2sv");
+    glc->fnVertexAttrib2dv = (gl20PVertexAttrib2dv)gl20GLGetProcAddress("glVertexAttrib2dv");
+    glc->fnVertexAttrib3fv = (gl20PVertexAttrib3fv)gl20GLGetProcAddress("glVertexAttrib3fv");
+    glc->fnVertexAttrib3sv = (gl20PVertexAttrib3sv)gl20GLGetProcAddress("glVertexAttrib3sv");
+    glc->fnVertexAttrib3dv = (gl20PVertexAttrib3dv)gl20GLGetProcAddress("glVertexAttrib3dv");
+    glc->fnVertexAttrib4fv = (gl20PVertexAttrib4fv)gl20GLGetProcAddress("glVertexAttrib4fv");
+    glc->fnVertexAttrib4sv = (gl20PVertexAttrib4sv)gl20GLGetProcAddress("glVertexAttrib4sv");
+    glc->fnVertexAttrib4dv = (gl20PVertexAttrib4dv)gl20GLGetProcAddress("glVertexAttrib4dv");
+    glc->fnVertexAttrib4iv = (gl20PVertexAttrib4iv)gl20GLGetProcAddress("glVertexAttrib4iv");
+    glc->fnVertexAttrib4bv = (gl20PVertexAttrib4bv)gl20GLGetProcAddress("glVertexAttrib4bv");
+    glc->fnVertexAttrib4ubv = (gl20PVertexAttrib4ubv)gl20GLGetProcAddress("glVertexAttrib4ubv");
+    glc->fnVertexAttrib4usv = (gl20PVertexAttrib4usv)gl20GLGetProcAddress("glVertexAttrib4usv");
+    glc->fnVertexAttrib4uiv = (gl20PVertexAttrib4uiv)gl20GLGetProcAddress("glVertexAttrib4uiv");
+    glc->fnVertexAttrib4Nbv = (gl20PVertexAttrib4Nbv)gl20GLGetProcAddress("glVertexAttrib4Nbv");
+    glc->fnVertexAttrib4Nsv = (gl20PVertexAttrib4Nsv)gl20GLGetProcAddress("glVertexAttrib4Nsv");
+    glc->fnVertexAttrib4Niv = (gl20PVertexAttrib4Niv)gl20GLGetProcAddress("glVertexAttrib4Niv");
+    glc->fnVertexAttrib4Nubv = (gl20PVertexAttrib4Nubv)gl20GLGetProcAddress("glVertexAttrib4Nubv");
+    glc->fnVertexAttrib4Nusv = (gl20PVertexAttrib4Nusv)gl20GLGetProcAddress("glVertexAttrib4Nusv");
+    glc->fnVertexAttrib4Nuiv = (gl20PVertexAttrib4Nuiv)gl20GLGetProcAddress("glVertexAttrib4Nuiv");
+    glc->fnUniformMatrix2fv = (gl20PUniformMatrix2fv)gl20GLGetProcAddress("glUniformMatrix2fv");
+    glc->fnUniformMatrix3fv = (gl20PUniformMatrix3fv)gl20GLGetProcAddress("glUniformMatrix3fv");
+    glc->fnUniformMatrix4fv = (gl20PUniformMatrix4fv)gl20GLGetProcAddress("glUniformMatrix4fv");
+    glc->fnUniformMatrix2x3fv = (gl20PUniformMatrix2x3fv)gl20GLGetProcAddress("glUniformMatrix2x3fv");
+    glc->fnUniformMatrix3x2fv = (gl20PUniformMatrix3x2fv)gl20GLGetProcAddress("glUniformMatrix3x2fv");
+    glc->fnUniformMatrix2x4fv = (gl20PUniformMatrix2x4fv)gl20GLGetProcAddress("glUniformMatrix2x4fv");
+    glc->fnUniformMatrix4x2fv = (gl20PUniformMatrix4x2fv)gl20GLGetProcAddress("glUniformMatrix4x2fv");
+    glc->fnUniformMatrix3x4fv = (gl20PUniformMatrix3x4fv)gl20GLGetProcAddress("glUniformMatrix3x4fv");
+    glc->fnUniformMatrix4x3fv = (gl20PUniformMatrix4x3fv)gl20GLGetProcAddress("glUniformMatrix4x3fv");
     return glc;
 }
 

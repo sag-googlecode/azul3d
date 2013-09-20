@@ -1,3 +1,7 @@
+// Copyright 2012 Lightpoke. All rights reserved.
+// This source code is subject to the terms and
+// conditions defined in the "License.txt" file.
+
 #include <stdbool.h>
 #include <stdlib.h>
 
@@ -527,6 +531,10 @@ typedef void(*gl121PUniform1i)(GLint, GLint);
 typedef void(*gl121PUniform2i)(GLint, GLint, GLint);
 typedef void(*gl121PUniform3i)(GLint, GLint, GLint, GLint);
 typedef void(*gl121PUniform4i)(GLint, GLint, GLint, GLint, GLint);
+typedef void(*gl121PUniform1ui)(GLint, GLuint);
+typedef void(*gl121PUniform2ui)(GLint, GLuint, GLuint);
+typedef void(*gl121PUniform3ui)(GLint, GLuint, GLuint, GLuint);
+typedef void(*gl121PUniform4ui)(GLint, GLuint, GLuint, GLuint, GLuint);
 typedef void(*gl121PUniform1fv)(GLint, GLsizei, GLfloat*);
 typedef void(*gl121PUniform2fv)(GLint, GLsizei, GLfloat*);
 typedef void(*gl121PUniform3fv)(GLint, GLsizei, GLfloat*);
@@ -535,6 +543,10 @@ typedef void(*gl121PUniform1iv)(GLint, GLsizei, GLint*);
 typedef void(*gl121PUniform2iv)(GLint, GLsizei, GLint*);
 typedef void(*gl121PUniform3iv)(GLint, GLsizei, GLint*);
 typedef void(*gl121PUniform4iv)(GLint, GLsizei, GLint*);
+typedef void(*gl121PUniform1uiv)(GLint, GLsizei, GLuint*);
+typedef void(*gl121PUniform2uiv)(GLint, GLsizei, GLuint*);
+typedef void(*gl121PUniform3uiv)(GLint, GLsizei, GLuint*);
+typedef void(*gl121PUniform4uiv)(GLint, GLsizei, GLuint*);
 typedef void(*gl121PUseProgram)(GLuint);
 typedef void(*gl121PValidateProgram)(GLuint);
 typedef void(*gl121PVertexAttribPointer)(GLuint, GLint, GLenum, GLboolean, GLsizei, GLvoid*);
@@ -1092,6 +1104,10 @@ typedef struct {
     gl121PUniform2i fnUniform2i;
     gl121PUniform3i fnUniform3i;
     gl121PUniform4i fnUniform4i;
+    gl121PUniform1ui fnUniform1ui;
+    gl121PUniform2ui fnUniform2ui;
+    gl121PUniform3ui fnUniform3ui;
+    gl121PUniform4ui fnUniform4ui;
     gl121PUniform1fv fnUniform1fv;
     gl121PUniform2fv fnUniform2fv;
     gl121PUniform3fv fnUniform3fv;
@@ -1100,6 +1116,10 @@ typedef struct {
     gl121PUniform2iv fnUniform2iv;
     gl121PUniform3iv fnUniform3iv;
     gl121PUniform4iv fnUniform4iv;
+    gl121PUniform1uiv fnUniform1uiv;
+    gl121PUniform2uiv fnUniform2uiv;
+    gl121PUniform3uiv fnUniform3uiv;
+    gl121PUniform4uiv fnUniform4uiv;
     gl121PUseProgram fnUseProgram;
     gl121PValidateProgram fnValidateProgram;
     gl121PVertexAttribPointer fnVertexAttribPointer;
@@ -1658,6 +1678,10 @@ void gl121Uniform1i(gl121Context* glc, GLint location, GLint v0);
 void gl121Uniform2i(gl121Context* glc, GLint location, GLint v0, GLint v1);
 void gl121Uniform3i(gl121Context* glc, GLint location, GLint v0, GLint v1, GLint v2);
 void gl121Uniform4i(gl121Context* glc, GLint location, GLint v0, GLint v1, GLint v2, GLint v3);
+void gl121Uniform1ui(gl121Context* glc, GLint location, GLuint v0);
+void gl121Uniform2ui(gl121Context* glc, GLint location, GLuint v0, GLuint v1);
+void gl121Uniform3ui(gl121Context* glc, GLint location, GLuint v0, GLuint v1, GLuint v2);
+void gl121Uniform4ui(gl121Context* glc, GLint location, GLuint v0, GLuint v1, GLuint v2, GLuint v3);
 void gl121Uniform1fv(gl121Context* glc, GLint location, GLsizei count, GLfloat* value);
 void gl121Uniform2fv(gl121Context* glc, GLint location, GLsizei count, GLfloat* value);
 void gl121Uniform3fv(gl121Context* glc, GLint location, GLsizei count, GLfloat* value);
@@ -1666,6 +1690,10 @@ void gl121Uniform1iv(gl121Context* glc, GLint location, GLsizei count, GLint* va
 void gl121Uniform2iv(gl121Context* glc, GLint location, GLsizei count, GLint* value);
 void gl121Uniform3iv(gl121Context* glc, GLint location, GLsizei count, GLint* value);
 void gl121Uniform4iv(gl121Context* glc, GLint location, GLsizei count, GLint* value);
+void gl121Uniform1uiv(gl121Context* glc, GLint location, GLsizei count, GLuint* value);
+void gl121Uniform2uiv(gl121Context* glc, GLint location, GLsizei count, GLuint* value);
+void gl121Uniform3uiv(gl121Context* glc, GLint location, GLsizei count, GLuint* value);
+void gl121Uniform4uiv(gl121Context* glc, GLint location, GLsizei count, GLuint* value);
 void gl121UseProgram(gl121Context* glc, GLuint program);
 void gl121ValidateProgram(gl121Context* glc, GLuint program);
 void gl121VertexAttribPointer(gl121Context* glc, GLuint index, GLint size, GLenum type, GLboolean normalized, GLsizei stride, GLvoid* pointer);
