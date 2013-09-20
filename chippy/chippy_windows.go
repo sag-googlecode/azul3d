@@ -9,12 +9,16 @@ import (
 	"code.google.com/p/azul3d/chippy/wrappers/win32"
 	"errors"
 	"fmt"
+	"runtime"
 	"sync"
 	"time"
 	"unsafe"
 )
 
 func eventLoop() {
+	runtime.LockOSThread()
+	defer runtime.UnlockOSThread()
+
 	for {
 		hasMessage := true
 
