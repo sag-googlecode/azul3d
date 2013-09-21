@@ -1,7 +1,7 @@
 package freetype
 
 /*
-#cgo windows amd64 LDFLAGS: freetype_windows_amd64.a
+#cgo LDFLAGS: -lazul3d_freetype
 #cgo CFLAGS: -I freetype-2.5.0.1/include/
 
 #include <ft2build.h>
