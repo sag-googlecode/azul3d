@@ -4,9 +4,13 @@
 
 package chippy
 
+import(
+	"fmt"
+)
+
 // We use this type for sorting the ScreenModes in backends
 // ScreenModes are sorted in order by highest resolution, bytes per pixel, and refresh rate.
-type sortedScreenModes []ScreenMode
+type sortedScreenModes []*ScreenMode
 
 func (s sortedScreenModes) Len() int {
 	return len(s)
@@ -40,26 +44,47 @@ func (s sortedScreenModes) Less(i, j int) bool {
 	return iResolution > jResolution
 }
 
-// ScreenMode represents an single, unique, screen mode, with an resolution, refresh rate, and bpp.
+// ScreenMode represents an single, unique, screen mode, with an resolution,
+// refresh rate, and bpp.
 //
-// It is possible for multiple different ScreenMode's to exist with the same resolution, each with
-// different refresh rates or bytes per pixel, respectively.
-type ScreenMode interface {
-	// String returns an nice string representing this ScreenMode
-	String() string
+// It is possible for multiple different ScreenMode's to exist with the same
+// resolution, each with different refresh rates or bytes per pixel,
+// respectively.
+type ScreenMode struct {
+	*NativeScreenMode
 
-	// Equals compares two ScreenMode(s) for equality. It does this by comparing resolutions,
-	// refresh rates, and bytes per pixels.
-	Equals(other ScreenMode) bool
+	width, height, bytesPerPixel int
+	refreshRate   float32
+}
 
-	// Resolution returns the width and height of this ScreenMode, in pixels.
-	Resolution() (width, height uint)
+// String returns an nice string representing this ScreenMode
+func (m *ScreenMode) String() string {
+	w, h := m.Resolution()
+	return fmt.Sprintf("ScreenMode(%d by %dpx, %.1fhz, %dbpp)", w, h, m.RefreshRate(), m.BytesPerPixel())
+}
 
-	// RefreshRate returns the refresh rate of this ScreenMode, in hertz, or 0 if the refresh rate
-	// is unable to be determined.
-	RefreshRate() float32
+// Equals compares two ScreenMode(s) for equality. It does this by comparing resolutions,
+// refresh rates, and bytes per pixels.
+func (m *ScreenMode) Equals(other *ScreenMode) bool {
+	width, height := m.Resolution()
+	otherWidth, otherHeight := other.Resolution()
 
-	// BytesPerPixel returns the number of bytes that represent an single pixel of this ScreenMode,
-	// or 0 if the bytes per pixel is unable to be determined.
-	BytesPerPixel() uint
+	return (width == otherWidth) && (height == otherHeight) && (m.RefreshRate() == other.RefreshRate()) && (m.BytesPerPixel() == other.BytesPerPixel())
+}
+
+// Resolution returns the width and height of this ScreenMode, in pixels.
+func (m *ScreenMode) Resolution() (width, height int) {
+	return m.width, m.height
+}
+
+// RefreshRate returns the refresh rate of this ScreenMode, in hertz, or 0 if the refresh rate
+// is unable to be determined.
+func (m *ScreenMode) RefreshRate() float32 {
+	return m.refreshRate
+}
+
+// BytesPerPixel returns the number of bytes that represent an single pixel of this ScreenMode,
+// or 0 if the bytes per pixel is unable to be determined.
+func (m *ScreenMode) BytesPerPixel() int {
+	return m.bytesPerPixel
 }

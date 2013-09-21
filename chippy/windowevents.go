@@ -191,7 +191,7 @@ func (ev *ResizedEvent) Time() time.Time {
 // different screen.
 type ScreenChangedEvent struct {
 	// Screen that the window is located on.
-	Screen Screen
+	Screen *Screen
 
 	T time.Time
 }

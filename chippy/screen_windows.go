@@ -102,49 +102,6 @@ func newScreen() *w32Screen {
 	return s
 }
 
-func (s *w32Screen) String() string {
-	w, h := s.PhysicalSize()
-	return fmt.Sprintf("Screen(\"%s\", %.0f by %.0fmm)", s.Name(), w, h)
-}
-
-func (w *w32Screen) Equals(s Screen) bool {
-	if w.String() == s.String() {
-		otherModes := s.ScreenModes()
-		for i, mode := range w.ScreenModes() {
-			if !mode.Equals(otherModes[i]) {
-				return false
-			}
-		}
-		return true
-	}
-
-	return false
-}
-
-func (s *w32Screen) Name() string {
-	s.access.RLock()
-	defer s.access.RUnlock()
-	return s.name
-}
-
-func (s *w32Screen) PhysicalSize() (width float32, height float32) {
-	s.access.RLock()
-	defer s.access.RUnlock()
-	return s.physicalWidth, s.physicalHeight
-}
-
-func (s *w32Screen) OriginalScreenMode() ScreenMode {
-	s.access.RLock()
-	defer s.access.RUnlock()
-	return s.originalScreenMode
-}
-
-func (s *w32Screen) ScreenModes() []ScreenMode {
-	s.access.RLock()
-	defer s.access.RUnlock()
-	return s.screenModes
-}
-
 func (s *w32Screen) SetScreenMode(newMode ScreenMode) (err error) {
 	s.access.Lock()
 	defer s.access.Unlock()

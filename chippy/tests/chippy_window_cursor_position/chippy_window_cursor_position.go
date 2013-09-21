@@ -35,7 +35,7 @@ func program() {
 	<-time.After(5 * time.Second)
 
 	log.Println("Screen bottom right")
-	screenWidth, screenHeight := window.Screen().ScreenMode().Resolution()
+	screenWidth, screenHeight := window.Screen().Mode().Resolution()
 	window.SetCursorPosition(int(screenWidth), int(screenHeight))
 	<-time.After(5 * time.Second)
 

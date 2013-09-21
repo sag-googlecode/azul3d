@@ -23,7 +23,7 @@ func program() {
 	for i, screen := range screens {
 		log.Printf("\nScreen %d - %s", i, screen)
 
-		for i, mode := range screen.ScreenModes() {
+		for i, mode := range screen.Modes() {
 			log.Printf("    -> ScreenMode %d - %s", i, mode)
 		}
 	}
@@ -47,16 +47,16 @@ func program() {
 		log.Fatal(err)
 	}
 
-	if mode < 0 || mode > len(screens[screen].ScreenModes())-1 {
+	if mode < 0 || mode > len(screens[screen].Modes())-1 {
 		log.Fatal("Incorrect screen number.")
 	}
-	chosenMode := chosenScreen.ScreenModes()[mode]
+	chosenMode := chosenScreen.Modes()[mode]
 
 	// Ensure that we restore the screen to it's original state before exiting
 	defer chosenScreen.Restore()
 
 	// Change screen mode
-	chosenScreen.SetScreenMode(chosenMode)
+	chosenScreen.SetMode(chosenMode)
 
 	log.Println("Waiting 15 seconds...")
 	<-time.After(15 * time.Second)

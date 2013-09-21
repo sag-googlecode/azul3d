@@ -38,7 +38,7 @@ type Window struct {
 
 	aspectRatio float32
 
-	originalScreen, screen Screen
+	originalScreen, screen *Screen
 
 	title string
 }
@@ -58,7 +58,7 @@ func (w *Window) String() string {
 //
 // If the window is destroyed, it's NativeWindow struct will be replaced with a
 // new one and the window will become valid again.
-func (w *Window) Open(screen Screen) error {
+func (w *Window) Open(screen *Screen) error {
 	w.access.RLock()
 
 	if w.opened && !w.destroyed {
@@ -765,8 +765,8 @@ func (w *Window) SetPosition(x, y int) {
 
 // SetPositionCenter sets the window position such that it is perfectly in
 // the center of the specified screen.
-func (w *Window) SetPositionCenter(screen Screen) {
-	screenWidth, screenHeight := screen.ScreenMode().Resolution()
+func (w *Window) SetPositionCenter(screen *Screen) {
+	screenWidth, screenHeight := screen.Mode().Resolution()
 	windowWidth, windowHeight := w.Size()
 	halfScreenWidth := int(screenWidth / 2)
 	halfScreenHeight := int(screenHeight / 2)
@@ -787,14 +787,14 @@ func (w *Window) Opened() bool {
 
 // OriginalScreen returns the screen that this window was created on at the
 // time Open() was called.
-func (w *Window) OriginalScreen() Screen {
+func (w *Window) OriginalScreen() *Screen {
 	w.access.RLock()
 	defer w.access.RUnlock()
 
 	return w.originalScreen
 }
 
-func (w *Window) trySetScreen(screen Screen) bool {
+func (w *Window) trySetScreen(screen *Screen) bool {
 	w.access.RLock()
 	if !w.screen.Equals(screen) {
 		// Enter write lock
@@ -819,7 +819,7 @@ func (w *Window) trySetScreen(screen Screen) bool {
 //
 // This function will return the original screen the window was created on in
 // the event that we are unable to determine the current screen.
-func (w *Window) Screen() Screen {
+func (w *Window) Screen() *Screen {
 	w.access.RLock()
 	defer w.access.RUnlock()
 
