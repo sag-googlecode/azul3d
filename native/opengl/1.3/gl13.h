@@ -4,6 +4,8 @@
 
 #include <stdbool.h>
 #include <stdlib.h>
+#include <stddef.h>
+#include <stdint.h>
 
 typedef char GLchar;
 typedef unsigned int GLenum;

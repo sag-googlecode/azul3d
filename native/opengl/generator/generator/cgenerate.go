@@ -38,7 +38,13 @@ func generateC(packageDir, prefix, version, versionWithoutDots string, versionPr
 #include <windows.h>
 #endif
 
+#ifdef __unix__
+#include <dlfcn.h>
+#endif
+
 #include "gl<VERSION_WITHOUT_DOTS>.h"
+
+
 
 #ifdef _WIN32
 HMODULE gl<VERSION_WITHOUT_DOTS>OpenGL32;
@@ -59,6 +65,32 @@ void* gl<VERSION_WITHOUT_DOTS>GLGetProcAddress(char* name) {
 		return NULL;
 	}
 	return ptr;
+}
+#endif
+
+
+
+#ifdef __unix__
+void* gl<VERSION_WITHOUT_DOTS>GLSO;
+
+void* gl<VERSION_WITHOUT_DOTS>LibGetProcAddress(char* name) {
+	if(gl<VERSION_WITHOUT_DOTS>GLSO == NULL) {
+		gl<VERSION_WITHOUT_DOTS>GLSO = dlopen("GL.so", RTLD_LAZY);
+	}
+	if(gl<VERSION_WITHOUT_DOTS>GLSO == NULL) {
+		return NULL;
+	}
+
+	return dlsym(gl<VERSION_WITHOUT_DOTS>GLSO, name);
+}
+
+void* gl<VERSION_WITHOUT_DOTS>GLGetProcAddress(char* name) {
+	intptr_t iptr = glXGetProcAddressARB(name);
+
+	if(iptr == 0 || iptr == 1 || iptr == 2 || iptr == 3 || iptr == -1) {
+		return NULL;
+	}
+	return (void*)iptr;
 }
 #endif
 `
@@ -117,7 +149,7 @@ void* gl<VERSION_WITHOUT_DOTS>GLGetProcAddress(char* name) {
 	for _, p := range versionProcs {
 		glStripped := strings.TrimLeft(p.Name, "gl")
 
-		fmt.Fprintf(api, "    glc->fn%s = (%sP%s)", glStripped, prefix, glStripped)
+		fmt.Fprintf(api, "    glc->fn%s = (%sP%s)(intptr_t)", glStripped, prefix, glStripped)
 		if !p.Extension {
 			fmt.Fprintf(api, "gl%sLibGetProcAddress(\"%s\");\n", versionWithoutDots, p.Name)
 		} else {

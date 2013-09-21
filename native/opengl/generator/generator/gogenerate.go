@@ -30,7 +30,8 @@ package opengl
 `
 
 const goHelperCode = `
-// #cgo LDFLAGS: -lopengl32
+// #cgo windows LDFLAGS: -lopengl32
+// #cgo linux LDFLAGS: -lGL -ldl
 // #include "gl<VERSION_WITHOUT_DOTS>.h"
 import "C"
 

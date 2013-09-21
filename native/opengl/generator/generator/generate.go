@@ -173,7 +173,7 @@ func Generate(specFilePath, outputDir string) {
 		return
 	}
 
-	err = os.MkdirAll(outputDir, os.ModeDir)
+	err = os.MkdirAll(outputDir, 0777)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -256,7 +256,7 @@ func Generate(specFilePath, outputDir string) {
 		versionWithoutDots := strings.Replace(version, ".", "", -1)
 		packageDir := filepath.Join(outputDir, version)
 
-		err = os.MkdirAll(packageDir, os.ModeDir)
+		err = os.MkdirAll(packageDir, 0777)
 		if err != nil {
 			log.Fatal(err)
 		}

@@ -32,6 +32,8 @@ func generateHeader(packageDir, prefix string, versionProcs, possibleProcs []*Pr
 
 	fmt.Fprintf(header, "\n#include <stdbool.h>\n")
 	fmt.Fprintf(header, "#include <stdlib.h>\n")
+	fmt.Fprintf(header, "#include <stddef.h>\n")
+	fmt.Fprintf(header, "#include <stdint.h>\n")
 	fmt.Fprintf(header, `
 typedef char GLchar;
 typedef unsigned int GLenum;
