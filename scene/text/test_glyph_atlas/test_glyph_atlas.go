@@ -65,7 +65,8 @@ func main() {
 	for i := 0; i < 64; i++ {
 		t0 := time.Now()
 
-		atlasImage, _ = text.Atlas(glyphs, true)
+		// 1 px padding
+		atlasImage, _ = text.Atlas(glyphs, 1, true)
 
 		t1 := time.Since(t0)
 		avg += t1
