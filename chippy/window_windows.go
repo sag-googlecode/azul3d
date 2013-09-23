@@ -57,7 +57,7 @@ type NativeWindow struct {
 	glPixelFormatSet bool
 }
 
-func (w *NativeWindow) open(screen Screen) (err error) {
+func (w *NativeWindow) open(screen *Screen) (err error) {
 	unlock := w.newAttemptUnlocker()
 	defer unlock()
 
@@ -1000,7 +1000,7 @@ func (w *NativeWindow) doSetWindowPos() {
 	y := win32.Int(wY - int(extentTop))
 
 	// Need to make the position relative to the original screen
-	r := w.r.OriginalScreen().(*w32Screen).w32Position
+	r := w.r.OriginalScreen().NativeScreen.w32Position
 	x = win32.Int(r.Left()) + x
 	y = win32.Int(r.Top()) + y
 
@@ -1056,10 +1056,10 @@ func (w *NativeWindow) doSetWindowPos() {
 
 	if w.r.Fullscreen() {
 		screen := w.r.Screen()
-		r := screen.(*w32Screen).w32Position
+		r := screen.NativeScreen.w32Position
 		x = win32.Int(r.Left())
 		y = win32.Int(r.Top())
-		sm := screen.ScreenMode()
+		sm := screen.Mode()
 		screenWidth, screenHeight := sm.Resolution()
 		width, height = float64(screenWidth), float64(screenHeight)
 
@@ -1687,9 +1687,9 @@ func mainWindowProc(hwnd win32.HWND, msg win32.UINT, wParam win32.WPARAM, lParam
 			} else {
 				screens := backend_doScreens()
 				for _, screen := range screens {
-					if screen.(*w32Screen).w32GraphicsDeviceName == mi.Device() {
+					if screen.NativeScreen.w32GraphicsDeviceName == mi.Device() {
 						if w.r.trySetScreen(screen) {
-							screen.(*w32Screen).w32Position = mi.RcMonitor
+							screen.NativeScreen.w32Position = mi.RcMonitor
 						}
 						return 0
 					}
