@@ -22,8 +22,6 @@ package win32
 #cgo LDFLAGS: -luser32 -lgdi32 -lkernel32 -lmsimg32
 
 WORD win32_MAKELANGID(USHORT usPrimaryLanguage, USHORT usSubLanguage);
-void win32_SetLPTSTRAtIndex(LPTSTR array, int index, WORD v);
-WORD win32_LPTSTRAtIndex(LPTSTR array, int index);
 
 LRESULT CALLBACK win32_WndProcWrapper(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
@@ -43,52 +41,52 @@ import "C"
 import (
 	"sync"
 	"unicode/utf16"
+	"reflect"
 	"unsafe"
 )
 
-// UTF16ToString returns the UTF-8 encoding of the UTF-16 sequence s,
-// with a terminating NUL removed.
-func UTF16ToString(s []uint16) string {
-	for i, v := range s {
-		if v == 0 {
-			s = s[0:i]
-			break
-		}
-	}
-	return string(utf16.Decode(s))
-}
-
 type LPTSTR C.LPTSTR
 
+// Decodes a UTF-16 encoded C.LPTSTR/C.LPWSTR to a UTF-8 encoded Go string.
+//
+// if cstr == nil: "" is returned
+//
+// This function does not touch/free the memory held by the cstr parameter.
 func LPTSTRToString(cstr C.LPTSTR) string {
 	if cstr == nil {
 		return ""
 	}
 	strlen := int(C.wcslen((*C.wchar_t)(unsafe.Pointer(cstr))))
 
-	slice := make([]uint16, strlen)
-	for i := 0; i < strlen; i++ {
-		slice[i] = uint16(C.win32_LPTSTRAtIndex(cstr, C.int(i)))
-	}
-	return UTF16ToString(slice)
+	var wstr []uint16
+	sliceHeader := (*reflect.SliceHeader)(unsafe.Pointer(&wstr))
+	sliceHeader.Cap = strlen
+	sliceHeader.Len = strlen
+	sliceHeader.Data = uintptr(unsafe.Pointer(cstr))
+
+	return string(utf16.Decode(wstr))
 }
 
+// Encodes a UTF-8 encoded Go string to a UTF-16 encoded C.LPTSTR/C.LPWSTR.
+//
+// if len(g) == 0: nil is returned.
+//
+// Note: The returned C.LPTSTR should be free'd at some point; it is malloc'd
 func StringToLPTSTR(g string) C.LPTSTR {
 	if len(g) == 0 {
 		return nil
 	}
 
-	encoded := utf16.Encode([]rune(g))
-	cstr := (C.LPTSTR)(C.malloc(C.size_t(len(encoded) * 16)))
+	u16 := utf16.Encode([]rune(g))
 
-	for i := 0; i < len(encoded)+1; i++ {
-		if i == len(encoded) {
-			C.win32_SetLPTSTRAtIndex(cstr, C.int(i), C.WORD(0))
-			break
-		}
+	// u16 is uint16 type
+	nBytes := C.size_t(len(u16) * 2)
 
-		C.win32_SetLPTSTRAtIndex(cstr, C.int(i), C.WORD(encoded[i]))
-	}
+	// Allocate a buffer
+	cstr := (C.LPTSTR)(C.calloc(1, nBytes + 2)) // +2 for uint16 NULL terminator
+
+	// Memcpy the UTF-16 encoded string into the buffer
+	C.memcpy(unsafe.Pointer(cstr), unsafe.Pointer(&u16[0]), nBytes)
 
 	return cstr
 }
