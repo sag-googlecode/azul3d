@@ -5,6 +5,7 @@
 package chippy
 
 import (
+	"sort"
 	"sync"
 	"fmt"
 )
@@ -17,7 +18,7 @@ type Screen struct {
 	access sync.RWMutex
 	name string
 	physicalWidth, physicalHeight float32
-	modes []*ScreenMode
+	modes sortedScreenModes
 	mode, originalMode *ScreenMode
 }
 
@@ -27,9 +28,10 @@ func newScreen(name string, physicalWidth, physicalHeight float32, modes []*Scre
 	s.name = name
 	s.physicalWidth = physicalWidth
 	s.physicalHeight = physicalHeight
-	s.modes = modes
+	s.modes = sortedScreenModes(modes)
 	s.mode = currentMode
 	s.originalMode = currentMode
+	sort.Sort(s.modes)
 	return s
 }
 

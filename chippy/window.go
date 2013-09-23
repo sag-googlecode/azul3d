@@ -1023,15 +1023,21 @@ func (w *Window) trySetExtents(left, right, bottom, top int) {
 // Extents returns how far the window region extends outward from the client
 // region of this window, in pixels.
 //
-// This function will return [0, 0, 0, 0] in the event that we are unable to
-// determine the extents.
+// If the window's extents are unknown, [0, 0, 0, 0] is returned.
+//
+// If the window is not open yet, [0, 0, 0, 0] is returned.
+//
+// If the window is destroyed, [0, 0, 0, 0] is returned.
 //
 // None of the extents will ever be less than zero.
 func (w *Window) Extents() (left, right, bottom, top int) {
 	w.access.RLock()
 	defer w.access.RUnlock()
 
-	return w.extentLeft, w.extentRight, w.extentBottom, w.extentTop
+	if w.opened && !w.destroyed {
+		return w.extentLeft, w.extentRight, w.extentBottom, w.extentTop
+	}
+	return 0, 0, 0, 0
 }
 
 func (w *Window) trySetFocused(focused bool) bool {

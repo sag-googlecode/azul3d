@@ -8,8 +8,8 @@ import(
 	"fmt"
 )
 
-// We use this type for sorting the ScreenModes in backends
-// ScreenModes are sorted in order by highest resolution, bytes per pixel, and refresh rate.
+// We use this type for sorting the screen modes in order of highest
+// resolution, bytes per pixel, and refresh rate.
 type sortedScreenModes []*ScreenMode
 
 func (s sortedScreenModes) Len() int {
@@ -55,6 +55,16 @@ type ScreenMode struct {
 
 	width, height, bytesPerPixel int
 	refreshRate   float32
+}
+
+func newScreenMode(width, height, bytesPerPixel int, refreshRate float32) *ScreenMode {
+	s := new(ScreenMode)
+	s.NativeScreenMode = newNativeScreenMode()
+	s.width = width
+	s.height = height
+	s.bytesPerPixel = bytesPerPixel
+	s.refreshRate = refreshRate
+	return s
 }
 
 // String returns an nice string representing this ScreenMode
