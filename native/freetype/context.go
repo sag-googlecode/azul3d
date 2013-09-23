@@ -1,7 +1,8 @@
 package freetype
 
 /*
-#cgo LDFLAGS: -lazul3d_freetype
+#cgo windows/amd64 LDFLAGS: libfreetype_windows_amd64.a libpng_windows_amd64.a libz_windows_amd64.a
+#cgo linux/amd64 LDFLAGS: -lazul3d_freetype
 #cgo CFLAGS: -I freetype-2.5.0.1/include/
 
 #include <ft2build.h>
