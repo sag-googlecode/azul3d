@@ -1,7 +1,7 @@
 package freetype
 
 /*
-#cgo windows/amd64 LDFLAGS: libfreetype_windows_amd64.a libpng_windows_amd64.a libz_windows_amd64.a
+#cgo windows/amd64 LDFLAGS: libfreetype_windows_amd64.a libpng_windows_amd64.a libz_windows_amd64.a libbz2_windows_amd64.a
 #cgo linux/amd64 LDFLAGS: libfreetype_linux_amd64.a libpng_linux_amd64.a libz_linux_amd64.a libbz2_linux_amd64.a -lm
 #cgo CFLAGS: -I freetype-2.5.0.1/include/
 
