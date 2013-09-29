@@ -27,7 +27,7 @@ attribute vec4 Color;
 attribute vec4 BoneWeight;
 attribute vec4 TextureCoord0;
 
-uniform uint NumTextureCoords;
+uniform int NumTextureCoords;
 
 varying vec2 tc0;
 
@@ -51,7 +51,7 @@ varying vec2 tc0;
 uniform sampler2D Texture0;
 uniform sampler2D Texture1;
 
-uniform uint NumTextures;
+uniform int NumTextures;
 
 void main()
 {
