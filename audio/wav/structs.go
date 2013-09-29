@@ -4,14 +4,6 @@
 
 package wav
 
-type chunkHeader struct {
-	// Chunk ID, like "RIFF" or "fmt " in ascii
-	ChunkID [4]byte
-
-	// Chunk Size, varies depending on which chunk
-	ChunkSize [4]byte
-}
-
 type factChunk struct {
 	SampleLength [4]byte
 }

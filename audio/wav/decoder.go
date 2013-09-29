@@ -5,14 +5,12 @@
 package wav
 
 import (
-	"bytes"
 	"code.google.com/p/azul3d/audio"
 	"encoding/binary"
+	"unsafe"
 	"errors"
-	"fmt"
-	"io"
 	"sync"
-	"time"
+	"io"
 )
 
 const (
@@ -37,198 +35,280 @@ const (
 type decoder struct {
 	access sync.RWMutex
 
-	format, bitsPerSample, chunkSize uint16
-	buffer                           audio.Samples
+	format, bitsPerSample uint16
+	chunkSize, currentCount uint32
+	dataChunkBegin int32
 
 	r      interface{}
 	rd     io.Reader
 	config *audio.Config
 }
 
-func (d *decoder) Seek(t time.Duration) {
+func (d *decoder) bRead(data interface{}, sz uintptr) error {
+	d.currentCount += uint32(sz)
+	if d.chunkSize > 0 {
+		if d.currentCount > d.chunkSize {
+			return io.EOF
+		}
+	} else {
+		d.dataChunkBegin += int32(sz)
+	}
+	return binary.Read(d.rd, binary.LittleEndian, data)
 }
 
-func (d *decoder) readPCM8(n int) (buf audio.Samples, err error) {
-	if d.buffer == nil || d.buffer.Len() < n {
-		d.buffer = make(audio.PCM8Samples, n)
+// Reads and returns the next RIFF chunk, note that always len(ident) == 4
+// E.g.
+//
+//  "fmt " (notice space).
+//
+// Length is length of chunk data.
+//
+// Returns any read errors.
+func (d *decoder) nextChunk() (ident string, length uint32, err error) {
+	// Read chunk identity, like "RIFF" or "fmt "
+	var chunkIdent [4]byte
+	err = d.bRead(&chunkIdent, unsafe.Sizeof(chunkIdent))
+	if err != nil {
+		return "", 0, err
 	}
-	bb := d.buffer.(audio.PCM8Samples)
+	ident = string(chunkIdent[:])
 
-	for i := 0; i < n; i++ {
-		// Pull one sample from the PCM data stream
-		var sample uint8
+	// Read chunk length
+	err = d.bRead(&length, unsafe.Sizeof(length))
+	if err != nil {
+		return "", 0, err
+	}
+	return
+}
 
-		err = binary.Read(d.rd, binary.LittleEndian, &sample)
+func (d *decoder) Seek(sample uint64) error {
+	rs, ok := d.r.(io.ReadSeeker)
+	if ok {
+		offset := int64(sample * (uint64(d.bitsPerSample) / 8))
+		_, err := rs.Seek(int64(d.dataChunkBegin) + offset, 0)
 		if err != nil {
-			return bb[:i], err
+			return err
+		}
+	}
+	return nil
+}
+
+func (d *decoder) readPCM8(b audio.Buffer) (read int, err error) {
+	bb, bbOk := b.(audio.PCM8Samples)
+
+	for read = 0; read < b.Len(); read++ {
+		// Pull one sample from the data stream
+		var sample audio.PCM8
+
+		err = d.bRead(&sample, unsafe.Sizeof(sample))
+		if err != nil {
+			return
 		}
 
-		bb[i] = audio.PCM8(sample)
+		if bbOk {
+			bb[read] = sample
+		} else {
+			f64 := audio.PCM8ToF64(sample)
+			b.Set(read, f64)
+		}
 	}
 
-	return bb[:n], nil
+	return
 }
 
-func (d *decoder) readPCM16(n int) (buf audio.Samples, err error) {
-	if d.buffer == nil || d.buffer.Len() < n {
-		d.buffer = make(audio.PCM16Samples, n)
-	}
-	bb := d.buffer.(audio.PCM16Samples)
+func (d *decoder) readPCM16(b audio.Buffer) (read int, err error) {
+	bb, bbOk := b.(audio.PCM16Samples)
 
-	for i := 0; i < n; i++ {
-		// Pull one sample from the PCM data stream
+	for read = 0; read < b.Len(); read++ {
+		// Pull one sample from the data stream
 		var sample audio.PCM16
 
-		err = binary.Read(d.rd, binary.LittleEndian, &sample)
+		err = d.bRead(&sample, unsafe.Sizeof(sample))
 		if err != nil {
-			return bb[:i], err
+			return
 		}
 
-		bb[i] = sample
+		if bbOk {
+			bb[read] = sample
+		} else {
+			f64 := audio.PCM16ToF64(sample)
+			b.Set(read, f64)
+		}
 	}
 
-	return bb[:n], nil
+	return
 }
 
-func (d *decoder) readPCM32(n int) (buf audio.Samples, err error) {
-	if d.buffer == nil || d.buffer.Len() < n {
-		d.buffer = make(audio.PCM32Samples, n)
-	}
-	bb := d.buffer.(audio.PCM32Samples)
+func (d *decoder) readPCM24(b audio.Buffer) (read int, err error) {
+	bb, bbOk := b.(audio.PCM32Samples)
 
-	for i := 0; i < n; i++ {
-		// Pull one sample from the PCM data stream
+	for read = 0; read < b.Len(); read++ {
+		// Pull one sample from the data stream
+		var sample [3]uint8
+
+		err = d.bRead(&sample, unsafe.Sizeof(sample))
+		if err != nil {
+			return
+		}
+
+		var ss audio.PCM32
+		if (ss & 0x800000) > 0 {
+			ss |= ^0xffffff
+		}
+
+		if bbOk {
+			bb[read] = ss
+		} else {
+			f64 := audio.PCM32ToF64(ss)
+			b.Set(read, f64)
+		}
+	}
+
+	return
+}
+
+
+func (d *decoder) readPCM32(b audio.Buffer) (read int, err error) {
+	bb, bbOk := b.(audio.PCM32Samples)
+
+	for read = 0; read < b.Len(); read++ {
+		// Pull one sample from the data stream
 		var sample audio.PCM32
 
-		err = binary.Read(d.rd, binary.LittleEndian, &sample)
+		err = d.bRead(&sample, unsafe.Sizeof(sample))
 		if err != nil {
-			return bb[:i], err
+			return
 		}
 
-		bb[i] = sample
+		if bbOk {
+			bb[read] = sample
+		} else {
+			f64 := audio.PCM32ToF64(sample)
+			b.Set(read, f64)
+		}
 	}
 
-	return bb[:n], nil
+	return
 }
 
-func (d *decoder) readFloat32(n int) (buf audio.Samples, err error) {
-	if d.buffer == nil || d.buffer.Len() < n {
-		d.buffer = make(audio.F32Samples, n)
-	}
-	bb := d.buffer.(audio.F32Samples)
+func (d *decoder) readF32(b audio.Buffer) (read int, err error) {
+	bb, bbOk := b.(audio.F32Samples)
 
-	for i := 0; i < n; i++ {
-		// Pull one sample from the PCM data stream
+	for read = 0; read < b.Len(); read++ {
+		// Pull one sample from the data stream
 		var sample audio.F32
 
-		err = binary.Read(d.rd, binary.LittleEndian, &sample)
+		err = d.bRead(&sample, unsafe.Sizeof(sample))
 		if err != nil {
-			return bb[:i], err
+			return
 		}
 
-		bb[i] = sample
+		if bbOk {
+			bb[read] = sample
+		} else {
+			b.Set(read, audio.F64(sample))
+		}
 	}
 
-	return bb[:n], nil
+	return
 }
 
-func (d *decoder) readFloat64(n int) (buf audio.Samples, err error) {
-	if d.buffer == nil || d.buffer.Len() < n {
-		d.buffer = make(audio.F64Samples, n)
-	}
-	bb := d.buffer.(audio.F64Samples)
-
-	for i := 0; i < n; i++ {
-		// Pull one sample from the PCM data stream
+func (d *decoder) readF64(b audio.Buffer) (read int, err error) {
+	for read = 0; read < b.Len(); read++ {
+		// Pull one sample from the data stream
 		var sample audio.F64
 
-		err = binary.Read(d.rd, binary.LittleEndian, &sample)
+		err = d.bRead(&sample, unsafe.Sizeof(sample))
 		if err != nil {
-			return bb[:i], err
+			return
 		}
 
-		bb[i] = sample
+		b.Set(read, sample)
 	}
 
-	return bb[:n], nil
+	return
 }
 
-func (d *decoder) readMuLaw(n int) (buf audio.Samples, err error) {
-	if d.buffer == nil || d.buffer.Len() < n {
-		d.buffer = make(audio.MuLawSamples, n)
-	}
-	bb := d.buffer.(audio.MuLawSamples)
+func (d *decoder) readMuLaw(b audio.Buffer) (read int, err error) {
+	bb, bbOk := b.(audio.MuLawSamples)
 
-	for i := 0; i < n; i++ {
-		// Pull one sample from the MuLaw data stream
+	for read = 0; read < b.Len(); read++ {
+		// Pull one sample from the data stream
 		var sample audio.MuLaw
 
-		err = binary.Read(d.rd, binary.LittleEndian, &sample)
+		err = d.bRead(&sample, unsafe.Sizeof(sample))
 		if err != nil {
-			return bb[:i], err
+			return
 		}
 
-		bb[i] = sample
+		if bbOk {
+			bb[read] = sample
+		} else {
+			p16 := audio.MuLawToPCM16(sample)
+			b.Set(read, audio.PCM16ToF64(p16))
+		}
 	}
 
-	return bb[:n], nil
+	return
 }
 
-func (d *decoder) readALaw(n int) (buf audio.Samples, err error) {
-	if d.buffer == nil || d.buffer.Len() < n {
-		d.buffer = make(audio.ALawSamples, n)
-	}
-	bb := d.buffer.(audio.ALawSamples)
+func (d *decoder) readALaw(b audio.Buffer) (read int, err error) {
+	bb, bbOk := b.(audio.ALawSamples)
 
-	for i := 0; i < n; i++ {
-		// Pull one sample from the ALaw data stream
+	for read = 0; read < b.Len(); read++ {
+		// Pull one sample from the data stream
 		var sample audio.ALaw
 
-		err = binary.Read(d.rd, binary.LittleEndian, &sample)
+		err = d.bRead(&sample, unsafe.Sizeof(sample))
 		if err != nil {
-			return bb[:i], err
+			return
 		}
 
-		bb[i] = sample
+		if bbOk {
+			bb[read] = sample
+		} else {
+			p16 := audio.ALawToPCM16(sample)
+			b.Set(read, audio.PCM16ToF64(p16))
+		}
 	}
 
-	return bb[:n], nil
+	return
 }
 
-func (d *decoder) Read(n int) (buf audio.Samples, err error) {
-	if n <= 0 {
-		panic("Read(): n <= 0")
+func (d *decoder) Read(b audio.Buffer) (read int, err error) {
+	if b.Len() == 0 {
+		return
 	}
 
 	d.access.Lock()
 	defer d.access.Unlock()
 
-	fmt.Println("Read()", n, "samples")
-
 	switch d.format {
 	case wave_FORMAT_PCM:
 		switch d.bitsPerSample {
 		case 8:
-			return d.readPCM8(n)
+			return d.readPCM8(b)
 		case 16:
-			return d.readPCM16(n)
+			return d.readPCM16(b)
+		case 24:
+			return d.readPCM24(b)
 		case 32:
-			return d.readPCM32(n)
+			return d.readPCM32(b)
 		}
 
 	case wave_FORMAT_IEEE_FLOAT:
 		switch d.bitsPerSample {
 		case 32:
-			return d.readFloat32(n)
+			return d.readF32(b)
 		case 64:
-			return d.readFloat64(n)
+			return d.readF64(b)
 		}
 
 	case wave_FORMAT_MULAW:
-		return d.readMuLaw(n)
+		return d.readMuLaw(b)
 
 	case wave_FORMAT_ALAW:
-		return d.readALaw(n)
+		return d.readALaw(b)
 	}
 	return
 }
@@ -245,6 +325,10 @@ func (d *decoder) Config() *audio.Config {
 //
 // This error only happens for audio files containing extensible wav data.
 var ErrUnsupported = errors.New("wav: data format is valid but not supported by decoder")
+
+func to32(b []byte) uint32 {
+	return binary.LittleEndian.Uint32(b)
+}
 
 func to16(b []byte) uint16 {
 	return binary.LittleEndian.Uint16(b)
@@ -265,122 +349,90 @@ func newDecoder(r interface{}) (audio.Decoder, error) {
 		panic("NewDecoder(): Invalid reader type; must be io.Reader or io.ReadSeeker!")
 	}
 
-	// Firstly, read RIFF chunk
-	var riffChunkHeader chunkHeader
-	err := binary.Read(d.rd, binary.LittleEndian, &riffChunkHeader)
-	if err != nil {
-		return nil, err
-	}
+	var(
+		complete bool
 
-	if !bytes.Equal(riffChunkHeader.ChunkID[:], []byte("RIFF")) {
-		return nil, audio.ErrInvalidData
-	}
-
-	var format [4]byte
-	err = binary.Read(d.rd, binary.LittleEndian, &format)
-	if !bytes.Equal(format[:], []byte("WAVE")) {
-		return nil, audio.ErrInvalidData
-	}
-
-	// Secondly, read the format chunk
-	var fmtChunkHeader chunkHeader
-	err = binary.Read(d.rd, binary.LittleEndian, &fmtChunkHeader)
-	if err != nil {
-		return nil, err
-	}
-
-	if !bytes.Equal(fmtChunkHeader.ChunkID[:], []byte("fmt ")) {
-		return nil, audio.ErrInvalidData
-	}
-
-	var (
 		c16 fmtChunk16
 		c18 fmtChunk18
 		c40 fmtChunk40
 	)
-
-	// Always contains the 16-byte chunk
-	err = binary.Read(d.rd, binary.LittleEndian, &c16)
-	if err != nil {
-		return nil, err
-	}
-	d.bitsPerSample = to16(c16.BitsPerSample[:])
-
-	// Sometimes contains extensive 18/40 byte chunks
-	switch to16(fmtChunkHeader.ChunkSize[:]) {
-	case 18:
-		err = binary.Read(d.rd, binary.LittleEndian, &c18)
-		if err != nil {
-			return nil, err
-		}
-	case 40:
-		err = binary.Read(d.rd, binary.LittleEndian, &c40)
-		if err != nil {
-			return nil, err
-		}
-	}
-
-	// Verify format tag
-	ft := to16(c16.FormatTag[:])
-	switch {
-	case ft == wave_FORMAT_PCM && (d.bitsPerSample == 8 || d.bitsPerSample == 16 || d.bitsPerSample == 32):
-		break
-	case ft == wave_FORMAT_IEEE_FLOAT && (d.bitsPerSample == 32 || d.bitsPerSample == 64):
-		break
-	case ft == wave_FORMAT_ALAW && d.bitsPerSample == 8:
-		break
-	case ft == wave_FORMAT_MULAW && d.bitsPerSample == 8:
-		break
-	// We don't support extensible wav files
-	//case wave_FORMAT_EXTENSIBLE:
-	//	break
-	default:
-		return nil, ErrUnsupported
-	}
-
-	// Assign format tag for later (See Read() method)
-	d.format = to16(c16.FormatTag[:])
-
-	// We now have enough information to build the audio configuration
-	d.config = &audio.Config{
-		Channels:   int(to16(c16.Channels[:])),
-		SampleRate: int(to16(c16.SamplesPerSec[:])),
-	}
-
-	// We don't care about format, we just want to know what is next.
-	var factOrData chunkHeader
-	err = binary.Read(d.rd, binary.LittleEndian, &factOrData)
-	if err != nil {
-		return nil, err
-	}
-
-	var dataChunkHeader chunkHeader
-	if bytes.Equal(factOrData.ChunkID[:], []byte("fact")) {
-		// We need to scan fact chunk first.
-		var fact factChunk
-		err = binary.Read(d.rd, binary.LittleEndian, &fact)
+	for !complete {
+		ident, length, err := d.nextChunk()
 		if err != nil {
 			return nil, err
 		}
 
-		// Read the data chunk header now
-		err = binary.Read(d.rd, binary.LittleEndian, &dataChunkHeader)
-		if err != nil {
-			return nil, err
-		}
+		switch ident {
+			case "RIFF":
+				var format [4]byte
+				err = d.bRead(&format, unsafe.Sizeof(format))
+				if string(format[:]) != "WAVE" {
+					return nil, audio.ErrInvalidData
+				}
 
-	} else if bytes.Equal(dataChunkHeader.ChunkID[:], []byte("data")) {
-		// Read the data chunk header now
-		err = binary.Read(d.rd, binary.LittleEndian, &dataChunkHeader)
-		if err != nil {
-			return nil, err
-		}
+			case "fmt ":
+				// Always contains the 16-byte chunk
+				err = d.bRead(&c16, unsafe.Sizeof(c16))
+				if err != nil {
+					return nil, err
+				}
+				d.bitsPerSample = to16(c16.BitsPerSample[:])
 
-	} else {
-		return nil, audio.ErrInvalidData
+				// Sometimes contains extensive 18/40 total byte chunks
+				switch length {
+				case 18:
+					err = d.bRead(&c18, unsafe.Sizeof(c18))
+					if err != nil {
+						return nil, err
+					}
+				case 40:
+					err = d.bRead(&c40, unsafe.Sizeof(c40))
+					if err != nil {
+						return nil, err
+					}
+				}
+
+				// Verify format tag
+				ft := to16(c16.FormatTag[:])
+				switch {
+				case ft == wave_FORMAT_PCM && (d.bitsPerSample == 8 || d.bitsPerSample == 16 || d.bitsPerSample == 24 || d.bitsPerSample == 32):
+					break
+				case ft == wave_FORMAT_IEEE_FLOAT && (d.bitsPerSample == 32 || d.bitsPerSample == 64):
+					break
+				case ft == wave_FORMAT_ALAW && d.bitsPerSample == 8:
+					break
+				case ft == wave_FORMAT_MULAW && d.bitsPerSample == 8:
+					break
+				// We don't support extensible wav files
+				//case wave_FORMAT_EXTENSIBLE:
+				//	break
+				default:
+					return nil, ErrUnsupported
+				}
+
+				// Assign format tag for later (See Read() method)
+				d.format = to16(c16.FormatTag[:])
+
+				// We now have enough information to build the audio configuration
+				d.config = &audio.Config{
+					Channels:   int(to16(c16.Channels[:])),
+					SampleRate: int(to32(c16.SamplesPerSec[:])),
+				}
+
+			case "fact":
+				// We need to scan fact chunk first.
+				var fact factChunk
+				err = d.bRead(&fact, unsafe.Sizeof(fact))
+				if err != nil {
+					return nil, err
+				}
+
+			case "data":
+				// Read the data chunk header now
+				d.chunkSize = length
+				complete = true
+		}
 	}
-
-	d.chunkSize = to16(dataChunkHeader.ChunkSize[:])
 
 	return d, nil
 }
