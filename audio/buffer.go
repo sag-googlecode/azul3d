@@ -212,7 +212,7 @@ type Buffer interface {
 
 // Copy copies copies audio samples from the source buffer to the destination
 // buffer. Returns the number of elements copied, which is the minimum of
-// the dst.Len() and src.Len() values. 
+// the dst.Len() and src.Len() values.
 func Copy(dst Buffer, src Buffer) int {
 	var i int
 	for i = 0; i < src.Len() && i < dst.Len(); i++ {
@@ -220,4 +220,3 @@ func Copy(dst Buffer, src Buffer) int {
 	}
 	return i
 }
-

@@ -55,7 +55,6 @@ func (p PCM8Samples) Slice(low, high int) Buffer {
 	return p[low:high]
 }
 
-
 type (
 	// PCM16 represents an signed 16-bit linear PCM audio sample.
 	PCM16 int16
@@ -131,4 +130,3 @@ func (p PCM32Samples) Set(i int, s F64) {
 func (p PCM32Samples) Slice(low, high int) Buffer {
 	return p[low:high]
 }
-

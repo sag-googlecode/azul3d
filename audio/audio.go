@@ -47,4 +47,3 @@ type Decoder interface {
 	// returned if the decoder does not understand the data in the stream).
 	Config() *Config
 }
-

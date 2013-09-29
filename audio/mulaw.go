@@ -38,7 +38,6 @@ func (p MuLawSamples) Slice(low, high int) Buffer {
 	return p[low:high]
 }
 
-
 const (
 	muLawCBias = 0x84
 	muLawCClip = 32635
