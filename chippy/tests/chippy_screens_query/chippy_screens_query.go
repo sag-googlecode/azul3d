@@ -1,8 +1,9 @@
 // Copyright 2012 Lightpoke. All rights reserved.
 // This source code is subject to the terms and
 // conditions defined in the "License.txt" file.
+// +build tests
 
-// Test application - Queries for all available screens, lists and changes screen modes
+// Test - Queries and lists all available screens, and their modes.
 package main
 
 import (
