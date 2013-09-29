@@ -3,6 +3,7 @@
 // conditions defined in the "License.txt" file.
 // +build tests
 
+// Test - Uses termbox to visualize D* Lite grid pathfinding.
 package main
 
 import(
