@@ -2,7 +2,7 @@
 // This source code is subject to the terms and
 // conditions defined in the "License.txt" file.
 
-// Package Azul3D is a 3D game engine.
+// Package azul3d is a 3D game engine.
 //
 // This package is a very thin wrapper around the various other sub-packages
 // found inside this directory.
