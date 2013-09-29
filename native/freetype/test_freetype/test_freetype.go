@@ -3,7 +3,7 @@
 // conditions defined in the "License.txt" file.
 // +build tests
 
-// Test application - Opens and decodes a wav file.
+// Test - Load a font, renders a glyph, displays some metrics.
 package main
 
 import (
