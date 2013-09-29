@@ -16,15 +16,26 @@ type (
 	ALawSamples []ALaw
 )
 
-// Implements Samples interface.
+// Implements Buffer interface.
 func (p ALawSamples) Len() int {
 	return len(p)
 }
 
-// Implements Samples interface.
+// Implements Buffer interface.
 func (p ALawSamples) At(i int) F64 {
 	p16 := ALawToPCM16(p[i])
 	return F64(p16) / F64(math.MaxInt16)
+}
+
+// Implements Buffer interface.
+func (p ALawSamples) Set(i int, s F64) {
+	p16 := F64ToPCM16(s)
+	p[i] = PCM16ToALaw(p16)
+}
+
+// Implements Buffer interface.
+func (p ALawSamples) Slice(low, high int) Buffer {
+	return p[low:high]
 }
 
 const (

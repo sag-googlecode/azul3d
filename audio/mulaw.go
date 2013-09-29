@@ -16,16 +16,28 @@ type (
 	MuLawSamples []MuLaw
 )
 
-// Implements Samples interface.
+// Implements Buffer interface.
 func (p MuLawSamples) Len() int {
 	return len(p)
 }
 
-// Implements Samples interface.
+// Implements Buffer interface.
 func (p MuLawSamples) At(i int) F64 {
 	p16 := MuLawToPCM16(p[i])
 	return F64(p16) / F64(math.MaxInt16)
 }
+
+// Implements Buffer interface.
+func (p MuLawSamples) Set(i int, s F64) {
+	p16 := F64ToPCM16(s)
+	p[i] = PCM16ToMuLaw(p16)
+}
+
+// Implements Buffer interface.
+func (p MuLawSamples) Slice(low, high int) Buffer {
+	return p[low:high]
+}
+
 
 const (
 	muLawCBias = 0x84

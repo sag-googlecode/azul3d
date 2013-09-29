@@ -13,15 +13,27 @@ type (
 	F32Samples []F32
 )
 
-// Implements Samples interface.
+// Implements Buffer interface.
 func (p F32Samples) Len() int {
 	return len(p)
 }
 
-// Implements Samples interface.
+// Implements Buffer interface.
 func (p F32Samples) At(i int) F64 {
 	return F64(p[i])
 }
+
+// Implements Buffer interface.
+func (p F32Samples) Set(i int, s F64) {
+	p[i] = F32(s)
+}
+
+// Implements Buffer interface.
+func (p F32Samples) Slice(low, high int) Buffer {
+	return p[low:high]
+}
+
+
 
 type (
 	// F64 represents an 64-bit floating-point linear audio sample in the range
@@ -32,12 +44,23 @@ type (
 	F64Samples []F64
 )
 
-// Implements Samples interface.
+// Implements Buffer interface.
 func (p F64Samples) Len() int {
 	return len(p)
 }
 
-// Implements Samples interface.
+// Implements Buffer interface.
 func (p F64Samples) At(i int) F64 {
 	return p[i]
 }
+
+// Implements Buffer interface.
+func (p F64Samples) Set(i int, s F64) {
+	p[i] = s
+}
+
+// Implements Buffer interface.
+func (p F64Samples) Slice(low, high int) Buffer {
+	return p[low:high]
+}
+
