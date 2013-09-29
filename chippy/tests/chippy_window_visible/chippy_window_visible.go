@@ -1,8 +1,9 @@
 // Copyright 2012 Lightpoke. All rights reserved.
 // This source code is subject to the terms and
 // conditions defined in the "License.txt" file.
+// +build tests
 
-// Test application - Opens two windows, changes each of their visibile properties
+// Test - Opens two windows, changes their visibility properties.
 package main
 
 import (

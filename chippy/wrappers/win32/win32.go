@@ -1,10 +1,8 @@
 // Copyright 2012 Lightpoke. All rights reserved.
 // This source code is subject to the terms and
 // conditions defined in the "License.txt" file.
-
 // +build windows
 
-// Do not use - Wrappers around very specific win32 APIs.
 package win32
 
 // Windows Type Information:

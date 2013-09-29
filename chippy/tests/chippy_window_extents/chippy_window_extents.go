@@ -1,8 +1,9 @@
 // Copyright 2012 Lightpoke. All rights reserved.
 // This source code is subject to the terms and
 // conditions defined in the "License.txt" file.
+// +build tests
 
-// Test application - Prints the extents of an window's region
+// Test - Prints the extents of an window's region.
 package main
 
 import (

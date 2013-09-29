@@ -1,8 +1,9 @@
 // Copyright 2012 Lightpoke. All rights reserved.
 // This source code is subject to the terms and
 // conditions defined in the "License.txt" file.
+// +build tests
 
-// Test application - Opens an single window on the specified screen
+// Test - Opens an single window on the specified screen.
 package main
 
 // Note: On Windows build with:
