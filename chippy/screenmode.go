@@ -4,7 +4,7 @@
 
 package chippy
 
-import(
+import (
 	"fmt"
 )
 
@@ -54,7 +54,7 @@ type ScreenMode struct {
 	*NativeScreenMode
 
 	width, height, bytesPerPixel int
-	refreshRate   float32
+	refreshRate                  float32
 }
 
 func newScreenMode(width, height, bytesPerPixel int, refreshRate float32) *ScreenMode {

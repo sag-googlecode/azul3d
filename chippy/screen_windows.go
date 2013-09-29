@@ -21,7 +21,6 @@ func newNativeScreenMode() *NativeScreenMode {
 	return m
 }
 
-
 type NativeScreen struct {
 	access sync.RWMutex
 
@@ -215,7 +214,7 @@ func backend_doScreens() (screens []*Screen) {
 							screen := newScreen(name, physicalWidth, physicalHeight, modes, currentMode)
 							screen.NativeScreen.w32GraphicsDeviceName = w32GraphicsDeviceName
 							screen.NativeScreen.w32MonitorDeviceName = dd.GetDeviceName()
-							if (gflags & win32.DISPLAY_DEVICE_PRIMARY_DEVICE) > 0 && j == 1 {
+							if (gflags&win32.DISPLAY_DEVICE_PRIMARY_DEVICE) > 0 && j == 1 {
 								screen.NativeScreen.isDefaultScreen = true
 							}
 							screen.NativeScreen.dc = dc

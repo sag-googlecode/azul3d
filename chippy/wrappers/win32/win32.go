@@ -37,9 +37,9 @@ LPTSTR macro_MAKEINTRESOURCE(WORD wInteger);
 import "C"
 
 import (
+	"reflect"
 	"sync"
 	"unicode/utf16"
-	"reflect"
 	"unsafe"
 )
 
@@ -81,7 +81,7 @@ func StringToLPTSTR(g string) C.LPTSTR {
 	nBytes := C.size_t(len(u16) * 2)
 
 	// Allocate a buffer
-	cstr := (C.LPTSTR)(C.calloc(1, nBytes + 2)) // +2 for uint16 NULL terminator
+	cstr := (C.LPTSTR)(C.calloc(1, nBytes+2)) // +2 for uint16 NULL terminator
 
 	// Memcpy the UTF-16 encoded string into the buffer
 	C.memcpy(unsafe.Pointer(cstr), unsafe.Pointer(&u16[0]), nBytes)

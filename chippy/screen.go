@@ -5,9 +5,9 @@
 package chippy
 
 import (
+	"fmt"
 	"sort"
 	"sync"
-	"fmt"
 )
 
 // Screen represents an single physical screen device. It is only possible to
@@ -15,11 +15,11 @@ import (
 type Screen struct {
 	*NativeScreen
 
-	access sync.RWMutex
-	name string
+	access                        sync.RWMutex
+	name                          string
 	physicalWidth, physicalHeight float32
-	modes sortedScreenModes
-	mode, originalMode *ScreenMode
+	modes                         sortedScreenModes
+	mode, originalMode            *ScreenMode
 }
 
 func newScreen(name string, physicalWidth, physicalHeight float32, modes []*ScreenMode, currentMode *ScreenMode) *Screen {
