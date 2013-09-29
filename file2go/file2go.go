@@ -2,7 +2,7 @@
 // This source code is subject to the terms and
 // conditions defined in the "License.txt" file.
 
-// file2go is an simple tool to convert an binary file to an go source file as an []byte
+// file2go is an simple tool to convert an binary file to an Go source file.
 package main
 
 import (
