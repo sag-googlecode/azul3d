@@ -2,6 +2,7 @@
 // This source code is subject to the terms and
 // conditions defined in the "License.txt" file.
 
+// embed is a small tool to embed a single file within a Go binary.
 package main
 
 import (

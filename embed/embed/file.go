@@ -2,6 +2,7 @@
 // This source code is subject to the terms and
 // conditions defined in the "License.txt" file.
 
+// Package embed allows for creating an embedded file within a Go binary.
 package embed
 
 import (
