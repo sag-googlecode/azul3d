@@ -1,18 +1,18 @@
 package aio
 
-import(
+import (
 	"code.google.com/p/azul3d/audio"
-	"sync"
 	"fmt"
+	"sync"
 )
 
 // Output represents a generic audio output device.
 type Output struct {
 	*nativeOutput
 
-	access sync.RWMutex
+	access     sync.RWMutex
 	bufferSize int
-	config *audio.Config
+	config     *audio.Config
 
 	// Name is the descriptive name of the audio output device.
 	Name string
@@ -24,8 +24,8 @@ type Output struct {
 func newOutput(name string, audioType audio.Type) *Output {
 	return &Output{
 		nativeOutput: new(nativeOutput),
-		Name: name,
-		Type: audioType,
+		Name:         name,
+		Type:         audioType,
 	}
 }
 

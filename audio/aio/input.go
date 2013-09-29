@@ -1,6 +1,6 @@
 package aio
 
-import(
+import (
 	"code.google.com/p/azul3d/audio"
 	"fmt"
 )
@@ -19,8 +19,8 @@ type Input struct {
 func newInput(name string, audioType audio.Type) *Input {
 	return &Input{
 		nativeInput: new(nativeInput),
-		Name: name,
-		AudioType: audioType,
+		Name:        name,
+		AudioType:   audioType,
 	}
 }
 
@@ -35,4 +35,3 @@ func (i *Input) String() string {
 func (i *Input) Equals(other *Input) bool {
 	return i.nativeInput.equals(other.nativeInput)
 }
-

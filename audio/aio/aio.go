@@ -1,20 +1,20 @@
 // Package aio provides access to audio input and output devices.
 package aio
 
-import(
-	"sync"
-	"log"
+import (
 	"io"
 	"io/ioutil"
+	"log"
+	"sync"
 )
 
-var(
+var (
 	theLoggerAccess sync.RWMutex
-	theLogger *log.Logger
+	theLogger       *log.Logger
 
-	cacheAccess sync.RWMutex
-	cachedInputs []*Input
-	cachedOutputs []*Output
+	cacheAccess                             sync.RWMutex
+	cachedInputs                            []*Input
+	cachedOutputs                           []*Output
 	cachedDefaultInput, cachedDefaultOutput int
 )
 
@@ -94,4 +94,3 @@ func init() {
 	SetDebugOutput(ioutil.Discard)
 	Refresh()
 }
-

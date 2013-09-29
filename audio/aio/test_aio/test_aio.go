@@ -1,14 +1,14 @@
 // Test - Plays audio data using aio package.
 package main
 
-import(
-	_ "code.google.com/p/azul3d/audio/wav"
-	"code.google.com/p/azul3d/audio/aio"
+import (
 	"code.google.com/p/azul3d/audio"
-	"time"
-	"math"
+	"code.google.com/p/azul3d/audio/aio"
+	_ "code.google.com/p/azul3d/audio/wav"
 	"log"
+	"math"
 	"os"
+	"time"
 )
 
 var sineCount int
@@ -68,8 +68,8 @@ func main() {
 
 	playPause := make(chan bool)
 	go func() {
-		for{
-			select{
+		for {
+			select {
 			case <-playPause:
 				log.Println("Pause")
 				// We got paused, wait again untill play
@@ -104,7 +104,7 @@ func main() {
 		}
 	}()
 
-	for{
+	for {
 		// Wait 6 seconds
 		time.Sleep(6 * time.Second)
 
@@ -121,4 +121,3 @@ func main() {
 		time.Sleep(6 * time.Second)
 	}
 }
-

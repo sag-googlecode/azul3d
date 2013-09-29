@@ -31,15 +31,15 @@ BOOL audioDSEnumCallback(LPGUID, LPTSTR, LPTSTR, LPVOID);
 */
 import "C"
 
-import(
+import (
 	"code.google.com/p/azul3d/audio"
-	"unicode/utf16"
-	"runtime"
-	"reflect"
-	"unsafe"
 	"errors"
-	"time"
 	"fmt"
+	"reflect"
+	"runtime"
+	"time"
+	"unicode/utf16"
+	"unsafe"
 )
 
 // Decodes a UTF-16 encoded C.LPTSTR/C.LPWSTR to a UTF-8 encoded Go string.
@@ -78,7 +78,7 @@ func stringToLPTSTR(g string) C.LPTSTR {
 	nBytes := C.size_t(len(u16) * 2)
 
 	// Allocate a buffer
-	cstr := (C.LPTSTR)(C.calloc(1, nBytes + 2)) // +2 for uint16 NULL terminator
+	cstr := (C.LPTSTR)(C.calloc(1, nBytes+2)) // +2 for uint16 NULL terminator
 
 	// Memcpy the UTF-16 encoded string into the buffer
 	C.memcpy(unsafe.Pointer(cstr), unsafe.Pointer(&u16[0]), nBytes)
@@ -145,9 +145,8 @@ func errString(c C.HRESULT) (err error) {
 	return fmt.Errorf("Unknown error 0x%X", c)
 }
 
-
 type enumContext struct {
-	outputs []*Output
+	outputs       []*Output
 	defaultOutput int
 }
 
@@ -196,8 +195,8 @@ func audioDSEnumCallback(guid C.LPGUID, cdescription, cmodule C.LPTSTR, contextP
 	}
 
 	// Determine audio type
-	var(
-		audioType audio.Type
+	var (
+		audioType     audio.Type
 		bitsPerSample int
 	)
 	if (dsCaps.dwFlags & C.DSCAPS_PRIMARY16BIT) > 0 {
@@ -275,20 +274,20 @@ func (d *nativeInput) equals(other *nativeInput) bool {
 }
 
 type nativeOutput struct {
-	ds *C.IDirectSound
-	guid *C.GUID
+	ds            *C.IDirectSound
+	guid          *C.GUID
 	bitsPerSample int
-	audioType audio.Type
+	audioType     audio.Type
 
 	configError error
-	config *audio.Config
-	dsBuffer *C.IDirectSoundBuffer
+	config      *audio.Config
+	dsBuffer    *C.IDirectSoundBuffer
 
 	// Used for write() calls.
 	bufferSize, bufferSizeBytes int
-	wBuffer chan audio.Buffer
-	wSamples chan int
-	wError chan error
+	wBuffer                     chan audio.Buffer
+	wSamples                    chan int
+	wError                      chan error
 }
 
 func (d *nativeOutput) equals(other *nativeOutput) bool {
@@ -309,9 +308,9 @@ func (o *nativeOutput) setConfig(bufferSize int, config *audio.Config) {
 	o.bufferSizeBytes = bufferSize * 2 * (o.bitsPerSample / 8)
 
 	o.config = config
-	var(
+	var (
 		description C.DSBUFFERDESC
-		waveFormat C.WAVEFORMATEX
+		waveFormat  C.WAVEFORMATEX
 	)
 	waveFormat.wFormatTag = C.WAVE_FORMAT_PCM
 	waveFormat.nSamplesPerSec = C.DWORD(config.SampleRate)
@@ -354,25 +353,25 @@ func (o *nativeOutput) setConfig(bufferSize int, config *audio.Config) {
 }
 
 func (o *nativeOutput) feedToDirectSound() {
-	var(
-		e error
+	var (
+		e        error
 		typeSize = o.bitsPerSample / 8
 
 		bPtr, bPtr2 C.LPVOID
-		bSz, bSz2 C.DWORD
+		bSz, bSz2   C.DWORD
 
 		samples unsafe.Pointer
 
-		firstIteration = true
+		firstIteration                                         = true
 		playCursor, safeWriteCursor, writeCursor, lastWriteEnd C.DWORD
 
 		stopTime = 200 * time.Millisecond
 	)
 
-	for{
+	for {
 		// Wait for someone to write to this output.
 		var buf audio.Buffer
-		select{
+		select {
 		case buf = <-o.wBuffer:
 			stopTime = 200 * time.Millisecond
 
@@ -407,14 +406,14 @@ func (o *nativeOutput) feedToDirectSound() {
 		// to.
 		v := audio.Convert(buf, o.audioType)
 		switch o.audioType {
-			case audio.TYPE_PCM8:
-				// Our buffer is PCM8 audio.
-				samples = unsafe.Pointer(&v.(audio.PCM8Samples)[0])
-			case audio.TYPE_PCM16:
-				// Our buffer is PCM16 audio
-				samples = unsafe.Pointer(&v.(audio.PCM16Samples)[0])
-			default:
-				panic("Buffer audio type unknown? This shouldn't happen.")
+		case audio.TYPE_PCM8:
+			// Our buffer is PCM8 audio.
+			samples = unsafe.Pointer(&v.(audio.PCM8Samples)[0])
+		case audio.TYPE_PCM16:
+			// Our buffer is PCM16 audio
+			samples = unsafe.Pointer(&v.(audio.PCM16Samples)[0])
+		default:
+			panic("Buffer audio type unknown? This shouldn't happen.")
 		}
 
 		var writeEnd C.DWORD
@@ -447,8 +446,6 @@ func (o *nativeOutput) feedToDirectSound() {
 			return
 		}
 
-
-
 		// Write to buffer
 		C.memcpy(unsafe.Pointer(bPtr), samples, C.size_t(bSz))
 
@@ -456,8 +453,6 @@ func (o *nativeOutput) feedToDirectSound() {
 		//C.memcpy(unsafe.Pointer(bPtr2), samples, C.size_t(bSz2))
 		writeCursor += bytesToCopy
 		writeCursor = C.DWORD(int(writeCursor) % o.bufferSizeBytes)
-
-
 
 		// Unlock the buffer.
 		e = errString(C.mIDirectSoundBuffer_Unlock(o.dsBuffer, bPtr, bSz, bPtr2, bSz2))
@@ -484,16 +479,6 @@ func (o *nativeOutput) write(b audio.Buffer) (wrote int, err error) {
 	err = <-o.wError
 	return
 }
-
-
-
-
-
-
-
-
-
-
 
 /*
 type nativeBuffer struct {
