@@ -994,7 +994,10 @@ func (w *NativeWindow) doUpdateStyle() {
 func (w *NativeWindow) doSetWindowPos() {
 	// win32.SWP_ASYNCWINDOWPOS|win32.SWP_FRAMECHANGED|win32.SWP_NOMOVE|win32.SWP_NOSIZE|win32.SWP_NOZORDER|win32.SWP_NOOWNERZORDER
 
-	extentLeft, extentRight, extentBottom, extentTop := w.r.Extents()
+	extentLeft := w.r.extentLeft
+	extentRight := w.r.extentRight
+	extentBottom := w.r.extentBottom
+	extentTop := w.r.extentTop
 	wX, wY := w.r.Position()
 	x := win32.Int(wX - int(extentLeft))
 	y := win32.Int(wY - int(extentTop))
