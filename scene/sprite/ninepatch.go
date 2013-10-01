@@ -250,7 +250,6 @@ func Ninepatch(p *Patches, r *Regions, hint geom.Hint) *geom.Mesh {
 
 	return &geom.Mesh{
 		Hint:      hint,
-		Primitive: geom.Triangles,
 		Vertices:  vertices,
 		TextureCoords: [][]texture.Coord{
 			textureCoords,

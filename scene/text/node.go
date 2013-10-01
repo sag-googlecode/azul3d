@@ -165,7 +165,6 @@ func (t *textObject) update() {
 	updatedText := scene.New("Text")
 	geom.Add(updatedText, &geom.Mesh{
 		Hint:      geom.Dynamic,
-		Primitive: geom.Triangles,
 		Vertices:  verts,
 		TextureCoords: [][]texture.Coord{
 			tcs,

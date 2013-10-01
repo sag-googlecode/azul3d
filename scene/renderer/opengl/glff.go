@@ -315,25 +315,11 @@ func (r *GLFFRenderer) drawGeom(current *sortedGeom) {
 			count++
 		}
 
-		prim := uint32(opengl.TRIANGLES)
-		switch g.Primitive {
-		case geom.Triangles:
-			break
-		case geom.TriangleStrips:
-			prim = opengl.TRIANGLE_STRIP
-		case geom.Points:
-			prim = opengl.POINTS
-		case geom.Lines:
-			prim = opengl.LINES
-		case geom.LineStrips:
-			prim = opengl.LINE_STRIP
-		}
-
 		if len(g.Indices) > 0 {
 			r.gl.BindBuffer(opengl.ELEMENT_ARRAY_BUFFER, bm.Indices)
-			r.gl.DrawElements(prim, int32(len(g.Indices)), opengl.UNSIGNED_INT, nil)
+			r.gl.DrawElements(opengl.TRIANGLES, int32(len(g.Indices)), opengl.UNSIGNED_INT, nil)
 		} else {
-			r.gl.DrawArrays(prim, 0, int32(len(g.Vertices)))
+			r.gl.DrawArrays(opengl.TRIANGLES, 0, int32(len(g.Vertices)))
 		}
 	}
 }

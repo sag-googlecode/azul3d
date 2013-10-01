@@ -18,8 +18,9 @@ func Card(left, right, bottom, top math.Real, tex texture.Region, hint geom.Hint
 		0, // Top Left
 		2, // Bottom Left
 		3, // Bottom Right
-		1, // Top Right
 		0, // Top Left
+		3, // Bottom Right
+		1, // Top Right
 	}
 
 	vertices := []geom.Vertex{
@@ -52,7 +53,6 @@ func Card(left, right, bottom, top math.Real, tex texture.Region, hint geom.Hint
 
 	return &geom.Mesh{
 		Hint:      hint,
-		Primitive: geom.TriangleStrips,
 		Indices:   indices,
 		Vertices:  vertices,
 		TextureCoords: [][]texture.Coord{

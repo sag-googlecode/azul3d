@@ -18,7 +18,6 @@ type Mesh struct {
 
 	Hint      Hint
 	Hidden    bool
-	Primitive Primitive
 
 	Indices       []uint32
 	Vertices      []Vertex
