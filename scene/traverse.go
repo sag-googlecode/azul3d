@@ -4,6 +4,21 @@
 
 package scene
 
+func (n *Node) traverse(callback func(index int, current *Node) bool) bool {
+	cont := callback(0, n)
+	if !cont {
+		return false
+	}
+
+	for _, child := range n.Children() {
+		cont = child.traverse(callback)
+		if !cont {
+			return false
+		}
+	}
+	return cont
+}
+
 // Traverse allows you to traverse the scene graph in an generic easy-to-use way; it works by
 // calling the specified function at each node who makes up the scene graph.
 //
@@ -38,12 +53,5 @@ package scene
 //  each(1, J)
 //
 func (n *Node) Traverse(callback func(index int, current *Node) bool) {
-	cont := callback(0, n)
-	if !cont {
-		return
-	}
-
-	for _, child := range n.Children() {
-		child.Traverse(callback)
-	}
+	n.traverse(callback)
 }
