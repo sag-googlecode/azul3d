@@ -66,7 +66,7 @@
 //  answer here.
 //
 // Q: What are those sub-packages wrappers/... ? Can I use those?
-//  They provide suupport code that Chippy uses internally.
+//  They provide support code that Chippy uses internally.
 //
 //  You should not use them.
 //
