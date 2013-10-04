@@ -164,8 +164,8 @@ func (t *textObject) update() {
 	// Create new node
 	updatedText := scene.New("Text")
 	geom.Add(updatedText, &geom.Mesh{
-		Hint:      geom.Dynamic,
-		Vertices:  verts,
+		Hint:     geom.Dynamic,
+		Vertices: verts,
 		TextureCoords: [][]texture.Coord{
 			tcs,
 		},
