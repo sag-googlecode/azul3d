@@ -54,11 +54,6 @@ func (n *Node) PrintTree() {
 //
 //  [B A]
 func (n *Node) Parents() []*Node {
-	// FIXME
-	//n.access.Lock()
-	//n.parents = nil
-	//n.access.Unlock()
-
 	n.access.RLock()
 	if n.parents != nil {
 		defer n.access.RUnlock()
@@ -119,11 +114,6 @@ func (n *Node) setParent(parent *Node) {
 	n.access.Lock()
 	defer n.access.Unlock()
 
-	// Since parent is changing, we need to recursively clear the active props
-	// of this node and all children nodes, as they can rely on the previous
-	// parent.
-	n.doRecursiveClearActiveProps()
-
 	// Assign new parent
 	n.parent = parent
 }
@@ -134,6 +124,11 @@ func (n *Node) SetParent(parent *Node) {
 	}
 	n.setParent(parent)
 	n.checkForCircular()
+
+	// Since parent is changing, we need to recursively clear the active props
+	// of this node and all children nodes, as they can rely on the previous
+	// parent.
+	n.doRecursiveClearActiveProps()
 }
 
 func (n *Node) Parent() *Node {

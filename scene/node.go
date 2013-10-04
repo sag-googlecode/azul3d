@@ -21,7 +21,7 @@ type Node struct {
 	name                   string
 	parent                 *Node
 	parents                []*Node
-	children               map[*Node]bool
+	children               []*Node
 	tags                   map[interface{}]interface{}
 	props, activePropCache map[interface{}]interface{}
 	forcedProps            map[interface{}]bool
@@ -39,14 +39,8 @@ func (n *Node) Copy() *Node {
 	n.access.RLock()
 	defer n.access.RUnlock()
 
-	var children map[*Node]bool
-	if n.children != nil {
-		children = make(map[*Node]bool, len(n.children))
-		for child, _ := range n.children {
-			childCopy := child.Copy()
-			children[childCopy] = true
-		}
-	}
+	children := make([]*Node, len(n.children))
+	copy(children, n.children)
 
 	var tags map[interface{}]interface{}
 	if n.tags != nil {
@@ -75,7 +69,7 @@ func (n *Node) Copy() *Node {
 
 	// In an Copy() we don't preserve parents, but we do for all our children (
 	// and distant ones, too).
-	for child, _ := range children {
+	for _, child := range children {
 		child.SetParent(copy)
 	}
 
@@ -84,6 +78,8 @@ func (n *Node) Copy() *Node {
 
 func (n *Node) doDetatch() {
 	n.doRemoveChildren()
+
+	n.parent = nil
 
 	// Inform of parents changing
 	n.doRecursiveClearActiveProps()
@@ -107,7 +103,7 @@ func (n *Node) Destroy() {
 
 	// Once we detatch this node, it will have no children, so defer destroying
 	// the child node.
-	for child, _ := range n.children {
+	for _, child := range n.children {
 		defer child.Destroy()
 	}
 

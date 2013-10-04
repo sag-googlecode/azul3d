@@ -56,7 +56,7 @@ func (n *Node) clearActiveProps() {
 
 func (n *Node) doRecursiveClearActiveProps() {
 	n.doClearActiveProps()
-	for child, _ := range n.children {
+	for _, child := range n.children {
 		child.doRecursiveClearActiveProps()
 	}
 }
