@@ -43,6 +43,22 @@ type Shader struct {
 	notifiers []chan bool
 }
 
+func (s *Shader) Copy() *Shader {
+	cpy := new(Shader)
+	cpy.name = s.name
+	cpy.clearOnLoad = s.clearOnLoad
+	cpy.vertSource = s.vertSource
+	cpy.fragSource = s.fragSource
+	cpy.error = s.error
+
+	cpy.inputs = make(map[string]interface{})
+	for input, value := range s.inputs {
+		cpy.inputs[input] = value
+		cpy.changed = append(cpy.changed, input)
+	}
+	return cpy
+}
+
 func (s *Shader) SetInput(name string, value interface{}) {
 	switch value.(type) {
 	case float32:
@@ -255,7 +271,7 @@ func (s *Shader) NativeIdentity() interface{} {
 // SetClearOnLoad specifies weather or not to clear the source of this shader
 // when it is loaded.
 //
-// Default: true
+// Default: false
 func (s *Shader) SetClearOnLoad(clearOnLoad bool) {
 	s.Lock()
 	defer s.Unlock()
@@ -266,7 +282,7 @@ func (s *Shader) SetClearOnLoad(clearOnLoad bool) {
 // ClearOnLoad tells weather or not the source of this shader will be cleared
 // when it is loaded.
 //
-// Default: true
+// Default: false
 func (s *Shader) ClearOnLoad() bool {
 	s.RLock()
 	defer s.RUnlock()
@@ -335,7 +351,6 @@ func (s *Shader) Error() []byte {
 func New(name string) *Shader {
 	s := new(Shader)
 	s.name = name
-	s.clearOnLoad = true
 	s.inputs = make(map[string]interface{})
 	return s
 }
