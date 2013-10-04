@@ -8,7 +8,7 @@ import (
 	"code.google.com/p/azul3d/native/opengl/1.0"
 )
 
-func (r *GLFFRenderer) GPUName() string {
+func (r *Renderer) GPUName() string {
 	if len(r.gpuName) > 0 {
 		return r.gpuName
 	}
@@ -16,7 +16,7 @@ func (r *GLFFRenderer) GPUName() string {
 	return r.gpuName
 }
 
-func (r *GLFFRenderer) MaxTextureCoords() int {
+func (r *Renderer) MaxTextureCoords() int {
 	if r.maxTextureCoords != 0 {
 		return r.maxTextureCoords
 	}
@@ -27,7 +27,7 @@ func (r *GLFFRenderer) MaxTextureCoords() int {
 	return r.maxTextureCoords
 }
 
-func (r *GLFFRenderer) MaxTextureLayers() int {
+func (r *Renderer) MaxTextureLayers() int {
 	if r.maxTextureLayers != 0 {
 		return r.maxTextureLayers
 	}
@@ -38,7 +38,7 @@ func (r *GLFFRenderer) MaxTextureLayers() int {
 	return r.maxTextureLayers
 }
 
-func (r *GLFFRenderer) MaxTextureSize() int {
+func (r *Renderer) MaxTextureSize() int {
 	if r.maxTextureSize != 0 {
 		return r.maxTextureSize
 	}

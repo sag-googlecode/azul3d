@@ -37,7 +37,7 @@ type GLShader struct {
 	Program, Vertex, Fragment uint32
 }
 
-type GLFFRenderer struct {
+type Renderer struct {
 	dcMakeCurrent, lcMakeCurrent func(current bool)
 	lcAccess                     sync.Mutex
 	gl                           *opengl.Context
@@ -49,27 +49,25 @@ type GLFFRenderer struct {
 	meshesToFreeAccess sync.RWMutex
 	meshesToFree       []*GLBufferedMesh
 
-	scissorStack [][]uint
-	cameraStack  []*scene.Node
+	cameraStack []*scene.Node
 
 	lastRegion                                                          *util.Region
 	lastColorClear                                                      *math.Vec4
 	lastDepthClear                                                      math.Real
 	lastStencilClear                                                    uint
-	lastScissorX, lastScissorY, lastScissorWidth, lastScissorHeight     uint
 	lastViewportX, lastViewportY, lastViewportWidth, lastViewportHeight uint
 
 	maxTextureCoords, maxTextureLayers, maxTextureSize, maxMemoryBytes int
 	gpuName                                                            string
 }
 
-func (r *GLFFRenderer) pushCamera(cam *scene.Node) {
+func (r *Renderer) pushCamera(cam *scene.Node) {
 	if cam != nil {
 		r.cameraStack = append(r.cameraStack, cam)
 	}
 }
 
-func (r *GLFFRenderer) popCamera() *scene.Node {
+func (r *Renderer) popCamera() *scene.Node {
 	if len(r.cameraStack) > 0 {
 		last := r.cameraStack[len(r.cameraStack)-1]
 		r.cameraStack = r.cameraStack[:len(r.cameraStack)-1]
@@ -78,7 +76,7 @@ func (r *GLFFRenderer) popCamera() *scene.Node {
 	return nil
 }
 
-func (r *GLFFRenderer) useCamera(camNode *scene.Node) {
+func (r *Renderer) useCamera(camNode *scene.Node) {
 	lens := camera.Lens(camNode)
 	mat := lens.Projection()
 
@@ -95,15 +93,11 @@ func (r *GLFFRenderer) useCamera(camNode *scene.Node) {
 	r.gl.MatrixMode(opengl.MODELVIEW)
 }
 
-func (r *GLFFRenderer) useRegion(region *util.Region) {
+func (r *Renderer) useRegion(region *util.Region) {
 	if r.lastRegion != nil && r.lastRegion.Id() == region.Id() {
 		return
 	}
 	r.lastRegion = region
-
-	if debug {
-		logf("REGION %v", region)
-	}
 
 	x, y, width, height := region.Region()
 	r.viewport(x, y, int(width), int(height))
@@ -128,16 +122,11 @@ func (r *GLFFRenderer) useRegion(region *util.Region) {
 
 	if clearFlags != 0 {
 		// Restrict clear to region (viewport) area
-		r.pushScissor(x, y, width, height, false)
-		if debug {
-			logf("glClear(...)")
-		}
 		r.gl.Clear(clearFlags)
-		r.popScissor()
 	}
 }
 
-func (r *GLFFRenderer) drawGeom(current *sortedGeom) {
+func (r *Renderer) drawGeom(current *sortedGeom) {
 	g := current.geom
 
 	if g.IsHidden() {
@@ -324,7 +313,7 @@ func (r *GLFFRenderer) drawGeom(current *sortedGeom) {
 	}
 }
 
-func (r *GLFFRenderer) loadTexture(t texture.Type, now bool) {
+func (r *Renderer) loadTexture(t texture.Type, now bool) {
 	if !texture.IsValid(t) {
 		panic("LoadTexture(): Invalid texture type!")
 	}
@@ -393,11 +382,11 @@ func (r *GLFFRenderer) loadTexture(t texture.Type, now bool) {
 //
 // But we may push it to an different thread if we wish to (we want to, of
 // course).
-func (r *GLFFRenderer) LoadTexture(t texture.Type) {
+func (r *Renderer) LoadTexture(t texture.Type) {
 	r.loadTexture(t, false)
 }
 
-func (r *GLFFRenderer) loadMesh(g *geom.Mesh, now bool) {
+func (r *Renderer) loadMesh(g *geom.Mesh, now bool) {
 	doUpdateMesh := func() {
 		bm := g.NativeIdentity().(*GLBufferedMesh)
 
@@ -814,11 +803,11 @@ func (r *GLFFRenderer) loadMesh(g *geom.Mesh, now bool) {
 //
 // But we may push it to an different thread if we wish to (we want to, of
 // course).
-func (r *GLFFRenderer) LoadMesh(m *geom.Mesh) {
+func (r *Renderer) LoadMesh(m *geom.Mesh) {
 	r.loadMesh(m, false)
 }
 
-func (r *GLFFRenderer) updateShaderInput(gls *GLShader, name string, value interface{}) {
+func (r *Renderer) updateShaderInput(gls *GLShader, name string, value interface{}) {
 	bts := []byte(name)
 	bts = append(bts, 0)
 	location := r.gl.GetUniformLocation(gls.Program, &bts[0])
@@ -937,7 +926,7 @@ func (r *GLFFRenderer) updateShaderInput(gls *GLShader, name string, value inter
 	}
 }
 
-func (r *GLFFRenderer) updateShaderInputs(s *shader.Shader, gls *GLShader) {
+func (r *Renderer) updateShaderInputs(s *shader.Shader, gls *GLShader) {
 	r.gl.UseProgram(gls.Program)
 	//FIXME
 
@@ -949,7 +938,7 @@ func (r *GLFFRenderer) updateShaderInputs(s *shader.Shader, gls *GLShader) {
 	}
 }
 
-func (r *GLFFRenderer) loadShader(s *shader.Shader, now bool) {
+func (r *Renderer) loadShader(s *shader.Shader, now bool) {
 	if s.Loaded() {
 		return
 	}
@@ -1106,11 +1095,11 @@ func (r *GLFFRenderer) loadShader(s *shader.Shader, now bool) {
 //
 // But we may push it to an different thread if we wish to (we want to, of
 // course).
-func (r *GLFFRenderer) LoadShader(s *shader.Shader) {
+func (r *Renderer) LoadShader(s *shader.Shader) {
 	r.loadShader(s, false)
 }
 
-func (r *GLFFRenderer) Render(rootNode *scene.Node, defaultRegion *util.Region) func() {
+func (r *Renderer) Render(rootNode *scene.Node, defaultRegion *util.Region) func() {
 	// Locate cameras in the scene who are active, have an scene specified, and have at least one
 	// camera region.
 	var cameras []*scene.Node
@@ -1223,28 +1212,11 @@ func (r *GLFFRenderer) Render(rootNode *scene.Node, defaultRegion *util.Region) 
 		// We shouldn't carry OpenGL state into the next frame -- other threads might be using GL
 		// to render.
 		r.lastRegion = nil
-		r.lastColorClear = nil
-		r.lastDepthClear = 0xFFFFFF
-		r.lastStencilClear = 0xFFFFFF
 
-		// Clear scissor
-		r.lastScissorX = 0xFFFFFF
-		r.lastScissorY = 0xFFFFFF
-		r.lastScissorWidth = 0xFFFFFF
-		r.lastScissorHeight = 0xFFFFFF
-
-		// Clear viewport
-		r.lastViewportX = 0xFFFFFF
-		r.lastViewportY = 0xFFFFFF
-		r.lastViewportWidth = 0xFFFFFF
-		r.lastViewportHeight = 0xFFFFFF
-
-		if debug {
-			logf("\n")
-			logf("********************************************************************************")
-			logf("* frame                                                                        *")
-			logf("********************************************************************************")
-		}
+		r.stateClearClearColor()
+		r.stateClearClearDepth()
+		r.stateClearClearStencil()
+		r.stateClearViewport()
 
 		for _, g := range geoms {
 			r.useRegion(g.region)
@@ -1264,7 +1236,7 @@ func (r *GLFFRenderer) Render(rootNode *scene.Node, defaultRegion *util.Region) 
 	}
 }
 
-func (r *GLFFRenderer) Resize(width, height int) {
+func (r *Renderer) Resize(width, height int) {
 	r.width = width
 	r.height = height
 
@@ -1272,8 +1244,8 @@ func (r *GLFFRenderer) Resize(width, height int) {
 	r.viewport(0, 0, width, height)
 }
 
-func NewGLFFRenderer(dcMakeCurrent, lcMakeCurrent func(current bool)) (*GLFFRenderer, error) {
-	r := new(GLFFRenderer)
+func NewRenderer(dcMakeCurrent, lcMakeCurrent func(current bool)) (*Renderer, error) {
+	r := new(Renderer)
 
 	r.dcMakeCurrent = dcMakeCurrent
 	r.lcMakeCurrent = lcMakeCurrent
@@ -1294,7 +1266,6 @@ func NewGLFFRenderer(dcMakeCurrent, lcMakeCurrent func(current bool)) (*GLFFRend
 	//r.gl.MatrixMode(opengl.MODELVIEW)
 
 	r.gl.Enable(opengl.TEXTURE_2D)
-	r.gl.Enable(opengl.SCISSOR_TEST)
 	r.gl.Enable(opengl.PROGRAM_POINT_SIZE)
 
 	r.gl.ClearDepth(1.0)

@@ -223,11 +223,11 @@ func (n *obj) renderFrame(pre func()) {
 	// and executes the pre function, in addition to swapping the window's
 	// buffers.
 	wrappedFrame := func() {
-		// Inform the clock that an new frame has just begun.
-		n.Clock.Tick()
-
 		// Send pre-frame event
 		event.Send("pre-frame", n.node)
+
+		// Inform the clock that an new frame has just begun.
+		n.Clock.Tick()
 
 		if pre != nil {
 			pre()
@@ -495,7 +495,7 @@ func SetBackend(n *scene.Node, b BackendType) error {
 		}
 
 		o.rendererCreateExecute <- func() {
-			render, err = opengl.NewGLFFRenderer(dcMakeCurrent, lcMakeCurrent)
+			render, err = opengl.NewRenderer(dcMakeCurrent, lcMakeCurrent)
 			if err == nil {
 				width, height := o.Window.Size()
 				render.Resize(width, height)

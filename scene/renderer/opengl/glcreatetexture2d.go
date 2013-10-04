@@ -12,7 +12,7 @@ import (
 	"unsafe"
 )
 
-func (r *GLFFRenderer) createTexture2D(t *texture.Texture2D) {
+func (r *Renderer) createTexture2D(t *texture.Texture2D) {
 	img := t.Image()
 
 	// Create texture identity

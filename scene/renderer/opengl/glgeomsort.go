@@ -107,7 +107,7 @@ func (s sortedGeoms) Less(i, j int) bool {
 	panic("Unable to sort geoms; reached end of function.")
 }
 
-func (r *GLFFRenderer) sortGeoms(root *scene.Node, cameras []*scene.Node, defaultRegion *util.Region) sortedGeoms {
+func (r *Renderer) sortGeoms(root *scene.Node, cameras []*scene.Node, defaultRegion *util.Region) sortedGeoms {
 	var geoms sortedGeoms
 
 	anyCameraHasRegion := false
