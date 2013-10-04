@@ -312,14 +312,14 @@ func (w *NativeWindow) notify() {
 }
 
 func (w *NativeWindow) PixelClear(rect image.Rectangle) {
-	unlock := w.newAttemptUnlocker()
-	defer unlock()
-
 	if !w.r.Opened() {
 		return
 	}
 
-	unlock()
+	if rect.Empty() {
+		return
+	}
+
 	dispatch(func() {
 		r := &win32.RECT{}
 		r.SetLeft(win32.LONG(rect.Min.X))
@@ -331,14 +331,10 @@ func (w *NativeWindow) PixelClear(rect image.Rectangle) {
 }
 
 func (w *NativeWindow) PixelBlit(x, y uint, image *image.RGBA) {
-	unlock := w.newAttemptUnlocker()
-	defer unlock()
-
 	if !w.r.Opened() {
 		return
 	}
 
-	unlock()
 	dispatch(func() {
 		if w.blitBitmap != nil {
 			if !win32.DeleteDC(w.blitBitmapDc) {
@@ -350,9 +346,12 @@ func (w *NativeWindow) PixelBlit(x, y uint, image *image.RGBA) {
 			}
 		}
 
-		bounds := image.Bounds()
-		width := uint(bounds.Max.X)
-		height := uint(bounds.Max.Y)
+		sz := image.Bounds().Size()
+		if sz.X <= 0 && sz.Y <= 0 {
+			return
+		}
+		width := uint(sz.X)
+		height := uint(sz.Y)
 
 		w.blitBitmapDc = win32.CreateCompatibleDC(w.dc)
 		w.blitBitmap = win32.CreateCompatibleBitmap(w.dc, win32.Int(width), win32.Int(height))
@@ -1511,6 +1510,16 @@ func mainWindowProc(hwnd win32.HWND, msg win32.UINT, wParam win32.WPARAM, lParam
 	// every message has been handled by mainWindowProc(). This line stops the message pump from
 	// pausing other goroutines.
 	runtime.Gosched()
+
+	select {
+	case r := <-requestChan:
+		action := <-r.funcChan
+		action()
+		r.completedChan <- true
+
+	default:
+		break
+	}
 
 	w, ok := windowsByHwnd[hwnd]
 	if ok {
