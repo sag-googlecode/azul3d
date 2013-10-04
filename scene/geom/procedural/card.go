@@ -52,9 +52,9 @@ func Card(left, right, bottom, top math.Real, tex texture.Region, hint geom.Hint
 	}
 
 	return &geom.Mesh{
-		Hint:      hint,
-		Indices:   indices,
-		Vertices:  vertices,
+		Hint:     hint,
+		Indices:  indices,
+		Vertices: vertices,
 		TextureCoords: [][]texture.Coord{
 			textureCoords,
 		},

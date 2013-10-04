@@ -115,8 +115,8 @@ func Cube(scale math.Real, hint geom.Hint) *geom.Mesh {
 	}
 
 	return &geom.Mesh{
-		Hint:      hint,
-		Vertices:  vertices,
+		Hint:     hint,
+		Vertices: vertices,
 		TextureCoords: [][]texture.Coord{
 			textureCoords,
 		},

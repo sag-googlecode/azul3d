@@ -16,8 +16,8 @@ import (
 type Mesh struct {
 	sync.RWMutex
 
-	Hint      Hint
-	Hidden    bool
+	Hint   Hint
+	Hidden bool
 
 	Indices       []uint32
 	Vertices      []Vertex
