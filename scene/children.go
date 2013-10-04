@@ -8,35 +8,53 @@ func (n *Node) addChild(child *Node) {
 	n.access.Lock()
 	defer n.access.Unlock()
 
-	if n.children == nil {
-		n.children = make(map[*Node]bool)
-	}
-	n.children[child] = true
+	n.children = append(n.children, child)
 }
 
 func (n *Node) AddChild(child *Node) {
 	n.addChild(child)
 	child.setParent(n)
 	n.checkForCircular()
+
+	// Since parent is changing, we need to recursively clear the active props
+	// of this node and all children nodes, as they can rely on the previous
+	// parent.
+	n.doRecursiveClearActiveProps()
 }
 
 func (n *Node) RemoveChild(child *Node) {
 	n.access.Lock()
 	defer n.access.Unlock()
 
-	if n.children == nil {
-		return
+	found := -1
+	for i, c := range n.children {
+		if c == child {
+			found = i
+			break
+		}
 	}
-	delete(n.children, child)
-	child.setParent(nil)
+	if found != -1 {
+		n.children[found] = nil
+		n.children = append(n.children[:found], n.children[found+1:]...)
+
+		child.setParent(nil)
+
+		// Since parent is changing, we need to recursively clear the active props
+		// of this node and all children nodes, as they can rely on the previous
+		// parent.
+		n.doRecursiveClearActiveProps()
+	}
 }
 
 func (n *Node) doRemoveChildren() {
 	// Get rid of all child nodes
-	for child, _ := range n.children {
+	for _, child := range n.children {
 		child.SetParent(nil)
 	}
 
+	for i, _ := range n.children {
+		n.children[i] = nil
+	}
 	n.children = nil
 }
 
@@ -51,28 +69,23 @@ func (n *Node) HasChild(child *Node) bool {
 	n.access.RLock()
 	defer n.access.RUnlock()
 
-	if n.children == nil {
-		return false
+	found := -1
+	for i, c := range n.children {
+		if c == child {
+			found = i
+			break
+		}
 	}
-	_, ok := n.children[child]
-	return ok
+	return found != -1
 }
 
 func (n *Node) Children() []*Node {
 	n.access.RLock()
 	defer n.access.RUnlock()
 
-	if n.children == nil {
-		return []*Node{}
-	}
-
-	children := make([]*Node, len(n.children))
-	i := 0
-	for child, _ := range n.children {
-		children[i] = child
-		i++
-	}
-	return children
+	cpy := make([]*Node, len(n.children))
+	copy(cpy, n.children)
+	return cpy
 }
 
 // RecursiveChildren returns all children (and distant children) of this node,
@@ -99,7 +112,7 @@ func (n *Node) RecursiveChildren() []*Node {
 	n.access.RLock()
 	defer n.access.RUnlock()
 
-	for child, _ := range n.children {
+	for _, child := range n.children {
 		children = append(children, child)
 		children = append(children, child.RecursiveChildren()...)
 	}
