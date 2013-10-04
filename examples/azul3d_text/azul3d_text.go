@@ -79,7 +79,6 @@ func toggleCursorGrabbed(ev *event.Event) {
 	engine.Window.SetCursorGrabbed(!isGrabbed)
 }
 
-
 // Our scene graph will look like this:
 //
 // > Display
@@ -103,6 +102,7 @@ func program() {
 
 	text.Set(textNode, "Hello Azul3D!")
 	textNode.SetParent(engine.Scene2d)
+	textNode.SetPos(0, 0, -24)
 
 	// Print scene graph
 	engine.Renderer.PrintTree()
