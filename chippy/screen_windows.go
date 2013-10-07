@@ -34,7 +34,7 @@ func newNativeScreen() *NativeScreen {
 	s := &NativeScreen{}
 
 	runtime.SetFinalizer(s, func(s *NativeScreen) {
-		dispatchNoWait(func() {
+		go dispatch(func() {
 			// Do screen related cleanup here..
 			if !win32.DeleteDC(s.dc) {
 				logger().Println("Cannot delete DC; DeleteDC():", win32.GetLastErrorString())

@@ -47,6 +47,7 @@ type NativeWindow struct {
 	lastCursorClip                                                           *win32.RECT
 
 	// Blit things here
+	blitLock     sync.Mutex
 	blitBitmap   win32.HBITMAP
 	blitBitmapDc win32.HDC
 	blitBits     []uint32
@@ -335,76 +336,81 @@ func (w *NativeWindow) PixelBlit(x, y uint, image *image.RGBA) {
 		return
 	}
 
-	dispatch(func() {
-		if w.blitBitmap != nil {
-			if !win32.DeleteDC(w.blitBitmapDc) {
-				logger().Println("Unable to delete blit bitmap; DeleteDC():", win32.GetLastErrorString())
-			}
+	w.blitLock.Lock()
+	defer w.blitLock.Unlock()
 
-			if !win32.DeleteObject(win32.HGDIOBJ(w.blitBitmap)) {
-				logger().Println("Unable to delete blit bitmap; DeleteObject():", win32.GetLastErrorString())
-			}
+	if w.blitBitmap != nil {
+		if !win32.DeleteDC(w.blitBitmapDc) {
+			logger().Println("Unable to delete blit bitmap; DeleteDC():", win32.GetLastErrorString())
 		}
 
-		sz := image.Bounds().Size()
-		if sz.X <= 0 && sz.Y <= 0 {
-			return
+		if !win32.DeleteObject(win32.HGDIOBJ(w.blitBitmap)) {
+			logger().Println("Unable to delete blit bitmap; DeleteObject():", win32.GetLastErrorString())
 		}
-		width := uint(sz.X)
-		height := uint(sz.Y)
+	}
 
-		w.blitBitmapDc = win32.CreateCompatibleDC(w.dc)
-		w.blitBitmap = win32.CreateCompatibleBitmap(w.dc, win32.Int(width), win32.Int(height))
-		if win32.SelectObject(w.blitBitmapDc, win32.HGDIOBJ(w.blitBitmap)) == nil {
-			logger().Println("Unable to blit; SelectObject():", win32.GetLastErrorString())
-			return
+	sz := image.Bounds().Size()
+	if sz.X <= 0 && sz.Y <= 0 {
+		return
+	}
+	width := uint(sz.X)
+	height := uint(sz.Y)
+
+	w.blitBitmapDc = win32.CreateCompatibleDC(w.dc)
+	w.blitBitmap = win32.CreateCompatibleBitmap(w.dc, win32.Int(width), win32.Int(height))
+	if win32.SelectObject(w.blitBitmapDc, win32.HGDIOBJ(w.blitBitmap)) == nil {
+		logger().Println("Unable to blit; SelectObject():", win32.GetLastErrorString())
+		return
+	}
+
+	w.blitBits = make([]uint32, width*height)
+
+	for y := 0; y < int(height); y++ {
+		for x := 0; x < int(width); x++ {
+			r, g, b, a := image.At(x, y).RGBA()
+			c := (uint32(a>>8) << 24) | (uint32(r>>8) << 16) | (uint32(g>>8) << 8) | (uint32(b>>8) << 0)
+
+			index := (int(height) - 1 - y) * int(width)
+			index += x
+			w.blitBits[index] = c
 		}
+	}
 
-		w.blitBits = make([]uint32, width*height)
+	bitmapInfo := win32.BITMAPINFO{
+		BmiHeader: win32.BITMAPINFOHEADER{
+			Size:          win32.DWORD(unsafe.Sizeof(win32.BITMAPINFOHEADER{})),
+			Width:         win32.LONG(width),
+			Height:        win32.LONG(height),
+			Planes:        1,
+			BitCount:      32,
+			Compression:   win32.BI_RGB,
+			SizeImage:     0,
+			XPelsPerMeter: 0,
+			YPelsPerMeter: 0,
+			ClrUsed:       0,
+			ClrImportant:  0,
+		},
+	}
+	if win32.SetDIBits(w.dc, w.blitBitmap, 0, win32.UINT(height), unsafe.Pointer(&w.blitBits[0]), &bitmapInfo, win32.DIB_RGB_COLORS) == 0 {
+		logger().Println("Unable to blit; SetDiBits():", win32.GetLastErrorString())
+		return
+	}
 
-		for y := 0; y < int(height); y++ {
-			for x := 0; x < int(width); x++ {
-				r, g, b, a := image.At(x, y).RGBA()
-				c := (uint32(a>>8) << 24) | (uint32(r>>8) << 16) | (uint32(g>>8) << 8) | (uint32(b>>8) << 0)
-
-				index := (int(height) - 1 - y) * int(width)
-				index += x
-				w.blitBits[index] = c
-			}
-		}
-
-		bitmapInfo := win32.BITMAPINFO{
-			BmiHeader: win32.BITMAPINFOHEADER{
-				Size:          win32.DWORD(unsafe.Sizeof(win32.BITMAPINFOHEADER{})),
-				Width:         win32.LONG(width),
-				Height:        win32.LONG(height),
-				Planes:        1,
-				BitCount:      32,
-				Compression:   win32.BI_RGB,
-				SizeImage:     0,
-				XPelsPerMeter: 0,
-				YPelsPerMeter: 0,
-				ClrUsed:       0,
-				ClrImportant:  0,
-			},
-		}
-		if win32.SetDIBits(w.dc, w.blitBitmap, 0, win32.UINT(height), unsafe.Pointer(&w.blitBits[0]), &bitmapInfo, win32.DIB_RGB_COLORS) == 0 {
-			logger().Println("Unable to blit; SetDiBits():", win32.GetLastErrorString())
-			return
-		}
-
-		blend := win32.BLENDFUNCTION{
-			BlendOp:             win32.AC_SRC_OVER,
-			BlendFlags:          0,
-			SourceConstantAlpha: 255,
-			AlphaFormat:         win32.AC_SRC_ALPHA,
-		}
-
-		if !win32.AlphaBlend(w.dc, win32.Int(x), win32.Int(y), win32.Int(width), win32.Int(height), w.blitBitmapDc, 0, 0, win32.Int(width), win32.Int(height), &blend) {
-			logger().Println("Unable to blit: TransparentBlt():", win32.GetLastErrorString())
-			return
-		}
-	})
+	if !win32.TransparentBlt(
+		w.dc,
+		win32.Int(x),
+		win32.Int(y),
+		win32.Int(width),
+		win32.Int(height),
+		w.blitBitmapDc,
+		0, 0,
+		win32.Int(width),
+		win32.Int(height),
+		0,
+	) {
+		logger().Println("Unable to blit: TransparentBlt():", win32.GetLastErrorString())
+		return
+	}
 }
 
 func (w *NativeWindow) setTransparent(transparent bool) {
@@ -1510,16 +1516,6 @@ func mainWindowProc(hwnd win32.HWND, msg win32.UINT, wParam win32.WPARAM, lParam
 	// every message has been handled by mainWindowProc(). This line stops the message pump from
 	// pausing other goroutines.
 	runtime.Gosched()
-
-	select {
-	case r := <-requestChan:
-		action := <-r.funcChan
-		action()
-		r.completedChan <- true
-
-	default:
-		break
-	}
 
 	w, ok := windowsByHwnd[hwnd]
 	if ok {

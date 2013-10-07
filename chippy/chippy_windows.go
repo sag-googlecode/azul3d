@@ -7,7 +7,6 @@ package chippy
 import (
 	"code.google.com/p/azul3d/chippy/keyboard"
 	"code.google.com/p/azul3d/chippy/wrappers/win32"
-	"errors"
 	"fmt"
 	"runtime"
 	"sync"
@@ -135,16 +134,12 @@ var hInstance win32.HINSTANCE
 var w32VersionMajor, w32VersionMinor win32.DWORD
 
 func backend_Init() error {
-	go dispatchRequests()
-
 	windowsKeyDisabled = true
 
-	var err error
-	dispatch(func() {
+	go dispatch(func() {
 		hInstance = win32.HINSTANCE(win32.GetModuleHandle(""))
 		if hInstance == nil {
-			err = errors.New(fmt.Sprintf("Unable to determine hInstance; GetModuleHandle():", win32.GetLastErrorString()))
-			return
+			logger().Printf(fmt.Sprintf("Unable to determine hInstance; GetModuleHandle():", win32.GetLastErrorString()))
 		}
 
 		// Get OS version, we use this to do some hack-ish fixes for different windows versions
@@ -153,8 +148,7 @@ func backend_Init() error {
 			w32VersionMajor = vi.DwMajorVersion()
 			w32VersionMinor = vi.DwMinorVersion()
 		} else {
-			err = errors.New(fmt.Sprintf("Unable to determine windows version information; GetVersionEx():", win32.GetLastErrorString()))
-			return
+			logger().Printf("Unable to determine windows version information; GetVersionEx():", win32.GetLastErrorString())
 		}
 
 		hKeyboardHook = win32.SetLowLevelKeyboardHook(keyboardHook, hInstance, 0)
@@ -162,10 +156,6 @@ func backend_Init() error {
 			logger().Println("Failed to disable keyboard shortcuts; SetWindowsHookEx():", win32.GetLastErrorString())
 		}
 	})
-
-	if err != nil {
-		return err
-	}
 
 	go eventLoop()
 
@@ -180,8 +170,6 @@ func backend_Destroy() {
 			}
 		}
 	})
-
-	stopDispatching()
 
 	classNameCounter = 0
 }

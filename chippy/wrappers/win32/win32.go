@@ -1420,6 +1420,10 @@ func AlphaBlend(hdcDest HDC, xoriginDest, yoriginDest, wDest, hDest Int, hdcSrc 
 	return C.AlphaBlend(C.HDC(hdcDest), C.int(xoriginDest), C.int(yoriginDest), C.int(wDest), C.int(hDest), C.HDC(hdcSrc), C.int(xoriginSrc), C.int(yoriginSrc), C.int(wSrc), C.int(hSrc), *(*C.BLENDFUNCTION)(unsafe.Pointer(ftn))) != 0
 }
 
+func TransparentBlt(a HDC, b, c, d, e Int, f HDC, g, h, i, j Int, k uint32) bool {
+	return C.TransparentBlt(C.HDC(a), C.int(b), C.int(c), C.int(d), C.int(e), C.HDC(f), C.int(g), C.int(h), C.int(i), C.int(j), C.UINT(k)) != 0
+}
+
 var (
 	IDC_ARROW = LPTSTR(C.macro_MAKEINTRESOURCE(32512))
 )

@@ -8,13 +8,17 @@ package main
 
 import (
 	"code.google.com/p/azul3d/chippy"
+	"runtime/pprof"
 	"image"
 	"image/draw"
 	_ "image/png"
 	"log"
 	"os"
 	"time"
+	"flag"
 )
+
+var cpuprofile = flag.String("cpuprofile", "", "write cpu profile to file")
 
 func program() {
 	defer chippy.Exit()
@@ -63,24 +67,52 @@ func program() {
 	events := window.Events()
 	defer window.CloseEvents(events)
 
+	measureBlitSpeed := time.After(10 * time.Second)
+	measuringBlitSpeed := false
+
 	for {
-		// Clear the rectangle on the window
-		window.PixelClear(rgba.Bounds())
+		// In order to clear a rectangle on the window, this is much faster
+		// than PixelBlit() with an fully transparent image:
+		//
+		// window.PixelClear(image.Rect(0, 0, 30, 30))
 
 		// Blit the image to the window, at x=0, y=0, blitting the entire image
+		start := time.Now()
 		window.PixelBlit(0, 0, rgba)
+		log.Println("PixelBlit():", time.Since(start))
+
+		if measuringBlitSpeed {
+			select{
+			case e := <-events:
+				switch e.(type) {
+				case *chippy.CloseEvent:
+					chippy.Exit()
+					return
+				}
+			default:
+				break
+			}
+			continue
+		}
 
 		// Wait for an paint event
 		gotPaintEvent := false
-		for !gotPaintEvent {
-			e := <-events
-			switch e.(type) {
-			case *chippy.PaintEvent:
-				log.Println(e)
-				gotPaintEvent = true
+loop: for !gotPaintEvent {
+			select {
+			case <-measureBlitSpeed:
+				measuringBlitSpeed = true
+				break loop
 
-			case *chippy.CloseEvent:
-				return
+			case e := <-events:
+				switch e.(type) {
+				case *chippy.PaintEvent:
+					log.Println(e)
+					gotPaintEvent = true
+
+				case *chippy.CloseEvent:
+					chippy.Exit()
+					return
+				}
 			}
 		}
 	}
@@ -90,6 +122,17 @@ func program() {
 }
 
 func main() {
+    flag.Parse()
+    if *cpuprofile != "" {
+        f, err := os.Create(*cpuprofile)
+        if err != nil {
+            log.Fatal(err)
+        }
+		defer f.Close()
+        pprof.StartCPUProfile(f)
+        defer pprof.StopCPUProfile()
+    }
+
 	log.SetFlags(0)
 
 	// Enable debug output

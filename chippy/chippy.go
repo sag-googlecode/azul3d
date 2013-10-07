@@ -47,6 +47,18 @@ var (
 	mainLoopFrames chan func() bool
 )
 
+// Dispatches the function on the dispatcher thread, and waits for the operation to complete before
+// returning.
+func dispatch(f func()) {
+	done := make(chan bool, 1)
+	mainLoopFrames <- func() bool {
+		f()
+		done <- true
+		return true
+	}
+	<-done
+}
+
 // IsInit returns weather Chippy has been initialized via a previous call to
 // Init().
 //
@@ -98,6 +110,8 @@ func Init() error {
 	defer globalLock.Unlock()
 
 	if isInit == false {
+		mainLoopFrames = make(chan func() bool, 32)
+
 		// Now we try and initialize the backend, which may fail due to user configurations
 		// or something of the sort (dumb user tries to run application on Linux box without
 		// any working X11 server or something silly)
@@ -111,7 +125,6 @@ func Init() error {
 		// the backend to handle things properly now
 		isInit = true
 
-		mainLoopFrames = make(chan func() bool, 32)
 		return nil
 	}
 	return nil
