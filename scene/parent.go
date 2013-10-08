@@ -138,7 +138,15 @@ func (n *Node) Parent() *Node {
 	return n.parent
 }
 
+// FindCommonParent finds a parent that both this node and the other node have
+// in common and returns it, or returns nil if there is not common node.
+//
+// If the other node is nil; a panic will occur.
 func (n *Node) FindCommonParent(other *Node) *Node {
+	if other == nil {
+		panic("FindCommonParent(): other node is nil!")
+	}
+
 	// What is the common parent between our node and our node? Obviously, our parent itself.
 	if n == other {
 		return n.Parent()
