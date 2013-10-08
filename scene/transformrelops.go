@@ -10,9 +10,16 @@ import (
 
 // SetRelativePosVec3 sets the position component of this node's transformation
 // to the specified position, as seen by (relative to) the other node.
+//
+// If the other node is nil, this function simply invokes n.SetPosVec3(pos) and
+// returns.
 func (n *Node) SetRelativePosVec3(other *Node, pos *math.Vec3) {
-	t := n.Transform()
+	if other == nil {
+		n.SetPosVec3(pos)
+		return
+	}
 
+	t := n.Transform()
 	relative := n.RelativeTransform(other)
 	relative.SetPos(pos)
 
@@ -43,16 +50,29 @@ func (n *Node) SetRelativePosVec3(other *Node, pos *math.Vec3) {
 
 // RelativePosVec3 returns the position component of this node's transformation
 // as seen by (relative to) the other node.
+//
+// If the other node is nil, this function simply returns n.PosVec3().
 func (n *Node) RelativePosVec3(other *Node) *math.Vec3 {
+	if other == nil {
+		return n.PosVec3()
+	}
+
 	relative := n.RelativeTransform(other)
 	return relative.Pos()
 }
 
 // SetRelativeRotVec3 sets the rotation component of this node's transformation
 // to the specified rotation, as seen by (relative to) the other node.
+//
+// If the other node is nil, this function simply invokes n.SetRotVec3(rot) and
+// returns.
 func (n *Node) SetRelativeRotVec3(other *Node, rot *math.Vec3) {
-	t := n.Transform()
+	if other == nil {
+		n.SetRotVec3(rot)
+		return
+	}
 
+	t := n.Transform()
 	relative := n.RelativeTransform(other)
 	relative.SetRot(rot)
 
@@ -83,16 +103,29 @@ func (n *Node) SetRelativeRotVec3(other *Node, rot *math.Vec3) {
 
 // RelativeRotVec3 returns the rotation component of this node's transformation
 // as seen by (relative to) the other node.
+//
+// If the other node is nil, this function simply returns n.RotVec3().
 func (n *Node) RelativeRotVec3(other *Node) *math.Vec3 {
+	if other == nil {
+		return n.RotVec3()
+	}
+
 	relative := n.RelativeTransform(other)
 	return relative.Rot()
 }
 
 // SetRelativeScaleVec3 sets the scale component of this node's transformation
 // to the specified scale, as seen by (relative to) the other node.
+//
+// If the other node is nil, this function simply invokes n.SetScaleVec3(pos) and
+// returns.
 func (n *Node) SetRelativeScaleVec3(other *Node, scale *math.Vec3) {
-	t := n.Transform()
+	if other == nil {
+		n.SetScaleVec3(scale)
+		return
+	}
 
+	t := n.Transform()
 	relative := n.RelativeTransform(other)
 	relative.SetScale(scale)
 
@@ -123,16 +156,29 @@ func (n *Node) SetRelativeScaleVec3(other *Node, scale *math.Vec3) {
 
 // RelativeScaleVec3 returns the scale component of this node's transformation
 // as seen by (relative to) the other node.
+//
+// If the other node is nil, this function simply returns n.ScaleVec3().
 func (n *Node) RelativeScaleVec3(other *Node) *math.Vec3 {
+	if other == nil {
+		return n.ScaleVec3()
+	}
+
 	relative := n.RelativeTransform(other)
 	return relative.Scale()
 }
 
 // SetRelativeShearVec3 sets the shear component of this node's transformation
 // to the specified shear, as seen by (relative to) the other node.
+//
+// If the other node is nil, this function simply invokes n.SetShearVec3(shear) and
+// returns.
 func (n *Node) SetRelativeShearVec3(other *Node, shear *math.Vec3) {
-	t := n.Transform()
+	if other == nil {
+		n.SetShearVec3(shear)
+		return
+	}
 
+	t := n.Transform()
 	relative := n.RelativeTransform(other)
 	relative.SetShear(shear)
 
@@ -163,7 +209,13 @@ func (n *Node) SetRelativeShearVec3(other *Node, shear *math.Vec3) {
 
 // RelativeShearVec3 returns the shear component of this node's transformation
 // as seen by (relative to) the other node.
+//
+// If the other node is nil, this function simply returns n.ShearVec3().
 func (n *Node) RelativeShearVec3(other *Node) *math.Vec3 {
+	if other == nil {
+		return n.ShearVec3()
+	}
+
 	relative := n.RelativeTransform(other)
 	return relative.Shear()
 }
