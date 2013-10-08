@@ -18,15 +18,19 @@ type Transform struct {
 	quat                             *math.Quat
 }
 
-func (t *Transform) HasComponents() bool {
-	t.access.RLock()
-	defer t.access.RUnlock()
-
+func (t *Transform) hasComponents() bool {
 	if t.arbitrary {
 		return false
 	}
 
 	return t.position != nil || t.rotation != nil || t.scale != nil || t.shear != nil || t.quat != nil
+}
+
+func (t *Transform) HasComponents() bool {
+	t.access.RLock()
+	defer t.access.RUnlock()
+
+	return t.hasComponents()
 }
 
 func (t *Transform) Compose(other *Transform) *Transform {
@@ -65,6 +69,12 @@ func (t *Transform) build() {
 
 	// Set to identity matrix to clear old transformation
 	t.built = math.Mat4Identity.Copy()
+
+	// If we don't have components to build with, we can just leave it as the
+	// identity matrix above.
+	if !t.hasComponents() {
+		return
+	}
 
 	scale := math.Vec3One
 	if t.scale != nil {
