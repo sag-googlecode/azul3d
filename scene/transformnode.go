@@ -51,7 +51,13 @@ func (n *Node) SetRelativeTransform(other *Node, t *Transform) {
 
 // RelativeTransform returns the transform of this node in the coordinate space
 // of the other node.
+//
+// If the other node is nil; a panic will occur.
 func (n *Node) RelativeTransform(other *Node) *Transform {
+	if other == nil {
+		panic("RelativeTransform(): other node is nil!")
+	}
+
 	logn := func(args ...interface{}) {
 		//if other.Name() != "renderer" {
 		//	log.Println(args...)
