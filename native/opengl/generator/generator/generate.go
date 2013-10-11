@@ -25,7 +25,7 @@ const licenseHeader = `// Copyright 2012 Lightpoke. All rights reserved.
 // conditions defined in the "License.txt" file.
 `
 
-var specialProcedures = make(map[string]func(ctx, prefix string, p *Procedure) (name, args, body, returns string))
+var specialProcedures = make(map[string]func(ctx, prefix string, p *Procedure) (name, args, untypedArgs, body, returns string))
 
 type Procedure struct {
 	Constants map[string]string
@@ -37,11 +37,12 @@ type Procedure struct {
 	Reference string
 }
 
-func autoProcedure(ctx, prefix string, p *Procedure) (name, args, body, returns string) {
+func autoProcedure(ctx, prefix string, p *Procedure) (name, args, untypedArgs, body, returns string) {
 	glStripped := strings.TrimLeft(p.Name, "gl")
 
 	name = glStripped
 
+	untypedArgsBuf := new(bytes.Buffer)
 	argsBuf := new(bytes.Buffer)
 	for i, arg := range p.Takes {
 		if arg != "void" {
@@ -52,17 +53,22 @@ func autoProcedure(ctx, prefix string, p *Procedure) (name, args, body, returns 
 
 				if split[0] == futureSplit[0] {
 					fmt.Fprintf(argsBuf, "%s", cToGoName(split[1]))
+					fmt.Fprintf(untypedArgsBuf, "%s", cToGoName(split[1]))
 				} else {
 					fmt.Fprintf(argsBuf, "%s %s", cToGoName(split[1]), cToGoType(split[0]))
+					fmt.Fprintf(untypedArgsBuf, "%s", cToGoName(split[1]))
 				}
 
 				fmt.Fprintf(argsBuf, ", ")
+				fmt.Fprintf(untypedArgsBuf, ", ")
 			} else {
 				fmt.Fprintf(argsBuf, "%s %s", cToGoName(split[1]), cToGoType(split[0]))
+				fmt.Fprintf(untypedArgsBuf, "%s", cToGoName(split[1]))
 			}
 		}
 	}
-	args = string(argsBuf.Bytes())
+	args = argsBuf.String()
+	untypedArgs = untypedArgsBuf.String()
 
 	if p.Returns != "void" {
 		returns = cToGoType(p.Returns)

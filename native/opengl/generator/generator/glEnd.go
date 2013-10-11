@@ -12,7 +12,7 @@ import (
 )
 
 func init() {
-	specialProcedures["glEnd"] = func(ctx, prefix string, p *Procedure) (name, args, body, returns string) {
+	specialProcedures["glEnd"] = func(ctx, prefix string, p *Procedure) (name, args, untypedArgs, body, returns string) {
 		body = fmt.Sprintf(`
 
 	C.%sEnd(%s)
@@ -20,6 +20,10 @@ func init() {
 	return
 `, prefix, ctx)
 
-		return "End", "", body, ""
+		name = "End"
+		args = ""
+		untypedArgs = ""
+		returns = ""
+		return
 	}
 }

@@ -12,7 +12,7 @@ import (
 )
 
 func init() {
-	specialProcedures["glBegin"] = func(ctx, prefix string, p *Procedure) (name, args, body, returns string) {
+	specialProcedures["glBegin"] = func(ctx, prefix string, p *Procedure) (name, args, untypedArgs, body, returns string) {
 		body = fmt.Sprintf(`
 
 	glc.inBeginEnd = true
@@ -20,6 +20,10 @@ func init() {
 	return
 `, prefix, ctx)
 
-		return "Begin", "mode uint32", body, ""
+		name = "Begin"
+		args = "mode uint32"
+		untypedArgs = "mode"
+		returns = ""
+		return
 	}
 }

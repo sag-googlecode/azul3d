@@ -8,6 +8,7 @@
 package generator
 
 import (
+	"bytes"
 	"fmt"
 	"log"
 	"os"
@@ -132,46 +133,57 @@ func (glc *Context) queryExtensions() {
 	}
 }
 
-func (glc *Context) trace(name string) {
+func (glc *Context) Panic(err string) {
 	glc.access.Lock()
 	defer glc.access.Unlock()
 
+	fmt.Println("OpenGL call stack (last 500 - most recent first).")
+
+	// Print stack now
+	count := 0
+	for i := len(glc.traceback); i > 0; i-- {
+		count++
+		fmt.Printf("%3.d. %s\n", count, glc.traceback[i-1])
+	}
+
+	panic(err)
+}
+
+func (glc *Context) trace(name string) {
+	glc.access.Lock()
+
 	glc.traceback = append(glc.traceback, name)
 	l := len(glc.traceback)
-	if l > 100 {
-		glc.traceback = glc.traceback[l-100:l]
+	if l > 500 {
+		glc.traceback = glc.traceback[l-500:l]
 	}
 
 	if glc.inBeginEnd {
+		glc.access.Unlock()
 		return
 	}
 	err := glc.GetError()
 	if err != NO_ERROR {
-		fmt.Println("OpenGL call stack (last 100 - most recent first).")
-
-		// Print stack now
-		count := 0
-		for i := len(glc.traceback); i > 0; i-- {
-			count++
-			fmt.Printf("%3.d. %s\n", count, glc.traceback[i-1])
-		}
+		glc.access.Unlock()
 
 		switch err {
 		case INVALID_ENUM:
-			panic("GL_INVALID_ENUM: An unacceptable value was specified for an enumerated argument.")
+			glc.Panic("GL_INVALID_ENUM: An unacceptable value was specified for an enumerated argument.")
 		case INVALID_VALUE:
-			panic("GL_INVALID_VALUE: A numeric argument is out of range.")
+			glc.Panic("GL_INVALID_VALUE: A numeric argument is out of range.")
 		case INVALID_OPERATION:
-			panic("GL_INVALID_OPERATION: The specified operation is not allowed in the current state.")
+			glc.Panic("GL_INVALID_OPERATION: The specified operation is not allowed in the current state.")
 		case INVALID_FRAMEBUFFER_OPERATION:
-			panic("GL_INVALID_FRAMEBUFFER_OPERATION: The framebuffer object is not complete.")
+			glc.Panic("GL_INVALID_FRAMEBUFFER_OPERATION: The framebuffer object is not complete.")
 		case OUT_OF_MEMORY:
-			panic("GL_OUT_OF_MEMORY: There is not enough memory left to execute the command.")
+			glc.Panic("GL_OUT_OF_MEMORY: There is not enough memory left to execute the command.")
 		case STACK_UNDERFLOW:
-			panic("GL_STACK_UNDERFLOW: An attempt has been made to perform an operation that would cause an internal stack to underflow.")
+			glc.Panic("GL_STACK_UNDERFLOW: An attempt has been made to perform an operation that would cause an internal stack to underflow.")
 		case STACK_OVERFLOW:
-			panic("GL_STACK_OVERFLOW: An attempt has been made to perform an operation that would cause an internal stack to overflow.")
+			glc.Panic("GL_STACK_OVERFLOW: An attempt has been made to perform an operation that would cause an internal stack to overflow.")
 		}
+	} else {
+		glc.access.Unlock()
 	}
 }
 
@@ -247,9 +259,9 @@ func generateGo(packageDir, prefix, version, versionWithoutDots string, versionP
 		var name, args, returns string
 
 		if fn, ok := specialProcedures[p.Name]; ok {
-			name, args, _, returns = fn("glc.context", prefix, p)
+			name, args, _, _, returns = fn("glc.context", prefix, p)
 		} else {
-			name, args, _, returns = autoProcedure("glc.context", prefix, p)
+			name, args, _, _, returns = autoProcedure("glc.context", prefix, p)
 		}
 		if len(returns) > 0 {
 			returns = " " + returns
@@ -265,7 +277,7 @@ func generateGo(packageDir, prefix, version, versionWithoutDots string, versionP
 	fmt.Fprintf(code, "\n")
 
 	/*
-		// For debugging
+		// Can be used for debugging to assert that all function pointers where found properly.
 		for _, p := range versionProcs {
 			if !p.Extension {
 				glStripped := strings.TrimLeft(p.Name, "gl")
@@ -281,12 +293,12 @@ func generateGo(packageDir, prefix, version, versionWithoutDots string, versionP
 
 	// Wrap each function with an closure tied to the object
 	for _, p := range allProcs {
-		var name, args, body, returns string
+		var name, untypedArgs, args, body, returns string
 
 		if fn, ok := specialProcedures[p.Name]; ok {
-			name, args, body, returns = fn("glc.context", prefix, p)
+			name, args, untypedArgs, body, returns = fn("glc.context", prefix, p)
 		} else {
-			name, args, body, returns = autoProcedure("glc.context", prefix, p)
+			name, args, untypedArgs, body, returns = autoProcedure("glc.context", prefix, p)
 		}
 		if len(returns) > 0 {
 			returns = " " + returns
@@ -294,7 +306,27 @@ func generateGo(packageDir, prefix, version, versionWithoutDots string, versionP
 
 		fmt.Fprintf(code, "\tglc.%s = func(%s)%s {\n", name, args, returns)
 		if trace && name != "GetError" {
-			fmt.Fprintf(code, "\t\tdefer glc.trace(\"%s\")\n", name)
+
+			// Make a proper "%v,%v,%v,%v" formatting string
+			percentVeesBuf := new(bytes.Buffer)
+			splitUntypedArgs := strings.Split(untypedArgs, ",")
+			for i, arg := range splitUntypedArgs {
+				if len(arg) > 0 {
+					if i != len(splitUntypedArgs)-1 {
+						fmt.Fprintf(percentVeesBuf, "%%v, ")
+					} else {
+						fmt.Fprintf(percentVeesBuf, "%%v")
+					}
+				}
+			}
+			percentVees := percentVeesBuf.String()
+
+			if percentVeesBuf.Len() > 0 {
+				fmt.Fprintf(code, "\t\tfmtCall := fmt.Sprintf(\"%s(%s)\", %s)\n", name, percentVees, untypedArgs)
+			} else {
+				fmt.Fprintf(code, "\t\tfmtCall := \"%s()\"\n", name)
+			}
+			fmt.Fprintf(code, "\t\tdefer glc.trace(fmtCall)\n")
 		}
 		for _, line := range strings.Split(body, "\n") {
 			if len(line) > 0 {

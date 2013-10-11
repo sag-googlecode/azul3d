@@ -12,12 +12,16 @@ import (
 )
 
 func init() {
-	specialProcedures["glGetString"] = func(ctx, prefix string, p *Procedure) (name, args, body, returns string) {
+	specialProcedures["glGetString"] = func(ctx, prefix string, p *Procedure) (name, args, untypedArgs, body, returns string) {
 		body = fmt.Sprintf(`
 	cstr := C.%sGetString(%s, C.GLenum(name))
 	return C.GoString((*C.char)(unsafe.Pointer(cstr)))
 `, prefix, ctx)
 
-		return "GetString", "name uint32", body, "string"
+		name = "GetString"
+		args = "name uint32"
+		untypedArgs = "name"
+		returns = "string"
+		return
 	}
 }

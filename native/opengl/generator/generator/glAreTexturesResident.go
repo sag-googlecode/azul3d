@@ -12,7 +12,7 @@ import (
 )
 
 func init() {
-	specialProcedures["glAreTexturesResident"] = func(ctx, prefix string, p *Procedure) (name, args, body, returns string) {
+	specialProcedures["glAreTexturesResident"] = func(ctx, prefix string, p *Procedure) (name, args, untypedArgs, body, returns string) {
 		body = fmt.Sprintf(`
 	var cRes *C.GLboolean
 	status = C.%sAreTexturesResident(%s, C.GLsizei(len(textures)), (*C.GLuint)(unsafe.Pointer(&textures[0])), cRes) != 0
@@ -24,6 +24,10 @@ func init() {
 	return
 `, prefix, ctx)
 
-		return "AreTexturesResident", "textures []uint32", body, "(status bool, residencies []bool)"
+		name = "AreTexturesResident"
+		args = "textures []uint32"
+		untypedArgs = "textures"
+		returns = "(status bool, residencies []bool)"
+		return
 	}
 }

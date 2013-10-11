@@ -12,7 +12,7 @@ import (
 )
 
 func init() {
-	specialProcedures["glGetActiveAttrib"] = func(ctx, prefix string, p *Procedure) (name, args, body, returns string) {
+	specialProcedures["glGetActiveAttrib"] = func(ctx, prefix string, p *Procedure) (name, args, untypedArgs, body, returns string) {
 		body = fmt.Sprintf(`
 	var (
 		cname C.GLchar
@@ -23,6 +23,10 @@ func init() {
 	return
 `, prefix, ctx)
 
-		return "GetActiveAttrib", "program, index uint32, bufSize int32", body, "(length int32, size int32, Type uint32, name string)"
+		name = "GetActiveAttrib"
+		args = "program, index uint32, bufSize int32"
+		untypedArgs = "program, index, bufSize"
+		returns = "(length int32, size int32, Type uint32, name string)"
+		return
 	}
 }

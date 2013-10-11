@@ -12,7 +12,7 @@ import (
 )
 
 func init() {
-	specialProcedures["glBindAttribLocation"] = func(ctx, prefix string, p *Procedure) (name, args, body, returns string) {
+	specialProcedures["glBindAttribLocation"] = func(ctx, prefix string, p *Procedure) (name, args, untypedArgs, body, returns string) {
 		body = fmt.Sprintf(`
 	cstr := C.CString(name)
 	defer C.free(unsafe.Pointer(&cstr))
@@ -21,6 +21,10 @@ func init() {
 	return
 `, prefix, ctx)
 
-		return "BindAttribLocation", "program, index uint32, name string", body, ""
+		name = "BindAttribLocation"
+		args = "program, index uint32, name string"
+		untypedArgs = "program, index, name"
+		returns = ""
+		return
 	}
 }
