@@ -13,26 +13,36 @@ import (
 //
 // An texture type is only valid if IsValid() would return true.
 type Type interface {
-	MarkLoading()
-	Loading() bool
-	MarkLoaded()
-	Loaded() bool
-	LoadNotify() chan bool
-	SetNativeIdentity(identity interface{})
-	NativeIdentity() interface{}
-	SetAutoLoad(autoLoad bool)
-	AutoLoad() bool
-	SetClearOnLoad(clearOnLoad bool)
-	ClearOnLoad() bool
-	SetAnisotropicDegree(degree uint)
 	AnisotropicDegree() uint
-	SetBorderColorVec4(color *math.Vec4)
-	BorderColorVec4() *math.Vec4
-	BorderColorFloat32() []float32
-	SetBorderColor(r, g, b, a math.Real)
+	AutoLoad() bool
 	BorderColor() (r, g, b, a math.Real)
-	SetCompressed(compressed bool)
+	BorderColorFloat32() []float32
+	BorderColorVec4() *math.Vec4
+	ClearOnLoad() bool
 	Compressed() bool
+	LoadNotify() chan bool
+	Loaded() bool
+	Loading() bool
+	MagFilter() Filter
+	MarkLoaded()
+	MarkLoading()
+	MinFilter() Filter
+	NativeIdentity() interface{}
+	SetAnisotropicDegree(degree uint)
+	SetAutoLoad(autoLoad bool)
+	SetBorderColor(r, g, b, a math.Real)
+	SetBorderColorVec4(color *math.Vec4)
+	SetClearOnLoad(clearOnLoad bool)
+	SetCompressed(compressed bool)
+	SetNativeIdentity(identity interface{})
+	SetMagFilter(filter Filter)
+	SetMinFilter(filter Filter)
+	SetWrapModeU(u WrapMode)
+	SetWrapModeV(v WrapMode)
+	SetWrapModeW(w WrapMode)
+	WrapModeU() WrapMode
+	WrapModeV() WrapMode
+	WrapModeW() WrapMode
 }
 
 // IsValid tells if this texture type interface value is one of the following:
