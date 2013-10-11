@@ -241,12 +241,39 @@ func generateGo(packageDir, prefix, version, versionWithoutDots string, versionP
 	helperCode = strings.Replace(helperCode, "<VERSION_WITHOUT_DOTS>", versionWithoutDots, -1)
 	code.Write([]byte(helperCode))
 
+	fmt.Fprintf(code, "type Enum int\n")
 	fmt.Fprintf(code, "const(\n")
 	for constName, constValue := range constants {
-		fmt.Fprintf(code, "\t%s = %s\n", cToGoConstName(constName), constValue)
+		fmt.Fprintf(code, "\t%s Enum = %s\n", cToGoConstName(constName), constValue)
 	}
 	fmt.Fprintf(code, ")\n")
 	fmt.Fprintf(code, "\n")
+
+	if trace {
+		// Some enums have the same values as others, which is really
+		// unfortunate. Luckilly this seems to mostly only happen for special
+		// vendor-specific extension functions, etc.
+		//
+		// Since a case statement must not have duplicate cases, we instead use
+		// a map for simplicity of this code here alone.
+		fmt.Fprintf(code, "var enumLookup = make(map[Enum]string, %d)\n", len(constants))
+		fmt.Fprintf(code, "\n")
+
+		fmt.Fprintf(code, "func init() {\n")
+		for constName, _ := range constants {
+			fmt.Fprintf(code, "\tenumLookup[%s] = \"%s\"\n", cToGoConstName(constName), cToGoConstName(constName))
+		}
+		fmt.Fprintf(code, "}\n")
+
+		fmt.Fprintf(code, "func (e Enum) String() string {\n")
+		fmt.Fprintf(code, "\tname, ok := enumLookup[e]\n")
+		fmt.Fprintf(code, "\tif ok {\n")
+		fmt.Fprintf(code, "\t\treturn name\n")
+		fmt.Fprintf(code, "\t}\n")
+		fmt.Fprintf(code, "\treturn fmt.Sprintf(\"Enum(%%d)\", e)\n")
+		fmt.Fprintf(code, "}\n")
+		fmt.Fprintf(code, "\n")
+	}
 
 	// Write out the Context type
 	fmt.Fprintf(code, "type Context struct {\n")

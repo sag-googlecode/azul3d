@@ -53,7 +53,7 @@ func cToGoType(c string) string {
 	case "GLsizei":
 		return "int32"
 	case "GLenum":
-		return "uint32"
+		return "Enum"
 	case "GLbitfield":
 		return "uint32"
 	case "GLfloat":
@@ -87,7 +87,7 @@ func cToGoType(c string) string {
 	case "GLuint*":
 		return "*uint32"
 	case "GLenum*":
-		return "*uint32"
+		return "*Enum"
 	case "GLboolean*":
 		return "*bool"
 	case "GLbyte*":

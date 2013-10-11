@@ -26,7 +26,7 @@ func init() {
 		name = "GetActiveAttrib"
 		args = "program, index uint32, bufSize int32"
 		untypedArgs = "program, index, bufSize"
-		returns = "(length int32, size int32, Type uint32, name string)"
+		returns = "(length int32, size int32, Type Enum, name string)"
 		return
 	}
 }

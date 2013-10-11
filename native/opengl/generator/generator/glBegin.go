@@ -21,7 +21,7 @@ func init() {
 `, prefix, ctx)
 
 		name = "Begin"
-		args = "mode uint32"
+		args = "mode Enum"
 		untypedArgs = "mode"
 		returns = ""
 		return

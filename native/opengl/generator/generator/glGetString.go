@@ -19,7 +19,7 @@ func init() {
 `, prefix, ctx)
 
 		name = "GetString"
-		args = "name uint32"
+		args = "name Enum"
 		untypedArgs = "name"
 		returns = "string"
 		return
