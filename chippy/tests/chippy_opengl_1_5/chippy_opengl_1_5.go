@@ -59,7 +59,7 @@ func resizeScene(width, height int) {
 
 func renderScene() {
 	// Clear The Screen And The Depth Buffer
-	gl.Clear(opengl.COLOR_BUFFER_BIT | opengl.DEPTH_BUFFER_BIT)
+	gl.Clear(uint32(opengl.COLOR_BUFFER_BIT | opengl.DEPTH_BUFFER_BIT))
 	gl.LoadIdentity() // Reset The View
 
 	// Move into the screen 6.0 units.
