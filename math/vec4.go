@@ -41,13 +41,23 @@ func (a *Vec4) Fill(n Real) {
 
 // Equals tells if this vector is equal to the other vector, by determining if it is within the
 // default tolerence for Real equality.
+//
+// Equality against nil is always false.
 func (a *Vec4) Equals(b *Vec4) bool {
+	if b == nil {
+		return false
+	}
 	return a.X.Equals(b.X) && a.Y.Equals(b.Y) && a.Z.Equals(b.Z) && a.W.Equals(b.W)
 }
 
 // EqualsTolerence tells if this vector is equal to the other vector, by determining if it is
 // within the specified tolerence for Real equality.
+//
+// Equality against nil is always false.
 func (a *Vec4) EqualsTolerence(b *Vec4, tolerence Real) bool {
+	if b == nil {
+		return false
+	}
 	return a.X.EqualsTolerence(b.X, tolerence) && a.Y.EqualsTolerence(b.Y, tolerence) && a.Z.EqualsTolerence(b.Z, tolerence) && a.W.EqualsTolerence(b.W, tolerence)
 }
 

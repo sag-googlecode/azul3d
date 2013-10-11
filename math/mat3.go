@@ -129,7 +129,12 @@ func (a *Mat3) ColVec2(column int) *Vec2 {
 
 // EqualsTolerence tells weather a is memberwise equal to b within the given tolerence for Real
 // equality.
+//
+// Equality against nil is always false.
 func (a *Mat3) EqualsTolerence(b *Mat3, tolerence Real) bool {
+	if b == nil {
+		return false
+	}
 	return a[0][0].EqualsTolerence(b[0][0], tolerence) &&
 		a[0][1].EqualsTolerence(b[0][1], tolerence) &&
 		a[0][2].EqualsTolerence(b[0][2], tolerence) &&
@@ -144,7 +149,12 @@ func (a *Mat3) EqualsTolerence(b *Mat3, tolerence Real) bool {
 }
 
 // Equals tells weather a is memberwise equal to b within the default tolerence for Real equality.
+//
+// Equality against nil is always false.
 func (a *Mat3) Equals(b *Mat3) bool {
+	if b == nil {
+		return false
+	}
 	return a.EqualsTolerence(b, RealNearZero)
 }
 

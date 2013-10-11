@@ -41,13 +41,23 @@ func (a *Quat) Fill(n Real) {
 
 // Equals tells if this quaternion is equal to the other quaternion, by determining if it is within
 // the default tolerence for Real equality.
+//
+// Equality against nil is always false.
 func (a *Quat) Equals(b *Quat) bool {
+	if b == nil {
+		return false
+	}
 	return a.W.Equals(b.W) && a.X.Equals(b.X) && a.Y.Equals(b.Y) && a.Z.Equals(b.Z)
 }
 
 // EqualsTolerence tells if this quaternion is equal to the other quaternion, by determining if it
 // is within the specified tolerence for Real equality.
+//
+// Equality against nil is always false.
 func (a *Quat) EqualsTolerence(b *Quat, tolerence Real) bool {
+	if b == nil {
+		return false
+	}
 	return a.W.EqualsTolerence(b.W, tolerence) && a.X.EqualsTolerence(b.X, tolerence) && a.Y.EqualsTolerence(b.Y, tolerence) && a.Z.EqualsTolerence(b.Z, tolerence)
 }
 
