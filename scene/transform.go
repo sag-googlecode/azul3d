@@ -164,8 +164,10 @@ func (t *Transform) SetPos(p *math.Vec3) {
 	t.access.Lock()
 	defer t.access.Unlock()
 
-	t.position = p.Copy()
-	t.built = nil
+	if !p.Equals(t.position) {
+		t.position = p.Copy()
+		t.built = nil
+	}
 }
 
 func (t *Transform) Pos() *math.Vec3 {
@@ -182,8 +184,10 @@ func (t *Transform) SetRot(r *math.Vec3) {
 	t.access.Lock()
 	defer t.access.Unlock()
 
-	t.rotation = r.Copy()
-	t.built = nil
+	if !r.Equals(t.rotation) {
+		t.rotation = r.Copy()
+		t.built = nil
+	}
 }
 
 func (t *Transform) Rot() *math.Vec3 {
@@ -205,8 +209,10 @@ func (t *Transform) SetQuat(q *math.Quat) {
 	t.access.Lock()
 	defer t.access.Unlock()
 
-	t.quat = q.Copy()
-	t.built = nil
+	if !q.Equals(t.quat) {
+		t.quat = q.Copy()
+		t.built = nil
+	}
 }
 
 func (t *Transform) Quat() *math.Quat {
@@ -233,8 +239,10 @@ func (t *Transform) SetScale(s *math.Vec3) {
 	t.access.Lock()
 	defer t.access.Unlock()
 
-	t.scale = s.Copy()
-	t.built = nil
+	if !s.Equals(t.scale) {
+		t.scale = s.Copy()
+		t.built = nil
+	}
 }
 
 func (t *Transform) Scale() *math.Vec3 {
@@ -251,8 +259,10 @@ func (t *Transform) SetShear(s *math.Vec3) {
 	t.access.Lock()
 	defer t.access.Unlock()
 
-	t.shear = s.Copy()
-	t.built = nil
+	if !s.Equals(t.shear) {
+		t.shear = s.Copy()
+		t.built = nil
+	}
 }
 
 func (t *Transform) Shear() *math.Vec3 {
