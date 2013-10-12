@@ -10,7 +10,7 @@ import (
 	"code.google.com/p/azul3d/scene/texture"
 )
 
-// Cube builds and returns an new 3D cube geom
+// Cube builds and returns an new 3D cube mesh.
 func Cube(scale math.Real, hint geom.Hint) *geom.Mesh {
 	s := scale
 
