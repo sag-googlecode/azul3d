@@ -13,28 +13,35 @@ import (
 )
 
 var (
-	lensTag       = scene.NewProp("cameraLens")
-	sceneTag      = scene.NewProp("cameraScene")
-	regionMap     = scene.NewProp("cameraRegionMap")
-	regionMapLock = scene.NewProp("cameraRegionMapLock")
+	// The property for storing the lens of a node.
+	PLens = scene.NewProp("Lens")
+
+	// The property for storing the target scene of a node.
+	PScene = scene.NewProp("Scene")
+
+	// The property for storing the camera regions map of a node.
+	PRegionMap = scene.NewProp("RegionMap")
+
+	// The property for storing the camera regions map lock of a node.
+	PRegionMapLock = scene.NewProp("RegionMapLock")
 )
 
 func getLock(n *scene.Node) *sync.RWMutex {
-	l, ok := n.Tag(regionMapLock)
+	l, ok := n.Prop(PRegionMapLock)
 	if !ok {
 		newLock := new(sync.RWMutex)
-		n.SetTag(regionMapLock, newLock)
+		n.SetProp(PRegionMapLock, newLock)
 		return newLock
 	}
 	return l.(*sync.RWMutex)
 }
 
 func getRegions(n *scene.Node) map[*util.Region]bool {
-	regions, ok := n.Tag(regionMap)
+	regions, ok := n.Prop(PRegionMap)
 	if !ok {
-		newRegionMap := make(map[*util.Region]bool)
-		n.SetTag(regionMap, newRegionMap)
-		return newRegionMap
+		newPRegionMap := make(map[*util.Region]bool)
+		n.SetProp(PRegionMap, newPRegionMap)
+		return newPRegionMap
 	}
 	return regions.(map[*util.Region]bool)
 }
@@ -101,12 +108,12 @@ func Regions(n *scene.Node) []*util.Region {
 
 // SetScene specifies the scene that this camera node renders.
 func SetScene(n, scene *scene.Node) {
-	n.SetTag(sceneTag, scene)
+	n.SetProp(PScene, scene)
 }
 
 // Scene returns the scene that this camera node renders.
 func Scene(n *scene.Node) *scene.Node {
-	s, ok := n.Tag(sceneTag)
+	s, ok := n.Prop(PScene)
 	if !ok {
 		return nil
 	}
@@ -115,12 +122,12 @@ func Scene(n *scene.Node) *scene.Node {
 
 // SetLens changes the lens of this camera to the specified one.
 func SetLens(n *scene.Node, lens *util.Lens) {
-	n.SetTag(lensTag, lens)
+	n.SetProp(PLens, lens)
 }
 
 // Lens returns the current lens attatched to this camera.
 func Lens(n *scene.Node) *util.Lens {
-	l, ok := n.Tag(lensTag)
+	l, ok := n.Prop(PLens)
 	if !ok {
 		return nil
 	}
@@ -131,16 +138,16 @@ func makeCopy(n *scene.Node, deep bool) {
 	// Copy lens
 	l := Lens(n)
 	if l != nil {
-		n.SetTag(lensTag, l)
+		n.SetProp(PLens, l)
 	}
 
 	// Copy scene
 	s := Scene(n)
 	if s != nil {
 		if deep {
-			n.SetTag(sceneTag, s.Copy())
+			n.SetProp(PScene, s.Copy())
 		} else {
-			n.SetTag(sceneTag, s)
+			n.SetProp(PScene, s)
 		}
 	}
 
@@ -153,12 +160,12 @@ func makeCopy(n *scene.Node, deep bool) {
 	for region, _ := range getRegions(n) {
 		regionsCopy[region.Copy()] = true
 	}
-	n.SetTag(regionMap, regionsCopy)
+	n.SetProp(PRegionMap, regionsCopy)
 
 	return
 }
 
-// Copy copies in-place the camera tag associated with this node.
+// Copy copies in-place the camera prop associated with this node.
 //
 // If an copy of a node is made, the underlying camera object is still
 // identical. You must then use:
