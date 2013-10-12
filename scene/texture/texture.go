@@ -57,6 +57,8 @@ func IsValid(t Type) bool {
 	return false
 }
 
+// Texture is a base texture type which fills the Type interface. All texture
+// types will use this type as an embedded struct.
 type Texture struct {
 	sync.RWMutex
 
@@ -203,6 +205,7 @@ func (t *Texture) ClearOnLoad() bool {
 	return t.clearOnLoad
 }
 
+// SetAnisotropicDegree sets the anisotropic degree of this texture.
 func (t *Texture) SetAnisotropicDegree(degree uint) {
 	if degree <= 0 || degree > 9 {
 		panic("SetAnisoDegree(): Anisotropic filtering degree must be 1-9")
@@ -213,6 +216,7 @@ func (t *Texture) SetAnisotropicDegree(degree uint) {
 	t.anisotropicDegree = degree
 }
 
+// AnisotropicDegree returns the anisotropic degree of this texture.
 func (t *Texture) AnisotropicDegree() uint {
 	t.RLock()
 	defer t.RUnlock()
@@ -220,6 +224,7 @@ func (t *Texture) AnisotropicDegree() uint {
 	return t.anisotropicDegree
 }
 
+// SetBorderColorVec4 sets the border color that will be used by this texture.
 func (t *Texture) SetBorderColorVec4(color *math.Vec4) {
 	t.Lock()
 	defer t.Unlock()
@@ -227,6 +232,7 @@ func (t *Texture) SetBorderColorVec4(color *math.Vec4) {
 	t.borderColor = color.Clamp(0, 1)
 }
 
+// BorderColorVec4 returns the border color that is used by this texture.
 func (t *Texture) BorderColorVec4() *math.Vec4 {
 	t.RLock()
 	defer t.RUnlock()
@@ -234,6 +240,8 @@ func (t *Texture) BorderColorVec4() *math.Vec4 {
 	return t.borderColor.Copy()
 }
 
+// BorderColorFloat32 returns a float32 array of the border color used by this
+// texture.
 func (t *Texture) BorderColorFloat32() []float32 {
 	t.RLock()
 	defer t.RUnlock()
@@ -246,6 +254,7 @@ func (t *Texture) BorderColorFloat32() []float32 {
 	}
 }
 
+// SetBorderColor sets the border color of this texture as math.Real types.
 func (t *Texture) SetBorderColor(r, g, b, a math.Real) {
 	t.Lock()
 	defer t.Unlock()
@@ -258,6 +267,7 @@ func (t *Texture) SetBorderColor(r, g, b, a math.Real) {
 	t.borderColor = math.Vector4(r, g, b, a)
 }
 
+// BorderColor returns the border color of this texture as math.Real types.
 func (t *Texture) BorderColor() (r, g, b, a math.Real) {
 	t.RLock()
 	defer t.RUnlock()
@@ -265,6 +275,8 @@ func (t *Texture) BorderColor() (r, g, b, a math.Real) {
 	return t.borderColor.X, t.borderColor.Y, t.borderColor.Z, t.borderColor.W
 }
 
+// SetCompressed sets weather or not this texture should be compressed in
+// memory.
 func (t *Texture) SetCompressed(compressed bool) {
 	t.Lock()
 	defer t.Unlock()
@@ -272,6 +284,8 @@ func (t *Texture) SetCompressed(compressed bool) {
 	t.compressed = compressed
 }
 
+// Compressed returns weather or not this texture is set to be compressed in
+// memory.
 func (t *Texture) Compressed() bool {
 	t.RLock()
 	defer t.RUnlock()

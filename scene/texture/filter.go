@@ -4,6 +4,7 @@
 
 package texture
 
+// Filter represents a single texture filter type.
 type Filter uint8
 
 // ValidMag tells if this filter is valid to be used for as a magnification

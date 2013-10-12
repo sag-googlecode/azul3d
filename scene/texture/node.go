@@ -10,25 +10,28 @@ import (
 )
 
 var (
-	textureMap     = scene.NewProp("textureMap")
-	textureMapLock = scene.NewProp("textureMapLock")
+	// Property for storing the texture map on a node.
+	PTextureMap = scene.NewProp("TextureMap")
+
+	// Property for storing the texture map lock on a node.
+	PTextureMapLock = scene.NewProp("TextureMapLock")
 )
 
 func getLock(n *scene.Node) *sync.RWMutex {
-	l, ok := n.Tag(textureMapLock)
+	l, ok := n.Prop(PTextureMapLock)
 	if !ok {
 		newLock := new(sync.RWMutex)
-		n.SetTag(textureMapLock, newLock)
+		n.SetProp(PTextureMapLock, newLock)
 		return newLock
 	}
 	return l.(*sync.RWMutex)
 }
 
 func getTextures(n *scene.Node) map[*Layer]Type {
-	i, ok := n.Tag(textureMap)
+	i, ok := n.Prop(PTextureMap)
 	if !ok {
 		newMap := make(map[*Layer]Type)
-		n.SetTag(textureMap, newMap)
+		n.SetProp(PTextureMap, newMap)
 		return newMap
 	}
 	return i.(map[*Layer]Type)
