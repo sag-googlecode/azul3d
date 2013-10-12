@@ -4,8 +4,17 @@
 
 package scene
 
+import (
+	"fmt"
+)
+
+// TransparencyMode describes a single type of transparency that can be used
+// during rendering.
 type TransparencyMode int
 
+// String returns a string representation of this transparency mode.
+//
+// E.g. NoTransparency -> "NoTransparency"
 func (t TransparencyMode) String() string {
 	switch t {
 	case NoTransparency:
@@ -17,9 +26,11 @@ func (t TransparencyMode) String() string {
 	case Multisample:
 		return "Multisample"
 	}
-	return "Invalid"
+	return fmt.Sprintf("TransparencyMode(%d)", t)
 }
 
+// Valid tells if this transparency mode is a valid one (I.e one of the
+// pre-defined constants in this package).
 func (t TransparencyMode) Valid() bool {
 	switch t {
 	case NoTransparency:

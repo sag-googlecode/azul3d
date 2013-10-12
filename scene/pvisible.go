@@ -5,6 +5,7 @@
 package scene
 
 var (
+	// The property used for storing the visibility status of a node.
 	PVisible = NewProp("Visible")
 )
 

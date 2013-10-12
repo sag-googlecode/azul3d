@@ -9,6 +9,7 @@ import (
 	"sync"
 )
 
+// Transform represents a three-dimensional transformation.
 type Transform struct {
 	access sync.RWMutex
 
@@ -26,6 +27,11 @@ func (t *Transform) hasComponents() bool {
 	return t.position != nil || t.rotation != nil || t.scale != nil || t.shear != nil || t.quat != nil
 }
 
+// HasComponents tells if this transformation has Pos(), Rot(), Scale(),
+// Shear(), or Quat() components specified.
+//
+// Additionally, if this transformation has an arbitrary matrix set on it,
+// false is returned.
 func (t *Transform) HasComponents() bool {
 	t.access.RLock()
 	defer t.access.RUnlock()
@@ -33,6 +39,8 @@ func (t *Transform) HasComponents() bool {
 	return t.hasComponents()
 }
 
+// Compose returns the composition of t * other, I.e. a composed transformation
+// that describes the two transformations combined.
 func (t *Transform) Compose(other *Transform) *Transform {
 	composed := new(Transform)
 
@@ -114,7 +122,8 @@ func (t *Transform) build() {
 	t.built = t.built.Mul(trans)
 }
 
-// Note: this function does not make an copy of the matrix m, you should pass in one.
+// SetArbitraryMat4 specifies an arbitrary transformation matrix to represent
+// this transformation.
 func (t *Transform) SetArbitraryMat4(m *math.Mat4) {
 	t.access.Lock()
 	defer t.access.Unlock()
@@ -124,20 +133,24 @@ func (t *Transform) SetArbitraryMat4(m *math.Mat4) {
 		t.built = nil
 	} else {
 		t.arbitrary = true
-		t.built = m
+		t.built = m.Copy()
 	}
 }
 
+// ArbitraryMat4 returns the arbitrary transformation matrix of this
+// transformation,
 func (t *Transform) ArbitraryMat4() *math.Mat4 {
 	t.access.RLock()
 	defer t.access.RUnlock()
 
 	if t.arbitrary {
-		return t.built
+		return t.built.Copy()
 	}
 	return nil
 }
 
+// SetMat4 specifies the position, scale, shear, and rotation components of
+// this transformation to the ones decomposed from the specified matrix.
 func (t *Transform) SetMat4(m *math.Mat4) {
 	t.access.Lock()
 	defer t.access.Unlock()
@@ -149,7 +162,7 @@ func (t *Transform) SetMat4(m *math.Mat4) {
 	t.rotation = t.rotation.Degrees().HprToXyz()
 }
 
-// Note: this function does not return an copy of the matrix m, you should copy it instead.
+// Mat4 returns the matrix which perfectly defines this transformation.
 func (t *Transform) Mat4() *math.Mat4 {
 	t.access.Lock()
 	defer t.access.Unlock()
@@ -157,9 +170,10 @@ func (t *Transform) Mat4() *math.Mat4 {
 	if t.built == nil {
 		t.build()
 	}
-	return t.built
+	return t.built.Copy()
 }
 
+// SetPos specifies the position component of this transformation.
 func (t *Transform) SetPos(p *math.Vec3) {
 	t.access.Lock()
 	defer t.access.Unlock()
@@ -170,6 +184,7 @@ func (t *Transform) SetPos(p *math.Vec3) {
 	}
 }
 
+// Pos returns the position component of this transformation.
 func (t *Transform) Pos() *math.Vec3 {
 	t.access.RLock()
 	defer t.access.RUnlock()
@@ -180,6 +195,7 @@ func (t *Transform) Pos() *math.Vec3 {
 	return t.position
 }
 
+// SetRot specifies the rotation component of this transformation.
 func (t *Transform) SetRot(r *math.Vec3) {
 	t.access.Lock()
 	defer t.access.Unlock()
@@ -190,6 +206,7 @@ func (t *Transform) SetRot(r *math.Vec3) {
 	}
 }
 
+// Rot returns the rotation component of this transformation.
 func (t *Transform) Rot() *math.Vec3 {
 	t.access.RLock()
 	defer t.access.RUnlock()
@@ -205,6 +222,7 @@ func (t *Transform) Rot() *math.Vec3 {
 	return t.rotation
 }
 
+// SetQuat specifies the quaternion rotation component of this transformation.
 func (t *Transform) SetQuat(q *math.Quat) {
 	t.access.Lock()
 	defer t.access.Unlock()
@@ -215,6 +233,7 @@ func (t *Transform) SetQuat(q *math.Quat) {
 	}
 }
 
+// Quat returns the quaternion component of this transformation.
 func (t *Transform) Quat() *math.Quat {
 	t.access.RLock()
 	defer t.access.RUnlock()
@@ -235,6 +254,7 @@ func (t *Transform) Quat() *math.Quat {
 	return t.quat.Copy()
 }
 
+// SetScale specifies the scale component of this transformation.
 func (t *Transform) SetScale(s *math.Vec3) {
 	t.access.Lock()
 	defer t.access.Unlock()
@@ -245,6 +265,7 @@ func (t *Transform) SetScale(s *math.Vec3) {
 	}
 }
 
+// Scale returns the scale component of this transformation.
 func (t *Transform) Scale() *math.Vec3 {
 	t.access.RLock()
 	defer t.access.RUnlock()
@@ -255,6 +276,7 @@ func (t *Transform) Scale() *math.Vec3 {
 	return t.scale.Copy()
 }
 
+// SetShear specifies the shear component of this transformation.
 func (t *Transform) SetShear(s *math.Vec3) {
 	t.access.Lock()
 	defer t.access.Unlock()
@@ -265,6 +287,7 @@ func (t *Transform) SetShear(s *math.Vec3) {
 	}
 }
 
+// Shear returns the shear component of this transformation.
 func (t *Transform) Shear() *math.Vec3 {
 	t.access.RLock()
 	defer t.access.RUnlock()
@@ -275,6 +298,8 @@ func (t *Transform) Shear() *math.Vec3 {
 	return t.shear.Copy()
 }
 
+// Reset resets all the components of this transformation such that it is in
+// it's original (e.g. Identity matrix) state.
 func (t *Transform) Reset() {
 	t.access.RLock()
 	defer t.access.RUnlock()
@@ -288,6 +313,7 @@ func (t *Transform) Reset() {
 	t.quat = nil
 }
 
+// Copy returns a new 1:1 copy of this transformation.
 func (t *Transform) Copy() *Transform {
 	t.access.RLock()
 	defer t.access.RUnlock()

@@ -4,24 +4,38 @@
 
 package scene
 
-func (n *Node) addChild(child *Node) {
+func (n *Node) addChild(child *Node) bool {
 	n.access.Lock()
 	defer n.access.Unlock()
 
+	// Check to see if the node is already a child
+	for _, existingChild := range n.children {
+		if existingChild == child {
+			return false
+		}
+	}
 	n.children = append(n.children, child)
+	return true
 }
 
+// AddChild adds the specified child node to this node.
+//
+// If this node already has the specified child, this function is no-op.
 func (n *Node) AddChild(child *Node) {
-	n.addChild(child)
-	child.setParent(n)
-	n.checkForCircular()
+	if n.addChild(child) {
+		child.setParent(n)
+		n.checkForCircular()
 
-	// Since parent is changing, we need to recursively clear the active props
-	// of this node and all children nodes, as they can rely on the previous
-	// parent.
-	n.doRecursiveClearActiveProps()
+		// Since parent is changing, we need to recursively clear the active props
+		// of this node and all children nodes, as they can rely on the previous
+		// parent.
+		n.doRecursiveClearActiveProps()
+	}
 }
 
+// RemoveChild removes the specified child node from this node.
+//
+// If this node does not have the specified child, this function is no-op.
 func (n *Node) RemoveChild(child *Node) {
 	n.access.Lock()
 	defer n.access.Unlock()
@@ -58,6 +72,7 @@ func (n *Node) doRemoveChildren() {
 	n.children = nil
 }
 
+// RemoveChildren removes all of the child nodes from this node.
 func (n *Node) RemoveChildren() {
 	n.access.Lock()
 	defer n.access.Unlock()
@@ -65,20 +80,20 @@ func (n *Node) RemoveChildren() {
 	n.doRemoveChildren()
 }
 
+// HasChild tells if this node has the specified child node.
 func (n *Node) HasChild(child *Node) bool {
 	n.access.RLock()
 	defer n.access.RUnlock()
 
-	found := -1
-	for i, c := range n.children {
+	for _, c := range n.children {
 		if c == child {
-			found = i
-			break
+			return true
 		}
 	}
-	return found != -1
+	return false
 }
 
+// Children returns a slice of all child nodes this node contains.
 func (n *Node) Children() []*Node {
 	n.access.RLock()
 	defer n.access.RUnlock()

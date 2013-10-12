@@ -96,6 +96,20 @@ func (n *Node) Parents() []*Node {
 	return n.parents
 }
 
+// Top returns the top node of this scene graph.
+//
+// Consider the following graph:
+//
+//  A
+//      B
+//          C
+//
+// C.Top() would return A.
+//
+// B.Top() would return A.
+//
+// A.Top() would return nil.
+//
 func (n *Node) Top() *Node {
 	parents := n.Parents()
 	if len(parents) > 0 {
@@ -118,9 +132,14 @@ func (n *Node) setParent(parent *Node) {
 	n.parent = parent
 }
 
+// SetParent specifies the parent node of this node, making this node a child
+// of the parent node.
 func (n *Node) SetParent(parent *Node) {
 	if parent != nil {
-		parent.addChild(n)
+		if !parent.addChild(n) {
+			// We're already a child of the parent? So we're done.
+			return
+		}
 	}
 	n.setParent(parent)
 	n.checkForCircular()
@@ -131,6 +150,7 @@ func (n *Node) SetParent(parent *Node) {
 	n.doRecursiveClearActiveProps()
 }
 
+// Parent returns the parent node of this node.
 func (n *Node) Parent() *Node {
 	n.access.RLock()
 	defer n.access.RUnlock()

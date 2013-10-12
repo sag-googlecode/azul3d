@@ -5,6 +5,7 @@
 package scene
 
 var (
+	// The property used for storing the transparency of a node.
 	PTransparency = NewProp("Transparency")
 )
 

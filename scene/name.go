@@ -4,6 +4,7 @@
 
 package scene
 
+// SetName sets the string name of this node.
 func (n *Node) SetName(name string) {
 	n.access.Lock()
 	defer n.access.Unlock()
@@ -11,6 +12,7 @@ func (n *Node) SetName(name string) {
 	n.name = name
 }
 
+// Name returns the string name of this node.
 func (n *Node) Name() string {
 	n.access.RLock()
 	defer n.access.RUnlock()

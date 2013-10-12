@@ -5,6 +5,7 @@
 package scene
 
 var (
+	// The property used for storing the sort value of a node.
 	PSort = NewProp("Sort")
 )
 
