@@ -1,31 +1,25 @@
-// +build examples
-
 package main
 
-import(
-	"code.google.com/p/azul3d/scene/renderer"
-	"code.google.com/p/azul3d/scene/texture"
-	"code.google.com/p/azul3d/scene/sprite"
-	"code.google.com/p/azul3d/scene/camera"
-	"code.google.com/p/azul3d/scene/geom"
-	"code.google.com/p/azul3d/scene"
-	"code.google.com/p/azul3d/math"
+import (
+	"code.google.com/p/azul3d"
 	"code.google.com/p/azul3d/chippy"
 	"code.google.com/p/azul3d/chippy/keyboard"
 	"code.google.com/p/azul3d/event"
-	"code.google.com/p/azul3d"
+	"code.google.com/p/azul3d/math"
+	"code.google.com/p/azul3d/scene"
+	"code.google.com/p/azul3d/scene/camera"
+	"code.google.com/p/azul3d/scene/geom"
+	"code.google.com/p/azul3d/scene/renderer"
+	"code.google.com/p/azul3d/scene/sprite"
+	"code.google.com/p/azul3d/scene/texture"
 	_ "image/png"
-	"runtime"
-	"math/rand"
-	"time"
 	"log"
-	"os"
+	"math/rand"
+	"runtime"
+	"time"
 )
 
-var(
-	// Create the engine.
-	engine = azul3d.NewEngine()
-
+var (
 	// root sprite
 	root *scene.Node
 )
@@ -35,11 +29,11 @@ func onCursorPosition(ev *event.Event) {
 	pos := ev.Data.(*chippy.CursorPositionEvent)
 
 	// If the cursor is not grabbed, we do not transform cubes.
-	if !engine.Window.CursorGrabbed() {
+	if !azul3d.Window.CursorGrabbed() {
 		return
 	}
 
-	kb := engine.Window.Keyboard
+	kb := azul3d.Window.Keyboard
 	if kb.Down(keyboard.RightCtrl) || kb.Down(keyboard.RightShift) {
 		// If right ctrl key is currently down, we apply shearing to current
 		// cube.
@@ -75,15 +69,15 @@ func resetTransforms(ev *event.Event) {
 }
 
 func printViewed(ev *event.Event) {
-	inView := camera.InView(engine.Camera2d, root.PosVec3(), root.Parent())
+	inView := camera.InView(azul3d.Camera2d, root.PosVec3(), root.Parent())
 
 	log.Printf("Visibility: %s=%t\n", root.Name(), inView)
 }
 
 // Event handler which toggles cursor grab
 func toggleCursorGrabbed(ev *event.Event) {
-	isGrabbed := engine.Window.CursorGrabbed()
-	engine.Window.SetCursorGrabbed(!isGrabbed)
+	isGrabbed := azul3d.Window.CursorGrabbed()
+	azul3d.Window.SetCursorGrabbed(!isGrabbed)
 }
 
 func createSprite(parent *scene.Node, tex *texture.Texture2D) {
@@ -98,10 +92,10 @@ func createSprite(parent *scene.Node, tex *texture.Texture2D) {
 	halfHeight := height / 2
 
 	max, min := 640, 0
-	x := math.Real(rand.Intn(max - min) + min)
+	x := math.Real(rand.Intn(max-min) + min)
 	max, min = 480, 0
-	y := math.Real(rand.Intn(max - min) + min)
-	s.SetPos(x + halfWidth.Rounded(), s.PosVec3().Y, -y - halfHeight.Rounded())
+	y := math.Real(rand.Intn(max-min) + min)
+	s.SetPos(x+halfWidth.Rounded(), s.PosVec3().Y, -y-halfHeight.Rounded())
 
 	texture.Set(s, texture.DefaultLayer, tex)
 
@@ -134,7 +128,7 @@ func createSprite(parent *scene.Node, tex *texture.Texture2D) {
 		tex.Region(48, 48, 64, 64),
 	})
 
-	sprite.SetFrameRate(s, (1000 / 24) * time.Millisecond)
+	sprite.SetFrameRate(s, (1000/24)*time.Millisecond)
 
 	sprite.SetPlaying(s, true)
 
@@ -142,9 +136,9 @@ func createSprite(parent *scene.Node, tex *texture.Texture2D) {
 }
 
 func program() {
-	root = engine.Scene2d.New("myrootNode")
+	root = azul3d.Scene2d.New("myrootNode")
 
-	t, err := renderer.LoadTextureFile(engine.Renderer, "src/code.google.com/p/azul3d/assets/textures/player.png")
+	t, err := renderer.LoadTextureFile(azul3d.Renderer, "src/code.google.com/p/azul3d/assets/textures/player.png")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -154,7 +148,7 @@ func program() {
 	tex := t.(*texture.Texture2D)
 
 	// Grab the cursor
-	engine.Window.SetCursorGrabbed(true)
+	azul3d.Window.SetCursorGrabbed(true)
 
 	// We can benefit greatly by collecting all the like-sprites into a single
 	// mesh. We can even do this at a shockingly fast rate, since sprites are
@@ -168,7 +162,7 @@ func program() {
 
 	var newlyCollected = make(chan *scene.Node, 1)
 	go func() {
-		for{
+		for {
 			// Collect all the sprites into a single mesh.
 			n, c := geom.Collect(root)
 			log.Println("Collected", n, "nodes")
@@ -181,7 +175,7 @@ func program() {
 	var collected *scene.Node
 	event.Handle("pre-frame", func(e *event.Event) {
 		var c *scene.Node
-		select{
+		select {
 		case c = <-newlyCollected:
 			break
 		default:
@@ -194,14 +188,14 @@ func program() {
 		collected = c
 
 		// Attach the mesh to scene2d.
-		collected.SetParent(engine.Scene2d)
+		collected.SetParent(azul3d.Scene2d)
 	})
 
 	var stop func()
 	stop = event.Define(event.Handlers{
 		// Listen for alt keys to toggle cursor grabbed
 		"RightAlt": toggleCursorGrabbed,
-		"LeftAlt": toggleCursorGrabbed,
+		"LeftAlt":  toggleCursorGrabbed,
 
 		// Listen for R key to reset transformations
 		"R": resetTransforms,
@@ -232,23 +226,9 @@ func program() {
 	})
 }
 
-
 func main() {
 	rand.Seed(time.Now().Unix())
 
-	// For debugging anything
-	azul3d.SetDebugOutput(os.Stdout)
-
-	// Initialize azul3d
-	err := azul3d.Init()
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	// Launch program
-	go program()
-
-	// Enter main loop
-	azul3d.MainLoop()
+	// Run our program, enter main loop.
+	azul3d.Run(program)
 }
-

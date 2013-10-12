@@ -1,22 +1,20 @@
-// +build examples
-
 package main
 
-import(
-	"code.google.com/p/azul3d/scene/geom/procedural"
-	"code.google.com/p/azul3d/scene/geom"
+import (
+	"code.google.com/p/azul3d"
+	"code.google.com/p/azul3d/chippy"
+	"code.google.com/p/azul3d/chippy/keyboard"
+	"code.google.com/p/azul3d/event"
 	"code.google.com/p/azul3d/scene"
 	"code.google.com/p/azul3d/scene/color"
-	"code.google.com/p/azul3d/chippy/keyboard"
-	"code.google.com/p/azul3d/chippy"
-	"code.google.com/p/azul3d/event"
-	"code.google.com/p/azul3d"
-	"sync"
+	"code.google.com/p/azul3d/scene/geom"
+	"code.google.com/p/azul3d/scene/geom/procedural"
 	"log"
 	"os"
+	"sync"
 )
 
-var(
+var (
 	// Create the engine.
 	engine = azul3d.NewEngine()
 
@@ -68,9 +66,9 @@ func onCursorPosition(ev event.Event) {
 		y := float32(-pos.Y / 220)
 
 		color.SetScale(currentCube, color.New(
-			cs.R + x,
-			cs.G + (x + y) / 2,
-			cs.B + y,
+			cs.R+x,
+			cs.G+(x+y)/2,
+			cs.B+y,
 			cs.A,
 		))
 		log.Println(cs)
@@ -85,9 +83,9 @@ func onCursorPosition(ev event.Event) {
 		y := float32(-pos.Y / 220)
 
 		color.Set(currentCube, color.New(
-			c.R + x,
-			c.G + (x + y) / 2,
-			c.B + y,
+			c.R+x,
+			c.G+(x+y)/2,
+			c.B+y,
 			c.A,
 		))
 		log.Println(c)
@@ -124,7 +122,6 @@ func toggleCursorGrabbed() {
 	isGrabbed := engine.Window.CursorGrabbed()
 	engine.Window.SetCursorGrabbed(!isGrabbed)
 }
-
 
 // Our scene graph will look like this:
 //
@@ -166,7 +163,6 @@ func program() {
 	// cube is the cube we are moving relative to.
 	currentCube = red
 
-
 	// Listen for alt keys to toggle cursor grabbed
 	keyRightAlt := event.Notify("RightAlt")
 	defer event.Close(keyRightAlt)
@@ -191,8 +187,8 @@ func program() {
 	destroyed := event.Notify("window-destroyed")
 	defer event.Close(destroyed)
 
-	for{
-		select{
+	for {
+		select {
 		case <-keyRightAlt:
 			toggleCursorGrabbed()
 

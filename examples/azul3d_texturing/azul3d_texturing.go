@@ -1,40 +1,26 @@
-// +build examples
-
 package main
 
-import(
-	"code.google.com/p/azul3d/scene/geom/procedural"
-	"code.google.com/p/azul3d/scene/geom"
-	"code.google.com/p/azul3d/scene/texture"
-	"code.google.com/p/azul3d/scene/renderer"
-	"code.google.com/p/azul3d/scene/color"
-	"code.google.com/p/azul3d/scene"
-	"code.google.com/p/azul3d/math"
-	"code.google.com/p/azul3d/chippy/keyboard"
-	"code.google.com/p/azul3d/chippy"
-	"code.google.com/p/azul3d/event"
+import (
 	"code.google.com/p/azul3d"
-	"runtime"
-	"runtime/debug"
+	"code.google.com/p/azul3d/chippy"
+	"code.google.com/p/azul3d/chippy/keyboard"
+	"code.google.com/p/azul3d/event"
+	"code.google.com/p/azul3d/math"
+	"code.google.com/p/azul3d/scene"
+	"code.google.com/p/azul3d/scene/color"
+	"code.google.com/p/azul3d/scene/geom"
+	"code.google.com/p/azul3d/scene/geom/procedural"
+	"code.google.com/p/azul3d/scene/renderer"
+	"code.google.com/p/azul3d/scene/texture"
 	_ "image/jpeg"
 	_ "image/png"
-	"sync"
 	"log"
-	"os"
+	"runtime"
+	"runtime/debug"
+	"sync"
 )
 
-import _ "net/http/pprof"
-import "net/http"
-func init() {
-	go func() {
-		log.Println(http.ListenAndServe(":6161", nil))
-	}()
-}
-
-var(
-	// Create the engine.
-	engine = azul3d.NewEngine()
-
+var (
 	// blue cube.
 	blue *scene.Node
 
@@ -61,13 +47,13 @@ func createCube(name string, c color.Color) *scene.Node {
 	// Note that the larger the texture the more memory it will consume, and it
 	// could eat all your system's memory.
 	prefix := "src/code.google.com/p/azul3d/assets/textures"
-	texFilePath := prefix+"/clouds_8192x8192.jpg"
+	texFilePath := prefix + "/clouds_8192x8192.jpg"
 	//texFilePath := prefix+"/clouds_4096x4096.jpg"
 	//texFilePath := prefix+"/clouds_2048x2048.jpg"
 	//texFilePath := prefix+"/clouds_1024x1024.jpg"
 	//texFilePath := prefix+"/texture_coords_1024x1024.png"
 
-	tex, err := renderer.LoadTextureFile(engine.Renderer, texFilePath)
+	tex, err := renderer.LoadTextureFile(azul3d.Renderer, texFilePath)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -93,11 +79,11 @@ func onCursorPosition(ev *event.Event) {
 	pos := ev.Data.(*chippy.CursorPositionEvent)
 
 	// If the cursor is not grabbed, we do not transform cubes.
-	if !engine.Window.CursorGrabbed() {
+	if !azul3d.Window.CursorGrabbed() {
 		return
 	}
 
-	kb := engine.Window.Keyboard
+	kb := azul3d.Window.Keyboard
 	if kb.Down(keyboard.LeftCtrl) {
 		// If left ctrl key is currently down, we apply scaling to current
 		// cube.
@@ -140,7 +126,7 @@ func resetTransforms(ev *event.Event) {
 
 	blue.Destroy()
 	blue = createCube("blue-cube", color.New(0, 0, 1, 1))
-	blue.SetParent(engine.Scene2d)
+	blue.SetParent(azul3d.Scene2d)
 
 	//blue.ResetTransform()
 	blue.SetScale(50, 50, 50)
@@ -149,10 +135,9 @@ func resetTransforms(ev *event.Event) {
 
 // Event handler which toggles cursor grab
 func toggleCursorGrabbed(ev *event.Event) {
-	isGrabbed := engine.Window.CursorGrabbed()
-	engine.Window.SetCursorGrabbed(!isGrabbed)
+	isGrabbed := azul3d.Window.CursorGrabbed()
+	azul3d.Window.SetCursorGrabbed(!isGrabbed)
 }
-
 
 // Our scene graph will look like this:
 //
@@ -165,7 +150,7 @@ func program() {
 	// Blue cube will be an child of the 2D scene, it will look flat and have
 	// no depth (Orthogonic camera lens is used to acheive this effect).
 	blue = createCube("blue-cube", color.New(0, 0, 1, 1))
-	blue.SetParent(engine.Scene2d)
+	blue.SetParent(azul3d.Scene2d)
 
 	// Since it's in the 2D scene -- it's units are in pixels. The cube from
 	// createCube() is two units wide, making it two pixels wide. We will make
@@ -178,17 +163,16 @@ func program() {
 	blue.SetPos(50, 0, -50)
 
 	// Print scene graph
-	engine.Renderer.PrintTree()
+	azul3d.Renderer.PrintTree()
 
 	// Grab the cursor
-	engine.Window.SetCursorGrabbed(true)
-
+	azul3d.Window.SetCursorGrabbed(true)
 
 	var stop func()
 	stop = event.Define(event.Handlers{
 		// Listen for alt keys to toggle cursor grabbed
 		"RightAlt": toggleCursorGrabbed,
-		"LeftAlt": toggleCursorGrabbed,
+		"LeftAlt":  toggleCursorGrabbed,
 
 		// Listen for R key to reset transformations
 		"R": resetTransforms,
@@ -214,19 +198,6 @@ func program() {
 }
 
 func main() {
-	// For debugging anything
-	azul3d.SetDebugOutput(os.Stdout)
-
-	// Initialize azul3d
-	err := azul3d.Init()
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	// Launch program
-	go program()
-
-	// Enter main loop
-	azul3d.MainLoop()
+	// Run our program, enter main loop.
+	azul3d.Run(program)
 }
-

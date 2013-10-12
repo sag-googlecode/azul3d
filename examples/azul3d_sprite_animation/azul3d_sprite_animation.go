@@ -1,29 +1,23 @@
-// +build examples
-
 package main
 
-import(
-	"code.google.com/p/azul3d/scene/renderer"
-	"code.google.com/p/azul3d/scene/texture"
-	"code.google.com/p/azul3d/scene/sprite"
-	"code.google.com/p/azul3d/scene/camera"
-	"code.google.com/p/azul3d/scene"
-	"code.google.com/p/azul3d/math"
+import (
+	"code.google.com/p/azul3d"
 	"code.google.com/p/azul3d/chippy"
 	"code.google.com/p/azul3d/chippy/keyboard"
 	"code.google.com/p/azul3d/event"
-	"code.google.com/p/azul3d"
+	"code.google.com/p/azul3d/math"
+	"code.google.com/p/azul3d/scene"
+	"code.google.com/p/azul3d/scene/camera"
+	"code.google.com/p/azul3d/scene/renderer"
+	"code.google.com/p/azul3d/scene/sprite"
+	"code.google.com/p/azul3d/scene/texture"
 	_ "image/png"
+	"log"
 	"runtime"
 	"time"
-	"log"
-	"os"
 )
 
-var(
-	// Create the engine.
-	engine = azul3d.NewEngine()
-
+var (
 	// Player sprite
 	player *scene.Node
 )
@@ -33,11 +27,11 @@ func onCursorPosition(ev *event.Event) {
 	pos := ev.Data.(*chippy.CursorPositionEvent)
 
 	// If the cursor is not grabbed, we do not transform cubes.
-	if !engine.Window.CursorGrabbed() {
+	if !azul3d.Window.CursorGrabbed() {
 		return
 	}
 
-	kb := engine.Window.Keyboard
+	kb := azul3d.Window.Keyboard
 	if kb.Down(keyboard.LeftCtrl) {
 		// If left ctrl key is currently down, we apply scaling to current
 		// cube.
@@ -92,15 +86,15 @@ func resetTransforms(ev *event.Event) {
 }
 
 func printViewed(ev *event.Event) {
-	inView := camera.InView(engine.Camera2d, player.PosVec3(), player.Parent())
+	inView := camera.InView(azul3d.Camera2d, player.PosVec3(), player.Parent())
 
 	log.Printf("Visibility: %s=%t\n", player.Name(), inView)
 }
 
 // Event handler which toggles cursor grab
 func toggleCursorGrabbed(ev *event.Event) {
-	isGrabbed := engine.Window.CursorGrabbed()
-	engine.Window.SetCursorGrabbed(!isGrabbed)
+	isGrabbed := azul3d.Window.CursorGrabbed()
+	azul3d.Window.SetCursorGrabbed(!isGrabbed)
 }
 
 // Our scene graph will look like this:
@@ -115,18 +109,22 @@ func program() {
 	player = sprite.New("Player")
 
 	// Center size
-	sprite.SetSize(player, 128, 128)
-	player.SetParent(engine.Scene2d)
+	sprite.SetSize(player, 256, 256) // Actual size of the sprite is 16x16, but we will scale it up here
+	player.SetParent(azul3d.Scene2d)
 
 	width, height := sprite.TotalSize(player)
 	halfWidth := width / 2
 	halfHeight := height / 2
 	player.SetPos(halfWidth.Rounded(), player.PosVec3().Y, -halfHeight.Rounded())
+	player.SetSort(1000)
+	player.SetSorter(scene.Unsorted)
 
-	t, err := renderer.LoadTextureFile(engine.Renderer, "src/code.google.com/p/azul3d/assets/textures/player.png")
+	t, err := renderer.LoadTextureFile(azul3d.Renderer, "src/code.google.com/p/azul3d/assets/textures/player.png")
 	if err != nil {
 		log.Fatal(err)
 	}
+	t.SetMinFilter(texture.Nearest)
+	t.SetMagFilter(texture.Nearest)
 
 	// We know it's an 2D texture, which we want for the Texture2D.Region
 	// method.
@@ -165,7 +163,7 @@ func program() {
 			tex.Region(48, 48, 64, 64),
 		})
 
-		sprite.SetFrameRate(player, (1000 / 24) * time.Millisecond)
+		sprite.SetFrameRate(player, (1000/24)*time.Millisecond)
 
 		sprite.SetPlaying(player, true)
 
@@ -173,16 +171,16 @@ func program() {
 	}()
 
 	// Print scene graph
-	engine.Renderer.PrintTree()
+	azul3d.Renderer.PrintTree()
 
 	// Grab the cursor
-	engine.Window.SetCursorGrabbed(true)
+	azul3d.Window.SetCursorGrabbed(true)
 
 	var stop func()
 	stop = event.Define(event.Handlers{
 		// Listen for alt keys to toggle cursor grabbed
 		"RightAlt": toggleCursorGrabbed,
-		"LeftAlt": toggleCursorGrabbed,
+		"LeftAlt":  toggleCursorGrabbed,
 
 		// Listen for R key to reset transformations
 		"R": resetTransforms,
@@ -206,21 +204,7 @@ func program() {
 	})
 }
 
-
 func main() {
-	// For debugging anything
-	azul3d.SetDebugOutput(os.Stdout)
-
-	// Initialize azul3d
-	err := azul3d.Init()
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	// Launch program
-	go program()
-
-	// Enter main loop
-	azul3d.MainLoop()
+	// Run our program, enter main loop.
+	azul3d.Run(program)
 }
-
