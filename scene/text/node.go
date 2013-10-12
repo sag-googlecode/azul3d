@@ -22,7 +22,7 @@ var (
 	gaRasterMap map[rune]map[*GlyphOptions]*GlyphRaster
 	gaRebuild   chan chan bool
 
-	tagTextObject = scene.NewProp("textObject")
+	PTextObject = scene.NewProp("TextObject")
 )
 
 func globalAtlasBuilder() {
@@ -205,12 +205,12 @@ func (t *textObject) get() string {
 func newTextObject(n *scene.Node) *textObject {
 	t := new(textObject)
 	t.node = n
-	t.node.SetTag(tagTextObject, t)
+	t.node.SetProp(PTextObject, t)
 	return t
 }
 
 func getObj(n *scene.Node) *textObject {
-	i, ok := n.Tag(tagTextObject)
+	i, ok := n.Prop(PTextObject)
 	if !ok {
 		return nil
 	}
@@ -219,7 +219,7 @@ func getObj(n *scene.Node) *textObject {
 
 // [foo]This sounds [u]great [/foo][b]because...[/u] it is. [[this has brackets]].[/b]
 func Set(n *scene.Node, text string) {
-	i, ok := n.Tag(tagTextObject)
+	i, ok := n.Prop(PTextObject)
 	if !ok {
 		o := newTextObject(n)
 		i = o
