@@ -9,6 +9,7 @@ import (
 	"sync"
 )
 
+// Type represents the type of which the shader source is.
 type Type uint8
 
 // Valid tells if the shader type is a valid one (I.e. one of the predefined
@@ -24,10 +25,14 @@ func (t Type) Valid() bool {
 }
 
 const (
+	// Vertex shader source type
 	Vertex Type = iota
+
+	// Fragment shader source type
 	Fragment
 )
 
+// Shader represents a single shader object.
 type Shader struct {
 	sync.RWMutex
 
@@ -36,13 +41,13 @@ type Shader struct {
 	clearOnLoad            bool
 	vertSource, fragSource []byte
 	error                  []byte
-	inputs                 map[string]interface{}
-	changed                []string
 
 	loaded    bool
 	notifiers []chan bool
 }
 
+// Copy returns a new 1:1 copy of this shader. The underlying source is not
+// copied but is instead referenced.
 func (s *Shader) Copy() *Shader {
 	cpy := new(Shader)
 	cpy.name = s.name
@@ -50,16 +55,12 @@ func (s *Shader) Copy() *Shader {
 	cpy.vertSource = s.vertSource
 	cpy.fragSource = s.fragSource
 	cpy.error = s.error
-
-	cpy.inputs = make(map[string]interface{})
-	for input, value := range s.inputs {
-		cpy.inputs[input] = value
-		cpy.changed = append(cpy.changed, input)
-	}
 	return cpy
 }
 
-func (s *Shader) SetInput(name string, value interface{}) {
+// IsValidType tells if the specified value is of a valid type to be a shader
+// input value.
+func IsValidType(value interface{}) bool {
 	switch value.(type) {
 	case float32:
 		break
@@ -148,46 +149,12 @@ func (s *Shader) SetInput(name string, value interface{}) {
 		break
 
 	default:
-		panic("Invalid shader input type!")
+		return false
 	}
-
-	current, ok := s.Input(name)
-	if !ok || current != value {
-		s.Lock()
-		defer s.Unlock()
-		s.inputs[name] = value
-		s.changed = append(s.changed, name)
-	}
+	return true
 }
 
-func (s *Shader) Input(name string) (value interface{}, ok bool) {
-	s.RLock()
-	defer s.RUnlock()
-
-	value, ok = s.inputs[name]
-	return
-}
-
-func (s *Shader) Changed() []string {
-	s.RLock()
-	defer s.RUnlock()
-
-	changed := s.changed
-	s.changed = nil
-	return changed
-}
-
-func (s *Shader) Inputs() map[string]interface{} {
-	s.RLock()
-	defer s.RUnlock()
-
-	cpy := make(map[string]interface{}, len(s.inputs))
-	for k, v := range s.inputs {
-		cpy[k] = v
-	}
-	return cpy
-}
-
+// Name returns the name of this shader, as it was passed in at creation.
 func (s *Shader) Name() string {
 	s.RLock()
 	defer s.RUnlock()
@@ -351,6 +318,5 @@ func (s *Shader) Error() []byte {
 func New(name string) *Shader {
 	s := new(Shader)
 	s.name = name
-	s.inputs = make(map[string]interface{})
 	return s
 }
