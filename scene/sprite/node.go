@@ -57,10 +57,10 @@ func (o *obj) updateLater() {
 	})
 }
 
-var objTag = scene.NewProp("sprite")
+var PSpriteObject = scene.NewProp("SpriteObject")
 
 func getObj(n *scene.Node) *obj {
-	o, ok := n.Tag(objTag)
+	o, ok := n.Prop(PSpriteObject)
 	if !ok {
 		return nil
 	}
@@ -89,7 +89,7 @@ func New(name string) *scene.Node {
 		Center: texture.Region{0, 0, 1, 1},
 	}
 
-	n.SetTag(objTag, o)
+	n.SetProp(PSpriteObject, o)
 	o.node = n
 	return n
 }
