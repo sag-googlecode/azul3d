@@ -6,6 +6,12 @@ import (
 	"code.google.com/p/azul3d/scene/texture"
 )
 
+// Collect 'collects' the specified node and all children nodes below it, by
+// taking the meshes of all of them, putting the vertices, vertice colors, etc,
+// into a single mesh and single node.
+//
+// Returned is the amount of nodes collected, and the node which represents all
+// of the nodes collected.
 func Collect(root *scene.Node) (amount int, collected *scene.Node) {
 	collected = scene.New(root.Name() + "-collected")
 	combined := new(Mesh)

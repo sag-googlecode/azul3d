@@ -8,15 +8,20 @@ import (
 	"code.google.com/p/azul3d/math"
 )
 
+// BoundingBox represents a single axis aligned bounding box.
 type BoundingBox struct {
 	Min, Max *math.Vec3
 }
 
+// Copy() returns a new 1:1 copy of this bounding box.
 func (a *BoundingBox) Copy() *BoundingBox {
 	cpy := *a
 	return &cpy
 }
 
+// Equals tells if this bounding box is directly equal to b.
+//
+// Equality against nil is always false.
 func (a *BoundingBox) Equals(b *BoundingBox) bool {
 	if b == nil {
 		return false

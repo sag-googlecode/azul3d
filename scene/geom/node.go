@@ -11,25 +11,28 @@ import (
 )
 
 var (
-	meshSlice     = scene.NewProp("meshSlice")
-	meshSliceLock = scene.NewProp("meshSliceLock")
+	// The property for storing the mesh slice of a node.
+	PMeshSlice = scene.NewProp("MeshSlice")
+
+	// The property for storing the mesh slice lock of a node.
+	PMeshSliceLock = scene.NewProp("MeshSliceLock")
 )
 
 func getLock(n *scene.Node) *sync.RWMutex {
-	l, ok := n.Tag(meshSliceLock)
+	l, ok := n.Prop(PMeshSliceLock)
 	if !ok {
 		newLock := new(sync.RWMutex)
-		n.SetTag(meshSliceLock, newLock)
+		n.SetProp(PMeshSliceLock, newLock)
 		return newLock
 	}
 	return l.(*sync.RWMutex)
 }
 
 func getMeshes(n *scene.Node) []*Mesh {
-	i, ok := n.Tag(meshSlice)
+	i, ok := n.Prop(PMeshSlice)
 	if !ok {
 		newSlice := make([]*Mesh, 0)
-		n.SetTag(meshSlice, newSlice)
+		n.SetProp(PMeshSlice, newSlice)
 		return newSlice
 	}
 	return i.([]*Mesh)
@@ -38,17 +41,17 @@ func getMeshes(n *scene.Node) []*Mesh {
 func appendMesh(n *scene.Node, m *Mesh) {
 	meshes := getMeshes(n)
 	meshes = append(meshes, m)
-	n.SetTag(meshSlice, meshes)
+	n.SetProp(PMeshSlice, meshes)
 }
 
 func removeMesh(n *scene.Node, index int) {
 	meshes := getMeshes(n)
 	meshes = append(meshes[:index], meshes[index+1:]...)
-	n.SetTag(meshSlice, meshes)
+	n.SetProp(PMeshSlice, meshes)
 }
 
 func makeCopy(n *scene.Node, deep bool) {
-	_, ok := n.Tag(meshSlice)
+	_, ok := n.Prop(PMeshSlice)
 	if !ok {
 		// Not an mesh
 		return
@@ -67,19 +70,27 @@ func makeCopy(n *scene.Node, deep bool) {
 			cpy[index] = mesh
 		}
 	}
-	n.SetTag(meshSlice, cpy)
+	n.SetProp(PMeshSlice, cpy)
 
 	return
 }
 
+// Copy copies in-place the meshes used by this node. This does not make copy
+// the actual meshes themselves, just the internal "mesh" object which stores
+// meshes.
 func Copy(n *scene.Node) {
 	makeCopy(n, false)
 }
 
+// DeepCopy works just like Copy(), except it makes copies of all individual
+// meshes themselves, which may be a very expensive operation!
 func DeepCopy(n *scene.Node) {
 	makeCopy(n, true)
 }
 
+// Add adds the specified mesh to the specified node.
+//
+// If the node already has the specified mesh, this function is no-op.
 func Add(n *scene.Node, m *Mesh) {
 	if m == nil || !m.Valid() {
 		panic("Add(): Mesh is invalid or nil!")
@@ -109,6 +120,9 @@ func Add(n *scene.Node, m *Mesh) {
 	appendMesh(n, m)
 }
 
+// Remove removes the specified mesh from the specified node.
+//
+// If the node does not have the specified mesh, this function is no-op.
 func Remove(n *scene.Node, m *Mesh) {
 	if m == nil {
 		return
@@ -139,6 +153,7 @@ func Remove(n *scene.Node, m *Mesh) {
 	removeMesh(n, meshIndex)
 }
 
+// Has tells if the node has the specified mesh.
 func Has(n *scene.Node, m *Mesh) bool {
 	if m == nil {
 		return false
@@ -157,6 +172,7 @@ func Has(n *scene.Node, m *Mesh) bool {
 	return false
 }
 
+// Meshes returns a slice of all the meshes that the specified node has.
 func Meshes(n *scene.Node) []*Mesh {
 	access := getLock(n)
 	access.RLock()
@@ -168,6 +184,9 @@ func Meshes(n *scene.Node) []*Mesh {
 	return cpy
 }
 
+// BakeColors takes the active color and color scales of the specified node and
+// all children below it, and 'bakes' them into the vertice colors of the
+// meshes in these nodes.
 func BakeColors(n *scene.Node, recursive bool) {
 	n.Traverse(func(i int, n *scene.Node) bool {
 		c, ok := color.Active(n)

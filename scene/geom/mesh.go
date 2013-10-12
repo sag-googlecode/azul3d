@@ -13,6 +13,18 @@ import (
 	"sync"
 )
 
+// Mesh represents a single mesh made up of several components. A mesh may or
+// may not be made up of indexed triangles, normals, etc, depending on weather
+// or not len(m.Indices) == 0 holds true.
+//
+// In the event that a mesh is indexed, m.Indices holds the indices and it can
+// be expected that Vertices, Normals, Tangents, etc, will hold at least enough
+// elements (or zero elements) such that the each index will not be out of
+// bounds.
+//
+// Most of the members that make up a mesh are public, as such synchronization
+// through the use of a mesh's RWMutex is necessary (and was done so for
+// performance reasons).
 type Mesh struct {
 	sync.RWMutex
 
@@ -41,6 +53,8 @@ type Mesh struct {
 
 // MarkLoaded marks this geom as loaded. Only the renderer should call this,
 // and as such you should (normally) never call this function.
+//
+// This function is thread-safe.
 func (m *Mesh) MarkLoaded() {
 	m.Lock()
 	defer m.Unlock()
@@ -52,6 +66,8 @@ func (m *Mesh) MarkLoaded() {
 }
 
 // Loaded tells if this geom is currently loaded or not.
+//
+// This function is thread-safe.
 func (m *Mesh) IsLoaded() bool {
 	m.RLock()
 	defer m.RUnlock()
@@ -61,6 +77,8 @@ func (m *Mesh) IsLoaded() bool {
 
 // LoadNotify returns an channel on which true is sent once this geom is marked
 // as loaded (normally by the renderer).
+//
+// This function is thread-safe.
 func (m *Mesh) LoadNotify() chan bool {
 	m.Lock()
 	defer m.Unlock()
@@ -81,6 +99,8 @@ func (m *Mesh) LoadNotify() chan bool {
 // SetNativeIdentity specifies the native identity of this mesh.
 //
 // This should mostly not be used (except in very rare, advanced cases).
+//
+// This function is thread-safe.
 func (m *Mesh) SetNativeIdentity(identity interface{}) {
 	m.Lock()
 	defer m.Unlock()
@@ -91,6 +111,8 @@ func (m *Mesh) SetNativeIdentity(identity interface{}) {
 // NativeIdentity returns the native identity of this mesh.
 //
 // This should mostly not be used (except in very rare, advanced cases).
+//
+// This function is thread-safe.
 func (m *Mesh) NativeIdentity() interface{} {
 	m.RLock()
 	defer m.RUnlock()
@@ -99,6 +121,8 @@ func (m *Mesh) NativeIdentity() interface{} {
 }
 
 // String returns a string representation of this mesh.
+//
+// This function is thread-safe.
 func (m *Mesh) String() string {
 	m.RLock()
 	defer m.RUnlock()
@@ -107,6 +131,8 @@ func (m *Mesh) String() string {
 }
 
 // SetUsageHint sets the usage hint of this mesh.
+//
+// This function is thread-safe.
 func (m *Mesh) SetUsageHint(hint Hint) {
 	m.Lock()
 	defer m.Unlock()
@@ -115,6 +141,8 @@ func (m *Mesh) SetUsageHint(hint Hint) {
 }
 
 // UsageHint returns the usage hint of this mesh.
+//
+// This function is thread-safe.
 func (m *Mesh) UsageHint() Hint {
 	m.RLock()
 	defer m.RUnlock()
@@ -123,6 +151,8 @@ func (m *Mesh) UsageHint() Hint {
 }
 
 // SetHidden specifies weather this mesh is considered hidden or not.
+//
+// This function is thread-safe.
 func (m *Mesh) SetHidden(hidden bool) {
 	m.Lock()
 	defer m.Unlock()
@@ -131,6 +161,8 @@ func (m *Mesh) SetHidden(hidden bool) {
 }
 
 // IsHidden tells if this mesh is considered hidden.
+//
+// This function is thread-safe.
 func (m *Mesh) IsHidden() bool {
 	m.RLock()
 	defer m.RUnlock()
@@ -140,6 +172,8 @@ func (m *Mesh) IsHidden() bool {
 
 // Valid checks this mesh for validity. For an mesh to be valid, it's vertex
 // property arrays must all be of the same length.
+//
+// This function is thread-safe.
 func (m *Mesh) Valid() bool {
 	m.RLock()
 	defer m.RUnlock()
@@ -190,6 +224,10 @@ func (m *Mesh) Valid() bool {
 	return true
 }
 
+// Copy returns a new 1:1 copy of this Mesh. This is a potentially expensive
+// operation depending on how many vertices, etc this mesh contains.
+//
+// This function is thread-safe.
 func (m *Mesh) Copy() *Mesh {
 	m.RLock()
 	defer m.RUnlock()
@@ -233,6 +271,8 @@ func (m *Mesh) Copy() *Mesh {
 //
 // This is needed for pixel-perfect sprites for example, due to the way OpenGL
 // workss.
+//
+// This function is thread-safe.
 func (m *Mesh) MakePixelPerfect() {
 	m.Lock()
 	defer m.Unlock()
@@ -244,6 +284,8 @@ func (m *Mesh) MakePixelPerfect() {
 
 // Transform transforms each vertex in this mesh by the specified affine
 // transformation matrix.
+//
+// This function is thread-safe.
 func (m *Mesh) Transform(mat *math.Mat4) {
 	m.Lock()
 	defer m.Unlock()
@@ -260,6 +302,8 @@ func (m *Mesh) Transform(mat *math.Mat4) {
 //
 // Also see CalculateBounds() which will calculate an axis aligned bounding box
 // for this mesh automatically.
+//
+// This function is thread-safe.
 func (m *Mesh) BoundingBox() *BoundingBox {
 	m.RLock()
 	defer m.RUnlock()
@@ -271,6 +315,8 @@ func (m *Mesh) BoundingBox() *BoundingBox {
 // specified one.
 //
 // You may pass in nil to imply that the mesh has no bounding box.
+//
+// This function is thread-safe.
 func (m *Mesh) SetBoundingBox(bb *BoundingBox) {
 	m.Lock()
 	defer m.Unlock()
@@ -288,6 +334,8 @@ func (m *Mesh) SetBoundingBox(bb *BoundingBox) {
 //
 // Note: It may be benificial depending on your use case to run this function
 // in a seperate goroutine.
+//
+// This function is thread-safe.
 func (m *Mesh) CalculateBounds() {
 	// We only need read access to calculate a bounding box, which can relieve
 	// some contengency while calculating the AABB.
@@ -336,6 +384,8 @@ func (m *Mesh) CalculateBounds() {
 // If the color scale parameter is not color.None, then resulting vertex colors
 // are multiplied against each respective RGBA component of the specified color
 // scale.
+//
+// This function is thread-safe.
 func (m *Mesh) BakeColors(c, colorScale color.Color) {
 	if c.Equals(color.None) && colorScale.Equals(color.None) {
 		return

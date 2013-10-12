@@ -10,8 +10,11 @@ import (
 )
 
 var (
-	TLocalBounds = scene.NewProp("LocalBounds")
-	TBounds      = scene.NewProp("Bounds")
+	// The property for storing the local bounds of a node.
+	PLocalBounds = scene.NewProp("LocalBounds")
+
+	// The property for storing the bounds of a node.
+	PBounds = scene.NewProp("Bounds")
 )
 
 func testBounds(b1, b2 *BoundingBox) (r *BoundingBox) {
@@ -88,7 +91,7 @@ func calculateBounds(n *scene.Node, done chan bool) {
 
 	// Assign local bounding box
 	obb, ok := LocalBounds(n)
-	n.SetTag(TLocalBounds, lbb)
+	n.SetProp(PLocalBounds, lbb)
 
 	// Keep track of any changes to our local or children bounding boxes
 	anyBoundsChanged := false
@@ -123,12 +126,14 @@ func calculateBounds(n *scene.Node, done chan bool) {
 			}
 		}
 
-		n.SetTag(TBounds, bb)
+		n.SetProp(PBounds, bb)
 	}
 
 	done <- true
 }
 
+// CalculateBounds calculates the bounding box of the specified root node and
+// all child nodes below it.
 func CalculateBounds(root *scene.Node) {
 	ch := make(chan bool)
 	go calculateBounds(root, ch)
@@ -144,7 +149,7 @@ func CalculateBounds(root *scene.Node) {
 // If the returned bounding box is nil, then there is no local bounding box
 // (I.e. no meshes) at this node.
 func LocalBounds(n *scene.Node) (bb *BoundingBox, ok bool) {
-	i, ok := n.Tag(TLocalBounds)
+	i, ok := n.Prop(PLocalBounds)
 	if ok && i != nil {
 		bb = i.(*BoundingBox)
 	}
@@ -160,7 +165,7 @@ func LocalBounds(n *scene.Node) (bb *BoundingBox, ok bool) {
 // If the returned bounding box is nil, then there is no bounding box (I.e. no
 // meshes) at or below this node.
 func Bounds(n *scene.Node) (bb *BoundingBox, ok bool) {
-	i, ok := n.Tag(TBounds)
+	i, ok := n.Prop(PBounds)
 	if ok && i != nil {
 		bb = i.(*BoundingBox)
 	}

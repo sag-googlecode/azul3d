@@ -8,6 +8,11 @@ import (
 	"fmt"
 )
 
+// Hint represents a single mesh usage hint, used to 'hint' at the intended
+// usage or dynamic-ness of a mesh.
+//
+// The chosen hint does not restrict how a mesh might be used, but can make it
+// less optimal performance-wise.
 type Hint uint8
 
 const (

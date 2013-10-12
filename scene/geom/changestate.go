@@ -4,6 +4,9 @@
 
 package geom
 
+// SetIndicesChanged marks the indices of this mesh as changed.
+//
+// This function is thread-safe.
 func (m *Mesh) SetIndicesChanged(changed bool) {
 	m.Lock()
 	defer m.Unlock()
@@ -11,6 +14,9 @@ func (m *Mesh) SetIndicesChanged(changed bool) {
 	m.IndicesChanged = changed
 }
 
+// HaveIndicesChanged tells if the indices of this mesh have changed.
+//
+// This function is thread-safe.
 func (m *Mesh) HaveIndicesChanged() bool {
 	m.RLock()
 	defer m.RUnlock()
@@ -18,6 +24,9 @@ func (m *Mesh) HaveIndicesChanged() bool {
 	return m.IndicesChanged
 }
 
+// SetVerticesChanged marks the vertices of this mesh as changed.
+//
+// This function is thread-safe.
 func (m *Mesh) SetVerticesChanged(changed bool) {
 	m.Lock()
 	defer m.Unlock()
@@ -25,6 +34,9 @@ func (m *Mesh) SetVerticesChanged(changed bool) {
 	m.VerticesChanged = changed
 }
 
+// HaveVerticesChanged tells if the vertices of this mesh have changed.
+//
+// This function is thread-safe.
 func (m *Mesh) HaveVerticesChanged() bool {
 	m.RLock()
 	defer m.RUnlock()
@@ -32,6 +44,9 @@ func (m *Mesh) HaveVerticesChanged() bool {
 	return m.VerticesChanged
 }
 
+// SetNormalsChanged marks the normals of this mesh as changed.
+//
+// This function is thread-safe.
 func (m *Mesh) SetNormalsChanged(changed bool) {
 	m.Lock()
 	defer m.Unlock()
@@ -39,6 +54,9 @@ func (m *Mesh) SetNormalsChanged(changed bool) {
 	m.NormalsChanged = changed
 }
 
+// HaveNormalsChanged tells if the normals of this mesh have changed.
+//
+// This function is thread-safe.
 func (m *Mesh) HaveNormalsChanged() bool {
 	m.RLock()
 	defer m.RUnlock()
@@ -46,6 +64,9 @@ func (m *Mesh) HaveNormalsChanged() bool {
 	return m.NormalsChanged
 }
 
+// SetTangentsChanged marks the tangents of this mesh as changed.
+//
+// This function is thread-safe.
 func (m *Mesh) SetTangentsChanged(changed bool) {
 	m.Lock()
 	defer m.Unlock()
@@ -53,6 +74,9 @@ func (m *Mesh) SetTangentsChanged(changed bool) {
 	m.TangentsChanged = changed
 }
 
+// HaveTangentsChanged tells if the tangents of this mesh have changed.
+//
+// This function is thread-safe.
 func (m *Mesh) HaveTangentsChanged() bool {
 	m.RLock()
 	defer m.RUnlock()
@@ -60,6 +84,9 @@ func (m *Mesh) HaveTangentsChanged() bool {
 	return m.TangentsChanged
 }
 
+// SetBitangentsChanged marks the bitangents of this mesh as changed.
+//
+// This function is thread-safe.
 func (m *Mesh) SetBitangentsChanged(changed bool) {
 	m.Lock()
 	defer m.Unlock()
@@ -67,6 +94,9 @@ func (m *Mesh) SetBitangentsChanged(changed bool) {
 	m.BitangentsChanged = changed
 }
 
+// HaveBitangentsChanged tells if the bitangents of this mesh have changed.
+//
+// This function is thread-safe.
 func (m *Mesh) HaveBitangentsChanged() bool {
 	m.RLock()
 	defer m.RUnlock()
@@ -74,6 +104,9 @@ func (m *Mesh) HaveBitangentsChanged() bool {
 	return m.BitangentsChanged
 }
 
+// SetColorsChanged marks the colors of this mesh as changed.
+//
+// This function is thread-safe.
 func (m *Mesh) SetColorsChanged(changed bool) {
 	m.Lock()
 	defer m.Unlock()
@@ -81,6 +114,9 @@ func (m *Mesh) SetColorsChanged(changed bool) {
 	m.ColorsChanged = changed
 }
 
+// HaveColorsChanged tells if the colors of this mesh have changed.
+//
+// This function is thread-safe.
 func (m *Mesh) HaveColorsChanged() bool {
 	m.RLock()
 	defer m.RUnlock()
@@ -88,6 +124,9 @@ func (m *Mesh) HaveColorsChanged() bool {
 	return m.ColorsChanged
 }
 
+// SetBoneWeightsChanged marks the bone-weights of this mesh as changed.
+//
+// This function is thread-safe.
 func (m *Mesh) SetBoneWeightsChanged(changed bool) {
 	m.Lock()
 	defer m.Unlock()
@@ -95,6 +134,9 @@ func (m *Mesh) SetBoneWeightsChanged(changed bool) {
 	m.BoneWeightsChanged = changed
 }
 
+// HaveBoneWeightsChanged tells if the bone-weights of this mesh have changed.
+//
+// This function is thread-safe.
 func (m *Mesh) HaveBoneWeightsChanged() bool {
 	m.RLock()
 	defer m.RUnlock()
@@ -102,6 +144,10 @@ func (m *Mesh) HaveBoneWeightsChanged() bool {
 	return m.BoneWeightsChanged
 }
 
+// SetTextureCoordsChanged marks the texture coordinates of the specified index
+// texture as changed.
+//
+// This function is thread-safe.
 func (m *Mesh) SetTextureCoordsChanged(index int, changed bool) {
 	m.Lock()
 	defer m.Unlock()
@@ -120,6 +166,10 @@ func (m *Mesh) SetTextureCoordsChanged(index int, changed bool) {
 	}
 }
 
+// HaveTextureCoordsChanged tells if the texture coordinates of the specified
+// index have changed.
+//
+// This function is thread-safe.
 func (m *Mesh) HaveTextureCoordsChanged(index int) bool {
 	m.RLock()
 	defer m.RUnlock()
