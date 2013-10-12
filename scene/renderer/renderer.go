@@ -15,7 +15,6 @@ import (
 	"code.google.com/p/azul3d/scene/renderer/opengl"
 	"code.google.com/p/azul3d/scene/shader"
 	"code.google.com/p/azul3d/scene/texture"
-	"code.google.com/p/azul3d/scene/util"
 	"fmt"
 	"runtime"
 	"sync"
@@ -26,7 +25,7 @@ import (
 // render function which will, when called, effectively renders the tree of
 // nodes.
 type backend interface {
-	Render(root *scene.Node, region *util.Region) func()
+	Render(root *scene.Node) func()
 	Resize(x, y int)
 	LoadTexture(t texture.Type)
 	LoadMesh(m *geom.Mesh)
@@ -38,7 +37,7 @@ type backend interface {
 }
 
 var (
-	objTag = scene.NewProp("renderer.obj")
+	PRendererObject = scene.NewProp("RendererObject")
 )
 
 type obj struct {
@@ -48,7 +47,6 @@ type obj struct {
 
 	Clock  *clock.Clock
 	Window *chippy.Window
-	Region *util.Region
 
 	renderer backend
 	backend  BackendType
@@ -238,7 +236,7 @@ func (n *obj) renderFrame(pre func()) {
 		}
 
 		// Prepare the frame at this moment.
-		frame := n.renderer.Render(n.node, n.Region)
+		frame := n.renderer.Render(n.node)
 		frame()
 
 		if n.backend == OpenGL {
@@ -354,7 +352,7 @@ func (o *obj) calculateBounds() {
 */
 
 func getObj(n *scene.Node) *obj {
-	o, ok := n.Tag(objTag)
+	o, ok := n.Prop(PRendererObject)
 	if !ok {
 		return nil
 	}
@@ -400,7 +398,6 @@ func Create(n *scene.Node, window *chippy.Window) {
 		o = new(obj)
 		o.Clock = clock.New()
 		o.Window = window
-		o.Region = util.NewRegion(0, 0, 0, 0)
 
 		// Limit clock to 75FPS, for drivers that do not support vsync
 		o.Clock.SetMaxFrameRate(75)
@@ -420,7 +417,7 @@ func Create(n *scene.Node, window *chippy.Window) {
 		//go o.calculateBounds()
 
 		o.node = n
-		n.SetTag(objTag, o)
+		n.SetProp(PRendererObject, o)
 	}
 }
 
@@ -428,7 +425,7 @@ func Destroy(n *scene.Node) {
 	o := getObj(n)
 	if o != nil {
 		o.Window.Destroy()
-		n.ClearTag(objTag)
+		n.ClearProp(PRendererObject)
 	}
 }
 
