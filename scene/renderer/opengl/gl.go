@@ -46,51 +46,19 @@ type Renderer struct {
 	texturesToFreeAccess sync.RWMutex
 	texturesToFree       []uint32
 
+	scissorStack       [][]uint
 	meshesToFreeAccess sync.RWMutex
 	meshesToFree       []*GLBufferedMesh
-
-	cameraStack []*scene.Node
 
 	lastRegion                                                          *util.Region
 	lastColorClear                                                      *math.Vec4
 	lastDepthClear                                                      math.Real
 	lastStencilClear                                                    uint
+	lastScissorX, lastScissorY, lastScissorWidth, lastScissorHeight     uint
 	lastViewportX, lastViewportY, lastViewportWidth, lastViewportHeight uint
 
 	maxTextureCoords, maxTextureLayers, maxTextureSize, maxMemoryBytes int
 	gpuName                                                            string
-}
-
-func (r *Renderer) pushCamera(cam *scene.Node) {
-	if cam != nil {
-		r.cameraStack = append(r.cameraStack, cam)
-	}
-}
-
-func (r *Renderer) popCamera() *scene.Node {
-	if len(r.cameraStack) > 0 {
-		last := r.cameraStack[len(r.cameraStack)-1]
-		r.cameraStack = r.cameraStack[:len(r.cameraStack)-1]
-		return last
-	}
-	return nil
-}
-
-func (r *Renderer) useCamera(camNode *scene.Node) {
-	lens := camera.Lens(camNode)
-	mat := lens.Projection()
-
-	// Changing PROJECTION matrix
-	r.gl.MatrixMode(opengl.PROJECTION)
-
-	if math.RealIsFloat64 {
-		r.gl.LoadMatrixd((*float64)(unsafe.Pointer(&mat[0][0])))
-	} else {
-		r.gl.LoadMatrixf((*float32)(unsafe.Pointer(&mat[0][0])))
-	}
-
-	// Back into MODELVIEW
-	r.gl.MatrixMode(opengl.MODELVIEW)
 }
 
 func (r *Renderer) useRegion(region *util.Region) {
@@ -102,7 +70,7 @@ func (r *Renderer) useRegion(region *util.Region) {
 	x, y, width, height := region.Region()
 	r.viewport(x, y, int(width), int(height))
 
-	var clearFlags uint32
+	var clearFlags opengl.Enum
 	if region.ClearColorActive() {
 		clearFlags = clearFlags | opengl.COLOR_BUFFER_BIT
 
@@ -122,7 +90,9 @@ func (r *Renderer) useRegion(region *util.Region) {
 
 	if clearFlags != 0 {
 		// Restrict clear to region (viewport) area
-		r.gl.Clear(clearFlags)
+		r.pushScissor(x, y, width, height)
+		r.gl.Clear(uint32(clearFlags))
+		r.popScissor()
 	}
 }
 
@@ -134,13 +104,6 @@ func (r *Renderer) drawGeom(current *sortedGeom) {
 	}
 
 	r.loadMesh(g, true)
-
-	// Load the matrix into OpenGL
-	if math.RealIsFloat64 {
-		r.gl.LoadMatrixd((*float64)(unsafe.Pointer(&current.mat[0][0])))
-	} else {
-		r.gl.LoadMatrixf((*float32)(unsafe.Pointer(&current.mat[0][0])))
-	}
 
 	// Load the shader into OpenGL
 	s, ok := shader.Active(current.node)
@@ -154,10 +117,6 @@ func (r *Renderer) drawGeom(current *sortedGeom) {
 		return
 	}
 	r.gl.UseProgram(gls.Program)
-
-	g.RLock()
-	s.SetInput("NumTextureCoords", uint32(len(g.TextureCoords)))
-	g.RUnlock()
 
 	// Add texture shader inputs, and drop textures that are not loaded
 	layeredTextures := texture.Textures(current.node)
@@ -183,12 +142,15 @@ func (r *Renderer) drawGeom(current *sortedGeom) {
 		}
 
 		// Add texture input
-		s.SetInput("Texture"+strconv.Itoa(count), int32(count))
+		shader.SetInput(current.node, "Texture"+strconv.Itoa(count), int32(count))
 		count++
 	}
-	s.SetInput("NumTextures", uint32(count))
 
-	r.updateShaderInputs(s, gls)
+	shader.SetInput(current.node, "Projection", current.projection)
+	shader.SetInput(current.node, "ModelView", current.modelView)
+	shader.SetInput(current.node, "ModelViewProjection", current.modelViewProjection)
+
+	r.updateShaderInputs(current.node, s, gls)
 
 	bm := g.NativeIdentity().(*GLBufferedMesh)
 
@@ -298,8 +260,7 @@ func (r *Renderer) drawGeom(current *sortedGeom) {
 		count := 0
 		for _, tex := range layeredTextures {
 			ident := tex.NativeIdentity().(uint32)
-			r.gl.ActiveTexture(uint32(opengl.TEXTURE0 + count))
-			r.gl.Enable(opengl.TEXTURE_2D)
+			r.gl.ActiveTexture(opengl.TEXTURE0 + opengl.Enum(count))
 			r.gl.BindTexture(opengl.TEXTURE_2D, ident)
 			count++
 		}
@@ -309,6 +270,11 @@ func (r *Renderer) drawGeom(current *sortedGeom) {
 			r.gl.DrawElements(opengl.TRIANGLES, int32(len(g.Indices)), opengl.UNSIGNED_INT, nil)
 		} else {
 			r.gl.DrawArrays(opengl.TRIANGLES, 0, int32(len(g.Vertices)))
+		}
+
+		for count := 0; count < len(layeredTextures); count++ {
+			r.gl.ActiveTexture(opengl.TEXTURE0 + opengl.Enum(count))
+			r.gl.BindTexture(opengl.TEXTURE_2D, 0)
 		}
 	}
 }
@@ -426,7 +392,7 @@ func (r *Renderer) loadMesh(g *geom.Mesh, now bool) {
 			// Later on release the loading context.
 			defer r.lcMakeCurrent(false)
 
-			var usageHint uint32 = opengl.STATIC_DRAW
+			var usageHint opengl.Enum = opengl.STATIC_DRAW
 			if g.Hint == geom.Dynamic {
 				usageHint = opengl.DYNAMIC_DRAW
 			}
@@ -635,7 +601,7 @@ func (r *Renderer) loadMesh(g *geom.Mesh, now bool) {
 		// Later on release the loading context.
 		defer r.lcMakeCurrent(false)
 
-		var usageHint uint32 = opengl.STATIC_DRAW
+		var usageHint opengl.Enum = opengl.STATIC_DRAW
 		if g.Hint == geom.Dynamic {
 			usageHint = opengl.DYNAMIC_DRAW
 		}
@@ -926,15 +892,11 @@ func (r *Renderer) updateShaderInput(gls *GLShader, name string, value interface
 	}
 }
 
-func (r *Renderer) updateShaderInputs(s *shader.Shader, gls *GLShader) {
+func (r *Renderer) updateShaderInputs(n *scene.Node, s *shader.Shader, gls *GLShader) {
 	r.gl.UseProgram(gls.Program)
-	//FIXME
 
-	for _, name := range s.Changed() {
-		value, ok := s.Input(name)
-		if ok {
-			r.updateShaderInput(gls, name, value)
-		}
+	for name, value := range shader.Inputs(n) {
+		r.updateShaderInput(gls, name, value)
 	}
 }
 
@@ -1099,23 +1061,14 @@ func (r *Renderer) LoadShader(s *shader.Shader) {
 	r.loadShader(s, false)
 }
 
-func (r *Renderer) Render(rootNode *scene.Node, defaultRegion *util.Region) func() {
+func (r *Renderer) Render(rootNode *scene.Node) func() {
 	// Locate cameras in the scene who are active, have an scene specified, and have at least one
 	// camera region.
 	var cameras []*scene.Node
 
 	rootNode.Traverse(func(i int, n *scene.Node) bool {
 		if (!n.Hidden() || n.ShownThrough()) && camera.Is(n) {
-			//n = n.Copy()
-			//camera.DeepCopy(n)
 			cameras = append(cameras, n)
-			//camScene := camera.Scene(n)
-
-			//camScene.Traverse(func(i int, n *scene.Node) bool {
-			//	geom.DeepCopy(n)
-			//	return true
-			//})
-			//geom.BakeColors(camScene, true)
 		}
 
 		// Please continue traversal
@@ -1123,7 +1076,7 @@ func (r *Renderer) Render(rootNode *scene.Node, defaultRegion *util.Region) func
 	})
 
 	// Sort all visible geom nodes by their active sorters and other properties.
-	geoms := r.sortGeoms(rootNode, cameras, defaultRegion)
+	geoms := r.sortGeoms(rootNode, cameras)
 
 	// Enter read lock
 	r.texturesToFreeAccess.RLock()
@@ -1204,11 +1157,6 @@ func (r *Renderer) Render(rootNode *scene.Node, defaultRegion *util.Region) func
 			}
 		}
 
-		//for _, cam := range cameras {
-		//	defer cam.Destroy()
-		//	defer camera.Scene(cam).Destroy()
-		//}
-
 		// We shouldn't carry OpenGL state into the next frame -- other threads might be using GL
 		// to render.
 		r.lastRegion = nil
@@ -1222,14 +1170,8 @@ func (r *Renderer) Render(rootNode *scene.Node, defaultRegion *util.Region) func
 			r.useRegion(g.region)
 
 			if g.node != nil {
-				r.useCamera(g.camera)
 				r.drawGeom(g)
 			}
-
-			//err := r.gl.GetError()
-			//if err != 0 {
-			//	panic(fmt.Sprintf("OpenGL error: %v", err))
-			//}
 		}
 
 		r.gl.Flush()
@@ -1257,15 +1199,8 @@ func NewRenderer(dcMakeCurrent, lcMakeCurrent func(current bool)) (*Renderer, er
 		return nil, fmt.Errorf("No support for OpenGL 2.0 found.")
 	}
 
-	// OpenGL uses lower left corner as [0, 0] texture coordinate. But we
-	// expect that [0, 0] is top-left corner, so we must flip the vertical
-	// texture axis.
-	//r.gl.MatrixMode(opengl.TEXTURE)
-	//r.gl.LoadIdentity()
-	//r.gl.Scalef(1, -1, 1)
-	//r.gl.MatrixMode(opengl.MODELVIEW)
-
 	r.gl.Enable(opengl.TEXTURE_2D)
+	r.gl.Enable(opengl.SCISSOR_TEST)
 	r.gl.Enable(opengl.PROGRAM_POINT_SIZE)
 
 	r.gl.ClearDepth(1.0)

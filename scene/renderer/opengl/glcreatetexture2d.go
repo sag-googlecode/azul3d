@@ -5,7 +5,7 @@
 package opengl
 
 import (
-	"code.google.com/p/azul3d/native/opengl/1.0"
+	"code.google.com/p/azul3d/native/opengl/2.0"
 	"code.google.com/p/azul3d/scene/texture"
 	"image"
 	"runtime"
@@ -25,7 +25,7 @@ func (r *Renderer) createTexture2D(t *texture.Texture2D) {
 	defer r.gl.BindTexture(opengl.TEXTURE_2D, 0)
 
 	// Setup wrap modes
-	var glWrapU, glWrapV int32
+	var glWrapU, glWrapV opengl.Enum
 
 	// Find U wrap mode
 	uWrapMode := t.WrapModeU()
@@ -60,11 +60,11 @@ func (r *Renderer) createTexture2D(t *texture.Texture2D) {
 		r.gl.TexParameterfv(opengl.TEXTURE_2D, opengl.TEXTURE_BORDER_COLOR, &borderColor[0])
 	}
 
-	r.gl.TexParameteri(opengl.TEXTURE_2D, opengl.TEXTURE_WRAP_S, glWrapU)
-	r.gl.TexParameteri(opengl.TEXTURE_2D, opengl.TEXTURE_WRAP_T, glWrapV)
+	r.gl.TexParameteri(opengl.TEXTURE_2D, opengl.TEXTURE_WRAP_S, int32(glWrapU))
+	r.gl.TexParameteri(opengl.TEXTURE_2D, opengl.TEXTURE_WRAP_T, int32(glWrapV))
 
 	// Setup min/mag filters
-	var glMinFilter, glMagFilter int32
+	var glMinFilter, glMagFilter opengl.Enum
 
 	minFilter := t.MinFilter()
 	switch minFilter {
@@ -98,16 +98,16 @@ func (r *Renderer) createTexture2D(t *texture.Texture2D) {
 		glMagFilter = opengl.LINEAR_MIPMAP_LINEAR
 	}
 
-	r.gl.TexParameteri(opengl.TEXTURE_2D, opengl.TEXTURE_MIN_FILTER, glMinFilter)
-	r.gl.TexParameteri(opengl.TEXTURE_2D, opengl.TEXTURE_MAG_FILTER, glMagFilter)
+	r.gl.TexParameteri(opengl.TEXTURE_2D, opengl.TEXTURE_MIN_FILTER, int32(glMinFilter))
+	r.gl.TexParameteri(opengl.TEXTURE_2D, opengl.TEXTURE_MAG_FILTER, int32(glMagFilter))
 
 	// Enable mipmap generation if either filter is mipmapped.
 	if minFilter.Mipmapped() || magFilter.Mipmapped() {
-		r.gl.TexParameteri(opengl.TEXTURE_2D, opengl.GENERATE_MIPMAP, opengl.TRUE)
+		r.gl.TexParameteri(opengl.TEXTURE_2D, opengl.GENERATE_MIPMAP, int32(opengl.TRUE))
 	}
 
 	// Determine formatting, load texture into OpenGL
-	internalFormat := int32(opengl.RGBA)
+	internalFormat := opengl.RGBA
 	if t.Compressed() {
 		internalFormat = opengl.COMPRESSED_RGBA
 	}
@@ -117,7 +117,7 @@ func (r *Renderer) createTexture2D(t *texture.Texture2D) {
 
 	t.RLock()
 	img = t.Source.(*image.RGBA)
-	r.gl.TexImage2D(opengl.TEXTURE_2D, 0, internalFormat, int32(sz.X), int32(sz.Y), 0, opengl.RGBA, opengl.UNSIGNED_BYTE, unsafe.Pointer(&img.Pix[0]))
+	r.gl.TexImage2D(opengl.TEXTURE_2D, 0, int32(internalFormat), int32(sz.X), int32(sz.Y), 0, opengl.RGBA, opengl.UNSIGNED_BYTE, unsafe.Pointer(&img.Pix[0]))
 	t.RUnlock()
 
 	runtime.SetFinalizer(t, func(t *texture.Texture2D) {

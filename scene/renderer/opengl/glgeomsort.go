@@ -9,22 +9,21 @@ import (
 	"code.google.com/p/azul3d/scene"
 	"code.google.com/p/azul3d/scene/camera"
 	"code.google.com/p/azul3d/scene/geom"
+	"code.google.com/p/azul3d/scene/shader"
 	"code.google.com/p/azul3d/scene/util"
 	"fmt"
 	"sort"
 )
 
 type sortedGeom struct {
-	region        *util.Region
-	sorter        *scene.Sorter
-	sortType      scene.SortType
-	sorterSort    uint
-	traversalSort uint
-	geom          *geom.Mesh
-	node          *scene.Node
-	camera        *scene.Node
-	transparency  scene.TransparencyMode
-	mat           *math.Mat4
+	region                                     *util.Region
+	sorter                                     *scene.Sorter
+	traversalSort                              uint
+	geom                                       *geom.Mesh
+	node                                       *scene.Node
+	camera                                     *scene.Node
+	transparency                               scene.TransparencyMode
+	projection, modelView, modelViewProjection shader.Mat4
 }
 
 func (s sortedGeom) String() string {
@@ -66,13 +65,13 @@ func (s sortedGeoms) Less(i, j int) bool {
 	}
 
 	// If they're under different sorters, then we sort them based off their sorters sort values.
-	if a.sortType != b.sortType {
-		return a.sorterSort < b.sorterSort
+	if a.sorter.SortType() != b.sorter.SortType() {
+		return a.sorter.Sort() < b.sorter.Sort()
 	}
 
 	// They're the same sorters -- meaning these two geoms are inside the same sorter, so we can
 	// freely sort based off the sorter's sort type.
-	switch a.sortType {
+	switch a.sorter.SortType() {
 	case scene.ValueSort:
 		// We want to sort based off node sort values
 		aSort, _ := a.node.Sort()
@@ -107,28 +106,24 @@ func (s sortedGeoms) Less(i, j int) bool {
 	panic("Unable to sort geoms; reached end of function.")
 }
 
-func (r *Renderer) sortGeoms(root *scene.Node, cameras []*scene.Node, defaultRegion *util.Region) sortedGeoms {
+func (r *Renderer) sortGeoms(root *scene.Node, cameras []*scene.Node) sortedGeoms {
 	var geoms sortedGeoms
-
-	anyCameraHasRegion := false
-	for _, camNode := range cameras {
-		if len(camera.Regions(camNode)) > 0 {
-			anyCameraHasRegion = true
-			break
-		}
-	}
 
 	// Search for geom nodes inside each region's camera's scene.
 	for _, camNode := range cameras {
 		var camInverse *math.Mat4
 
-		var camRegions []*util.Region
-		if anyCameraHasRegion {
-			camRegions = camera.Regions(camNode)
-		} else {
-			camRegions = []*util.Region{
-				defaultRegion,
-			}
+		camRegions := camera.Regions(camNode)
+		if len(camRegions) == 0 {
+			continue
+		}
+
+		lp := camera.Lens(camNode).Projection()
+		lensProjection := shader.Mat4{
+			[4]float32{float32(lp[0][0]), float32(lp[0][1]), float32(lp[0][2]), float32(lp[0][3])},
+			[4]float32{float32(lp[1][0]), float32(lp[1][1]), float32(lp[1][2]), float32(lp[1][3])},
+			[4]float32{float32(lp[2][0]), float32(lp[2][1]), float32(lp[2][2]), float32(lp[2][3])},
+			[4]float32{float32(lp[3][0]), float32(lp[3][1]), float32(lp[3][2]), float32(lp[3][3])},
 		}
 
 		for _, region := range camRegions {
@@ -144,6 +139,7 @@ func (r *Renderer) sortGeoms(root *scene.Node, cameras []*scene.Node, defaultReg
 			geoms = append(geoms, &sortedGeom{
 				region: region,
 				camera: camNode,
+				sorter: scene.Unsorted,
 			})
 
 			// Scene must exist and be non-hidden
@@ -171,10 +167,25 @@ func (r *Renderer) sortGeoms(root *scene.Node, cameras []*scene.Node, defaultReg
 					worldMat := nWorldTransform.Mat4()
 
 					// Apply camera transform
-					mat := worldMat.Mul(camInverse)
+					mv := worldMat.Mul(camInverse)
 
 					// Apply the ZUpRight -> YUpRight coordinate system conversion
-					mat = mat.Mul(coordSysConversion)
+					mv = mv.Mul(coordSysConversion)
+					modelView := shader.Mat4{
+						[4]float32{float32(mv[0][0]), float32(mv[0][1]), float32(mv[0][2]), float32(mv[0][3])},
+						[4]float32{float32(mv[1][0]), float32(mv[1][1]), float32(mv[1][2]), float32(mv[1][3])},
+						[4]float32{float32(mv[2][0]), float32(mv[2][1]), float32(mv[2][2]), float32(mv[2][3])},
+						[4]float32{float32(mv[3][0]), float32(mv[3][1]), float32(mv[3][2]), float32(mv[3][3])},
+					}
+
+					// modelView * lensProjection
+					mvp := mv.Mul(lp)
+					modelViewProjection := shader.Mat4{
+						[4]float32{float32(mvp[0][0]), float32(mvp[0][1]), float32(mvp[0][2]), float32(mvp[0][3])},
+						[4]float32{float32(mvp[1][0]), float32(mvp[1][1]), float32(mvp[1][2]), float32(mvp[1][3])},
+						[4]float32{float32(mvp[2][0]), float32(mvp[2][1]), float32(mvp[2][2]), float32(mvp[2][3])},
+						[4]float32{float32(mvp[3][0]), float32(mvp[3][1]), float32(mvp[3][2]), float32(mvp[3][3])},
+					}
 
 					for _, theGeom := range nGeoms {
 						theGeom.RLock()
@@ -186,13 +197,15 @@ func (r *Renderer) sortGeoms(root *scene.Node, cameras []*scene.Node, defaultReg
 						}
 
 						g := &sortedGeom{
-							region:        region,
-							geom:          theGeom,
-							node:          n,
-							traversalSort: traversalSort,
-							camera:        camNode,
-							transparency:  activeTransparency,
-							mat:           mat,
+							region:              region,
+							geom:                theGeom,
+							node:                n,
+							traversalSort:       traversalSort,
+							camera:              camNode,
+							transparency:        activeTransparency,
+							projection:          lensProjection,
+							modelView:           modelView,
+							modelViewProjection: modelViewProjection,
 						}
 
 						if hasActiveSorter {
@@ -204,8 +217,6 @@ func (r *Renderer) sortGeoms(root *scene.Node, cameras []*scene.Node, defaultReg
 								g.sorter = scene.BackToFront
 							}
 						}
-						g.sortType = g.sorter.SortType()
-						g.sorterSort = g.sorter.Sort()
 
 						// Add the sorted geom to the list of scene-sorted geoms
 						geoms = append(geoms, g)

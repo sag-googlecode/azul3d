@@ -27,14 +27,16 @@ attribute vec4 Color;
 attribute vec4 BoneWeight;
 attribute vec4 TextureCoord0;
 
-uniform int NumTextureCoords;
-
 varying vec2 tc0;
+
+uniform mat4 Projection;
+uniform mat4 ModelView;
+uniform mat4 ModelViewProjection;
 
 void main()
 {
-	gl_Position = gl_ModelViewProjectionMatrix * Vertex;
 	tc0 = TextureCoord0.xy;
+	gl_Position = Projection * ModelView * Vertex;
 }
 `), shader.Vertex)
 
@@ -50,8 +52,6 @@ varying vec2 tc0;
 
 uniform sampler2D Texture0;
 uniform sampler2D Texture1;
-
-uniform int NumTextures;
 
 void main()
 {

@@ -5,7 +5,7 @@
 package opengl
 
 import (
-	"code.google.com/p/azul3d/native/opengl/1.0"
+	"code.google.com/p/azul3d/native/opengl/2.0"
 )
 
 func (r *Renderer) GPUName() string {

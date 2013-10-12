@@ -12,6 +12,10 @@ func (r *Renderer) stateClearViewport() {
 }
 
 func (r *Renderer) viewport(x, y uint, width, height int) {
+	if x == 0 && y == 0 && width == 0 && height == 0 {
+		width = r.width
+		height = r.height
+	}
 	if r.lastViewportX == x && r.lastViewportY == y && int(r.lastViewportWidth) == width && int(r.lastViewportHeight) == height {
 		// Identical Viewport region as last one -- we don't need to do it again.
 		return
