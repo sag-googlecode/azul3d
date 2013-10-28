@@ -11,6 +11,7 @@ package main
 // to hide the command prompt
 
 import (
+	"code.google.com/p/azul3d/chippy/keyboard"
 	"code.google.com/p/azul3d/chippy"
 	"fmt"
 	"log"
@@ -60,6 +61,20 @@ func program() {
 	for {
 		ev := <-events
 		log.Println(ev)
+
+		typedEvent, ok := ev.(*keyboard.TypedEvent)
+		if ok {
+			title := window.Title()
+			if typedEvent.Rune == '\b' {
+				if len(title) > 0 {
+					window.SetTitle(title[:len(title)-1])
+				}
+			} else {
+				if len(title) < 80 {
+					window.SetTitle(title + string(typedEvent.Rune))
+				}
+			}
+		}
 	}
 }
 

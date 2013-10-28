@@ -88,118 +88,28 @@ func (w *NativeWindow) open(screen *Screen) (err error) {
 		// To let the application know of current toggle key states, we need to send them right now
 		// otherwise they might already be on or off -- something the application might want to
 		// know.
+		virtualKeyMap := map[keyboard.Key]win32.Int{
+			keyboard.CapsLock:   win32.VK_CAPITAL,
+			keyboard.NumLock:    win32.VK_NUMLOCK,
+			keyboard.ScrollLock: win32.VK_SCROLL,
+			keyboard.LeftAlt:    win32.VK_LMENU,
+			keyboard.RightAlt:   win32.VK_RMENU,
+			keyboard.LeftCtrl:   win32.VK_LCONTROL,
+			keyboard.RightCtrl:  win32.VK_RCONTROL,
+			keyboard.LeftShift:  win32.VK_LSHIFT,
+			keyboard.RightShift: win32.VK_RSHIFT,
+			keyboard.LeftSuper:  win32.VK_LWIN,
+			keyboard.RightSuper: win32.VK_RWIN,
+		}
+
 		var state keyboard.State
-
-		state = keyboard.On
-		if (win32.GetAsyncKeyState(win32.VK_CAPITAL) & 0x0001) == 0 {
-			state = keyboard.Off
+		for key, virtualKey := range virtualKeyMap {
+			state = keyboard.On
+			if (win32.GetAsyncKeyState(virtualKey) & 0x0001) == 0 {
+				state = keyboard.Off
+			}
+			w.r.tryAddKeyboardStateEvent(key, keyboard.OS(virtualKey), state)
 		}
-		w.tryAddKeyboardStateEvent(&keyboard.StateEvent{
-			T:     time.Now(),
-			Key:   keyboard.CapsLock,
-			State: state,
-		})
-
-		state = keyboard.On
-		if (win32.GetAsyncKeyState(win32.VK_NUMLOCK) & 0x0001) == 0 {
-			state = keyboard.Off
-		}
-		w.tryAddKeyboardStateEvent(&keyboard.StateEvent{
-			T:     time.Now(),
-			Key:   keyboard.NumLock,
-			State: state,
-		})
-
-		state = keyboard.On
-		if (win32.GetAsyncKeyState(win32.VK_SCROLL) & 0x0001) == 0 {
-			state = keyboard.Off
-		}
-		w.tryAddKeyboardStateEvent(&keyboard.StateEvent{
-			T:     time.Now(),
-			Key:   keyboard.ScrollLock,
-			State: state,
-		})
-
-		// Also we need to keep track of any double left-right combo keys (alt, ctrl, shift).
-		state = keyboard.Down
-		if (win32.GetAsyncKeyState(win32.VK_LMENU) & 0x0001) == 0 {
-			state = keyboard.Up
-		}
-		w.tryAddKeyboardStateEvent(&keyboard.StateEvent{
-			T:     time.Now(),
-			Key:   keyboard.LeftAlt,
-			State: state,
-		})
-
-		state = keyboard.Down
-		if (win32.GetAsyncKeyState(win32.VK_RMENU) & 0x0001) == 0 {
-			state = keyboard.Up
-		}
-		w.tryAddKeyboardStateEvent(&keyboard.StateEvent{
-			T:     time.Now(),
-			Key:   keyboard.RightAlt,
-			State: state,
-		})
-
-		state = keyboard.Down
-		if (win32.GetAsyncKeyState(win32.VK_LCONTROL) & 0x0001) == 0 {
-			state = keyboard.Up
-		}
-		w.tryAddKeyboardStateEvent(&keyboard.StateEvent{
-			T:     time.Now(),
-			Key:   keyboard.LeftCtrl,
-			State: state,
-		})
-
-		state = keyboard.Down
-		if (win32.GetAsyncKeyState(win32.VK_RCONTROL) & 0x0001) == 0 {
-			state = keyboard.Up
-		}
-		w.tryAddKeyboardStateEvent(&keyboard.StateEvent{
-			T:     time.Now(),
-			Key:   keyboard.RightCtrl,
-			State: state,
-		})
-
-		state = keyboard.Down
-		if (win32.GetAsyncKeyState(win32.VK_LSHIFT) & 0x0001) == 0 {
-			state = keyboard.Up
-		}
-		w.tryAddKeyboardStateEvent(&keyboard.StateEvent{
-			T:     time.Now(),
-			Key:   keyboard.LeftShift,
-			State: state,
-		})
-
-		state = keyboard.Down
-		if (win32.GetAsyncKeyState(win32.VK_RSHIFT) & 0x0001) == 0 {
-			state = keyboard.Up
-		}
-		w.tryAddKeyboardStateEvent(&keyboard.StateEvent{
-			T:     time.Now(),
-			Key:   keyboard.RightShift,
-			State: state,
-		})
-
-		state = keyboard.Down
-		if (win32.GetAsyncKeyState(win32.VK_LWIN) & 0x0001) == 0 {
-			state = keyboard.Up
-		}
-		w.tryAddKeyboardStateEvent(&keyboard.StateEvent{
-			T:     time.Now(),
-			Key:   keyboard.LeftSuper,
-			State: state,
-		})
-
-		state = keyboard.Down
-		if (win32.GetAsyncKeyState(win32.VK_RWIN) & 0x0001) == 0 {
-			state = keyboard.Up
-		}
-		w.tryAddKeyboardStateEvent(&keyboard.StateEvent{
-			T:     time.Now(),
-			Key:   keyboard.RightSuper,
-			State: state,
-		})
 
 		if w.r.Cursor() != nil {
 			w.doSetCursor()
@@ -1407,49 +1317,6 @@ func (w *NativeWindow) translateKey(wParam win32.WPARAM) (key keyboard.Key) {
 	return key
 }
 
-func (w *NativeWindow) tryAddKeyboardStateEvent(ev *keyboard.StateEvent) {
-	if w.r.Keyboard.State(ev.Key) != ev.State {
-		w.r.Keyboard.SetState(ev.Key, ev.State)
-		w.r.send(ev)
-	}
-}
-
-func (w *NativeWindow) releaseDownedButtons() {
-	for key, state := range w.r.Keyboard.States() {
-		if state == keyboard.Down {
-			// Set new state
-			state = keyboard.Up
-
-			// Assign key state to the window
-			w.r.Keyboard.SetState(key, state)
-
-			// Add keyboard state event
-			w.r.send(&keyboard.StateEvent{
-				T:     time.Now(),
-				Key:   key,
-				State: state,
-			})
-		}
-	}
-
-	for button, state := range w.r.Mouse.States() {
-		if state == mouse.Down {
-			// Set new state
-			state = mouse.Up
-
-			// Assign button state to the window
-			w.r.Mouse.SetState(button, state)
-
-			// Add mouse event
-			w.r.send(&mouse.Event{
-				T:      time.Now(),
-				Button: button,
-				State:  state,
-			})
-		}
-	}
-}
-
 func (w *NativeWindow) saveCursorClip() {
 	if w.lastCursorClip != nil {
 		return
@@ -1726,7 +1593,7 @@ func mainWindowProc(hwnd win32.HWND, msg win32.UINT, wParam win32.WPARAM, lParam
 					// we need to release those keys or else the user can only
 					// release them by putting them into down-state and then
 					// releasing again!
-					w.releaseDownedButtons()
+					w.r.releaseDownedButtons()
 				}
 			} else {
 				w.r.trySetFocused(true)
@@ -1754,16 +1621,10 @@ func mainWindowProc(hwnd win32.HWND, msg win32.UINT, wParam win32.WPARAM, lParam
 
 		case msg == win32.WM_CHAR:
 			debug("WM_CHAR")
-			r := rune(wParam)
-
-			// Convert CR to LF for added cross-platform ness...
-			if r == rune('\r') {
-				r = rune('\n')
-			}
 
 			w.r.send(&keyboard.TypedEvent{
 				T:    time.Now(),
-				Rune: r,
+				Rune: rune(wParam),
 			})
 
 		case msg == win32.WM_KEYDOWN || msg == win32.WM_SYSKEYDOWN || msg == win32.WM_KEYUP || msg == win32.WM_SYSKEYUP:
@@ -1789,9 +1650,6 @@ func mainWindowProc(hwnd win32.HWND, msg win32.UINT, wParam win32.WPARAM, lParam
 			}
 
 			k := w.translateKey(wParam)
-			if k == keyboard.Invalid {
-				logger().Printf("Unknown key wParam=%d hex=0x%X)\n", wParam, wParam)
-			}
 
 			var state keyboard.State
 			if msg == win32.WM_KEYDOWN || msg == win32.WM_SYSKEYDOWN {
@@ -1807,22 +1665,14 @@ func mainWindowProc(hwnd win32.HWND, msg win32.UINT, wParam win32.WPARAM, lParam
 				if !leftShiftDown {
 					state = keyboard.Up
 				}
-				w.tryAddKeyboardStateEvent(&keyboard.StateEvent{
-					T:     time.Now(),
-					Key:   keyboard.LeftShift,
-					State: state,
-				})
+				w.r.tryAddKeyboardStateEvent(keyboard.LeftShift, keyboard.OS(win32.VK_LSHIFT), state)
 
 				rightShiftDown := (uint16(win32.GetAsyncKeyState(win32.VK_RSHIFT)) & 0x8000) != 0
 				state = keyboard.Down
 				if !rightShiftDown {
 					state = keyboard.Up
 				}
-				w.tryAddKeyboardStateEvent(&keyboard.StateEvent{
-					T:     time.Now(),
-					Key:   keyboard.RightShift,
-					State: state,
-				})
+				w.r.tryAddKeyboardStateEvent(keyboard.RightShift, keyboard.OS(win32.VK_RSHIFT), state)
 				return 0
 
 			case keyboard.LeftAlt:
@@ -1831,22 +1681,14 @@ func mainWindowProc(hwnd win32.HWND, msg win32.UINT, wParam win32.WPARAM, lParam
 				if !leftAltDown {
 					state = keyboard.Up
 				}
-				w.tryAddKeyboardStateEvent(&keyboard.StateEvent{
-					T:     time.Now(),
-					Key:   keyboard.LeftAlt,
-					State: state,
-				})
+				w.r.tryAddKeyboardStateEvent(keyboard.LeftAlt, keyboard.OS(win32.VK_LMENU), state)
 
 				rightAltDown := (uint16(win32.GetAsyncKeyState(win32.VK_RMENU)) & 0x8000) != 0
 				state = keyboard.Down
 				if !rightAltDown {
 					state = keyboard.Up
 				}
-				w.tryAddKeyboardStateEvent(&keyboard.StateEvent{
-					T:     time.Now(),
-					Key:   keyboard.RightAlt,
-					State: state,
-				})
+				w.r.tryAddKeyboardStateEvent(keyboard.RightAlt, keyboard.OS(win32.VK_RMENU), state)
 				return 0
 
 			case keyboard.LeftCtrl:
@@ -1855,22 +1697,14 @@ func mainWindowProc(hwnd win32.HWND, msg win32.UINT, wParam win32.WPARAM, lParam
 				if !leftCtrlDown {
 					state = keyboard.Up
 				}
-				w.tryAddKeyboardStateEvent(&keyboard.StateEvent{
-					T:     time.Now(),
-					Key:   keyboard.LeftCtrl,
-					State: state,
-				})
+				w.r.tryAddKeyboardStateEvent(keyboard.LeftCtrl, keyboard.OS(win32.VK_LCONTROL), state)
 
 				rightCtrlDown := (uint16(win32.GetAsyncKeyState(win32.VK_RCONTROL)) & 0x8000) != 0
 				state = keyboard.Down
 				if !rightCtrlDown {
 					state = keyboard.Up
 				}
-				w.tryAddKeyboardStateEvent(&keyboard.StateEvent{
-					T:     time.Now(),
-					Key:   keyboard.RightCtrl,
-					State: state,
-				})
+				w.r.tryAddKeyboardStateEvent(keyboard.RightCtrl, keyboard.OS(win32.VK_RCONTROL), state)
 				return 0
 
 			case keyboard.CapsLock:
@@ -1895,11 +1729,7 @@ func mainWindowProc(hwnd win32.HWND, msg win32.UINT, wParam win32.WPARAM, lParam
 				}
 			}
 
-			w.tryAddKeyboardStateEvent(&keyboard.StateEvent{
-				T:     time.Now(),
-				Key:   k,
-				State: state,
-			})
+			w.r.tryAddKeyboardStateEvent(k, keyboard.OS(wParam), state)
 			return 0
 
 		case msg == win32.WM_MOUSEMOVE:

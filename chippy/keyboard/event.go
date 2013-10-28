@@ -12,9 +12,17 @@ import (
 // StateEvent represents an event when an keyboard key changes state, that is,
 // being pushed down when it was previously up, or being toggled on when it was
 // previously off, etc.
+//
+// A StateEvent may have an Invalid key; in which case the OS unique identifier
+// may be used to identify the key uniquely. (E.g. for special keys and non-US
+// keyboard keys).
+//
+// The StateEvent must always have a unique OS value which uniquely represents
+// the key, even if the Key value is set to Invalid.
 type StateEvent struct {
 	T     time.Time
 	Key   Key
+	OS    OS
 	State State
 }
 
@@ -25,7 +33,7 @@ func (e *StateEvent) Time() time.Time {
 
 // String returns an string representation of this event.
 func (e *StateEvent) String() string {
-	return fmt.Sprintf("keyboard.StateEvent(Key=%v, State=%v, Time=%v)", e.Key.String(), e.State.String(), e.T)
+	return fmt.Sprintf("keyboard.StateEvent(Key=%v, OS=%v, State=%v, Time=%v)", e.Key.String(), e.OS, e.State.String(), e.T)
 }
 
 // TypedEvent represents an event where some sort of user input has generated

@@ -1125,6 +1125,74 @@ func (w *Window) send(ev Event) {
 	}
 }
 
+func (w *Window) tryAddKeyboardStateEvent(k keyboard.Key, os keyboard.OS, s keyboard.State) {
+	// Prevent accidentially repeating an identical state event
+	if w.Keyboard.State(k) == s && w.Keyboard.OSState(os) == s {
+		return
+	}
+
+	w.Keyboard.SetState(k, s)
+	w.Keyboard.SetOSState(os, s)
+	w.send(&keyboard.StateEvent{
+		T:     time.Now(),
+		Key:   k,
+		OS:    os,
+		State: s,
+	})
+}
+
+func (w *Window) releaseDownedButtons() {
+	// Release the keys that we know of (defined constants) first.
+	for key, state := range w.Keyboard.States() {
+		if state == keyboard.Down {
+			// Change Key state
+			state = keyboard.Up
+			w.Keyboard.SetState(key, state)
+
+			// Send event
+			w.send(&keyboard.StateEvent{
+				T:     time.Now(),
+				Key:   key,
+				State: state,
+			})
+		}
+	}
+
+	// Release the keys that we are unknown to us.
+	for os, state := range w.Keyboard.OSStates() {
+		if state == keyboard.Down {
+			// Change Key state
+			state = keyboard.Up
+			w.Keyboard.SetOSState(os, state)
+
+			// Send event
+			w.send(&keyboard.StateEvent{
+				T:     time.Now(),
+				OS:    os,
+				State: state,
+			})
+		}
+	}
+
+	// Release mouse buttons
+	for button, state := range w.Mouse.States() {
+		if state == mouse.Down {
+			// Set new state
+			state = mouse.Up
+
+			// Assign button state to the window
+			w.Mouse.SetState(button, state)
+
+			// Add mouse event
+			w.send(&mouse.Event{
+				T:      time.Now(),
+				Button: button,
+				State:  state,
+			})
+		}
+	}
+}
+
 // EventsBuffer returns an new read-only channel over which window events will
 // be sent.
 //

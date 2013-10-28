@@ -8,57 +8,106 @@ import (
 	"sync"
 )
 
-// Watcher watches the state of various mouse buttons.
+type watcherKey struct {
+	key Key
+	os  OS
+}
+
+// Watcher watches the state of various keyboard keys.
 type Watcher struct {
-	access sync.RWMutex
-	states map[Key]State
+	access   sync.RWMutex
+	states   map[Key]State
+	osStates map[OS]State
 }
 
 // SetState specifies the current state of the specified key.
-func (s *Watcher) SetState(key Key, state State) {
-	s.access.Lock()
-	defer s.access.Unlock()
+func (w *Watcher) SetState(key Key, state State) {
+	w.access.Lock()
+	defer w.access.Unlock()
 
-	s.states[key] = state
+	w.states[key] = state
 }
 
 // States returns an copy of the internal key state map used by this watcher.
-func (s *Watcher) States() map[Key]State {
-	s.access.RLock()
-	defer s.access.RUnlock()
+func (w *Watcher) States() map[Key]State {
+	w.access.RLock()
+	defer w.access.RUnlock()
 
 	copy := make(map[Key]State)
-	for key, state := range s.states {
+	for key, state := range w.states {
 		copy[key] = state
 	}
 	return copy
 }
 
 // State returns the current state of the specified key.
-func (s *Watcher) State(key Key) State {
-	s.access.Lock()
-	defer s.access.Unlock()
+func (w *Watcher) State(key Key) State {
+	w.access.Lock()
+	defer w.access.Unlock()
 
-	state, ok := s.states[key]
+	state, ok := w.states[key]
 	if !ok {
-		s.states[key] = Down
+		w.states[key] = Down
 	}
 	return state
 }
 
 // Down tells weather the specified key is currently in the down state.
-func (s *Watcher) Down(key Key) bool {
-	return s.State(key) == Down
+func (w *Watcher) Down(key Key) bool {
+	return w.State(key) == Down
 }
 
 // Up tells weather the specified key is currently in the up state.
-func (s *Watcher) Up(key Key) bool {
-	return s.State(key) == Up
+func (w *Watcher) Up(key Key) bool {
+	return w.State(key) == Up
+}
+
+// SetOSState specifies the current state of the specified OS key value.
+func (w *Watcher) SetOSState(os OS, state State) {
+	w.access.Lock()
+	defer w.access.Unlock()
+
+	w.osStates[os] = state
+}
+
+// OSStates returns an copy of the internal OS key state map used by this watcher.
+func (w *Watcher) OSStates() map[OS]State {
+	w.access.RLock()
+	defer w.access.RUnlock()
+
+	copy := make(map[OS]State)
+	for os, state := range w.osStates {
+		copy[os] = state
+	}
+	return copy
+}
+
+// OSState returns the current state of the specified OS key value.
+func (w *Watcher) OSState(os OS) State {
+	w.access.Lock()
+	defer w.access.Unlock()
+
+	state, ok := w.osStates[os]
+	if !ok {
+		w.osStates[os] = Down
+	}
+	return state
+}
+
+// OSDown tells weather the specified OS key value is currently in the down state.
+func (w *Watcher) OSDown(os OS) bool {
+	return w.OSState(os) == Down
+}
+
+// OSUp tells weather the specified OS key value is currently in the up state.
+func (w *Watcher) OSUp(os OS) bool {
+	return w.OSState(os) == Up
 }
 
 // NewWatcher returns a new, initialized, watcher.
 func NewWatcher() *Watcher {
-	s := new(Watcher)
-	s.states = make(map[Key]State)
-	return s
+	w := new(Watcher)
+	w.states = make(map[Key]State)
+	w.osStates = make(map[OS]State)
+	return w
 }
