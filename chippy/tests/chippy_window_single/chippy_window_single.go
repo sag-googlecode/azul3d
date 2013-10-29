@@ -13,6 +13,7 @@ package main
 import (
 	"code.google.com/p/azul3d/chippy/keyboard"
 	"code.google.com/p/azul3d/chippy"
+	"unicode/utf8"
 	"fmt"
 	"log"
 	"os"
@@ -66,13 +67,13 @@ func program() {
 		if ok {
 			title := window.Title()
 			if typedEvent.Rune == '\b' {
+				// Backspace - remove one character from the end of the string.
 				if len(title) > 0 {
-					window.SetTitle(title[:len(title)-1])
+					_, size := utf8.DecodeLastRune([]byte(title))
+					window.SetTitle(title[:len(title) - size])
 				}
 			} else {
-				if len(title) < 80 {
-					window.SetTitle(title + string(typedEvent.Rune))
-				}
+				window.SetTitle(title + string(typedEvent.Rune))
 			}
 		}
 	}
