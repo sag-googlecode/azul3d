@@ -16,6 +16,7 @@ func program() {
 	defer chippy.Exit()
 
 	window := chippy.NewWindow()
+	window.SetVisible(false)
 	err := window.Open(chippy.DefaultScreen())
 	if err != nil {
 		log.Fatal(err)
