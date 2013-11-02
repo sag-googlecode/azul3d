@@ -338,10 +338,55 @@ func (w *Window) trySetSize(width, height int) bool {
 	return false
 }
 
+// w.access lock must not currently be held
+func (w *Window) clampedSize() (width, height int) {
+	w.access.RLock()
+	defer w.access.RUnlock()
+
+	return w.doClampedSize()
+}
+
+// w.access lock must currently be held
+func (w *Window) doClampedSize() (width, height int) {
+	width = w.width
+	height = w.height
+
+	if width <= 0 {
+		width = 1
+	}
+	if height <= 0 {
+		height = 1
+	}
+
+	if w.minWidth != 0 && w.minHeight != 0 {
+		if width < w.minWidth {
+			width = w.minWidth
+		}
+		if height < w.minHeight {
+			height = w.minHeight
+		}
+	}
+
+	if w.maxWidth != 0 && w.maxHeight != 0 {
+		if width > w.maxWidth {
+			width = w.maxWidth
+		}
+		if height > w.maxHeight {
+			height = w.maxHeight
+		}
+	}
+	return
+}
+
 // SetSize specifies the new width and height of this window's client
 // region, in pixels.
 //
-// Width and height will be clamped to at least one.
+// The window's size will be clamped such that it is always 1px wide/tall; and
+// never exceeds the bounds of the minimum or maximum size of the window if one
+// is specified.
+//
+// If w.Size() is later called, it will return the identical (non-clamped)
+// values you provide here.
 func (w *Window) SetSize(width, height int) {
 	w.access.RLock()
 
@@ -353,7 +398,8 @@ func (w *Window) SetSize(width, height int) {
 		w.width = width
 		w.height = height
 		if w.opened {
-			go w.NativeWindow.setSize(width, height)
+			clampedWidth, clampedHeight := w.doClampedSize()
+			go w.NativeWindow.setSize(clampedWidth, clampedHeight)
 		}
 		w.access.Unlock()
 		return
