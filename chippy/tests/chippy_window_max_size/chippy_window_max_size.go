@@ -42,6 +42,13 @@ func program() {
 	log.Println(window1)
 	log.Println(window2)
 
+	log.Println("Waiting 5 seconds...")
+	<-time.After(5 * time.Second)
+
+	log.Println("Both windows should become 300x300px; and should *not* become 600x600px.")
+	window1.SetSize(600, 600)
+	window2.SetSize(600, 600)
+
 	// Just wait an while so they can enjoy the window
 	log.Println("Waiting 30 seconds...")
 	<-time.After(30 * time.Second)
