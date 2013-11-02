@@ -36,6 +36,9 @@ func program() {
 		log.Fatal(err)
 	}
 
+	log.Println("Please manually minimize the windows.. Waiting 5 seconds...")
+	<-time.After(5 * time.Second)
+
 	window1.Notify()
 	window2.Notify()
 

@@ -22,7 +22,7 @@ func program() {
 	window1.SetTitle("Window 1")
 	window2.SetTitle("Window 2")
 
-	window1.SetPosition(512, 512)
+	window1.SetPosition(128, 128)
 
 	// Actually open the windows
 	screen := chippy.DefaultScreen()
@@ -36,7 +36,7 @@ func program() {
 		log.Fatal(err)
 	}
 
-	window2.SetPosition(512, 512)
+	window2.SetPosition(128, 128)
 
 	// Print out what they currently has property-wise
 	log.Println(window1)
@@ -46,8 +46,8 @@ func program() {
 	log.Println("Waiting 5 seconds...")
 	<-time.After(5 * time.Second)
 
-	window1.SetDecorated(true)
-	window2.SetDecorated(true)
+	window1.SetPosition(256, 256)
+	window2.SetPosition(256, 256)
 
 	// Just wait an while so they can enjoy the window
 	log.Println("Waiting 15 seconds...")

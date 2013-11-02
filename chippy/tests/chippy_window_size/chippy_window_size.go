@@ -46,8 +46,8 @@ func program() {
 	log.Println("Waiting 5 seconds...")
 	<-time.After(5 * time.Second)
 
-	window1.SetDecorated(true)
-	window2.SetDecorated(true)
+	window1.SetSize(256, 256)
+	window2.SetSize(256, 256)
 
 	// Just wait an while so they can enjoy the window
 	log.Println("Waiting 15 seconds...")
