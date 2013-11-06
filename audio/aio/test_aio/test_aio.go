@@ -41,8 +41,7 @@ func main() {
 		return
 	}
 
-	//file, err := os.Open("src/code.google.com/p/azul3d/assets/audio/tune_stereo_44100hz_int16.wav")
-	file, err := os.Open("src/code.google.com/p/azul3d/assets/audio/kakariko16.wav")
+	file, err := os.Open("src/code.google.com/p/azul3d/assets/audio/tune_stereo_44100hz_int16.wav")
 	if err != nil {
 		log.Fatal(err)
 	}

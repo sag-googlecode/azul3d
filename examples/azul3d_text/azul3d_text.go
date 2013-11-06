@@ -65,6 +65,7 @@ func onCursorPosition(ev *event.Event) {
 func resetTransforms(ev *event.Event) {
 	log.Println("Reset")
 	textNode.ResetTransform()
+	textNode.SetPos(0, 0, -24)
 }
 
 // Event handler which toggles cursor grab

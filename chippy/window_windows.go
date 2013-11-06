@@ -853,7 +853,7 @@ func (w *NativeWindow) doSetCursorPos() {
 		if !w.r.CursorWithin() {
 			return
 		}
-		width, height := w.r.Size()
+		width, height := w.r.clampedSize()
 		w.r.trySetCursorPosition(width/2, height/2)
 	}
 
@@ -927,24 +927,9 @@ func (w *NativeWindow) doSetWindowPos() {
 		y += win32.Int(extentTop)
 	}
 
-	// Clip to maxWidth/maxHeight and minWidth/minHeight, append extents so that width/height is
-	// the client region specifically.
-	minWidth, minHeight := w.r.MinimumSize()
-	maxWidth, maxHeight := w.r.MaximumSize()
-
-	wWidth, wHeight := w.r.Size()
-
+	wWidth, wHeight := w.r.clampedSize()
 	width := float64(wWidth)
-	if maxWidth > 0 {
-		width = math.Min(float64(wWidth), float64(maxWidth))
-	}
-	width = math.Max(width, float64(minWidth))
-
 	height := float64(wHeight)
-	if maxHeight > 0 {
-		height = math.Min(height, float64(maxHeight))
-	}
-	height = math.Max(height, float64(minHeight))
 
 	if w.r.Decorated() {
 		width += float64(extentLeft)
@@ -1353,7 +1338,7 @@ func (w *NativeWindow) updateCursorClip() {
 		logger().Println("Unable to set clip cursor; ClientToScreen():", win32.GetLastErrorString())
 	}
 
-	wWidth, wHeight := w.r.Size()
+	wWidth, wHeight := w.r.clampedSize()
 	br := new(win32.POINT)
 	br.SetX(win32.LONG(wWidth))
 	br.SetY(win32.LONG(wHeight))
@@ -1739,7 +1724,7 @@ func mainWindowProc(hwnd win32.HWND, msg win32.UINT, wParam win32.WPARAM, lParam
 
 			w.r.trySetCursorPosition(cursorX, cursorY)
 
-			wWidth, wHeight := w.r.Size()
+			wWidth, wHeight := w.r.clampedSize()
 			if cursorX >= wWidth || cursorY >= wHeight || cursorX <= 0 || cursorY <= 0 || !w.r.Focused() {
 				// Better than WM_MOUSELEAVE
 				if !w.r.CursorGrabbed() {
@@ -1767,7 +1752,7 @@ func mainWindowProc(hwnd win32.HWND, msg win32.UINT, wParam win32.WPARAM, lParam
 
 			if w.r.CursorGrabbed() {
 				supportRawInput := w32VersionMajor >= 5 && w32VersionMinor >= 1
-				wWidth, wHeight := w.r.Size()
+				wWidth, wHeight := w.r.clampedSize()
 				halfWidth := wWidth / 2
 				halfHeight := wHeight / 2
 
