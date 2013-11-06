@@ -145,10 +145,6 @@ func (w *Window) Notify() {
 // decoration, or in the icon tray.
 //
 // If the icon is nil; the default 'chippy' icon is restored.
-//
-// It should be noted that on most platforms you cannot change the window icon
-// once the window has been opened. (Unless you destroy and open it again, of
-// course)
 func (w *Window) SetIcon(icon image.Image) {
 	w.access.RLock()
 
