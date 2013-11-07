@@ -65,6 +65,12 @@ func program() {
 
 		typedEvent, ok := ev.(*keyboard.TypedEvent)
 		if ok {
+			if typedEvent.Rune == 'd' {
+				window.SetDecorated(!window.Decorated())
+			}
+			if typedEvent.Rune == 'p' {
+				window.SetPosition(100, 100)
+			}
 			title := window.Title()
 			if typedEvent.Rune == '\b' {
 				// Backspace - remove one character from the end of the string.
