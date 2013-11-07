@@ -84,6 +84,10 @@ func program() {
 		switch e.(type) {
 		case *chippy.CloseEvent:
 			return
+
+		default:
+			// We don't care about whatever event this is.
+			break
 		}
 	}
 }

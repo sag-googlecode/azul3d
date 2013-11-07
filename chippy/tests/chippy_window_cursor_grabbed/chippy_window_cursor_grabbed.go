@@ -51,6 +51,10 @@ func program() {
 
 		case *chippy.CloseEvent:
 			return
+
+		default:
+			// We don't care about whatever event this is.
+			break
 		}
 	}
 }

@@ -227,6 +227,10 @@ func program() {
 			case *chippy.CloseEvent:
 				chippy.Exit()
 				return
+
+				default:
+					// We don't care about whatever event this is.
+					break
 			}
 		}
 
