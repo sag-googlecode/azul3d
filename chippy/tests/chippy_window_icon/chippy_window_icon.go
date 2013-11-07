@@ -46,6 +46,7 @@ func program() {
 		log.Fatal(err)
 	}
 
+	<-time.After(5 * time.Second)
 	window1.SetIcon(icon)
 	window2.SetIcon(icon)
 
