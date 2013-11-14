@@ -67,8 +67,12 @@ func program() {
 	events := window.Events()
 	defer window.CloseEvents(events)
 
-	measureBlitSpeed := time.After(10 * time.Second)
-	measuringBlitSpeed := false
+	var(
+		measureBlitSpeed = time.After(10 * time.Second)
+		measuringBlitSpeed bool
+		numBlits int
+		totalBlitTime time.Duration
+	)
 
 	for {
 		// In order to clear a rectangle on the window, this is much faster
@@ -79,7 +83,11 @@ func program() {
 		// Blit the image to the window, at x=0, y=0, blitting the entire image
 		start := time.Now()
 		window.PixelBlit(0, 0, rgba)
-		log.Println("PixelBlit():", time.Since(start))
+		blitTime := time.Since(start)
+		log.Println("PixelBlit():", blitTime)
+
+		numBlits++
+		totalBlitTime += blitTime
 
 		if measuringBlitSpeed {
 			select{
@@ -87,7 +95,7 @@ func program() {
 				switch e.(type) {
 				case *chippy.CloseEvent:
 					chippy.Exit()
-					return
+					goto stats
 
 				default:
 					// We don't care about whatever event this is.
@@ -115,7 +123,7 @@ loop: for !gotPaintEvent {
 
 				case *chippy.CloseEvent:
 					chippy.Exit()
-					return
+					goto stats
 
 				default:
 					// We don't care about whatever event this is.
@@ -125,8 +133,9 @@ loop: for !gotPaintEvent {
 		}
 	}
 
-	log.Println("Waiting 15 seconds...")
-	<-time.After(15 * time.Second)
+stats:
+	log.Printf("%d PixelBlit() over %v\n", numBlits, totalBlitTime)
+	log.Printf("Average blit time: %v\n", totalBlitTime / time.Duration(numBlits))
 }
 
 func main() {
