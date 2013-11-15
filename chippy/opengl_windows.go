@@ -44,7 +44,7 @@ func (w *NativeWindow) GLConfigs() (configs []*GLConfig) {
 			var pf *win32.PIXELFORMATDESCRIPTOR
 			max, pf = win32.DescribePixelFormat(w.dc, index)
 			if max == 0 {
-				logger().Println("Unable to get GLBufferFormats; DescribePixelFormat():", win32.GetLastErrorString())
+				logger().Println("Unable to get GLConfig's; DescribePixelFormat():", win32.GetLastErrorString())
 				return
 			}
 
@@ -77,12 +77,6 @@ func (w *NativeWindow) GLConfigs() (configs []*GLConfig) {
 					}
 
 					config.Transparent = (pf.DwFlags() & win32.PFD_SUPPORT_COMPOSITION) > 0
-
-					//logger().Println("GENERIC_FORMAT", pf.DwFlags() & win32.PFD_GENERIC_FORMAT)
-					//logger().Println("GENERIC_ACCELERATED", pf.DwFlags() & win32.PFD_GENERIC_ACCELERATED)
-					//config.Accelerated = ((pf.DwFlags() & win32.PFD_GENERIC_FORMAT)  & (pf.DwFlags() & win32.PFD_GENERIC_ACCELERATED)) > 0
-					//logger().Println(config.Accelerated)
-
 					config.DoubleBuffered = (pf.DwFlags() & win32.PFD_DOUBLEBUFFER) > 0
 					config.StereoScopic = (pf.DwFlags() & win32.PFD_STEREO) > 0
 					config.DepthBits = uint8(pf.CDepthBits())
