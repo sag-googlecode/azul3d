@@ -191,7 +191,7 @@ func NewClearable() *Clearable {
 		clearColor:   true,
 		clearDepth:   true,
 		clearStencil: true,
-		color:        math.Vector4(0.53, 0.81, 0.98, 0),
+		color:        math.Vector4(0.53, 0.81, 0.98, 1),
 		depth:        1,
 		stencil:      0,
 	}
