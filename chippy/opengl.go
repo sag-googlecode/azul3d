@@ -26,25 +26,76 @@ func extSupported(str, ext string) bool {
 
 func versionSupported(ver string, wantedMajor, wantedMinor int) bool {
 	if len(ver) > 0 {
+		// Version string must not be empty
 		var (
-			major, minor int
+			major, minor  int
+			versionString string
+			err           error
 		)
 
-		versions := strings.Split(ver, ".")
-		versions = versions[0:2]
+		// According to http://www.opengl.org/sdk/docs/man/xhtml/glGetString.xml
+		//
+		// the string returned may be 'major.minor' or 'major.minor.release'
+		// and may be following by a space and any vendor specific information.
 
-		if len(versions) == 2 {
-			major, _ = strconv.Atoi(versions[0])
-			minor, _ = strconv.Atoi(versions[1])
+		// First locate a proper version string without vendor specific
+		// information.
+		if strings.Contains(ver, " ") {
+			// It must have vendor information.
+			split := strings.Split(ver, " ")
+			if len(split) > 0 || len(split[0]) > 0 {
+				// Everything looks good.
+				versionString = split[0]
+			} else {
+				// Something must be wrong with their vendor string.
+				return false
+			}
 		} else {
-			logger().Printf("OpenGL: *** Driver reported version parsing failed for %q ***\n", ver)
-			return false
+			// No vendor information.
+			versionString = ver
+		}
+
+		// We have a proper version string now without vendor information.
+		dots := strings.Count(versionString, ".")
+		if dots == 1 {
+			// It's a 'major.minor' style string
+			versions := strings.Split(versionString, ".")
+			if len(versions) == 2 {
+				major, err = strconv.Atoi(versions[0])
+				if err != nil {
+					return false
+				}
+
+				minor, err = strconv.Atoi(versions[1])
+				if err != nil {
+					return false
+				}
+
+			} else {
+				return false
+			}
+
+		} else if dots == 2 {
+			// It's a 'major.minor.release' style string
+			versions := strings.Split(versionString, ".")
+			if len(versions) == 3 {
+				major, err = strconv.Atoi(versions[0])
+				if err != nil {
+					return false
+				}
+
+				minor, err = strconv.Atoi(versions[1])
+				if err != nil {
+					return false
+				}
+			} else {
+				return false
+			}
 		}
 
 		if major > wantedMajor {
 			return true
-		}
-		if major == wantedMajor && minor >= wantedMinor {
+		} else if major == wantedMajor && minor >= wantedMinor {
 			return true
 		}
 	}
