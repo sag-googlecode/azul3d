@@ -10,7 +10,7 @@ import (
 	"code.google.com/p/azul3d/chippy/keyboard"
 	"code.google.com/p/azul3d/chippy"
 	"code.google.com/p/azul3d/clock"
-	"code.google.com/p/azul3d/native/opengl/1.5"
+	"code.google.com/p/azul3d/native/gl"
 	"log"
 	"math"
 	"os"
@@ -33,7 +33,7 @@ func gluPerspective(gl *opengl.Context, fovY, aspect, zNear, zFar float64) {
 }
 
 func resizeScene(width, height int) {
-	gl.Viewport(0, 0, int32(width), int32(height)) // Reset The Current Viewport And Perspective Transformation
+	gl.Viewport(0, 0, uint32(width), uint32(height)) // Reset The Current Viewport And Perspective Transformation
 	gl.MatrixMode(opengl.PROJECTION)
 	gl.LoadIdentity()
 	gluPerspective(gl, 45.0, float64(width) / float64(height), 0.1, 100.0)
@@ -132,7 +132,7 @@ func program() {
 	configs := window.GLConfigs()
 
 	// See documentation for this function and vars to see how it determines the 'best' format
-	bestConfig := chippy.GLChooseConfig(configs, chippy.GLWorstHWConfig, chippy.GLBestConfig)
+	bestConfig := chippy.GLChooseConfig(configs, chippy.GLWorstHWConfig, chippy.GLBestTransparentConfig)
 	window.GLSetConfig(bestConfig)
 
 	// Print out all the formats, and which one we determined to be the 'best'.

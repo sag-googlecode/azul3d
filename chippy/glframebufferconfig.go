@@ -118,6 +118,24 @@ var (
 
 	GLBestConfig = &GLConfig{
 		Accelerated:    true,
+		Transparent:    false,
+		RedBits:        255,
+		GreenBits:      255,
+		BlueBits:       255,
+		AlphaBits:      255,
+		AccumRedBits:   255,
+		AccumGreenBits: 255,
+		AccumBlueBits:  255,
+		AccumAlphaBits: 255,
+		AuxBuffers:     255,
+		DepthBits:      255,
+		StencilBits:    255,
+		DoubleBuffered: true,
+		StereoScopic:   false,
+	}
+
+	GLBestTransparentConfig = &GLConfig{
+		Accelerated:    true,
 		Transparent:    true,
 		RedBits:        255,
 		GreenBits:      255,
