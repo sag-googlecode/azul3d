@@ -28,5 +28,5 @@ func (r *Renderer) viewport(x, y uint, width, height int) {
 	// glViewport expects that coordinates are in bottom-left to top-right, but we expect the to use
 	// top-left to bottom-right.
 	vx, vy, vWidth, vHeight := regionToGL(uint(r.width), uint(r.height), x, y, uint(width), uint(height))
-	r.gl.Viewport(vx, vy, vWidth, vHeight)
+	r.gl.Viewport(vx, vy, uint32(vWidth), uint32(vHeight))
 }

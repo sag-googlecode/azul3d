@@ -30,10 +30,14 @@ type backend interface {
 	LoadTexture(t texture.Type)
 	LoadMesh(m *geom.Mesh)
 	LoadShader(s *shader.Shader)
-	MaxTextureCoords() int
-	MaxTextureLayers() int
+
 	MaxTextureSize() int
 	GPUName() string
+	GPUVendor() string
+	GPUDriverVersion() int
+	GLVersion() (major, minor int)
+	GLSLVersion() (major, minor int)
+	GLExtensions() []string
 }
 
 var (
@@ -62,8 +66,10 @@ type obj struct {
 	vsyncChanged bool
 	vsync        chippy.VSyncMode
 
-	maxTextureCoords, maxTextureLayers, maxTextureSize int
-	gpuName                                            string
+	maxTextureSize, gpuDriverVersion, glMajorVersion, glMinorVersion,
+	glslMajorVersion, glslMinorVersion int
+	gpuName, gpuVendor string
+	glExtensions       []string
 
 	currentlyChangingBuffer sync.Mutex
 
@@ -367,26 +373,6 @@ func mustGetObj(n *scene.Node) *obj {
 	panic("Specified node is not an renderer node.")
 }
 
-func GPUName(n *scene.Node) string {
-	o := mustGetObj(n)
-	return o.gpuName
-}
-
-func MaxTextureCoords(n *scene.Node) int {
-	o := mustGetObj(n)
-	return o.maxTextureCoords
-}
-
-func MaxTextureLayers(n *scene.Node) int {
-	o := mustGetObj(n)
-	return o.maxTextureLayers
-}
-
-func MaxTextureSize(n *scene.Node) int {
-	o := mustGetObj(n)
-	return o.maxTextureSize
-}
-
 // Create creates an renderer node on the specified scene node. An renderer
 // node is responsible for taking all nodes parented below it and rendering
 // them appropriately into an window or offscreen buffer.
@@ -497,10 +483,13 @@ func SetBackend(n *scene.Node, b BackendType) error {
 				width, height := o.Window.Size()
 				render.Resize(width, height)
 
-				o.maxTextureCoords = render.MaxTextureCoords()
-				o.maxTextureLayers = render.MaxTextureLayers()
 				o.maxTextureSize = render.MaxTextureSize()
 				o.gpuName = render.GPUName()
+				o.gpuVendor = render.GPUVendor()
+				o.gpuDriverVersion = render.GPUDriverVersion()
+				o.glExtensions = render.GLExtensions()
+				o.glMajorVersion, o.glMinorVersion = render.GLVersion()
+				o.glslMajorVersion, o.glslMinorVersion = render.GLSLVersion()
 			}
 		}
 		<-o.rendererCreateComplete

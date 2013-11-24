@@ -6,7 +6,7 @@ package opengl
 
 import (
 	"code.google.com/p/azul3d/math"
-	"code.google.com/p/azul3d/native/opengl/2.0"
+	"code.google.com/p/azul3d/native/gl"
 	"code.google.com/p/azul3d/scene"
 	"code.google.com/p/azul3d/scene/camera"
 	"code.google.com/p/azul3d/scene/geom"
@@ -58,7 +58,7 @@ type Renderer struct {
 	lastViewportX, lastViewportY, lastViewportWidth, lastViewportHeight uint
 
 	maxTextureCoords, maxTextureLayers, maxTextureSize, maxMemoryBytes int
-	gpuName                                                            string
+	gpuName, gpuVendorName                                             string
 }
 
 func (r *Renderer) useRegion(region *util.Region) {
@@ -70,7 +70,7 @@ func (r *Renderer) useRegion(region *util.Region) {
 	x, y, width, height := region.Region()
 	r.viewport(x, y, int(width), int(height))
 
-	var clearFlags opengl.Enum
+	var clearFlags int32
 	if region.ClearColorActive() {
 		clearFlags = clearFlags | opengl.COLOR_BUFFER_BIT
 
@@ -187,7 +187,7 @@ func (r *Renderer) drawGeom(current *sortedGeom) {
 			r.gl.BindBuffer(opengl.ARRAY_BUFFER, bm.Vertices)
 			r.gl.EnableVertexAttribArray(idx)
 			defer r.gl.DisableVertexAttribArray(idx)
-			r.gl.VertexAttribPointer(idx, 3, opengl.FLOAT, false, 0, nil)
+			r.gl.VertexAttribPointer(idx, 3, opengl.FLOAT, opengl.GLBool(false), 0, nil)
 		}
 
 		if len(g.Normals) > 0 {
@@ -197,7 +197,7 @@ func (r *Renderer) drawGeom(current *sortedGeom) {
 				r.gl.BindBuffer(opengl.ARRAY_BUFFER, bm.Normals)
 				r.gl.EnableVertexAttribArray(idx)
 				defer r.gl.DisableVertexAttribArray(idx)
-				r.gl.VertexAttribPointer(idx, 3, opengl.FLOAT, false, 0, nil)
+				r.gl.VertexAttribPointer(idx, 3, opengl.FLOAT, opengl.GLBool(false), 0, nil)
 			}
 		}
 
@@ -208,7 +208,7 @@ func (r *Renderer) drawGeom(current *sortedGeom) {
 				r.gl.BindBuffer(opengl.ARRAY_BUFFER, bm.Tangents)
 				r.gl.EnableVertexAttribArray(idx)
 				defer r.gl.DisableVertexAttribArray(idx)
-				r.gl.VertexAttribPointer(idx, 3, opengl.FLOAT, false, 0, nil)
+				r.gl.VertexAttribPointer(idx, 3, opengl.FLOAT, opengl.GLBool(false), 0, nil)
 			}
 		}
 
@@ -219,7 +219,7 @@ func (r *Renderer) drawGeom(current *sortedGeom) {
 				r.gl.BindBuffer(opengl.ARRAY_BUFFER, bm.Bitangents)
 				r.gl.EnableVertexAttribArray(idx)
 				defer r.gl.DisableVertexAttribArray(idx)
-				r.gl.VertexAttribPointer(idx, 3, opengl.FLOAT, false, 0, nil)
+				r.gl.VertexAttribPointer(idx, 3, opengl.FLOAT, opengl.GLBool(false), 0, nil)
 			}
 		}
 
@@ -230,7 +230,7 @@ func (r *Renderer) drawGeom(current *sortedGeom) {
 				r.gl.BindBuffer(opengl.ARRAY_BUFFER, bm.Colors)
 				r.gl.EnableVertexAttribArray(idx)
 				defer r.gl.DisableVertexAttribArray(idx)
-				r.gl.VertexAttribPointer(idx, 4, opengl.FLOAT, false, 0, nil)
+				r.gl.VertexAttribPointer(idx, 4, opengl.FLOAT, opengl.GLBool(false), 0, nil)
 			}
 		}
 
@@ -241,7 +241,7 @@ func (r *Renderer) drawGeom(current *sortedGeom) {
 				r.gl.BindBuffer(opengl.ARRAY_BUFFER, bm.BoneWeights)
 				r.gl.EnableVertexAttribArray(idx)
 				defer r.gl.DisableVertexAttribArray(idx)
-				r.gl.VertexAttribPointer(idx, 3, opengl.FLOAT, false, 0, nil)
+				r.gl.VertexAttribPointer(idx, 3, opengl.FLOAT, opengl.GLBool(false), 0, nil)
 			}
 		}
 
@@ -253,27 +253,27 @@ func (r *Renderer) drawGeom(current *sortedGeom) {
 				r.gl.BindBuffer(opengl.ARRAY_BUFFER, bm.TextureCoords[index])
 				r.gl.EnableVertexAttribArray(idx)
 				defer r.gl.DisableVertexAttribArray(idx)
-				r.gl.VertexAttribPointer(idx, 4, opengl.FLOAT, false, 0, nil)
+				r.gl.VertexAttribPointer(idx, 4, opengl.FLOAT, opengl.GLBool(false), 0, nil)
 			}
 		}
 
 		count := 0
 		for _, tex := range layeredTextures {
 			ident := tex.NativeIdentity().(uint32)
-			r.gl.ActiveTexture(opengl.TEXTURE0 + opengl.Enum(count))
+			r.gl.ActiveTexture(opengl.TEXTURE0 + int32(count))
 			r.gl.BindTexture(opengl.TEXTURE_2D, ident)
 			count++
 		}
 
 		if len(g.Indices) > 0 {
 			r.gl.BindBuffer(opengl.ELEMENT_ARRAY_BUFFER, bm.Indices)
-			r.gl.DrawElements(opengl.TRIANGLES, int32(len(g.Indices)), opengl.UNSIGNED_INT, nil)
+			r.gl.DrawElements(opengl.TRIANGLES, uint32(len(g.Indices)), opengl.UNSIGNED_INT, nil)
 		} else {
-			r.gl.DrawArrays(opengl.TRIANGLES, 0, int32(len(g.Vertices)))
+			r.gl.DrawArrays(opengl.TRIANGLES, 0, uint32(len(g.Vertices)))
 		}
 
 		for count := 0; count < len(layeredTextures); count++ {
-			r.gl.ActiveTexture(opengl.TEXTURE0 + opengl.Enum(count))
+			r.gl.ActiveTexture(opengl.TEXTURE0 + int32(count))
 			r.gl.BindTexture(opengl.TEXTURE_2D, 0)
 		}
 	}
@@ -392,7 +392,7 @@ func (r *Renderer) loadMesh(g *geom.Mesh, now bool) {
 			// Later on release the loading context.
 			defer r.lcMakeCurrent(false)
 
-			var usageHint opengl.Enum = opengl.STATIC_DRAW
+			usageHint := opengl.STATIC_DRAW
 			if g.Hint == geom.Dynamic {
 				usageHint = opengl.DYNAMIC_DRAW
 			}
@@ -410,7 +410,7 @@ func (r *Renderer) loadMesh(g *geom.Mesh, now bool) {
 					sz := int(unsafe.Sizeof(g.Indices[0]))
 					r.gl.BufferData(
 						opengl.ARRAY_BUFFER,
-						int32(sz*len(g.Indices)),
+						uintptr(sz*len(g.Indices)),
 						unsafe.Pointer(&g.Indices[0]),
 						usageHint,
 					)
@@ -431,7 +431,7 @@ func (r *Renderer) loadMesh(g *geom.Mesh, now bool) {
 					sz := int(unsafe.Sizeof(g.Vertices[0]))
 					r.gl.BufferData(
 						opengl.ARRAY_BUFFER,
-						int32(sz*len(g.Vertices)),
+						uintptr(sz*len(g.Vertices)),
 						unsafe.Pointer(&g.Vertices[0]),
 						usageHint,
 					)
@@ -452,7 +452,7 @@ func (r *Renderer) loadMesh(g *geom.Mesh, now bool) {
 					sz := int(unsafe.Sizeof(g.Normals[0]))
 					r.gl.BufferData(
 						opengl.ARRAY_BUFFER,
-						int32(sz*len(g.Normals)),
+						uintptr(sz*len(g.Normals)),
 						unsafe.Pointer(&g.Normals[0]),
 						usageHint,
 					)
@@ -473,7 +473,7 @@ func (r *Renderer) loadMesh(g *geom.Mesh, now bool) {
 					sz := int(unsafe.Sizeof(g.Tangents[0]))
 					r.gl.BufferData(
 						opengl.ARRAY_BUFFER,
-						int32(sz*len(g.Tangents)),
+						uintptr(sz*len(g.Tangents)),
 						unsafe.Pointer(&g.Tangents[0]),
 						usageHint,
 					)
@@ -494,7 +494,7 @@ func (r *Renderer) loadMesh(g *geom.Mesh, now bool) {
 					sz := int(unsafe.Sizeof(g.Bitangents[0]))
 					r.gl.BufferData(
 						opengl.ARRAY_BUFFER,
-						int32(sz*len(g.Bitangents)),
+						uintptr(sz*len(g.Bitangents)),
 						unsafe.Pointer(&g.Bitangents[0]),
 						usageHint,
 					)
@@ -515,7 +515,7 @@ func (r *Renderer) loadMesh(g *geom.Mesh, now bool) {
 					sz := int(unsafe.Sizeof(g.Colors[0]))
 					r.gl.BufferData(
 						opengl.ARRAY_BUFFER,
-						int32(sz*len(g.Colors)),
+						uintptr(sz*len(g.Colors)),
 						unsafe.Pointer(&g.Colors[0]),
 						usageHint,
 					)
@@ -536,7 +536,7 @@ func (r *Renderer) loadMesh(g *geom.Mesh, now bool) {
 					sz := int(unsafe.Sizeof(g.BoneWeights[0]))
 					r.gl.BufferData(
 						opengl.ARRAY_BUFFER,
-						int32(sz*len(g.BoneWeights)),
+						uintptr(sz*len(g.BoneWeights)),
 						unsafe.Pointer(&g.BoneWeights[0]),
 						usageHint,
 					)
@@ -559,7 +559,7 @@ func (r *Renderer) loadMesh(g *geom.Mesh, now bool) {
 						sz := int(unsafe.Sizeof(texCoords[0]))
 						r.gl.BufferData(
 							opengl.ARRAY_BUFFER,
-							int32(sz*len(texCoords)),
+							uintptr(sz*len(texCoords)),
 							unsafe.Pointer(&texCoords[0]),
 							usageHint,
 						)
@@ -601,7 +601,7 @@ func (r *Renderer) loadMesh(g *geom.Mesh, now bool) {
 		// Later on release the loading context.
 		defer r.lcMakeCurrent(false)
 
-		var usageHint opengl.Enum = opengl.STATIC_DRAW
+		usageHint := opengl.STATIC_DRAW
 		if g.Hint == geom.Dynamic {
 			usageHint = opengl.DYNAMIC_DRAW
 		}
@@ -620,7 +620,7 @@ func (r *Renderer) loadMesh(g *geom.Mesh, now bool) {
 			sz := int(unsafe.Sizeof(g.Vertices[0]))
 			r.gl.BufferData(
 				opengl.ARRAY_BUFFER,
-				int32(sz*len(g.Vertices)),
+				uintptr(sz*len(g.Vertices)),
 				unsafe.Pointer(&g.Vertices[0]),
 				usageHint,
 			)
@@ -633,7 +633,7 @@ func (r *Renderer) loadMesh(g *geom.Mesh, now bool) {
 				sz := int(unsafe.Sizeof(g.Indices[0]))
 				r.gl.BufferData(
 					opengl.ARRAY_BUFFER,
-					int32(sz*len(g.Indices)),
+					uintptr(sz*len(g.Indices)),
 					unsafe.Pointer(&g.Indices[0]),
 					usageHint,
 				)
@@ -647,7 +647,7 @@ func (r *Renderer) loadMesh(g *geom.Mesh, now bool) {
 				sz := int(unsafe.Sizeof(g.Normals[0]))
 				r.gl.BufferData(
 					opengl.ARRAY_BUFFER,
-					int32(sz*len(g.Normals)),
+					uintptr(sz*len(g.Normals)),
 					unsafe.Pointer(&g.Normals[0]),
 					usageHint,
 				)
@@ -661,7 +661,7 @@ func (r *Renderer) loadMesh(g *geom.Mesh, now bool) {
 				sz := int(unsafe.Sizeof(g.Tangents[0]))
 				r.gl.BufferData(
 					opengl.ARRAY_BUFFER,
-					int32(sz*len(g.Tangents)),
+					uintptr(sz*len(g.Tangents)),
 					unsafe.Pointer(&g.Tangents[0]),
 					usageHint,
 				)
@@ -675,7 +675,7 @@ func (r *Renderer) loadMesh(g *geom.Mesh, now bool) {
 				sz := int(unsafe.Sizeof(g.Bitangents[0]))
 				r.gl.BufferData(
 					opengl.ARRAY_BUFFER,
-					int32(sz*len(g.Bitangents)),
+					uintptr(sz*len(g.Bitangents)),
 					unsafe.Pointer(&g.Bitangents[0]),
 					usageHint,
 				)
@@ -689,7 +689,7 @@ func (r *Renderer) loadMesh(g *geom.Mesh, now bool) {
 				sz := int(unsafe.Sizeof(g.Colors[0]))
 				r.gl.BufferData(
 					opengl.ARRAY_BUFFER,
-					int32(sz*len(g.Colors)),
+					uintptr(sz*len(g.Colors)),
 					unsafe.Pointer(&g.Colors[0]),
 					usageHint,
 				)
@@ -703,7 +703,7 @@ func (r *Renderer) loadMesh(g *geom.Mesh, now bool) {
 				sz := int(unsafe.Sizeof(g.BoneWeights[0]))
 				r.gl.BufferData(
 					opengl.ARRAY_BUFFER,
-					int32(sz*len(g.BoneWeights)),
+					uintptr(sz*len(g.BoneWeights)),
 					unsafe.Pointer(&g.BoneWeights[0]),
 					usageHint,
 				)
@@ -718,7 +718,7 @@ func (r *Renderer) loadMesh(g *geom.Mesh, now bool) {
 				sz := int(unsafe.Sizeof(texCoords[0]))
 				r.gl.BufferData(
 					opengl.ARRAY_BUFFER,
-					int32(sz*len(texCoords)),
+					uintptr(sz*len(texCoords)),
 					unsafe.Pointer(&texCoords[0]),
 					usageHint,
 				)
@@ -785,107 +785,107 @@ func (r *Renderer) updateShaderInput(gls *GLShader, name string, value interface
 	case float32:
 		r.gl.Uniform1fv(location, 1, &v)
 	case []float32:
-		r.gl.Uniform1fv(location, int32(len(v)), &v[0])
+		r.gl.Uniform1fv(location, uint32(len(v)), &v[0])
 
 	case shader.Vec2:
 		r.gl.Uniform2fv(location, 1, &v[0])
 	case []shader.Vec2:
-		r.gl.Uniform2fv(location, int32(len(v)), &v[0][0])
+		r.gl.Uniform2fv(location, uint32(len(v)), &v[0][0])
 
 	case shader.Vec3:
 		r.gl.Uniform3fv(location, 1, &v[0])
 	case []shader.Vec3:
-		r.gl.Uniform3fv(location, int32(len(v)), &v[0][0])
+		r.gl.Uniform3fv(location, uint32(len(v)), &v[0][0])
 
 	case shader.Vec4:
 		r.gl.Uniform4fv(location, 1, &v[0])
 	case []shader.Vec4:
-		r.gl.Uniform4fv(location, int32(len(v)), &v[0][0])
+		r.gl.Uniform4fv(location, uint32(len(v)), &v[0][0])
 
 	case int32:
 		r.gl.Uniform1iv(location, 1, &v)
 	case []int32:
-		r.gl.Uniform1iv(location, int32(len(v)), &v[0])
+		r.gl.Uniform1iv(location, uint32(len(v)), &v[0])
 
 	case shader.Vec2i:
 		r.gl.Uniform2iv(location, 1, &v[0])
 	case []shader.Vec2i:
-		r.gl.Uniform2iv(location, int32(len(v)), &v[0][0])
+		r.gl.Uniform2iv(location, uint32(len(v)), &v[0][0])
 
 	case shader.Vec3i:
 		r.gl.Uniform3iv(location, 1, &v[0])
 	case []shader.Vec3i:
-		r.gl.Uniform3iv(location, int32(len(v)), &v[0][0])
+		r.gl.Uniform3iv(location, uint32(len(v)), &v[0][0])
 
 	case shader.Vec4i:
 		r.gl.Uniform4iv(location, 1, &v[0])
 	case []shader.Vec4i:
-		r.gl.Uniform4iv(location, int32(len(v)), &v[0][0])
+		r.gl.Uniform4iv(location, uint32(len(v)), &v[0][0])
 
 	case uint32:
 		r.gl.Uniform1uiv(location, 1, &v)
 	case []uint32:
-		r.gl.Uniform1uiv(location, int32(len(v)), &v[0])
+		r.gl.Uniform1uiv(location, uint32(len(v)), &v[0])
 
 	case shader.Vec2ui:
 		r.gl.Uniform2uiv(location, 1, &v[0])
 	case []shader.Vec2ui:
-		r.gl.Uniform2uiv(location, int32(len(v)), &v[0][0])
+		r.gl.Uniform2uiv(location, uint32(len(v)), &v[0][0])
 
 	case shader.Vec3ui:
 		r.gl.Uniform3uiv(location, 1, &v[0])
 	case []shader.Vec3ui:
-		r.gl.Uniform3uiv(location, int32(len(v)), &v[0][0])
+		r.gl.Uniform3uiv(location, uint32(len(v)), &v[0][0])
 
 	case shader.Vec4ui:
 		r.gl.Uniform4uiv(location, 1, &v[0])
 	case []shader.Vec4ui:
-		r.gl.Uniform4uiv(location, int32(len(v)), &v[0][0])
+		r.gl.Uniform4uiv(location, uint32(len(v)), &v[0][0])
 
 	case shader.Mat2:
-		r.gl.UniformMatrix2fv(location, 1, false, &v[0][0])
+		r.gl.UniformMatrix2fv(location, 1, opengl.GLBool(false), &v[0][0])
 	case []shader.Mat2:
-		r.gl.UniformMatrix2fv(location, int32(len(v)), false, &v[0][0][0])
+		r.gl.UniformMatrix2fv(location, uint32(len(v)), opengl.GLBool(false), &v[0][0][0])
 
 	case shader.Mat3:
-		r.gl.UniformMatrix3fv(location, 1, false, &v[0][0])
+		r.gl.UniformMatrix3fv(location, 1, opengl.GLBool(false), &v[0][0])
 	case []shader.Mat3:
-		r.gl.UniformMatrix3fv(location, int32(len(v)), false, &v[0][0][0])
+		r.gl.UniformMatrix3fv(location, uint32(len(v)), opengl.GLBool(false), &v[0][0][0])
 
 	case shader.Mat4:
-		r.gl.UniformMatrix4fv(location, 1, false, &v[0][0])
+		r.gl.UniformMatrix4fv(location, 1, opengl.GLBool(false), &v[0][0])
 	case []shader.Mat4:
-		r.gl.UniformMatrix4fv(location, int32(len(v)), false, &v[0][0][0])
+		r.gl.UniformMatrix4fv(location, uint32(len(v)), opengl.GLBool(false), &v[0][0][0])
 
 	case shader.Mat2x3:
-		r.gl.UniformMatrix2x3fv(location, 1, false, &v[0][0])
+		r.gl.UniformMatrix2x3fv(location, 1, opengl.GLBool(false), &v[0][0])
 	case []shader.Mat2x3:
-		r.gl.UniformMatrix2x3fv(location, int32(len(v)), false, &v[0][0][0])
+		r.gl.UniformMatrix2x3fv(location, uint32(len(v)), opengl.GLBool(false), &v[0][0][0])
 
 	case shader.Mat3x2:
-		r.gl.UniformMatrix3x2fv(location, 1, false, &v[0][0])
+		r.gl.UniformMatrix3x2fv(location, 1, opengl.GLBool(false), &v[0][0])
 	case []shader.Mat3x2:
-		r.gl.UniformMatrix3x2fv(location, int32(len(v)), false, &v[0][0][0])
+		r.gl.UniformMatrix3x2fv(location, uint32(len(v)), opengl.GLBool(false), &v[0][0][0])
 
 	case shader.Mat2x4:
-		r.gl.UniformMatrix2x4fv(location, 1, false, &v[0][0])
+		r.gl.UniformMatrix2x4fv(location, 1, opengl.GLBool(false), &v[0][0])
 	case []shader.Mat2x4:
-		r.gl.UniformMatrix2x4fv(location, int32(len(v)), false, &v[0][0][0])
+		r.gl.UniformMatrix2x4fv(location, uint32(len(v)), opengl.GLBool(false), &v[0][0][0])
 
 	case shader.Mat4x2:
-		r.gl.UniformMatrix4x2fv(location, 1, false, &v[0][0])
+		r.gl.UniformMatrix4x2fv(location, 1, opengl.GLBool(false), &v[0][0])
 	case []shader.Mat4x2:
-		r.gl.UniformMatrix4x2fv(location, int32(len(v)), false, &v[0][0][0])
+		r.gl.UniformMatrix4x2fv(location, uint32(len(v)), opengl.GLBool(false), &v[0][0][0])
 
 	case shader.Mat3x4:
-		r.gl.UniformMatrix3x4fv(location, 1, false, &v[0][0])
+		r.gl.UniformMatrix3x4fv(location, 1, opengl.GLBool(false), &v[0][0])
 	case []shader.Mat3x4:
-		r.gl.UniformMatrix3x4fv(location, int32(len(v)), false, &v[0][0][0])
+		r.gl.UniformMatrix3x4fv(location, uint32(len(v)), opengl.GLBool(false), &v[0][0][0])
 
 	case shader.Mat4x3:
-		r.gl.UniformMatrix4x3fv(location, 1, false, &v[0][0])
+		r.gl.UniformMatrix4x3fv(location, 1, opengl.GLBool(false), &v[0][0])
 	case []shader.Mat4x3:
-		r.gl.UniformMatrix4x3fv(location, int32(len(v)), false, &v[0][0][0])
+		r.gl.UniformMatrix4x3fv(location, uint32(len(v)), opengl.GLBool(false), &v[0][0][0])
 
 	default:
 		panic("Invalid shader input type!")
@@ -939,7 +939,7 @@ func (r *Renderer) loadShader(s *shader.Shader, now bool) {
 				r.gl.GetShaderiv(s, opengl.INFO_LOG_LENGTH, &logSize)
 
 				log := make([]byte, logSize)
-				r.gl.GetShaderInfoLog(s, logSize, nil, &log[0])
+				r.gl.GetShaderInfoLog(s, uint32(logSize), nil, &log[0])
 				return log
 			}
 			return nil
@@ -1027,7 +1027,7 @@ func (r *Renderer) loadShader(s *shader.Shader, now bool) {
 				r.gl.GetProgramiv(gls.Program, opengl.INFO_LOG_LENGTH, &logSize)
 
 				log := make([]byte, logSize)
-				r.gl.GetProgramInfoLog(gls.Program, logSize, nil, &log[0])
+				r.gl.GetProgramInfoLog(gls.Program, uint32(logSize), nil, &log[0])
 
 				// Sanity
 				gls.Program = 0
@@ -1123,7 +1123,7 @@ func (r *Renderer) Render(rootNode *scene.Node) func() {
 	// Build an render function to return
 	return func() {
 		if len(texturesToFree) > 0 {
-			r.gl.DeleteTextures(int32(len(texturesToFree)), &texturesToFree[0])
+			r.gl.DeleteTextures(uint32(len(texturesToFree)), &texturesToFree[0])
 		}
 
 		if len(meshesToFree) > 0 {
@@ -1209,10 +1209,6 @@ func NewRenderer(dcMakeCurrent, lcMakeCurrent func(current bool)) (*Renderer, er
 
 	r.gl.Enable(opengl.BLEND)
 	r.gl.BlendFunc(opengl.SRC_ALPHA, opengl.ONE_MINUS_SRC_ALPHA)
-
-	r.gl.ShadeModel(opengl.SMOOTH)
-
-	//r.dcMakeCurrent(false)
 
 	return r, nil
 }

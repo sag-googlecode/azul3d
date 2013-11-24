@@ -21,7 +21,7 @@ func (r *Renderer) scissor(x, y, width, height uint) {
 	// glScissor expects that coordinates are in bottom-left to top-right, but we expect the to use
 	// top-left to bottom-right.
 	sx, sy, sWidth, sHeight := regionToGL(uint(r.width), uint(r.height), x, y, width, height)
-	r.gl.Scissor(sx, sy, sWidth, sHeight)
+	r.gl.Scissor(sx, sy, uint32(sWidth), uint32(sHeight))
 }
 
 func (r *Renderer) pushScissor(x, y, width, height uint) {
