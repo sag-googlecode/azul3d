@@ -10,7 +10,7 @@ import (
 	"code.google.com/p/azul3d/chippy/keyboard"
 	"code.google.com/p/azul3d/chippy"
 	"code.google.com/p/azul3d/clock"
-	"code.google.com/p/azul3d/native/opengl/1.5"
+	"code.google.com/p/azul3d/native/gl"
 	"log"
 	"math"
 	"os"
@@ -33,7 +33,7 @@ func gluPerspective(gl *opengl.Context, fovY, aspect, zNear, zFar float64) {
 }
 
 func initScene() {
-	gl.ClearColor(0.0, 0.0, 0.0, 0.0)
+	gl.ClearColor(1.0, 1.0, 1.0, 1.0) // White
 	gl.ClearDepth(1.0)
 	gl.DepthFunc(opengl.LESS)
 	gl.Enable(opengl.DEPTH_TEST)
@@ -50,7 +50,7 @@ func initScene() {
 }
 
 func resizeScene(width, height int) {
-	gl.Viewport(0, 0, int32(width), int32(height)) // Reset The Current Viewport And Perspective Transformation
+	gl.Viewport(0, 0, uint32(width), uint32(height)) // Reset The Current Viewport And Perspective Transformation
 	gl.MatrixMode(opengl.PROJECTION)
 	gl.LoadIdentity()
 	gluPerspective(gl, 45.0, float64(width) / float64(height), 0.1, 100.0)
@@ -159,6 +159,9 @@ func program() {
 	}
 	log.Println(gl.GetError())
 
+	// Turn on batching of OpenGL commands
+	gl.SetBatching(true)
+
 	// Initialize some things
 	initScene()
 
@@ -186,8 +189,6 @@ func program() {
 
 	// Begin our rendering loop
 	for !window.Destroyed() {
-		runtime.Gosched()
-
 		// Inform the clock that an new frame has begun
 		glClock.Tick()
 
@@ -198,21 +199,26 @@ func program() {
 					resizeScene(ev.Width, ev.Height)
 
 				case *keyboard.StateEvent:
-					if ev.State == keyboard.Down && ev.Key == keyboard.Space {
-						toggleVerticalSync()
+					if ev.State == keyboard.Down {
+						switch ev.Key {
+						case keyboard.V:
+							toggleVerticalSync()
+						case keyboard.B:
+							gl.SetBatching(!gl.Batching())
+							log.Println("Batching?", gl.Batching())
+						}
 					}
 
 				case *chippy.CloseEvent:
 					return
-
-				default:
-					// We don't care about whatever event this is.
-					break
 			}
 		}
 
 		// Render the scene
 		renderScene()
+
+		// Execute all the pending OpenGL commands
+		gl.Execute()
 
 		// Swap the display buffers
 		window.GLSwapBuffers()

@@ -10,7 +10,7 @@ import (
 	"code.google.com/p/azul3d/chippy"
 	"code.google.com/p/azul3d/chippy/keyboard"
 	"code.google.com/p/azul3d/clock"
-	"code.google.com/p/azul3d/native/opengl/2.1"
+	"code.google.com/p/azul3d/native/gl"
 	"log"
 	"math"
 	"os"
@@ -67,7 +67,7 @@ func initScene() {
 }
 
 func resizeScene(width, height int) {
-	gl.Viewport(0, 0, int32(width), int32(height)) // Reset The Current Viewport And Perspective Transformation
+	gl.Viewport(0, 0, uint32(width), uint32(height)) // Reset The Current Viewport And Perspective Transformation
 	gl.MatrixMode(opengl.PROJECTION)
 	gl.LoadIdentity()
 	gluPerspective(gl, 45.0, float64(width)/float64(height), 0.1, 100.0)
