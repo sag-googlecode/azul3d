@@ -7,9 +7,14 @@
 package chippy
 
 import (
+	"errors"
 	"fmt"
 	"strconv"
 	"strings"
+)
+
+var (
+	ErrGLVersionNotSupported = errors.New("opengl version is not supported")
 )
 
 // Do not use for multiple extensions as it splits the string and searches it slowly..
@@ -199,6 +204,11 @@ type GLRenderable interface {
 	// * = It is not advised to use this flag in production.
 	//
 	// You must call GLSetConfig() before calling this function.
+	//
+	// If the error returned is not nil, it will either be an undefined error
+	// (which may indicate an error with the user's graphics card, or drivers),
+	// or will be ErrGLVersionNotSupported, which indicates that the requested
+	// OpenGL version is not available.
 	GLCreateContext(major, minor uint, flags GLContextFlags, share GLContext) (GLContext, error)
 
 	// GLDestroyContext destroys the specified OpenGL context.

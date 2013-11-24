@@ -242,9 +242,9 @@ func (w *NativeWindow) GLCreateContext(glVersionMajor, glVersionMinor uint, flag
 		defer win32.WglMakeCurrent(nil, nil)
 
 		ver := win32.GlGetString(win32.GL_VERSION)
-		//logger().Printf("OpenGL: Driver version string is %q\n", ver)
 		if !versionSupported(ver, int(glVersionMajor), int(glVersionMinor)) {
-			err = errors.New(fmt.Sprintf("No OpenGL %d.%d support.", glVersionMajor, glVersionMinor))
+			logger().Printf("GL_VERSION=%q; no support for OpenGL %v.%v found\n", ver, glVersionMajor, glVersionMinor)
+			err = ErrGLVersionNotSupported
 			return
 		}
 	})
