@@ -5,13 +5,27 @@
 package mouse
 
 import (
+	"bytes"
 	"sync"
+	"fmt"
 )
 
 // Watcher watches the state of various mouse buttons.
 type Watcher struct {
 	access sync.RWMutex
 	states map[Button]State
+}
+
+// String returns a multi-line string representation of this mouse watcher and
+// it's associated states.
+func (w *Watcher) String() string {
+	bb := new(bytes.Buffer)
+	fmt.Fprintf(bb, "mouse.Watcher(\n")
+	for b, s := range w.States() {
+		fmt.Fprintf(bb, "    %v: %v\n", b, s)
+	}
+	fmt.Fprintf(bb, ")")
+	return bb.String()
 }
 
 // SetState specifies the current state of the specified mouse button.
@@ -41,7 +55,7 @@ func (s *Watcher) State(button Button) State {
 
 	state, ok := s.states[button]
 	if !ok {
-		s.states[button] = Down
+		s.states[button] = Up
 	}
 	return state
 }
