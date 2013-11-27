@@ -15,6 +15,7 @@ import (
 	"code.google.com/p/azul3d/scene/util"
 	"fmt"
 	"runtime"
+	"reflect"
 	"strconv"
 	"strings"
 	"sync"
@@ -45,6 +46,7 @@ type Renderer struct {
 
 	texturesToFreeAccess sync.RWMutex
 	texturesToFree       []uint32
+	compressedTextureFormats []int32
 
 	scissorStack       [][]uint
 	meshesToFreeAccess sync.RWMutex
@@ -1209,6 +1211,18 @@ func NewRenderer(dcMakeCurrent, lcMakeCurrent func(current bool)) (*Renderer, er
 
 	r.gl.Enable(opengl.BLEND)
 	r.gl.BlendFunc(opengl.SRC_ALPHA, opengl.ONE_MINUS_SRC_ALPHA)
+
+	var(
+		formatsCount int32
+		formatsArray int32
+	)
+	r.gl.GetIntegerv(opengl.NUM_COMPRESSED_TEXTURE_FORMATS, &formatsCount)
+	r.gl.GetIntegerv(opengl.COMPRESSED_TEXTURE_FORMATS, &formatsArray)
+
+	sliceHeader := (*reflect.SliceHeader)(unsafe.Pointer(&r.compressedTextureFormats))
+	sliceHeader.Data = uintptr(unsafe.Pointer(&formatsArray))
+	sliceHeader.Len = int(formatsCount)
+	sliceHeader.Cap = int(formatsCount)
 
 	return r, nil
 }

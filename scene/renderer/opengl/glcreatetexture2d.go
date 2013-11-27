@@ -109,7 +109,15 @@ func (r *Renderer) createTexture2D(t *texture.Texture2D) {
 	// Determine formatting, load texture into OpenGL
 	internalFormat := opengl.RGBA
 	if t.Compressed() {
-		internalFormat = opengl.COMPRESSED_RGBA
+		// We can only ask the driver to convert to a compressed format if it
+		// actually supports it.
+		for _, format := range r.compressedTextureFormats {
+			switch format {
+			case opengl.COMPRESSED_RGBA:
+				internalFormat = format
+				break
+			}
+		}
 	}
 
 	// Load texture
