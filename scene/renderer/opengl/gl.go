@@ -14,8 +14,8 @@ import (
 	"code.google.com/p/azul3d/scene/texture"
 	"code.google.com/p/azul3d/scene/util"
 	"fmt"
-	"runtime"
 	"reflect"
+	"runtime"
 	"strconv"
 	"strings"
 	"sync"
@@ -44,8 +44,8 @@ type Renderer struct {
 	gl                           *opengl.Context
 	width, height                int
 
-	texturesToFreeAccess sync.RWMutex
-	texturesToFree       []uint32
+	texturesToFreeAccess     sync.RWMutex
+	texturesToFree           []uint32
 	compressedTextureFormats []int32
 
 	scissorStack       [][]uint
@@ -1212,7 +1212,7 @@ func NewRenderer(dcMakeCurrent, lcMakeCurrent func(current bool)) (*Renderer, er
 	r.gl.Enable(opengl.BLEND)
 	r.gl.BlendFunc(opengl.SRC_ALPHA, opengl.ONE_MINUS_SRC_ALPHA)
 
-	var(
+	var (
 		formatsCount int32
 		formatsArray int32
 	)
