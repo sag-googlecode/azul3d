@@ -6,8 +6,8 @@ package keyboard
 
 import (
 	"bytes"
-	"sync"
 	"fmt"
+	"sync"
 )
 
 type watcherKey struct {

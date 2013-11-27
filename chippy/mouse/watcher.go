@@ -6,8 +6,8 @@ package mouse
 
 import (
 	"bytes"
-	"sync"
 	"fmt"
+	"sync"
 )
 
 // Watcher watches the state of various mouse buttons.
