@@ -147,7 +147,7 @@ func (n *Node) SetParent(parent *Node) {
 	// Since parent is changing, we need to recursively clear the active props
 	// of this node and all children nodes, as they can rely on the previous
 	// parent.
-	n.doRecursiveClearActiveProps()
+	n.recursiveClearActiveProps()
 }
 
 // Parent returns the parent node of this node.

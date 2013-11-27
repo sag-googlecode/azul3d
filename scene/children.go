@@ -29,7 +29,7 @@ func (n *Node) AddChild(child *Node) {
 		// Since parent is changing, we need to recursively clear the active props
 		// of this node and all children nodes, as they can rely on the previous
 		// parent.
-		n.doRecursiveClearActiveProps()
+		n.recursiveClearActiveProps()
 	}
 }
 

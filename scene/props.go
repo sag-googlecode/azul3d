@@ -62,10 +62,17 @@ func (n *Node) clearActiveProps() {
 	n.doClearActiveProps()
 }
 
+func (n *Node) recursiveClearActiveProps() {
+	n.access.Lock()
+	defer n.access.Unlock()
+
+	n.doRecursiveClearActiveProps()
+}
+
 func (n *Node) doRecursiveClearActiveProps() {
 	n.doClearActiveProps()
 	for _, child := range n.children {
-		child.doRecursiveClearActiveProps()
+		child.recursiveClearActiveProps()
 	}
 }
 
