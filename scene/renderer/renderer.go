@@ -217,11 +217,13 @@ func (n *obj) buildFramesLoop() {
 // rendering loop has created room for it, or untill Play() has been called
 // again.
 func (n *obj) renderFrame(pre func()) {
+	n.Lock()
 	vsyncChanged := n.vsyncChanged
 	vsync := n.vsync
 	if n.vsyncChanged {
 		n.vsyncChanged = false
 	}
+	n.Unlock()
 
 	// Wrap the frame with an function which informs the clock of an new frame,
 	// and executes the pre function, in addition to swapping the window's
