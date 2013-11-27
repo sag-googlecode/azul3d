@@ -5,7 +5,9 @@
 package keyboard
 
 import (
+	"bytes"
 	"sync"
+	"fmt"
 )
 
 type watcherKey struct {
@@ -18,6 +20,18 @@ type Watcher struct {
 	access   sync.RWMutex
 	states   map[Key]State
 	osStates map[OS]State
+}
+
+// String returns a multi-line string representation of this keyboard watcher
+// and it's associated states (but not OS ones).
+func (w *Watcher) String() string {
+	bb := new(bytes.Buffer)
+	fmt.Fprintf(bb, "keyboard.Watcher(\n")
+	for k, s := range w.States() {
+		fmt.Fprintf(bb, "    %v: %v\n", k, s)
+	}
+	fmt.Fprintf(bb, ")")
+	return bb.String()
 }
 
 // SetState specifies the current state of the specified key.
@@ -47,7 +61,7 @@ func (w *Watcher) State(key Key) State {
 
 	state, ok := w.states[key]
 	if !ok {
-		w.states[key] = Down
+		w.states[key] = Up
 	}
 	return state
 }
@@ -89,7 +103,7 @@ func (w *Watcher) OSState(os OS) State {
 
 	state, ok := w.osStates[os]
 	if !ok {
-		w.osStates[os] = Down
+		w.osStates[os] = Up
 	}
 	return state
 }
