@@ -17,31 +17,38 @@ type GLConfig struct {
 	// An GLConfig is 'valid' when the user did not create it themself.
 	valid bool
 
-	// Tells weather this configuration is hardware accelerated or uses some software
-	// implementation version of OpenGL.
+	// Tells weather this configuration is hardware accelerated or uses some
+	// software implementation version of OpenGL.
 	//
-	// Note: Most software implementations are very low OpenGL versions. (I.e. GL 1.1)
+	// Note: Most software implementations are very low OpenGL versions. (I.e.
+	// GL 1.1)
 	Accelerated bool
 
-	// Tells weather or not this config will support the window being transparent while using OpenGL rendering
+	// Tells weather or not this config will support the window being
+	// transparent while using OpenGL rendering
 	Transparent bool
-
-	// Number of anti-aliasing samples this configuration supports
-	Samples uint8
 
 	// The number of bits that represent an color per pixel in the frame buffer.
 	RedBits, GreenBits, BlueBits, AlphaBits uint8
 
-	// The number of bits that represent an color per pixel in the accumulation buffer.
+	// The number of bits that represent an color per pixel in the accumulation
+	// buffer.
 	//
-	// Note: GLSL shaders can perform an much better job of anything you would be trying to do with
-	// the accumulation buffer.
+	// Note: GLSL shaders can perform an much better job of anything you would
+	// be trying to do with the accumulation buffer.
 	AccumRedBits, AccumGreenBits, AccumBlueBits, AccumAlphaBits uint8
+
+	// Number of Multi Sample Anti Aliasing samples this configuration supports
+	// (e.g. 2 for 2x MSAA, 16 for 16x MSAA, etc)
+	Samples uint8
 
 	// The number of auxiliary buffers available.
 	//
-	// Note: Auxiliary buffers are very rarely supported on most OpenGL implementations, For more
-	// information about this see the following forum URL:
+	// Note: Auxiliary buffers are very rarely supported on most OpenGL
+	// implementations (or choosing a configuration with them causes
+	// non-accelerated rendering).
+	//
+	// For more information about this see the following forum URL:
 	//     http://www.opengl.org/discussion_boards/showthread.php/171060-auxiliary-buffers
 	AuxBuffers uint8
 
@@ -60,26 +67,28 @@ type GLConfig struct {
 
 func (c *GLConfig) panicUnlessValid() {
 	if !c.valid {
-		panic("Invalid GLBufferFormat; did you attempt to create it yourself?")
+		panic("Invalid GLConfig; did you attempt to create it yourself?")
 	}
 }
 
 func (c *GLConfig) String() string {
-	return fmt.Sprintf("GLConfig(Accelerated=%t, %dbpp[%d,%d,%d,%d], AccumBits=[%d,%d,%d,%d], AuxBuffers=%d, DepthBits=%d, StencilBits=%d, DoubleBuffered=%t, Transparent=%t, StereoScopic=%t)", c.Accelerated, c.RedBits+c.GreenBits+c.BlueBits+c.AlphaBits, c.RedBits, c.GreenBits, c.BlueBits, c.AlphaBits, c.AccumRedBits, c.AccumGreenBits, c.AccumBlueBits, c.AccumAlphaBits, c.AuxBuffers, c.DepthBits, c.StencilBits, c.DoubleBuffered, c.Transparent, c.StereoScopic)
+	return fmt.Sprintf("GLConfig(Accelerated=%t, %dbpp[%d,%d,%d,%d], AccumBits=[%d,%d,%d,%d], Samples=%d, AuxBuffers=%d, DepthBits=%d, StencilBits=%d, DoubleBuffered=%t, Transparent=%t, StereoScopic=%t)", c.Accelerated, c.RedBits+c.GreenBits+c.BlueBits+c.AlphaBits, c.RedBits, c.GreenBits, c.BlueBits, c.AlphaBits, c.AccumRedBits, c.AccumGreenBits, c.AccumBlueBits, c.AccumAlphaBits, c.Samples, c.AuxBuffers, c.DepthBits, c.StencilBits, c.DoubleBuffered, c.Transparent, c.StereoScopic)
 }
 
-// Equals tells weather this GLConfig equals the other GLFrameBufferConfig, by comparing
-// each attribute.
+// Equals tells weather this GLConfig equals the other GLFrameBufferConfig, by
+// comparing each attribute.
 func (c *GLConfig) Equals(other *GLConfig) bool {
 	o := other
 
-	if c.Accelerated != o.Accelerated || c.Transparent != o.Transparent || c.RedBits != o.RedBits || c.GreenBits != o.GreenBits || c.BlueBits != o.BlueBits || c.AlphaBits != o.AlphaBits || c.AccumRedBits != o.AccumRedBits || c.AccumGreenBits != o.AccumGreenBits || c.AccumBlueBits != o.AccumBlueBits || c.AccumAlphaBits != o.AccumAlphaBits || c.AuxBuffers != o.AuxBuffers || c.DepthBits != o.DepthBits || c.StencilBits != o.StencilBits || c.DoubleBuffered != o.DoubleBuffered || c.StereoScopic != o.StereoScopic {
+	if c.Accelerated != o.Accelerated || c.Transparent != o.Transparent || c.RedBits != o.RedBits || c.GreenBits != o.GreenBits || c.BlueBits != o.BlueBits || c.AlphaBits != o.AlphaBits || c.AccumRedBits != o.AccumRedBits || c.AccumGreenBits != o.AccumGreenBits || c.AccumBlueBits != o.AccumBlueBits || c.AccumAlphaBits != o.AccumAlphaBits || c.Samples != o.Samples || c.AuxBuffers != o.AuxBuffers || c.DepthBits != o.DepthBits || c.StencilBits != o.StencilBits || c.DoubleBuffered != o.DoubleBuffered || c.StereoScopic != o.StereoScopic {
 		return false
 	}
 	return true
 }
 
 var (
+	// Describes the worst possible OpenGL frame buffer configuration, this is
+	// typically used as a parameter to GLChooseConfig.
 	GLWorstConfig = &GLConfig{
 		Accelerated:    false,
 		Transparent:    false,
@@ -91,6 +100,7 @@ var (
 		AccumGreenBits: 0,
 		AccumBlueBits:  0,
 		AccumAlphaBits: 0,
+		Samples:        0,
 		AuxBuffers:     0,
 		DepthBits:      0,
 		StencilBits:    0,
@@ -98,6 +108,9 @@ var (
 		StereoScopic:   false,
 	}
 
+	// Describes the worst possible OpenGL frame buffer configuration while
+	// still being hardware-accelerated by the graphics card, this is typically
+	// used as a parameter to GLChooseConfig.
 	GLWorstHWConfig = &GLConfig{
 		Accelerated:    true,
 		Transparent:    false,
@@ -109,6 +122,7 @@ var (
 		AccumGreenBits: 0,
 		AccumBlueBits:  0,
 		AccumAlphaBits: 0,
+		Samples:        0,
 		AuxBuffers:     0,
 		DepthBits:      0,
 		StencilBits:    0,
@@ -116,6 +130,9 @@ var (
 		StereoScopic:   false,
 	}
 
+	// Describes the best possible OpenGL frame buffer configuration that does
+	// not have any transparency, this is typically used as a parameter to
+	// GLChooseConfig.
 	GLBestConfig = &GLConfig{
 		Accelerated:    true,
 		Transparent:    false,
@@ -127,6 +144,7 @@ var (
 		AccumGreenBits: 255,
 		AccumBlueBits:  255,
 		AccumAlphaBits: 255,
+		Samples:        255,
 		AuxBuffers:     255,
 		DepthBits:      255,
 		StencilBits:    255,
@@ -134,6 +152,13 @@ var (
 		StereoScopic:   false,
 	}
 
+	// Describes the best possible OpenGL frame buffer configuration that has
+	// transparency and can therefor be used for making the OpenGL window
+	// transparent, this is typically used as a parameter to GLChooseConfig.
+	//
+	// It's not advised to request a transparent configuration unless you
+	// intend to use the transparency, as some drivers have issues or artifacts
+	// with transparent configurations.
 	GLBestTransparentConfig = &GLConfig{
 		Accelerated:    true,
 		Transparent:    true,
@@ -145,6 +170,7 @@ var (
 		AccumGreenBits: 255,
 		AccumBlueBits:  255,
 		AccumAlphaBits: 255,
+		Samples:        255,
 		AuxBuffers:     255,
 		DepthBits:      255,
 		StencilBits:    255,
@@ -153,15 +179,19 @@ var (
 	}
 )
 
-// GLChooseConfig chooses an appropriate configuration from the slice of possible configurations.
+// GLChooseConfig chooses an appropriate configuration from the slice of
+// possible configurations.
 //
-// The returned configuration will have at least minConfig's attributes, or nil will be returned if
-// there is no configuration that has at least minConfig's attributes.
+// The returned configuration will have at least minConfig's attributes, or nil
+// will be returned if there is no configuration that has at least minConfig's
+// attributes.
 //
-// The returned configuration will have no greater than maxConfig's attributes, or nil will be
-// returned if there is no configuration that is below maxConfig's attributes.
+// The returned configuration will have no greater than maxConfig's attributes,
+// or nil will be returned if there is no configuration that is below
+// maxConfig's attributes.
 //
-// You may use the predefined GLWorstConfig and GLBestConfig variables if they suite your case.
+// You may use the predefined GLWorstConfig and GLBestConfig variables if they
+// suite your case.
 func GLChooseConfig(possible []*GLConfig, minConfig, maxConfig *GLConfig) *GLConfig {
 	min := minConfig
 	max := maxConfig
@@ -195,6 +225,9 @@ func GLChooseConfig(possible []*GLConfig, minConfig, maxConfig *GLConfig) *GLCon
 			continue
 		}
 
+		if c.Samples < min.Samples {
+			continue
+		}
 		if c.AuxBuffers < min.AuxBuffers {
 			continue
 		}
@@ -250,6 +283,9 @@ func GLChooseConfig(possible []*GLConfig, minConfig, maxConfig *GLConfig) *GLCon
 			continue
 		}
 
+		if c.Samples > max.Samples {
+			continue
+		}
 		if c.AuxBuffers > max.AuxBuffers {
 			continue
 		}
@@ -281,6 +317,7 @@ func GLChooseConfig(possible []*GLConfig, minConfig, maxConfig *GLConfig) *GLCon
 	// Accelerated
 	// RedBits, GreenBits, BlueBits, AlphaBits
 	// DoubleBuffered
+	// Samples
 	// DepthBits
 	// StencilBits
 	// Transparent
@@ -303,6 +340,10 @@ func GLChooseConfig(possible []*GLConfig, minConfig, maxConfig *GLConfig) *GLCon
 		}
 
 		if !t.DoubleBuffered && bc.DoubleBuffered {
+			continue
+		}
+
+		if t.Samples < bc.Samples {
 			continue
 		}
 
