@@ -23,6 +23,7 @@ func program() {
 	window2.SetTitle("Window 2")
 
 	window1.SetMinimized(true)
+	window2.SetMinimized(true)
 
 	// Actually open the windows
 	screen := chippy.DefaultScreen()
@@ -36,15 +37,16 @@ func program() {
 		log.Fatal(err)
 	}
 
-	log.Println("Please manually minimize the windows.. Waiting 5 seconds...")
+	// In case their window manager ignores minimized requests (not common).
+	log.Println("Please manually minimize the windows if they are not already..")
+	log.Println("Waiting 5 seconds...")
 	<-time.After(5 * time.Second)
 
 	window1.Notify()
 	window2.Notify()
 
-	// Print out what they currently has property-wise
-	log.Println(window1)
-	log.Println(window2)
+	// Inform user of their notifications.
+	log.Println("Both windows have been notified. This may appear as blinking or restoring the window.")
 
 	// Just wait an while so they can enjoy the window
 	log.Println("Waiting 15 seconds...")
