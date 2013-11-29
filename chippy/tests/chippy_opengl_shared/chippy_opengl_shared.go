@@ -50,7 +50,9 @@ func buildTriangleList() {
 }
 
 func initScene() {
-	gl.ClearColor(0.0, 0.0, 0.0, 0.0)
+	// Background color white
+	gl.ClearColor(1.0, 1.0, 1.0, 1.0)
+
 	gl.ClearDepth(1.0)
 	gl.DepthFunc(opengl.LESS)
 	gl.Enable(opengl.DEPTH_TEST)

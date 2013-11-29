@@ -42,7 +42,9 @@ func gluPerspective(gl *opengl.Context, fovY, aspect, zNear, zFar float64) {
 
 // initScene is reponsible for initializing the OpenGL scene
 func initScene() {
-	gl.ClearColor(1.0, 1.0, 1.0, 1.0) // White
+	// Background color white
+	gl.ClearColor(1.0, 1.0, 1.0, 1.0)
+
 	gl.ClearDepth(1.0)
 	gl.DepthFunc(opengl.LESS)
 	gl.Enable(opengl.DEPTH_TEST)
