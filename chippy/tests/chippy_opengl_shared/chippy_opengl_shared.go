@@ -1,7 +1,7 @@
 // Copyright 2012 Lightpoke. All rights reserved.
 // This source code is subject to the terms and
 // conditions defined in the "License.txt" file.
-// +build tests,!no_opengl
+// +build tests
 
 // Test - Opens multiple windows, uses OpenGL 2.1 with an shared context.
 package main

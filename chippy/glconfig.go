@@ -2,8 +2,6 @@
 // This source code is subject to the terms and
 // conditions defined in the "License.txt" file.
 
-// +build !no_opengl
-
 package chippy
 
 import (
