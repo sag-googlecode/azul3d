@@ -192,6 +192,9 @@ func (w *NativeWindow) GLCreateContext(glVersionMajor, glVersionMinor uint, flag
 			attribs = append(attribs, win32.WGL_CONTEXT_PROFILE_MASK_ARB)
 			attribs = append(attribs, profileMask)
 
+			// Attribs list is zero terminated
+			attribs = append(attribs, 0)
+
 			c.hglrc, ok = win32.WglCreateContextAttribsARB(w.dc, shglrc, attribs)
 			if !ok {
 				// The wglCreateContextAttribsARB entry point is missing
