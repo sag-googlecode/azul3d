@@ -19,19 +19,28 @@ import (
 )
 
 var(
+	// Gives us API access to a single OpenGL context.
 	gl *opengl.Context
+
+	// Rotation in degrees of the triangle.
 	rot float64
+
+	// The actual OpenGL window we will render to.
 	window *chippy.Window
+
+	// A clock used for timing (e.g. frames per second, etc).
 	glClock *clock.Clock
 )
 
-// Alternative for gluPerspective.
+// Alternative for the gluPerspective function used in many older OpenGL
+// tutorials.
 func gluPerspective(gl *opengl.Context, fovY, aspect, zNear, zFar float64) {
 	fH := math.Tan(fovY/360*math.Pi) * zNear
 	fW := fH * aspect
 	gl.Frustum(-fW, fW, -fH, fH, zNear, zFar)
 }
 
+// initScene is reponsible for initializing the OpenGL scene
 func initScene() {
 	gl.ClearColor(1.0, 1.0, 1.0, 1.0) // White
 	gl.ClearDepth(1.0)
@@ -49,6 +58,7 @@ func initScene() {
 	gl.MatrixMode(opengl.MODELVIEW)
 }
 
+// resizeScene is responsible for resizing the OpenGL scene to the dimensions of the window.
 func resizeScene(width, height int) {
 	gl.Viewport(0, 0, uint32(width), uint32(height)) // Reset The Current Viewport And Perspective Transformation
 	gl.MatrixMode(opengl.PROJECTION)
@@ -57,6 +67,7 @@ func resizeScene(width, height int) {
 	gl.MatrixMode(opengl.MODELVIEW)
 }
 
+// renderScene is responsible for rendering a single frame of the OpenGL scene.
 func renderScene() {
 	// Clear The Screen And The Depth Buffer
 	gl.Clear(uint32(opengl.COLOR_BUFFER_BIT | opengl.DEPTH_BUFFER_BIT))
@@ -92,6 +103,8 @@ func renderScene() {
 	}
 }
 
+// toggleVerticalSync is responsible for switching the vertical sync mode to
+// the next one.
 func toggleVerticalSync() {
 	vsync := window.GLVerticalSync()
 
@@ -110,20 +123,35 @@ func toggleVerticalSync() {
 	window.GLSetVerticalSync(vsync)
 }
 
+var MSAA = true
+func toggleMSAA() {
+	if MSAA {
+		MSAA = false
+		gl.Enable(opengl.MULTISAMPLE)
+	} else {
+		MSAA = true
+		gl.Enable(opengl.MULTISAMPLE)
+	}
+	log.Println("MSAA enabled?", MSAA)
+}
+
 func program() {
 	defer chippy.Exit()
 
 	window = chippy.NewWindow()
 
-	// Actually open the windows
+	// Actually open the window
 	screen := chippy.DefaultScreen()
 	err := window.Open(screen)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	// Print out what the window currently has property-wise
-	log.Println(window)
+	// Print some instructions for the user
+	log.Println("Instructions:")
+	log.Println("v key - Toggle Vertical Sync")
+	log.Println("m key - Toggle Multi Sample Anti Aliasing")
+	log.Println("b key - Toggle OpenGL call batching")
 
 	// Choose an buffer format, these include things like double buffering, bytes per pixel, number of depth bits, etc.
 	configs := window.GLConfigs()
@@ -174,10 +202,8 @@ func program() {
 
 	// Start an goroutine to display statistics
 	go func() {
-		delay := 0 * time.Second
 		for {
-			<-time.After(delay)
-			delay = 1 * time.Second
+			<-time.After(1 * time.Second)
 
 			// Print our FPS and average FPS
 			log.Printf("FPS: %4.3f\tAverage: %4.3f\tDeviation: %f\n", glClock.FrameRate(), glClock.AverageFrameRate(), glClock.FrameRateDeviation())
@@ -203,6 +229,8 @@ func program() {
 						switch ev.Key {
 						case keyboard.V:
 							toggleVerticalSync()
+						case keyboard.M:
+							toggleMSAA()
 						case keyboard.B:
 							gl.SetBatching(!gl.Batching())
 							log.Println("Batching?", gl.Batching())

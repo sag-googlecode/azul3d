@@ -342,6 +342,20 @@ func toggleVerticalSync() {
 	window.GLSetVerticalSync(vsync)
 }
 
+// toggleMSAA is responsible for turning on/off OpenGL Multi Sample Anti
+// Aliasing (MSAA)
+var MSAA = true
+func toggleMSAA() {
+	if MSAA {
+		MSAA = false
+		gl.Enable(opengl.MULTISAMPLE)
+	} else {
+		MSAA = true
+		gl.Enable(opengl.MULTISAMPLE)
+	}
+	log.Println("MSAA enabled?", MSAA)
+}
+
 func program() {
 	defer chippy.Exit()
 
@@ -354,12 +368,14 @@ func program() {
 		log.Fatal(err)
 	}
 
-	// Print out what the window currently has property-wise
-	log.Println(window)
+	// Print some instructions for the user
+	log.Println("Instructions:")
+	log.Println("v key - Toggle Vertical Sync")
+	log.Println("m key - Toggle Multi Sample Anti Aliasing")
+	log.Println("b key - Toggle OpenGL call batching")
 
 	// Choose an buffer format, these include things like double buffering, bytes per pixel, number of depth bits, etc.
 	configs := window.GLConfigs()
-
 
 	// See documentation for this function and vars to see how it determines the 'best' format
 	bestConfig := chippy.GLChooseConfig(configs, chippy.GLWorstConfig, chippy.GLBestConfig)
@@ -407,16 +423,13 @@ func program() {
 
 	// Start an goroutine to display statistics
 	go func() {
-		delay := 0 * time.Second
 		for {
-			<-time.After(delay)
-			delay = 1 * time.Second
+			<-time.After(1 * time.Second)
 
 			// Print our FPS and average FPS
 			log.Printf("FPS: %4.3f\tAverage: %4.3f\tDeviation: %f\n", glClock.FrameRate(), glClock.AverageFrameRate(), glClock.FrameRateDeviation())
 		}
 	}()
-
 
 	events := window.Events()
 	defer window.CloseEvents(events)
@@ -438,6 +451,8 @@ func program() {
 						switch ev.Key {
 						case keyboard.V:
 							toggleVerticalSync()
+						case keyboard.M:
+							toggleMSAA()
 						case keyboard.B:
 							gl.SetBatching(!gl.Batching())
 							log.Println("Batching?", gl.Batching())
