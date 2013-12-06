@@ -46,9 +46,12 @@ func (w *NativeWindow) GLConfigs() (configs []*GLConfig) {
 				return
 			}
 
-			// We only want ones who have an flag of PFD_SUPPORT_OPENGL
-			if (pf.DwFlags() & win32.PFD_SUPPORT_OPENGL) > 0 {
-
+			// We can only use pixel formats who have PFD_SUPPORT_OPENGL and
+			// PFD_DRAW_TO_WINDOW (otherwise it may be an offscreen pixel
+			// format)
+			supportOpenGL := (pf.DwFlags() & win32.PFD_SUPPORT_OPENGL) > 0
+			drawToWindow := (pf.DwFlags() & win32.PFD_DRAW_TO_WINDOW) > 0
+			if supportOpenGL && drawToWindow {
 				// We only want ones whose pixel type is PFD_TYPE_RGBA
 				if pf.IPixelType() == win32.PFD_TYPE_RGBA {
 					config := new(GLConfig)
@@ -107,6 +110,7 @@ func (w *NativeWindow) GLSetConfig(config *GLConfig) {
 			}
 		}
 
+		logger().Println(config.index)
 		if !win32.SetPixelFormat(w.dc, config.index, nil) {
 			logger().Println("GLSetConfig failed; SetPixelFormat():", win32.GetLastErrorString())
 		}
