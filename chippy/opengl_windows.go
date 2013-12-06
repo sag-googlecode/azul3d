@@ -175,20 +175,26 @@ func (w *NativeWindow) GLCreateContext(glVersionMajor, glVersionMinor uint, flag
 				attribs = append(attribs, wglFlags)
 			}
 
-			// Profile selection
+			// Note: context creation will fail on nvidia drivers if trying to
+			// select a profile and the requested version is < 3.2
 			//
-			// "GLCompatabilityProfile will be used if neither GLCoreProfile or GLCompatibilityProfile
-			// are present, or if both are present."
-			profileMask := win32.Int(win32.WGL_CONTEXT_COMPATIBILITY_PROFILE_BIT_ARB)
+			// See: https://www.opengl.org/discussion_boards/showthread.php/177832-Small-NVIDIA-wglCreateContextAttribsARB-Bug
+			if glVersionMajor >= 3 && glVersionMinor >= 2 {
+				// Profile selection
+				//
+				// "GLCompatabilityProfile will be used if neither GLCoreProfile or GLCompatibilityProfile
+				// are present, or if both are present."
+				profileMask := win32.Int(win32.WGL_CONTEXT_COMPATIBILITY_PROFILE_BIT_ARB)
 
-			wantCoreProfile := (flags & GLCoreProfile) > 0
-			wantCompatProfile := (flags & GLCompatibilityProfile) > 0
-			if wantCoreProfile && !wantCompatProfile {
-				profileMask = win32.WGL_CONTEXT_CORE_PROFILE_BIT_ARB
+				wantCoreProfile := (flags & GLCoreProfile) > 0
+				wantCompatProfile := (flags & GLCompatibilityProfile) > 0
+				if wantCoreProfile && !wantCompatProfile {
+					profileMask = win32.WGL_CONTEXT_CORE_PROFILE_BIT_ARB
+				}
+
+				attribs = append(attribs, win32.WGL_CONTEXT_PROFILE_MASK_ARB)
+				attribs = append(attribs, profileMask)
 			}
-
-			attribs = append(attribs, win32.WGL_CONTEXT_PROFILE_MASK_ARB)
-			attribs = append(attribs, profileMask)
 
 			// Attribs list is zero terminated
 			attribs = append(attribs, 0)
@@ -201,7 +207,7 @@ func (w *NativeWindow) GLCreateContext(glVersionMajor, glVersionMinor uint, flag
 				logger().Println("WGL_ARB_create_context supported -- but wglCreateContextAttribsARB is missing!")
 				c.hglrc = fakeContext
 
-				if !win32.WglShareLists(c.hglrc, shglrc) {
+				if share != nil && !win32.WglShareLists(c.hglrc, shglrc) {
 					logger().Println("wglShareLists() failed:", win32.GetLastErrorString())
 				}
 
@@ -213,7 +219,7 @@ func (w *NativeWindow) GLCreateContext(glVersionMajor, glVersionMinor uint, flag
 				logger().Println("wglCreateContextAttribsARB() failed:", win32.GetLastErrorString())
 				c.hglrc = fakeContext
 
-				if !win32.WglShareLists(c.hglrc, shglrc) {
+				if share != nil && !win32.WglShareLists(c.hglrc, shglrc) {
 					logger().Println("wglShareLists() failed:", win32.GetLastErrorString())
 				}
 
@@ -224,9 +230,10 @@ func (w *NativeWindow) GLCreateContext(glVersionMajor, glVersionMinor uint, flag
 				win32.WglMakeCurrent(nil, nil)
 				win32.WglDeleteContext(fakeContext)
 
-				// So we can get the version
+				// So we can get the version below
 				win32.WglMakeCurrent(w.dc, c.hglrc)
 			}
+
 		} else {
 			// They have no WGL_ARB_create_context support.
 			//
@@ -234,12 +241,11 @@ func (w *NativeWindow) GLCreateContext(glVersionMajor, glVersionMinor uint, flag
 			logger().Println("WGL_ARB_create_context is unavailable.")
 			c.hglrc = fakeContext
 
-			if !win32.WglShareLists(c.hglrc, shglrc) {
+			if share != nil && !win32.WglShareLists(c.hglrc, shglrc) {
 				logger().Println("wglShareLists() failed:", win32.GetLastErrorString())
 			}
 		}
 
-		win32.WglMakeCurrent(w.dc, c.hglrc)
 		defer win32.WglMakeCurrent(nil, nil)
 
 		ver := win32.GlGetString(win32.GL_VERSION)

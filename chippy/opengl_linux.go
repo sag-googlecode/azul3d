@@ -213,20 +213,26 @@ func (w *NativeWindow) GLCreateContext(glVersionMajor, glVersionMinor uint, flag
 			attribs = append(attribs, glxFlags)
 		}
 
-		// Profile selection
+		// Note: context creation will fail on nvidia drivers if trying to
+		// select a profile and the requested version is < 3.2
 		//
-		// "GLCompatabilityProfile will be used if neither GLCoreProfile or GLCompatibilityProfile
-		// are present, or if both are present."
-		profileMask := x11.Int(x11.GLX_CONTEXT_COMPATIBILITY_PROFILE_BIT_ARB)
+		// See: https://www.opengl.org/discussion_boards/showthread.php/177832-Small-NVIDIA-wglCreateContextAttribsARB-Bug
+		if glVersionMajor >= 3 && glVersionMinor >= 2 {
+			// Profile selection
+			//
+			// "GLCompatabilityProfile will be used if neither GLCoreProfile or GLCompatibilityProfile
+			// are present, or if both are present."
+			profileMask := x11.Int(x11.GLX_CONTEXT_COMPATIBILITY_PROFILE_BIT_ARB)
 
-		wantCoreProfile := (flags & GLCoreProfile) > 0
-		wantCompatProfile := (flags & GLCompatibilityProfile) > 0
-		if wantCoreProfile && !wantCompatProfile {
-			profileMask = x11.GLX_CONTEXT_CORE_PROFILE_BIT_ARB
+			wantCoreProfile := (flags & GLCoreProfile) > 0
+			wantCompatProfile := (flags & GLCompatibilityProfile) > 0
+			if wantCoreProfile && !wantCompatProfile {
+				profileMask = x11.GLX_CONTEXT_CORE_PROFILE_BIT_ARB
+			}
+
+			attribs = append(attribs, x11.GLX_CONTEXT_PROFILE_MASK_ARB)
+			attribs = append(attribs, profileMask)
 		}
-
-		attribs = append(attribs, x11.GLX_CONTEXT_PROFILE_MASK_ARB)
-		attribs = append(attribs, profileMask)
 
 		// Attribs list is zero terminated
 		attribs = append(attribs, 0)
