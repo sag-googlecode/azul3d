@@ -18,14 +18,34 @@ const cCodeTemplate = `// Copyright 2012 Lightpoke. All rights reserved.
 // conditions defined in the "License.txt" file.
 //
 // This source file was automatically generated using glwrap.
-// +build{{.BuildTags}}
 
 #include "gl.h"
 
 typedef void (*__glwrap_func_ptr)(void);
 
 #if defined(__WIN32) || defined(__WIN64)
-	// Todo: Windows support.
+	typedef void* HMODULE;
+	typedef int (*FARPROC)(void);
+	typedef int (*PROC)(void);
+
+	//extern PROC wglGetProcAddress(const char* name);
+	extern HMODULE LoadLibraryA(const char* name);
+	extern FARPROC GetProcAddress(HMODULE, const char*);
+
+	HMODULE glwrap_OpenGL32;
+
+
+	typedef PROC (*__glwrap_PFNWGLGETPROCADDRESS)(const char*);
+	__glwrap_PFNWGLGETPROCADDRESS __glwrap_wglGetProcAddressPtr;
+	inline PROC __glwrap_wglGetProcAddress(const char* name) {
+		if(__glwrap_wglGetProcAddressPtr == NULL) {
+			if(glwrap_OpenGL32 == NULL) {
+				glwrap_OpenGL32 = LoadLibraryA("opengl32.dll");
+			}
+			__glwrap_wglGetProcAddressPtr = (__glwrap_PFNWGLGETPROCADDRESS)GetProcAddress(glwrap_OpenGL32, "wglGetProcAddress");
+		}
+		return __glwrap_wglGetProcAddressPtr(name);
+	}
 
 #elif defined(__linux) || defined(__unix) || defined(__posix)
 	// See http://dri.freedesktop.org/wiki/glXGetProcAddressNeverReturnsNULL
@@ -41,7 +61,20 @@ typedef void (*__glwrap_func_ptr)(void);
 
 inline __glwrap_func_ptr gl_wrap_get_pointer(const char* name) {
 	#if defined(__WIN32) || defined(__WIN64)
-		// Todo: Windows support.
+		void* ptr = __glwrap_wglGetProcAddress(name);
+		intptr_t iptr = (intptr_t)ptr;
+
+		if(iptr == 0 || iptr == 1 || iptr == 2 || iptr == 3 || iptr == -1) {
+			// Could be a core function, then.
+
+			// No need for this: because it's done in wglGetProcAddress()
+			//if(glwrap_OpenGL32 == NULL) {
+			//	glwrap_OpenGL32 = LoadLibraryA("opengl32.dll");
+			//}
+			return (__glwrap_func_ptr)GetProcAddress(glwrap_OpenGL32, name);
+		}
+
+		return ptr;
 
 	#elif defined(__linux) || defined(__unix) || defined(__posix)
 		return glXGetProcAddressARB(name);

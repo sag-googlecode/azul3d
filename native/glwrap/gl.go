@@ -44,7 +44,6 @@ const goglTemplate = `// Copyright 2012 Lightpoke. All rights reserved.
 package opengl
 
 /*
-#cgo windows LDFLAGS: -lopengl32
 #cgo linux LDFLAGS: -lGL
 #include "gl.h"
 */
