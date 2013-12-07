@@ -106,6 +106,14 @@ var (
 	xWindowLookup       = make(map[x11.Window]*NativeWindow, 1)
 )
 
+func findWindow(w x11.Window) (*NativeWindow, bool) {
+	xWindowLookupAccess.RLock()
+	defer xWindowLookupAccess.RUnlock()
+
+	nw, ok := xWindowLookup[w]
+	return nw, ok
+}
+
 var shutdownEventLoop = make(chan bool, 1)
 var eventLoopReady = make(chan bool, 1)
 
@@ -132,91 +140,91 @@ func eventLoop() {
 			switch e.ResponseType &^ 0x80 {
 			case x11.KEY_PRESS:
 				ev := (*x11.KeyPressEvent)(unsafe.Pointer(e.EGenericEvent))
-				w, ok := xWindowLookup[ev.Event]
+				w, ok := findWindow(ev.Event)
 				if ok {
 					go w.handleEvent(e, ev)
 				}
 
 			case x11.KEY_RELEASE:
 				ev := (*x11.KeyReleaseEvent)(unsafe.Pointer(e.EGenericEvent))
-				w, ok := xWindowLookup[ev.Event]
+				w, ok := findWindow(ev.Event)
 				if ok {
 					go w.handleEvent(e, ev)
 				}
 
 			case x11.BUTTON_PRESS:
 				ev := (*x11.ButtonPressEvent)(unsafe.Pointer(e.EGenericEvent))
-				w, ok := xWindowLookup[ev.Event]
+				w, ok := findWindow(ev.Event)
 				if ok {
 					go w.handleEvent(e, ev)
 				}
 
 			case x11.BUTTON_RELEASE:
 				ev := (*x11.ButtonReleaseEvent)(unsafe.Pointer(e.EGenericEvent))
-				w, ok := xWindowLookup[ev.Event]
+				w, ok := findWindow(ev.Event)
 				if ok {
 					go w.handleEvent(e, ev)
 				}
 
 			case x11.MOTION_NOTIFY:
 				ev := (*x11.MotionNotifyEvent)(unsafe.Pointer(e.EGenericEvent))
-				w, ok := xWindowLookup[ev.Event]
+				w, ok := findWindow(ev.Event)
 				if ok {
 					go w.handleEvent(e, ev)
 				}
 
 			case x11.ENTER_NOTIFY:
 				ev := (*x11.EnterNotifyEvent)(unsafe.Pointer(e.EGenericEvent))
-				w, ok := xWindowLookup[ev.Event]
+				w, ok := findWindow(ev.Event)
 				if ok {
 					go w.handleEvent(e, ev)
 				}
 
 			case x11.LEAVE_NOTIFY:
 				ev := (*x11.LeaveNotifyEvent)(unsafe.Pointer(e.EGenericEvent))
-				w, ok := xWindowLookup[ev.Event]
+				w, ok := findWindow(ev.Event)
 				if ok {
 					go w.handleEvent(e, ev)
 				}
 
 			case x11.FOCUS_IN:
 				ev := (*x11.FocusInEvent)(unsafe.Pointer(e.EGenericEvent))
-				w, ok := xWindowLookup[ev.Event]
+				w, ok := findWindow(ev.Event)
 				if ok {
 					go w.handleEvent(e, ev)
 				}
 
 			case x11.FOCUS_OUT:
 				ev := (*x11.FocusOutEvent)(unsafe.Pointer(e.EGenericEvent))
-				w, ok := xWindowLookup[ev.Event]
+				w, ok := findWindow(ev.Event)
 				if ok {
 					go w.handleEvent(e, ev)
 				}
 
 			case x11.EXPOSE:
 				ev := (*x11.ExposeEvent)(unsafe.Pointer(e.EGenericEvent))
-				w, ok := xWindowLookup[ev.Window]
+				w, ok := findWindow(ev.Window)
 				if ok {
 					go w.handleEvent(e, ev)
 				}
 
 			case x11.VISIBILITY_NOTIFY:
 				ev := (*x11.VisibilityNotifyEvent)(unsafe.Pointer(e.EGenericEvent))
-				w, ok := xWindowLookup[ev.Window]
+				w, ok := findWindow(ev.Window)
 				if ok {
 					go w.handleEvent(e, ev)
 				}
 
 			case x11.CREATE_NOTIFY:
 				ev := (*x11.CreateNotifyEvent)(unsafe.Pointer(e.EGenericEvent))
-				w, ok := xWindowLookup[ev.Window]
+				w, ok := findWindow(ev.Window)
 				if ok {
 					go w.handleEvent(e, ev)
 				}
 
 			case x11.DESTROY_NOTIFY:
 				ev := (*x11.DestroyNotifyEvent)(unsafe.Pointer(e.EGenericEvent))
-				w, ok := xWindowLookup[ev.Window]
+				w, ok := findWindow(ev.Window)
 				if ok {
 					go w.handleEvent(e, ev)
 				}
@@ -226,42 +234,42 @@ func eventLoop() {
 
 			case x11.CLIENT_MESSAGE:
 				ev := (*x11.ClientMessageEvent)(unsafe.Pointer(e.EGenericEvent))
-				w, ok := xWindowLookup[ev.Window]
+				w, ok := findWindow(ev.Window)
 				if ok {
 					go w.handleEvent(e, ev)
 				}
 
 			case x11.PROPERTY_NOTIFY:
 				ev := (*x11.PropertyNotifyEvent)(unsafe.Pointer(e.EGenericEvent))
-				w, ok := xWindowLookup[ev.Window]
+				w, ok := findWindow(ev.Window)
 				if ok {
 					go w.handleEvent(e, ev)
 				}
 
 			case x11.CONFIGURE_NOTIFY:
 				ev := (*x11.ConfigureNotifyEvent)(unsafe.Pointer(e.EGenericEvent))
-				w, ok := xWindowLookup[ev.Window]
+				w, ok := findWindow(ev.Window)
 				if ok {
 					go w.handleEvent(e, ev)
 				}
 
 			case x11.REPARENT_NOTIFY:
 				ev := (*x11.ReparentNotifyEvent)(unsafe.Pointer(e.EGenericEvent))
-				w, ok := xWindowLookup[ev.Window]
+				w, ok := findWindow(ev.Window)
 				if ok {
 					go w.handleEvent(e, ev)
 				}
 
 			case x11.MAP_NOTIFY:
 				ev := (*x11.MapNotifyEvent)(unsafe.Pointer(e.EGenericEvent))
-				w, ok := xWindowLookup[ev.Window]
+				w, ok := findWindow(ev.Window)
 				if ok {
 					go w.handleEvent(e, ev)
 				}
 
 			case x11.UNMAP_NOTIFY:
 				ev := (*x11.UnmapNotifyEvent)(unsafe.Pointer(e.EGenericEvent))
-				w, ok := xWindowLookup[ev.Window]
+				w, ok := findWindow(ev.Window)
 				if ok {
 					go w.handleEvent(e, ev)
 				}
