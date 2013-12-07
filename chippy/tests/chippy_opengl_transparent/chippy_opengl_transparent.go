@@ -198,8 +198,6 @@ func program() {
 
 	// Begin our rendering loop
 	for !window.Destroyed() {
-		runtime.Gosched()
-
 		// Inform the clock that an new frame has begun
 		glClock.Tick()
 
