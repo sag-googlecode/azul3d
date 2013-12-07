@@ -110,7 +110,6 @@ func (w *NativeWindow) GLSetConfig(config *GLConfig) {
 			}
 		}
 
-		logger().Println(config.index)
 		if !win32.SetPixelFormat(w.dc, config.index, nil) {
 			logger().Println("GLSetConfig failed; SetPixelFormat():", win32.GetLastErrorString())
 		}
