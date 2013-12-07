@@ -322,13 +322,6 @@ func eventLoop() {
 				}
 			}
 		}
-
-		select {
-		case <-shutdownEventLoop:
-			return
-		default:
-			break
-		}
 	}
 }
 

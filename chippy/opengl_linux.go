@@ -6,8 +6,8 @@ package chippy
 
 import (
 	"code.google.com/p/azul3d/chippy/wrappers/x11"
-	"runtime"
 	"errors"
+	"runtime"
 	"unsafe"
 )
 
