@@ -1159,9 +1159,10 @@ func (w *Window) send(ev Event) {
 	defer w.access.Unlock()
 
 	for ch, _ := range w.events {
-		if len(ch) != cap(ch) {
-			ch <- ev
-		} else {
+		select {
+		case ch <- ev:
+			break
+		default:
 			logger().Println("Warning: Event buffer full; Missed event!")
 		}
 	}
