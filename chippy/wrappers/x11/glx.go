@@ -9,6 +9,7 @@ package x11
 /*
 #include <stdlib.h>
 #include <GL/glx.h>
+#include <GL/gl.h>
 #include <X11/Xlib-xcb.h>
 
 #cgo LDFLAGS: -lX11 -lGL
@@ -273,4 +274,12 @@ func (d *Display) GLXSwapIntervalSGI(interval int) int {
 
 func XFree(ptr unsafe.Pointer) {
 	C.XFree(ptr)
+}
+
+const (
+	GL_VERSION = 0x1F02
+)
+
+func GlGetString(name uint32) string {
+	return C.GoString((*C.char)(unsafe.Pointer(C.glGetString(C.GLenum(name)))))
 }

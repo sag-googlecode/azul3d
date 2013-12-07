@@ -6,6 +6,7 @@ package chippy
 
 import (
 	"code.google.com/p/azul3d/chippy/wrappers/x11"
+	"runtime"
 	"errors"
 	"unsafe"
 )
@@ -260,7 +261,18 @@ func (w *NativeWindow) GLCreateContext(glVersionMajor, glVersionMinor uint, flag
 		}
 	}
 
-	xDisplay.XSync(false)
+	runtime.LockOSThread()
+	defer runtime.UnlockOSThread()
+
+	xDisplay.GLXMakeContextCurrent(x11.GLXDrawable(w.xWindow), x11.GLXDrawable(w.xWindow), c.glxContext)
+	defer xDisplay.GLXMakeContextCurrent(0, 0, nil)
+
+	ver := x11.GlGetString(x11.GL_VERSION)
+	if !versionSupported(ver, int(glVersionMajor), int(glVersionMinor)) {
+		logger().Printf("GL_VERSION=%q; no support for OpenGL %v.%v found\n", ver, glVersionMajor, glVersionMinor)
+		return nil, ErrGLVersionNotSupported
+	}
+
 	return c, nil
 }
 
@@ -286,7 +298,6 @@ func (w *NativeWindow) GLMakeCurrent(c GLContext) {
 	if xDisplay.GLXMakeContextCurrent(glxWindow, glxWindow, glxContext) == 0 {
 		logger().Println("glXMakeContextCurrent() failed!")
 	}
-	xDisplay.XSync(false)
 }
 
 func (w *NativeWindow) GLSwapBuffers() {
