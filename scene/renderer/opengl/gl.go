@@ -14,7 +14,6 @@ import (
 	"code.google.com/p/azul3d/scene/texture"
 	"code.google.com/p/azul3d/scene/util"
 	"fmt"
-	"reflect"
 	"runtime"
 	"strconv"
 	"strings"
@@ -1212,17 +1211,11 @@ func NewRenderer(dcMakeCurrent, lcMakeCurrent func(current bool)) (*Renderer, er
 	r.gl.Enable(opengl.BLEND)
 	r.gl.BlendFunc(opengl.SRC_ALPHA, opengl.ONE_MINUS_SRC_ALPHA)
 
-	var (
-		formatsCount int32
-		formatsArray int32
-	)
-	r.gl.GetIntegerv(opengl.NUM_COMPRESSED_TEXTURE_FORMATS, &formatsCount)
-	r.gl.GetIntegerv(opengl.COMPRESSED_TEXTURE_FORMATS, &formatsArray)
+	var numFormats int32
+	r.gl.GetIntegerv(opengl.NUM_COMPRESSED_TEXTURE_FORMATS, &numFormats)
 
-	sliceHeader := (*reflect.SliceHeader)(unsafe.Pointer(&r.compressedTextureFormats))
-	sliceHeader.Data = uintptr(unsafe.Pointer(&formatsArray))
-	sliceHeader.Len = int(formatsCount)
-	sliceHeader.Cap = int(formatsCount)
+	r.compressedTextureFormats = make([]int32, numFormats)
+	r.gl.GetIntegerv(opengl.COMPRESSED_TEXTURE_FORMATS, &r.compressedTextureFormats[0])
 
 	return r, nil
 }
