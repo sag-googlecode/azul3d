@@ -7,7 +7,6 @@ package chippy
 import (
 	"code.google.com/p/azul3d/chippy/wrappers/x11"
 	"errors"
-	"runtime"
 	"unsafe"
 )
 
@@ -260,9 +259,6 @@ func (w *NativeWindow) GLCreateContext(glVersionMajor, glVersionMinor uint, flag
 			return nil, errors.New("glXCreateNewContext() failed!")
 		}
 	}
-
-	runtime.LockOSThread()
-	defer runtime.UnlockOSThread()
 
 	xDisplay.GLXMakeContextCurrent(x11.GLXDrawable(w.xWindow), x11.GLXDrawable(w.xWindow), c.glxContext)
 	defer xDisplay.GLXMakeContextCurrent(0, 0, nil)
