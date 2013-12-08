@@ -90,6 +90,8 @@ func renderScene() {
 	gl.Vertex3f(-1.0, -1.0, 0.0)            // Bottom Left
 	gl.End()                                // We are done with the polygon
 
+	gl.Flush()
+
 	// Determine time since frame began
 	delta := glClock.Delta()
 

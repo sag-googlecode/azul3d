@@ -320,6 +320,8 @@ func renderScene() {
 
 	// Draw the triangle
 	gl.DrawArrays(opengl.TRIANGLES, 0, uint32(len(triangle.vertices)))
+
+	gl.Flush()
 }
 
 // toggleVerticalSync is responsible for switching the vertical sync mode to

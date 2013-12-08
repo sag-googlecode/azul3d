@@ -91,6 +91,8 @@ func renderScene() {
 	// Invoke shared context list
 	gl.CallList(triangleList)
 
+	gl.Flush()
+
 	// Determine time since frame began
 	delta := glClock.Delta()
 
