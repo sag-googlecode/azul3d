@@ -1,3 +1,20 @@
+// Copyright 2012 Lightpoke. All rights reserved.
+// This source code is subject to the terms and
+// conditions defined in the "License.txt" file.
+
+// Package cp is a wrapper for the Chipmunk 2D Physics Engine
+//
+// More information about Chipmunk can be found at:
+//  http://chipmunk-physics.net/
+//
+// This package does not attempt to hide the manual memory management of the C
+// library, as such you must pay attention as you would if you where using the
+// C library itself.
+//
+// This package uses the Chipmunk library, and as such it is also bound by it's
+// license which can be found at:
+//  https://github.com/slembcke/Chipmunk2D/blob/master/LICENSE.txt
+//
 package cp
 
 /*
