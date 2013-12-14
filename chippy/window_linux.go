@@ -502,15 +502,15 @@ func (w *NativeWindow) PointerGrab() bool {
 }
 
 func (w *NativeWindow) open(screen *Screen) (err error) {
+	w.access.Lock()
+	defer w.access.Unlock()
+
 	// When we first open the window, we can just use PixelBlit mode.
 	w.activeRenderMode = renderModePixelBlit
 	return w.doRebuildWindow()
 }
 
 func (w *NativeWindow) doRebuildWindow() (err error) {
-	w.access.Lock()
-	defer w.access.Unlock()
-
 	if w.r.Opened() {
 		w.destroy()
 	}
@@ -1215,14 +1215,24 @@ func (w *NativeWindow) PixelClear(rect image.Rectangle) {
 	w.PixelBlit(uint(rect.Min.X), uint(rect.Min.Y), img)
 }
 
-func (w *NativeWindow) PixelBlit(x, y uint, image *image.RGBA) {
+func (w *NativeWindow) PixelBlit(x, y uint, img *image.RGBA) {
 	if !w.r.Opened() {
 		return
 	}
 
+	w.access.RLock()
 	if w.activeRenderMode != renderModePixelBlit {
+		w.access.RUnlock()
+
+		// Enter write lock
+		w.access.Lock()
+
 		w.activeRenderMode = renderModePixelBlit
 		w.doRebuildWindow()
+
+		w.access.Unlock()
+	} else {
+		w.access.RUnlock()
 	}
 
 	if w.xGC == 0 {
@@ -1233,18 +1243,38 @@ func (w *NativeWindow) PixelBlit(x, y uint, image *image.RGBA) {
 	if w.r.Transparent() {
 		chosenFmt = w.pixmapFmt32
 	}
-
 	if chosenFmt == nil {
 		return
 	}
 	defer xConnection.Flush()
 
-	sz := image.Bounds().Size()
+	bounds := img.Bounds()
+	sz := bounds.Size()
 	if sz.X <= 0 && sz.Y <= 0 {
 		return
 	}
 	width := uint16(sz.X)
 	height := uint16(sz.Y)
+
+	// Convert to RGBA
+	rgba := image.NewRGBA(image.Rect(0, 0, bounds.Dx(), bounds.Dy()))
+	draw.Draw(rgba, rgba.Bounds(), img, bounds.Min, draw.Src)
+
+	// RGBA to BGRA
+	for x := 0; x < sz.X; x++ {
+		for y := 0; y < sz.Y; y++ {
+			p := (y-rgba.Rect.Min.Y)*rgba.Stride + (x-rgba.Rect.Min.X)*4
+			r := rgba.Pix[p]
+			g := rgba.Pix[p+1]
+			b := rgba.Pix[p+2]
+			a := rgba.Pix[p+3]
+
+			rgba.Pix[p] = b
+			rgba.Pix[p+1] = g
+			rgba.Pix[p+2] = r
+			rgba.Pix[p+3] = a
+		}
+	}
 
 	setup := xConnection.GetSetup()
 	x11Image := x11.ImageCreate(
@@ -1257,9 +1287,9 @@ func (w *NativeWindow) PixelBlit(x, y uint, image *image.RGBA) {
 		32,
 		int(setup.ImageByteOrder),
 		x11.IMAGE_ORDER_LSB_FIRST,
-		unsafe.Pointer(&image.Pix[0]),
-		uint32(len(image.Pix)),
-		&image.Pix[0],
+		unsafe.Pointer(&rgba.Pix[0]),
+		uint32(len(rgba.Pix)),
+		&rgba.Pix[0],
 	)
 
 	nativeImage := xConnection.ImageNative(x11Image, true)

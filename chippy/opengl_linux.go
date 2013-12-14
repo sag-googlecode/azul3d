@@ -138,6 +138,9 @@ func (w *NativeWindow) GLConfigs() (configs []*GLConfig) {
 }
 
 func (w *NativeWindow) GLSetConfig(config *GLConfig) {
+	w.access.Lock()
+	defer w.access.Unlock()
+
 	if config == nil {
 		panic("Invalid (nil) GLConfig; it must be an valid configuration!")
 	}

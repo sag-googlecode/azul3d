@@ -84,25 +84,40 @@ func program() {
 		start := time.Now()
 		window.PixelBlit(0, 0, rgba)
 		blitTime := time.Since(start)
-		log.Println("PixelBlit():", blitTime)
 
 		numBlits++
 		totalBlitTime += blitTime
 
+		log.Printf("PixelBlit(): %v (%v average)", blitTime, totalBlitTime / time.Duration(numBlits))
+
 		if measuringBlitSpeed {
-			select{
-			case e := <-events:
+			// Say that PixelBlit() above takes more time than it takes for
+			// your high precision mouse to send two or more events -- we would
+			// end up with the event buffer filling and missing events. The for
+			// statement below solves this.
+			//
+			// Also, "why not just use a simple for loop or range, like so?":
+			//
+			//  for len(events) > 0
+			//
+			// If your high precision mouse was to constantly send position
+			// events (because you are constantly wiggling the mouse) will the
+			// for loop ever end and let you render? No. Storing the variable
+			// n below lets us know for certain it will eventually end and let
+			// us PixelBlit() to the window once again in the near future once
+			// we've read at max cap(events) from the channel.
+			//
+			// In practice, you would not tie your rendering loop and your
+			// event loop together for this exact reason. It would be much
+			// better to handle events in a seperate goroutine and communicate
+			// with the render loop over a channel.
+			for n := len(events); n > 0; n-- {
+				e := <-events
 				switch e.(type) {
 				case *chippy.CloseEvent:
 					chippy.Exit()
 					goto stats
-
-				default:
-					// We don't care about whatever event this is.
-					break
 				}
-			default:
-				break
 			}
 			continue
 		}
