@@ -53,7 +53,6 @@ type obj struct {
 	Window *chippy.Window
 
 	renderer backend
-	backend  BackendType
 
 	maxBufferedFrames uint
 	playing           bool
@@ -201,7 +200,6 @@ func (n *obj) buildFramesLoop() {
 
 		default:
 			n.renderFrame(nil)
-			runtime.Gosched()
 		}
 	}
 }
@@ -247,9 +245,7 @@ func (n *obj) renderFrame(pre func()) {
 		frame := n.renderer.Render(n.node)
 		frame()
 
-		if n.backend == OpenGL {
-			n.Window.GLSwapBuffers()
-		}
+		n.Window.GLSwapBuffers()
 
 		// Send frame event.
 		event.Send("frame", n.node)
@@ -339,26 +335,6 @@ func (n *obj) eventLoop() {
 	}
 }
 
-/*
-func (o *obj) calculateBounds() {
-	preFrame, stop := event.Notify("pre-frame")
-	defer stop()
-
-	destroyed, stop := event.Notify("window-destroyed")
-	defer stop()
-
-	for {
-		select{
-		case <-preFrame:
-			geom.CalculateBounds(o.node)
-
-		case <-destroyed:
-			return
-		}
-	}
-}
-*/
-
 func getObj(n *scene.Node) *obj {
 	o, ok := n.Prop(PRendererObject)
 	if !ok {
@@ -380,7 +356,7 @@ func mustGetObj(n *scene.Node) *obj {
 // them appropriately into an window or offscreen buffer.
 //
 // The window parameter specifies which window will be used for rendering.
-func Create(n *scene.Node, window *chippy.Window) {
+func Create(n *scene.Node, window *chippy.Window) error {
 	o := getObj(n)
 	if o == nil {
 		o = new(obj)
@@ -402,11 +378,12 @@ func Create(n *scene.Node, window *chippy.Window) {
 
 		go o.eventLoop()
 		go o.renderLoop()
-		//go o.calculateBounds()
 
 		o.node = n
 		n.SetProp(PRendererObject, o)
 	}
+
+	return o.setup()
 }
 
 func Destroy(n *scene.Node) {
@@ -431,12 +408,7 @@ func Window(n *scene.Node) *chippy.Window {
 	return o.Window
 }
 
-func SetBackend(n *scene.Node, b BackendType) error {
-	if !b.Valid() {
-		panic("SetBackend(): Invalid backend type specified!")
-	}
-
-	o := mustGetObj(n)
+func (o *obj) setup() error {
 	o.Lock()
 	defer o.Unlock()
 
@@ -445,57 +417,52 @@ func SetBackend(n *scene.Node, b BackendType) error {
 		render backend
 	)
 
-	//FIXME: expose
 	glContextFlags := chippy.GLCoreProfile
 
-	switch b {
-	case OpenGL:
-		//FIXME: expose
+	dcMakeCurrent := func(current bool) {
+		if current {
+			o.Window.GLMakeCurrent(o.displayContext)
+		} else {
+			o.Window.GLMakeCurrent(nil)
+		}
+	}
+
+	lcMakeCurrent := func(current bool) {
+		if current {
+			o.Window.GLMakeCurrent(o.loaderContext)
+		} else {
+			o.Window.GLMakeCurrent(nil)
+		}
+	}
+
+	o.rendererCreateExecute <- func() {
 		o.Window.GLSetConfig(chippy.GLChooseConfig(o.Window.GLConfigs(), chippy.GLWorstConfig, chippy.GLBestConfig))
 
 		o.loaderContext, err = o.Window.GLCreateContext(2, 0, glContextFlags, nil)
 		if err != nil {
-			return err
+			return
 		}
 
 		o.displayContext, err = o.Window.GLCreateContext(2, 0, glContextFlags, o.loaderContext)
 		if err != nil {
-			return err
+			return
 		}
 
-		dcMakeCurrent := func(current bool) {
-			if current {
-				o.Window.GLMakeCurrent(o.displayContext)
-			} else {
-				o.Window.GLMakeCurrent(nil)
-			}
-		}
+		render, err = opengl.NewRenderer(dcMakeCurrent, lcMakeCurrent)
+		if err == nil {
+			width, height := o.Window.Size()
+			render.Resize(width, height)
 
-		lcMakeCurrent := func(current bool) {
-			if current {
-				o.Window.GLMakeCurrent(o.loaderContext)
-			} else {
-				o.Window.GLMakeCurrent(nil)
-			}
+			o.maxTextureSize = render.MaxTextureSize()
+			o.gpuName = render.GPUName()
+			o.gpuVendor = render.GPUVendor()
+			o.gpuDriverVersion = render.GPUDriverVersion()
+			o.glExtensions = render.GLExtensions()
+			o.glMajorVersion, o.glMinorVersion = render.GLVersion()
+			o.glslMajorVersion, o.glslMinorVersion = render.GLSLVersion()
 		}
-
-		o.rendererCreateExecute <- func() {
-			render, err = opengl.NewRenderer(dcMakeCurrent, lcMakeCurrent)
-			if err == nil {
-				width, height := o.Window.Size()
-				render.Resize(width, height)
-
-				o.maxTextureSize = render.MaxTextureSize()
-				o.gpuName = render.GPUName()
-				o.gpuVendor = render.GPUVendor()
-				o.gpuDriverVersion = render.GPUDriverVersion()
-				o.glExtensions = render.GLExtensions()
-				o.glMajorVersion, o.glMinorVersion = render.GLVersion()
-				o.glslMajorVersion, o.glslMinorVersion = render.GLSLVersion()
-			}
-		}
-		<-o.rendererCreateComplete
 	}
+	<-o.rendererCreateComplete
 
 	if err != nil {
 		return err
@@ -506,21 +473,9 @@ func SetBackend(n *scene.Node, b BackendType) error {
 		panic("Renderer is nil!")
 	}
 
-	o.backend = b
-
-	if o.backend == 0 {
-		go o.buildFramesLoop()
-	}
+	go o.buildFramesLoop()
 
 	return nil
-}
-
-func Backend(n *scene.Node) BackendType {
-	o := mustGetObj(n)
-	o.RLock()
-	defer o.RUnlock()
-
-	return o.backend
 }
 
 // Pause causes the rendering loop to stop rendering.
@@ -567,15 +522,9 @@ func SetMaxBufferedFrames(n *scene.Node, max uint) {
 		return
 	}
 
-	//destroyedEvents := o.Window.DestroyedEvents()
-	//defer destroyedEvents.Close()
-
 	select {
 	case o.wantChangeBufferSize <- max:
 		return
-
-		//case <-destroyedEvents.Read:
-		//return
 	}
 }
 

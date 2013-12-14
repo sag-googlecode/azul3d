@@ -61,14 +61,12 @@ func setup() {
 	}
 
 	Renderer = scene.New("renderer")
-	renderer.Create(Renderer, Window)
-	Clock = renderer.Clock(Renderer)
-
-	// We'll be using the OpenGL rendering backend
-	err = renderer.SetBackend(Renderer, renderer.OpenGL)
+	err = renderer.Create(Renderer, Window)
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	Clock = renderer.Clock(Renderer)
 
 	// Start an goroutine to display FPS
 	go func() {
