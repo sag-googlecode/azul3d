@@ -10,13 +10,12 @@ import (
 	"code.google.com/p/azul3d/scene/camera"
 	"code.google.com/p/azul3d/scene/geom"
 	"code.google.com/p/azul3d/scene/shader"
-	"code.google.com/p/azul3d/scene/util"
 	"fmt"
 	"sort"
 )
 
 type sortedGeom struct {
-	region                                     *util.Region
+	region                                     *camera.Region
 	sorter                                     *scene.Sorter
 	traversalSort                              uint
 	geom                                       *geom.Mesh

@@ -2,7 +2,7 @@
 // This source code is subject to the terms and
 // conditions defined in the "License.txt" file.
 
-package util
+package camera
 
 import (
 	"code.google.com/p/azul3d/math"

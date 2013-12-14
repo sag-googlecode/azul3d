@@ -19,7 +19,6 @@ import (
 	"code.google.com/p/azul3d/scene"
 	"code.google.com/p/azul3d/scene/camera"
 	"code.google.com/p/azul3d/scene/renderer"
-	"code.google.com/p/azul3d/scene/util"
 	"fmt"
 	"log"
 	"os"
@@ -98,7 +97,7 @@ func setup() {
 	//
 	// In our case, we will use the region [0, 0, 0, 0] which holds a special
 	// meaning for 'the entire window'.
-	underlay := util.NewRegion(0, 0, 0, 0)
+	underlay := camera.NewRegion(0, 0, 0, 0)
 	camera.AddRegion(Camera3d, underlay)
 
 	// Our 2D camera, which will display the 2D scene (UI elements.. etc).
@@ -108,7 +107,7 @@ func setup() {
 	// For the 2D camera, it is 'overlay'd atop the 3D camera's region, so we
 	// want to make sure that this region does not clear the color, depth, or
 	// stencil buffers below it (the already-rendered 3D scene).
-	overlay := util.NewRegion(0, 0, 0, 0)
+	overlay := camera.NewRegion(0, 0, 0, 0)
 	overlay.SetClearColorActive(false)
 	overlay.SetClearDepthActive(false)
 	overlay.SetClearStencilActive(false)
@@ -123,8 +122,8 @@ func setup() {
 		width := math.Real(w)
 		height := math.Real(h)
 
-		camera.SetLens(Camera3d, util.PerspectiveLens(75, width/height, 0.001, 1000))
-		camera.SetLens(Camera2d, util.OrthoLens(0, width, -height, 0, -1000000, 1000000))
+		camera.SetLens(Camera3d, camera.PerspectiveLens(75, width/height, 0.001, 1000))
+		camera.SetLens(Camera2d, camera.OrthoLens(0, width, -height, 0, -1000000, 1000000))
 	}
 
 	w, h := Window.Size()

@@ -12,7 +12,6 @@ import (
 	"code.google.com/p/azul3d/scene/geom"
 	"code.google.com/p/azul3d/scene/shader"
 	"code.google.com/p/azul3d/scene/texture"
-	"code.google.com/p/azul3d/scene/util"
 	"fmt"
 	"runtime"
 	"strconv"
@@ -51,7 +50,7 @@ type Renderer struct {
 	meshesToFreeAccess sync.RWMutex
 	meshesToFree       []*GLBufferedMesh
 
-	lastRegion                                                          *util.Region
+	lastRegion                                                          *camera.Region
 	lastColorClear                                                      *math.Vec4
 	lastDepthClear                                                      math.Real
 	lastStencilClear                                                    uint
@@ -62,7 +61,7 @@ type Renderer struct {
 	gpuName, gpuVendorName                                             string
 }
 
-func (r *Renderer) useRegion(region *util.Region) {
+func (r *Renderer) useRegion(region *camera.Region) {
 	if r.lastRegion != nil && r.lastRegion.Id() == region.Id() {
 		return
 	}

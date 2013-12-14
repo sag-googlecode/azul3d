@@ -8,13 +8,12 @@ package camera
 import (
 	"code.google.com/p/azul3d/math"
 	"code.google.com/p/azul3d/scene"
-	"code.google.com/p/azul3d/scene/util"
 	"sync"
 )
 
 var (
-	// The property for storing the lens of a node.
-	PLens = scene.NewProp("Lens")
+	// The property for storing the lens projection of a node.
+	PLensProjection = scene.NewProp("LensProjection")
 
 	// The property for storing the target scene of a node.
 	PScene = scene.NewProp("Scene")
@@ -36,14 +35,14 @@ func getLock(n *scene.Node) *sync.RWMutex {
 	return l.(*sync.RWMutex)
 }
 
-func getRegions(n *scene.Node) map[*util.Region]bool {
+func getRegions(n *scene.Node) map[*Region]bool {
 	regions, ok := n.Prop(PRegionMap)
 	if !ok {
-		newPRegionMap := make(map[*util.Region]bool)
+		newPRegionMap := make(map[*Region]bool)
 		n.SetProp(PRegionMap, newPRegionMap)
 		return newPRegionMap
 	}
-	return regions.(map[*util.Region]bool)
+	return regions.(map[*Region]bool)
 }
 
 // Is tells if the specified scene node is an camera node. An camera node is
@@ -57,7 +56,7 @@ func Is(n *scene.Node) bool {
 
 // AddRegion adds the specified display region to the camera's list of display
 // regions.
-func AddRegion(n *scene.Node, region *util.Region) {
+func AddRegion(n *scene.Node, region *Region) {
 	access := getLock(n)
 	access.Lock()
 	defer access.Unlock()
@@ -68,7 +67,7 @@ func AddRegion(n *scene.Node, region *util.Region) {
 
 // RemoveRegion removes the specified display region from the camera's list of
 // display regions.
-func RemoveRegion(n *scene.Node, region *util.Region) {
+func RemoveRegion(n *scene.Node, region *Region) {
 	access := getLock(n)
 	access.Lock()
 	defer access.Unlock()
@@ -79,7 +78,7 @@ func RemoveRegion(n *scene.Node, region *util.Region) {
 
 // HasRegion tells if the specified display region exists inside this camera's
 // list of display regions.
-func HasRegion(n *scene.Node, region *util.Region) bool {
+func HasRegion(n *scene.Node, region *Region) bool {
 	access := getLock(n)
 	access.RLock()
 	defer access.RUnlock()
@@ -90,14 +89,14 @@ func HasRegion(n *scene.Node, region *util.Region) bool {
 }
 
 // Regions returns an list of the regions used by this camera node.
-func Regions(n *scene.Node) []*util.Region {
+func Regions(n *scene.Node) []*Region {
 	access := getLock(n)
 	access.RLock()
 	defer access.RUnlock()
 
 	regions := getRegions(n)
 
-	c := make([]*util.Region, len(regions))
+	c := make([]*Region, len(regions))
 	i := 0
 	for region, _ := range regions {
 		c[i] = region
@@ -121,24 +120,24 @@ func Scene(n *scene.Node) *scene.Node {
 }
 
 // SetLens changes the lens of this camera to the specified one.
-func SetLens(n *scene.Node, lens *util.Lens) {
-	n.SetProp(PLens, lens)
+func SetLens(n *scene.Node, lens *LensProjection) {
+	n.SetProp(PLensProjection, lens)
 }
 
 // Lens returns the current lens attatched to this camera.
-func Lens(n *scene.Node) *util.Lens {
-	l, ok := n.Prop(PLens)
+func Lens(n *scene.Node) *LensProjection {
+	l, ok := n.Prop(PLensProjection)
 	if !ok {
 		return nil
 	}
-	return l.(*util.Lens)
+	return l.(*LensProjection)
 }
 
 func makeCopy(n *scene.Node, deep bool) {
 	// Copy lens
 	l := Lens(n)
 	if l != nil {
-		n.SetProp(PLens, l)
+		n.SetProp(PLensProjection, l)
 	}
 
 	// Copy scene
@@ -156,7 +155,7 @@ func makeCopy(n *scene.Node, deep bool) {
 	defer access.Unlock()
 
 	// Copy regions
-	regionsCopy := make(map[*util.Region]bool)
+	regionsCopy := make(map[*Region]bool)
 	for region, _ := range getRegions(n) {
 		regionsCopy[region.Copy()] = true
 	}

@@ -11,7 +11,6 @@ import (
 	"code.google.com/p/azul3d/scene/color"
 	"code.google.com/p/azul3d/scene/geom"
 	"code.google.com/p/azul3d/scene/geom/procedural"
-	"code.google.com/p/azul3d/scene/util"
 	"log"
 	"sync"
 )
@@ -170,13 +169,13 @@ func program() {
 	camera.AddRegion(azul3d.Camera3d, topLeft)
 
 	// For the other Camera3d regions, we'll create new ones.
-	topRight := util.NewRegion(640/2, 0, 640/2, 480/2)
+	topRight := camera.NewRegion(640/2, 0, 640/2, 480/2)
 	camera.AddRegion(azul3d.Camera3d, topRight)
 
-	bottomLeft := util.NewRegion(0, 480/2, 640/2, 480/2)
+	bottomLeft := camera.NewRegion(0, 480/2, 640/2, 480/2)
 	camera.AddRegion(azul3d.Camera3d, bottomLeft)
 
-	bottomRight := util.NewRegion(640/2, 480/2, 640/2, 480/2)
+	bottomRight := camera.NewRegion(640/2, 480/2, 640/2, 480/2)
 	camera.AddRegion(azul3d.Camera3d, bottomRight)
 
 	// We don't need to touch the Camera2d's region, because by default it is
