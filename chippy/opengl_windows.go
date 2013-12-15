@@ -77,7 +77,13 @@ func (w *NativeWindow) GLConfigs() (configs []*GLConfig) {
 						config.Accelerated = true
 					}
 
+					// Even some 24-bit RGB modes support composition, but only
+					// ones with alpha frame buffer bits will be transparent.
 					config.Transparent = (pf.DwFlags() & win32.PFD_SUPPORT_COMPOSITION) > 0
+					if config.AlphaBits == 0 {
+						config.Transparent = false
+					}
+
 					config.DoubleBuffered = (pf.DwFlags() & win32.PFD_DOUBLEBUFFER) > 0
 					config.StereoScopic = (pf.DwFlags() & win32.PFD_STEREO) > 0
 					config.DepthBits = uint8(pf.CDepthBits())
