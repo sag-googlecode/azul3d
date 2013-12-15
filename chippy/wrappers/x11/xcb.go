@@ -785,6 +785,10 @@ func (c *Connection) GetKeyboardMappingKeysyms(r *GetKeyboardMappingReply) (keys
 	return
 }
 
+const (
+	GRAB_MODE_ASYNC = C.XCB_GRAB_MODE_ASYNC
+)
+
 type EGrabPointerReply struct {
 	ResponseType C.uint8_t
 	Status       C.uint8_t
@@ -805,10 +809,6 @@ type GrabPointerCookie C.xcb_grab_pointer_cookie_t
 func (c GrabPointerCookie) c() C.xcb_grab_pointer_cookie_t {
 	return C.xcb_grab_pointer_cookie_t(c)
 }
-
-const (
-	GRAB_MODE_ASYNC = C.XCB_GRAB_MODE_ASYNC
-)
 
 func (c *Connection) GrabPointer(ownerEvents uint8, grabEvents Window, eventMask uint16, pointerMode, keyboardMode uint8, confineTo Window, cursor Cursor, time Timestamp) GrabPointerCookie {
 	cookie := C.xcb_grab_pointer(
@@ -844,6 +844,63 @@ func (c *Connection) GrabPointerReply(cookie GrabPointerCookie) (reply *GrabPoin
 
 func (c *Connection) UngrabPointer(time Timestamp) VoidCookie {
 	return VoidCookie(C.xcb_ungrab_pointer(
+		c.c(),
+		C.xcb_timestamp_t(time),
+	))
+}
+
+type EGrabKeyboardReply struct {
+	ResponseType C.uint8_t
+	Status       C.uint8_t
+	Sequence     C.uint16_t
+	Length       C.uint32_t
+}
+type GrabKeyboardReply struct {
+	*EGrabKeyboardReply
+}
+
+func (c *GrabKeyboardReply) c() *C.xcb_grab_keyboard_reply_t {
+	ptr := c.EGrabKeyboardReply
+	return (*C.xcb_grab_keyboard_reply_t)(unsafe.Pointer(ptr))
+}
+
+type GrabKeyboardCookie C.xcb_grab_keyboard_cookie_t
+
+func (c GrabKeyboardCookie) c() C.xcb_grab_keyboard_cookie_t {
+	return C.xcb_grab_keyboard_cookie_t(c)
+}
+
+func (c *Connection) GrabKeyboard(ownerEvents uint8, grabWindow Window, time Timestamp, pointerMode, keyboardMode uint8) GrabKeyboardCookie {
+	cookie := C.xcb_grab_keyboard(
+		c.c(),
+		C.uint8_t(ownerEvents),
+		C.xcb_window_t(grabWindow),
+		C.xcb_timestamp_t(time),
+		C.uint8_t(pointerMode),
+		C.uint8_t(keyboardMode),
+	)
+	return GrabKeyboardCookie(cookie)
+}
+
+func (c *Connection) GrabKeyboardReply(cookie GrabKeyboardCookie) (reply *GrabKeyboardReply, err error) {
+	var e *C.xcb_generic_error_t
+	cReply := C.xcb_grab_keyboard_reply(c.c(), cookie.c(), &e)
+	if e == nil {
+		reply = new(GrabKeyboardReply)
+		reply.EGrabKeyboardReply = (*EGrabKeyboardReply)(unsafe.Pointer(cReply))
+		runtime.SetFinalizer(reply, func(r *GrabKeyboardReply) {
+			C.free(unsafe.Pointer(r.EGrabKeyboardReply))
+		})
+	}
+	if e != nil {
+		err = errors.New("GrabKeyboardReply(): " + xcbError(e))
+		C.free(unsafe.Pointer(e))
+	}
+	return
+}
+
+func (c *Connection) UngrabKeyboard(time Timestamp) VoidCookie {
+	return VoidCookie(C.xcb_ungrab_keyboard(
 		c.c(),
 		C.xcb_timestamp_t(time),
 	))
