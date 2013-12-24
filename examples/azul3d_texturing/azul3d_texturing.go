@@ -47,11 +47,11 @@ func createCube(name string, c color.Color) *scene.Node {
 	// Note that the larger the texture the more memory it will consume, and it
 	// could eat all your system's memory.
 	prefix := "src/code.google.com/p/azul3d/assets/textures"
-	texFilePath := prefix + "/clouds_8192x8192.jpg"
+	//texFilePath := prefix + "/clouds_8192x8192.jpg"
 	//texFilePath := prefix+"/clouds_4096x4096.jpg"
 	//texFilePath := prefix+"/clouds_2048x2048.jpg"
 	//texFilePath := prefix+"/clouds_1024x1024.jpg"
-	//texFilePath := prefix+"/texture_coords_1024x1024.png"
+	texFilePath := prefix + "/texture_coords_1024x1024.png"
 
 	tex, err := renderer.LoadTextureFile(azul3d.Renderer, texFilePath)
 	if err != nil {
