@@ -121,6 +121,7 @@ func (n *Node) Top() *Node {
 func (n *Node) setParent(parent *Node) {
 	n.access.RLock()
 	if n.parent == parent {
+		n.access.RUnlock()
 		return
 	}
 	n.access.RUnlock()
@@ -142,7 +143,9 @@ func (n *Node) SetParent(parent *Node) {
 		}
 	}
 	n.setParent(parent)
-	n.checkForCircular()
+	if parent != nil {
+		n.checkForCircular()
+	}
 
 	// Since parent is changing, we need to recursively clear the active props
 	// of this node and all children nodes, as they can rely on the previous
