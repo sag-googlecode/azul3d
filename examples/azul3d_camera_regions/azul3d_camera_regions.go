@@ -11,6 +11,7 @@ import (
 	"code.google.com/p/azul3d/scene/color"
 	"code.google.com/p/azul3d/scene/geom"
 	"code.google.com/p/azul3d/scene/geom/procedural"
+	"code.google.com/p/azul3d/scene/shader"
 	"log"
 	"sync"
 )
@@ -25,7 +26,39 @@ var (
 	// The current cube that we're manipulating, and the cube we're
 	// manipulating relative to.
 	currentCube, relativeCube *scene.Node
+
+	// Color shader
+	colorShader = shader.New("colorShader")
 )
+
+func init() {
+	// Vertex shader
+	colorShader.SetSource([]byte(`
+#version 110
+
+attribute vec4 Vertex;
+attribute vec4 Color;
+
+uniform mat4 Projection;
+uniform mat4 ModelViewProjection;
+
+void main()
+{
+	gl_FrontColor = Color;
+	gl_Position = ModelViewProjection * Vertex;
+}
+`), shader.Vertex)
+
+	// Fragment shader
+	colorShader.SetSource([]byte(`
+#version 110
+
+void main()
+{
+	gl_FragColor = gl_Color;
+}
+`), shader.Fragment)
+}
 
 func createCube(name string, c color.Color) *scene.Node {
 	// Create an geom node
@@ -186,6 +219,10 @@ func program() {
 	// Set camera 12 units back (Y is depth) so that we see the cubes placed in
 	// the center of the scene
 	azul3d.Camera3d.SetPos(0, -12, 0)
+
+	// Color shader will affect all nodes below the 2D and 3D scene nodes
+	shader.Set(azul3d.Scene2d, colorShader)
+	shader.Set(azul3d.Scene3d, colorShader)
 
 	// Red cube will be an child of the scene, that way it's seen by the
 	// camera.

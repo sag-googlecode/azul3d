@@ -5,17 +5,14 @@
 package al
 
 /*
-#include <inttypes.h>
+extern char _blobopenal[], _eblobopenal;
 
-extern uint8_t openal_data[] asm("_binary_openal_start");
-extern uint8_t openal_data_size[] asm("_binary_openal_size");
-
-long get_openal_data(void) {
-	return (long)openal_data;
+void* get_openal_data() {
+	return _blobopenal;
 }
 
-long get_openal_data_size(void) {
-	return (long)openal_data_size;
+void* get_openal_data_size() {
+	return &_eblobopenal;
 }
 */
 import "C"
@@ -25,7 +22,6 @@ import (
 	"log"
 	"os"
 	"os/user"
-	"path"
 	"path/filepath"
 	"reflect"
 	"unsafe"
@@ -38,9 +34,11 @@ var (
 
 func init() {
 	// Initialize blob slice using blob data
-	sz := int(C.get_openal_data_size())
+	ptrData := C.get_openal_data()
+	ptrSize := C.get_openal_data_size()
+	sz := int(uintptr(ptrSize) - uintptr(ptrData))
 	sliceHeader := (*reflect.SliceHeader)(unsafe.Pointer(&blob))
-	sliceHeader.Data = uintptr(C.get_openal_data())
+	sliceHeader.Data = uintptr(ptrData)
 	sliceHeader.Len = sz
 	sliceHeader.Cap = sz
 
@@ -57,7 +55,7 @@ func init() {
 	// implementation of the library there (per the LGPL restrictions).
 	_, err = os.Stat(libraryPath)
 	if err != nil {
-		err := os.MkdirAll(path.Dir(libraryPath), 0777)
+		err := os.MkdirAll(filepath.Dir(libraryPath), 0777)
 		if err != nil {
 			log.Fatal(err)
 		}

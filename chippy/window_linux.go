@@ -451,54 +451,13 @@ type NativeWindow struct {
 	xicon                    []uint32
 	pixmapFmt32, pixmapFmt24 *x11.Format
 	cursors                  map[*Cursor]loadedCursor
-	pointerGrabbing          bool
 	activeRenderMode         int
+	pCanSendRelativeMove     bool
 
 	// OpenGL things here
 	glVSyncMode         VSyncMode
 	glConfig            *GLConfig
 	glxExtensionsString string
-}
-
-// SetPointerGrab specifies weather or not this window will grab the pointer
-// during SetCursorGrabbed() calls. See 'man XGrabPointer' for what this
-// entails.
-//
-// This is disabled by default.
-//
-// Whenever the cursor is grabbed on this window and the cursor moves, it is
-// constantly moved back to the center of the window. If the user manages to
-// move the mouse cursor extreamilly fast or if the window is very small, and
-// also manages to click while the cursor is outside the window (I.e. before we
-// have reset it to the center of the window), then the window may lose focus.
-//
-// If SetPointerGrab(true), in the above case the window cannot lose focus at
-// all, and there is no such possibility for that to happen. However, it also
-// becomes impossible for the user to use hotkeys (such as Alt+Tab, or desktop
-// switching hot keys) while the cursor is grabbed. This is a limitation of the
-// X server.
-//
-// If SetPointerGrab(false), the above case is exactly as described (it is
-// *sometimes* possible for the window to lose focus in that situation, but
-// normally only if GOMAXPROCS=1 or if the application is not sharing
-// goroutines well). However, it is possible for the user to use hotkeys (like
-// Alt+Tab, etc).
-func (w *NativeWindow) SetPointerGrab(enabled bool) {
-	w.access.Lock()
-	defer w.access.Unlock()
-
-	w.pointerGrabbing = enabled
-}
-
-// PointerGrab returns the pointer grab state as set previously via the
-// SetPointerGrab() function.
-//
-// See SetPointerGrab() for more information.
-func (w *NativeWindow) PointerGrab() bool {
-	w.access.RLock()
-	defer w.access.RUnlock()
-
-	return w.pointerGrabbing
 }
 
 func (w *NativeWindow) open(screen *Screen) (err error) {
@@ -818,6 +777,18 @@ func (w *NativeWindow) refreshIndicators() {
 	}
 }
 
+func (w *NativeWindow) canSendRelativeMove() bool {
+	w.access.RLock()
+	defer w.access.RUnlock()
+	return w.pCanSendRelativeMove
+}
+
+func (w *NativeWindow) setCanSendRelativeMove(v bool) {
+	w.access.Lock()
+	defer w.access.Unlock()
+	w.pCanSendRelativeMove = v
+}
+
 func (w *NativeWindow) handleEvent(ref *x11.GenericEvent, e interface{}) {
 	// Note: each handleEvent is in it's own goroutine and it is therefor safe
 	// to block for long periods of time if required.
@@ -956,11 +927,14 @@ func (w *NativeWindow) handleEvent(ref *x11.GenericEvent, e interface{}) {
 			diffX := x - halfWidth
 			diffY := y - halfHeight
 			if diffX != 0 || diffY != 0 {
-				w.r.send(&CursorPositionEvent{
-					T: time.Now(),
-					X: float64(diffX),
-					Y: float64(diffY),
-				})
+				if w.canSendRelativeMove() {
+					w.r.send(&CursorPositionEvent{
+						T: time.Now(),
+						X: float64(diffX),
+						Y: float64(diffY),
+					})
+				}
+				w.setCanSendRelativeMove(true)
 
 				// Event though we have the cursor grabbed, it might still
 				// hit the border of the window, in which case we can't
@@ -1518,25 +1492,26 @@ func (w *NativeWindow) setCursorGrabbed(grabbed bool) {
 
 func (w *NativeWindow) doSetCursorGrabbed(grabbed, restorePosition bool) {
 	if grabbed {
-		if w.pointerGrabbing {
-			xConnection.GrabPointer(
-				1,                   // boolean owner events
-				w.xWindow,           // grab events
-				0,                   // event mask (0 because owner events is on)
-				x11.GRAB_MODE_ASYNC, // pointer mode
-				x11.GRAB_MODE_ASYNC, // keyboard mode
-				w.xWindow,           // confine to
-				0,
-				x11.TIME_CURRENT_TIME,
-			)
+		cookie := xConnection.GrabPointer(
+			1,                   // boolean owner events
+			w.xWindow,           // grab events
+			0,                   // event mask (0 because owner events is on)
+			x11.GRAB_MODE_ASYNC, // pointer mode
+			x11.GRAB_MODE_ASYNC, // keyboard mode
+			w.xWindow,           // confine to
+			0,
+			x11.TIME_CURRENT_TIME,
+		)
+		_, err := xConnection.GrabPointerReply(cookie)
+		if err != nil {
+			logger().Println(err)
 		}
 
 		w.doSetCursor(clearCursor)
+		w.pCanSendRelativeMove = false
 
 	} else {
-		if w.pointerGrabbing {
-			xConnection.UngrabPointer(x11.TIME_CURRENT_TIME)
-		}
+		xConnection.UngrabPointer(x11.TIME_CURRENT_TIME)
 
 		if restorePosition {
 			// Restore cursor to the original position it was in before the grab.

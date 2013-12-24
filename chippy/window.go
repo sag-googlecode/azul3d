@@ -359,6 +359,7 @@ func (w *Window) doClampedSize() (width, height int) {
 			width = w.minWidth
 		}
 		if height < w.minHeight {
+
 			height = w.minHeight
 		}
 	}
@@ -556,7 +557,6 @@ func (w *Window) SetFullscreen(fullscreen bool) {
 			go w.NativeWindow.setFullscreen(fullscreen)
 			go w.NativeWindow.setSize(w.width, w.height)
 			go w.NativeWindow.setPosition(w.x, w.y)
-			fmt.Println(fullscreen, w.width, w.height, w.x, w.y)
 		}
 		w.access.Unlock()
 		return

@@ -1579,6 +1579,16 @@ func mainWindowProc(hwnd win32.HWND, msg win32.UINT, wParam win32.WPARAM, lParam
 					// release them by putting them into down-state and then
 					// releasing again!
 					w.r.releaseDownedButtons()
+
+					if w.r.Fullscreen() {
+						// If the window is fullscreen and loses focus users will
+						// expect it to minimize on it's own instead of hanging on
+						// in the background.
+						win32.ShowWindow(w.hwnd, win32.SW_MINIMIZE)
+						w.doSetWindowPos()
+						w.r.trySetMaximized(false)
+						w.r.trySetMinimized(true)
+					}
 				}
 			} else {
 				w.r.trySetFocused(true)
