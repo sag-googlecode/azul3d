@@ -16,7 +16,7 @@ extern void* openal_data[] asm("_binary_openal_start");
 	int _binary_openal_size;
 	void* openal_data_size = (void*)1619557; // hard-coded file size in bytes
 #else
-	//extern void* openal_data_size[] asm("_binary_openal_size");
+	extern void* openal_data_size[] asm("_binary_openal_size");
 #endif
 
 
