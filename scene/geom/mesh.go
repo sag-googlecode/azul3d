@@ -292,7 +292,7 @@ func (m *Mesh) Transform(mat *math.Mat4) {
 
 	for vi, v := range m.Vertices {
 		vect := math.Vector3(v.X, v.Y, v.Z)
-		vect.TransformMat4(mat)
+		vect = vect.TransformMat4(mat)
 		m.Vertices[vi] = Vertex{vect.X, vect.Y, vect.Z}
 	}
 }
