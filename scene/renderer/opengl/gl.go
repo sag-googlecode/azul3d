@@ -120,7 +120,8 @@ func (r *Renderer) drawGeom(current *sortedGeom) {
 
 	// Add texture shader inputs, and drop textures that are not loaded
 	layeredTextures := texture.Textures(current.node)
-	count := 0
+	inputTextures := make([]int32, len(layeredTextures))
+	count := int32(0)
 	for layer, tex := range layeredTextures {
 		// If the texture is not loaded yet, then we simply never render with
 		// it.
@@ -142,13 +143,21 @@ func (r *Renderer) drawGeom(current *sortedGeom) {
 		}
 
 		// Add texture input
-		shader.SetInput(current.node, "Texture"+strconv.Itoa(count), int32(count))
+		inputTextures[count] = count
 		count++
 	}
 
+	shader.SetInput(current.node, "Textures", inputTextures)
 	shader.SetInput(current.node, "Projection", current.projection)
 	shader.SetInput(current.node, "ModelView", current.modelView)
 	shader.SetInput(current.node, "ModelViewProjection", current.modelViewProjection)
+
+	msTransparencySupport := false
+	if current.node.Transparency() == scene.Binary || !msTransparencySupport {
+		shader.SetInput(current.node, "BinaryTransparency", int32(1))
+	} else {
+		shader.SetInput(current.node, "BinaryTransparency", int32(0))
+	}
 
 	r.updateShaderInputs(current.node, s, gls)
 

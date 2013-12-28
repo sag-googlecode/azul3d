@@ -36,7 +36,8 @@ uniform mat4 ModelViewProjection;
 void main()
 {
 	tc0 = TextureCoord0.xy;
-	gl_Position = Projection * ModelView * Vertex;
+	//gl_FrontColor = Color;
+	gl_Position = ModelViewProjection * Vertex;
 }
 `), shader.Vertex)
 
@@ -50,14 +51,22 @@ void main()
 
 varying vec2 tc0;
 
-uniform sampler2D Texture0;
-uniform sampler2D Texture1;
+const int NumTextures = 2;
+uniform sampler2D[NumTextures] Textures;
+uniform bool BinaryTransparency;
 
 void main()
 {
-	vec4 Color0 = texture2D(Texture0, tc0);
-	vec4 Color1 = texture2D(Texture1, tc0);
-	gl_FragColor = mix(Color0, Color1, Color1.a);
+	vec4 final;
+	for(int t = 0; t < NumTextures; t++) {
+		vec4 tc = texture2D(Textures[t], tc0);
+		final = mix(final, tc, tc.a);
+	}
+
+	if (BinaryTransparency && final.a < 0.5) {
+		discard;
+	}
+	gl_FragColor = final;
 }
 `), shader.Fragment)
 }

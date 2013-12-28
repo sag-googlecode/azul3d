@@ -97,12 +97,8 @@ func (s sortedGeoms) Less(i, j int) bool {
 
 	if a.node == nil {
 		return true
-	} else if b.node == nil {
-		return false
 	}
-
-	// Never gets here.
-	panic("Unable to sort geoms; reached end of function.")
+	return false
 }
 
 func (r *Renderer) sortGeoms(root *scene.Node, cameras []*scene.Node) sortedGeoms {
