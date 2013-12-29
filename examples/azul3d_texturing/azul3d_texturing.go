@@ -39,6 +39,9 @@ func createCube(name string, c color.Color) *scene.Node {
 	// Attach it to the geom.Node
 	geom.Add(geomNode, cube)
 
+	// Enable multisample transparency on the node
+	geomNode.SetTransparency(scene.Multisample)
+
 	// Load texture file
 	//
 	// You might try one of the following textures instead to increase load
