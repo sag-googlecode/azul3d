@@ -123,6 +123,9 @@ func (w *NativeWindow) open(screen *Screen) (err error) {
 }
 
 func (w *NativeWindow) doRebuildWindow() (err error) {
+	if w.hwnd != nil {
+		w.doDestroy()
+	}
 	w.glPixelFormatSet = false
 
 	// Make our window class
@@ -187,18 +190,22 @@ func (w *NativeWindow) doRebuildWindow() (err error) {
 	return
 }
 
+func (w *NativeWindow) doDestroy() {
+	win32.UnregisterWndProc(w.hwnd)
+	delete(windowsByHwnd, w.hwnd)
+
+	if !win32.DestroyWindow(w.hwnd) {
+		logger().Println("Unable to destroy window; DestroyWindow():", win32.GetLastErrorString())
+	}
+
+	if !win32.UnregisterClass(w.windowClass, hInstance) {
+		logger().Println("Failed to unregister window class; UnregisterClass():", win32.GetLastErrorString())
+	}
+}
+
 func (w *NativeWindow) destroy() {
 	dispatch(func() {
-		win32.UnregisterWndProc(w.hwnd)
-		delete(windowsByHwnd, w.hwnd)
-
-		if !win32.DestroyWindow(w.hwnd) {
-			logger().Println("Unable to destroy window; DestroyWindow():", win32.GetLastErrorString())
-		}
-
-		if !win32.UnregisterClass(w.windowClass, hInstance) {
-			logger().Println("Failed to unregister window class; UnregisterClass():", win32.GetLastErrorString())
-		}
+		w.doDestroy()
 	})
 }
 
@@ -306,7 +313,18 @@ func (w *NativeWindow) PixelBlit(x, y uint, image *image.RGBA) {
 		return
 	}
 
-	if !win32.TransparentBlt(
+	r := new(win32.RECT)
+	r.SetLeft(win32.LONG(x))
+	r.SetTop(win32.LONG(y))
+	r.SetRight(win32.LONG(x + width))
+	r.SetBottom(win32.LONG(y + height))
+	brush := win32.GetStockObject(win32.BLACK_BRUSH)
+	if !win32.FillRect(w.dc, r, win32.HBRUSH(brush)) {
+		logger().Println("PixelBlit(): FillRect():", win32.GetLastErrorString())
+		return
+	}
+
+	if !win32.AlphaBlend(
 		w.dc,
 		win32.Int(x),
 		win32.Int(y),
@@ -316,9 +334,13 @@ func (w *NativeWindow) PixelBlit(x, y uint, image *image.RGBA) {
 		0, 0,
 		win32.Int(width),
 		win32.Int(height),
-		0,
+		&win32.BLENDFUNCTION{
+			BlendOp:             win32.AC_SRC_OVER,
+			SourceConstantAlpha: 255,
+			AlphaFormat:         win32.AC_SRC_ALPHA,
+		},
 	) {
-		logger().Println("Unable to blit: TransparentBlt():", win32.GetLastErrorString())
+		logger().Println("PixelBlit(): AlphaBlend():", win32.GetLastErrorString())
 		return
 	}
 }
@@ -974,7 +996,7 @@ func (w *NativeWindow) doSetWindowPos() {
 
 	// |win32.SWP_NOZORDER|win32.SWP_NOOWNERZORDER
 	if !win32.SetWindowPos(w.hwnd, insertAfter, x, y, win32.Int(width), win32.Int(height), win32.SWP_FRAMECHANGED) {
-		logger().Println("Unable to set window position; SetWindowPos():", win32.GetLastErrorString())
+		//logger().Println("Unable to set window position; SetWindowPos():", win32.GetLastErrorString())
 	}
 }
 
