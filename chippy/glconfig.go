@@ -6,7 +6,87 @@ package chippy
 
 import (
 	"fmt"
+	"math"
+	"sort"
 )
+
+type sortedConfigs struct {
+	c   []*GLConfig
+	max *GLConfig
+}
+
+func (s sortedConfigs) Len() int      { return len(s.c) }
+func (s sortedConfigs) Swap(i, j int) { s.c[i], s.c[j] = s.c[j], s.c[i] }
+func (s sortedConfigs) Less(i, j int) bool {
+	// Sort in order
+	//
+	// Accelerated
+	// RedBits, GreenBits, BlueBits, AlphaBits
+	// DoubleBuffered
+	// Transparent
+	// Samples
+	// DepthBits
+	// StencilBits
+	// StereoScopic
+	// AccumRedBits, AccumGreenBits, AccumBlueBits, AccumAlphaBits
+	// AuxBuffers
+	distCmp := func(a, b, target uint8) bool {
+		return math.Abs(float64(a-target)) > math.Abs(float64(b-target))
+	}
+
+	boolCmp := func(a, b, target bool) bool {
+		return a == target
+	}
+
+	a := s.c[i]
+	b := s.c[j]
+	if a.Accelerated != b.Accelerated {
+		return boolCmp(a.Accelerated, b.Accelerated, s.max.Accelerated)
+	}
+	if a.RedBits != b.RedBits {
+		return distCmp(a.RedBits, b.RedBits, s.max.RedBits)
+	}
+	if a.GreenBits != b.GreenBits {
+		return distCmp(a.GreenBits, b.GreenBits, s.max.GreenBits)
+	}
+	if a.BlueBits != b.BlueBits {
+		return distCmp(a.BlueBits, b.BlueBits, s.max.BlueBits)
+	}
+	if a.AlphaBits != b.AlphaBits {
+		return distCmp(a.AlphaBits, b.AlphaBits, s.max.AlphaBits)
+	}
+	if a.DoubleBuffered != b.DoubleBuffered {
+		return boolCmp(a.DoubleBuffered, b.DoubleBuffered, s.max.DoubleBuffered)
+	}
+	if a.Transparent != b.Transparent {
+		return boolCmp(a.Transparent, b.Transparent, s.max.Transparent)
+	}
+	if a.Samples != b.Samples {
+		return distCmp(a.Samples, b.Samples, s.max.Samples)
+	}
+	if a.DepthBits != b.DepthBits {
+		return distCmp(a.DepthBits, b.DepthBits, s.max.DepthBits)
+	}
+	if a.StencilBits != b.StencilBits {
+		return distCmp(a.StencilBits, b.StencilBits, s.max.StencilBits)
+	}
+	if a.StereoScopic != b.StereoScopic {
+		return boolCmp(a.StereoScopic, b.StereoScopic, s.max.StereoScopic)
+	}
+	if a.AccumRedBits != b.AccumRedBits {
+		return distCmp(a.AccumRedBits, b.AccumRedBits, s.max.AccumRedBits)
+	}
+	if a.AccumGreenBits != b.AccumGreenBits {
+		return distCmp(a.AccumGreenBits, b.AccumGreenBits, s.max.AccumGreenBits)
+	}
+	if a.AccumBlueBits != b.AccumBlueBits {
+		return distCmp(a.AccumBlueBits, b.AccumBlueBits, s.max.AccumBlueBits)
+	}
+	if a.AccumAlphaBits != b.AccumAlphaBits {
+		return distCmp(a.AccumAlphaBits, b.AccumAlphaBits, s.max.AccumAlphaBits)
+	}
+	return distCmp(a.AuxBuffers, b.AuxBuffers, s.max.AuxBuffers)
+}
 
 // GLConfig represents an single opengl (frame buffer / pixel) configuration.
 type GLConfig struct {
@@ -188,6 +268,26 @@ var (
 // or nil will be returned if there is no configuration that is below
 // maxConfig's attributes.
 //
+// After the selection process excludes configurations below minConfig and
+// above maxConfig, the compatible configurations not excluded are sorted in
+// order of closest-to maxConfig in the order of the following configuration
+// attributes:
+//
+//  Accelerated
+//  RedBits, GreenBits, BlueBits, AlphaBits
+//  DoubleBuffered
+//  Transparent
+//  Samples
+//  DepthBits
+//  StencilBits
+//  StereoScopic
+//  AccumRedBits, AccumGreenBits, AccumBlueBits, AccumAlphaBits
+//  AuxBuffers
+//
+// And the first configuration in the sorted list is returned. (I.e. you are
+// most likely to recieve a Accelerated configuration, then one with high bytes
+// per pixel, then one who is DoubleBuffered, Transparent, and so forth).
+//
 // You may use the predefined GLWorstConfig and GLBestConfig variables if they
 // suite your case.
 func GLChooseConfig(possible []*GLConfig, minConfig, maxConfig *GLConfig) *GLConfig {
@@ -310,71 +410,11 @@ func GLChooseConfig(possible []*GLConfig, minConfig, maxConfig *GLConfig) *GLCon
 	}
 	possible = removed
 
-	// Sort by order of closest-to maxConfig in order of
-	//
-	// Accelerated
-	// RedBits, GreenBits, BlueBits, AlphaBits
-	// DoubleBuffered
-	// Samples
-	// DepthBits
-	// StencilBits
-	// Transparent
-	// StereoScopic
-	// AccumRedBits, AccumGreenBits, AccumBlueBits, AccumAlphaBits
-	// AuxBuffers
-
 	if len(possible) == 0 {
 		return nil
 	}
 
-	bc := possible[0]
-	for _, t := range possible {
-		if !t.Accelerated && bc.Accelerated {
-			continue
-		}
-
-		if t.RedBits < bc.RedBits || t.GreenBits < bc.GreenBits || t.BlueBits < bc.BlueBits || t.AlphaBits < bc.AlphaBits {
-			continue
-		}
-
-		if !t.DoubleBuffered && bc.DoubleBuffered {
-			continue
-		}
-
-		if t.Samples < bc.Samples {
-			continue
-		}
-
-		if t.DepthBits < bc.DepthBits {
-			continue
-		}
-
-		if t.StencilBits < bc.StencilBits {
-			continue
-		}
-
-		if !t.Transparent && bc.Transparent {
-			continue
-		}
-
-		if !t.StereoScopic && bc.StereoScopic {
-			continue
-		}
-
-		if t.AccumRedBits < bc.AccumRedBits || t.AccumGreenBits < bc.AccumGreenBits {
-			continue
-		}
-
-		if t.AccumBlueBits < bc.AccumBlueBits || t.AccumAlphaBits < bc.AccumAlphaBits {
-			continue
-		}
-
-		if t.AuxBuffers < bc.AuxBuffers {
-			continue
-		}
-
-		// Whew, so t is greater than bc (best config), store that one instead!
-		bc = t
-	}
-	return bc
+	sorted := sortedConfigs{possible, maxConfig}
+	sort.Sort(sorted)
+	return sorted.c[0]
 }
