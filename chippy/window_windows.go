@@ -73,17 +73,6 @@ func (w *NativeWindow) open(screen *Screen) (err error) {
 		if err != nil {
 			return
 		}
-		w.doMakeIcon()
-
-		supportRawInput := w32VersionMajor >= 5 && w32VersionMinor >= 1
-		if supportRawInput {
-			rid := win32.RAWINPUTDEVICE{}
-			rid.UsagePage = win32.HID_USAGE_PAGE_GENERIC
-			rid.Usage = win32.HID_USAGE_GENERIC_MOUSE
-			rid.Flags = win32.RIDEV_INPUTSINK
-			rid.Target = w.hwnd
-			win32.RegisterRawInputDevices(&rid, 1, win32.UINT(unsafe.Sizeof(rid)))
-		}
 
 		// To let the application know of current toggle key states, we need to send them right now
 		// otherwise they might already be on or off -- something the application might want to
@@ -186,6 +175,18 @@ func (w *NativeWindow) doRebuildWindow() (err error) {
 
 	windowsByHwnd[w.hwnd] = w
 	win32.RegisterWndProc(w.hwnd, mainWindowProc)
+
+	w.doMakeIcon()
+
+	supportRawInput := w32VersionMajor >= 5 && w32VersionMinor >= 1
+	if supportRawInput {
+		rid := win32.RAWINPUTDEVICE{}
+		rid.UsagePage = win32.HID_USAGE_PAGE_GENERIC
+		rid.Usage = win32.HID_USAGE_GENERIC_MOUSE
+		rid.Flags = win32.RIDEV_INPUTSINK
+		rid.Target = w.hwnd
+		win32.RegisterRawInputDevices(&rid, 1, win32.UINT(unsafe.Sizeof(rid)))
+	}
 
 	return
 }
