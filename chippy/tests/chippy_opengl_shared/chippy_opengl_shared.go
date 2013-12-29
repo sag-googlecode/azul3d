@@ -130,7 +130,7 @@ var MSAA = true
 func toggleMSAA() {
 	if MSAA {
 		MSAA = false
-		gl.Enable(opengl.MULTISAMPLE)
+		gl.Disable(opengl.MULTISAMPLE)
 	} else {
 		MSAA = true
 		gl.Enable(opengl.MULTISAMPLE)
