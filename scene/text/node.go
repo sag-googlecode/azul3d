@@ -219,6 +219,7 @@ func getObj(n *scene.Node) *textObject {
 
 // [foo]This sounds [u]great [/foo][b]because...[/u] it is. [[this has brackets]].[/b]
 func Set(n *scene.Node, text string) {
+	n.SetTransparency(scene.Multisample)
 	i, ok := n.Prop(PTextObject)
 	if !ok {
 		o := newTextObject(n)
