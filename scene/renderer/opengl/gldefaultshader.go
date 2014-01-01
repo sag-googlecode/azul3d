@@ -17,7 +17,7 @@ func init() {
 		 		=======================================================================
 	*/
 	defaultShader.SetSource([]byte(`
-#version 110
+#version 120
 
 attribute vec4 Vertex;
 attribute vec4 Normal;
@@ -47,7 +47,7 @@ void main()
 		 		=======================================================================
 	*/
 	defaultShader.SetSource([]byte(`
-#version 110
+#version 120
 
 varying vec2 tc0;
 
