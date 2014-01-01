@@ -92,8 +92,9 @@ func onCursorPosition(ev *event.Event) {
 		// cube.
 		sx, sy, sz := blue.Scale()
 
-		sx += math.Real(pos.X / 220)
-		sz += math.Real(-pos.Y / 220)
+		sx += math.Real(pos.X / 10)
+		sy += math.Real(-pos.Y / 10)
+		sz += math.Real(-pos.Y / 10)
 
 		blue.SetScale(sx, sy, sz)
 
@@ -102,8 +103,8 @@ func onCursorPosition(ev *event.Event) {
 		// cube.
 		shx, shy, shz := blue.Shear()
 
-		shy += math.Real(pos.X / 220)
-		shz += math.Real(-pos.Y / 220)
+		shy += math.Real(pos.X / 10)
+		shz += math.Real(-pos.Y / 10)
 
 		blue.SetShear(shx, shy, shz)
 
@@ -140,6 +141,22 @@ func resetTransforms(ev *event.Event) {
 func toggleCursorGrabbed(ev *event.Event) {
 	isGrabbed := azul3d.Window.CursorGrabbed()
 	azul3d.Window.SetCursorGrabbed(!isGrabbed)
+}
+
+// Event handler which toggles transparency
+func toggleTransparency(ev *event.Event) {
+	n := azul3d.Scene2d
+	switch n.Transparency() {
+	case scene.NoTransparency:
+		n.SetTransparency(scene.Transparency)
+	case scene.Transparency:
+		n.SetTransparency(scene.Binary)
+	case scene.Binary:
+		n.SetTransparency(scene.Multisample)
+	case scene.Multisample:
+		n.SetTransparency(scene.NoTransparency)
+	}
+	log.Println(n.Transparency())
 }
 
 // Our scene graph will look like this:
@@ -179,6 +196,9 @@ func program() {
 
 		// Listen for R key to reset transformations
 		"R": resetTransforms,
+
+		// Listen for T key to change transparency modes
+		"T": toggleTransparency,
 
 		// Listen for F key to try and free texture
 		"F": func(ev *event.Event) {
