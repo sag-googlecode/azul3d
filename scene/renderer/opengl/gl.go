@@ -41,6 +41,7 @@ type Renderer struct {
 	lcAccess                     sync.Mutex
 	gl                           *opengl.Context
 	width, height                int
+	glArbMultisample bool
 
 	texturesToFreeAccess     sync.RWMutex
 	texturesToFree           []uint32
@@ -152,11 +153,25 @@ func (r *Renderer) drawGeom(current *sortedGeom) {
 	shader.SetInput(current.node, "ModelView", current.modelView)
 	shader.SetInput(current.node, "ModelViewProjection", current.modelViewProjection)
 
-	msTransparencySupport := false
-	if current.node.Transparency() == scene.Binary || !msTransparencySupport {
+	transparency := current.node.ActiveTransparency()
+	if transparency == scene.Binary {
 		shader.SetInput(current.node, "BinaryTransparency", int32(1))
 	} else {
 		shader.SetInput(current.node, "BinaryTransparency", int32(0))
+	}
+
+	switch transparency {
+	case scene.Multisample:
+		if r.glArbMultisample {
+			r.gl.Enable(opengl.SAMPLE_ALPHA_TO_COVERAGE)
+			defer r.gl.Disable(opengl.SAMPLE_ALPHA_TO_COVERAGE)
+		} else {
+			shader.SetInput(current.node, "BinaryTransparency", int32(1))
+		}
+	case scene.Transparency:
+		r.gl.Enable(opengl.BLEND)
+		defer r.gl.Disable(opengl.BLEND)
+		r.gl.BlendFunc(opengl.SRC_ALPHA, opengl.ONE_MINUS_SRC_ALPHA)
 	}
 
 	r.updateShaderInputs(current.node, s, gls)
@@ -1208,6 +1223,11 @@ func NewRenderer(dcMakeCurrent, lcMakeCurrent func(current bool)) (*Renderer, er
 		return nil, fmt.Errorf("No support for OpenGL 2.0 found.")
 	}
 
+	r.glArbMultisample = r.gl.Extension("GL_ARB_multisample")
+	if r.glArbMultisample {
+		r.gl.Enable(opengl.MULTISAMPLE)
+	}
+
 	r.gl.Enable(opengl.TEXTURE_2D)
 	r.gl.Enable(opengl.SCISSOR_TEST)
 	r.gl.Enable(opengl.PROGRAM_POINT_SIZE)
@@ -1215,9 +1235,6 @@ func NewRenderer(dcMakeCurrent, lcMakeCurrent func(current bool)) (*Renderer, er
 	r.gl.ClearDepth(1.0)
 	r.gl.DepthFunc(opengl.LESS)
 	r.gl.Enable(opengl.DEPTH_TEST)
-
-	r.gl.Enable(opengl.BLEND)
-	r.gl.BlendFunc(opengl.SRC_ALPHA, opengl.ONE_MINUS_SRC_ALPHA)
 
 	var numFormats int32
 	r.gl.GetIntegerv(opengl.NUM_COMPRESSED_TEXTURE_FORMATS, &numFormats)
