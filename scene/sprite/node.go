@@ -77,6 +77,7 @@ func mustGetObj(n *scene.Node) *obj {
 
 func New(name string) *scene.Node {
 	n := scene.New(name)
+	n.SetTransparency(scene.Multisample)
 	o := new(obj)
 	o.stopPlaying = make(chan bool, 1)
 
