@@ -59,7 +59,7 @@ func init() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	libraryPath = filepath.Join(usr.HomeDir, ".openal")
+	libraryPath = filepath.Join(usr.HomeDir, ".azul3d")
 	libraryPath = filepath.Join(libraryPath, blobFileName)
 
 	// Check if the library already exists at that location -- if it does it

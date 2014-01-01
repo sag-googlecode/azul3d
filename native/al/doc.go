@@ -24,7 +24,7 @@
 //
 // You should simply inform your users where they can place their own
 // OpenAL-Soft dynamic link library for their specific platform, file named as
-// shown below, into their home directory under the ".openal" directory created
+// shown below, into their home directory under the ".azul3d" directory created
 // on their operating system's file system:
 //
 //  linux/amd64: libopenal_soft.so.1.15.1
