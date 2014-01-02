@@ -125,16 +125,16 @@ func (t *textObject) update() {
 		bearingX := math.Real(raster.HMetrics.BearingX)
 		bearingY := math.Real(raster.HMetrics.BearingY)
 
-		left := origin + bearingX
-		right := origin + bearingX + math.Real(sz.X)
-		bottom := -(math.Real(sz.Y) - bearingY)
-		top := bearingY
+		left := float32(origin + bearingX)
+		right := float32(origin + bearingX + math.Real(sz.X))
+		bottom := float32(-(math.Real(sz.Y) - bearingY))
+		top := float32(bearingY)
 		//log.Println(bottom, top)
 
 		if index > 0 {
 			x, y := Kerning(last, r, DefaultOptions)
-			left += math.Real(x)
-			bottom += math.Real(y)
+			left += float32(x)
+			bottom += float32(y)
 		}
 
 		origin += math.Real(raster.HMetrics.Advance)
