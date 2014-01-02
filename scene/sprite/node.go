@@ -116,8 +116,8 @@ func SetSize(n *scene.Node, width, height math.Real) {
 	defer o.Unlock()
 
 	o.updateLater()
-	o.patches.Width = width
-	o.patches.Height = height
+	o.patches.Width = float32(width)
+	o.patches.Height = float32(height)
 }
 
 func Size(n *scene.Node) (width, height math.Real) {
@@ -125,7 +125,7 @@ func Size(n *scene.Node) (width, height math.Real) {
 	o.RLock()
 	defer o.RUnlock()
 
-	return o.patches.Width, o.patches.Height
+	return math.Real(o.patches.Width), math.Real(o.patches.Height)
 }
 
 func TotalSize(n *scene.Node) (width, height math.Real) {
@@ -135,7 +135,7 @@ func TotalSize(n *scene.Node) (width, height math.Real) {
 
 	w := o.patches.Width + o.patches.Left + o.patches.Right
 	h := o.patches.Height + o.patches.Bottom + o.patches.Top
-	return w, h
+	return math.Real(w), math.Real(h)
 }
 
 func SetBorders(n *scene.Node, left, right, bottom, top math.Real) {
@@ -144,10 +144,10 @@ func SetBorders(n *scene.Node, left, right, bottom, top math.Real) {
 	defer o.Unlock()
 
 	o.updateLater()
-	o.patches.Left = left
-	o.patches.Right = right
-	o.patches.Bottom = bottom
-	o.patches.Top = top
+	o.patches.Left = float32(left)
+	o.patches.Right = float32(right)
+	o.patches.Bottom = float32(bottom)
+	o.patches.Top = float32(top)
 }
 
 func Borders(n *scene.Node) (left, right, bottom, top math.Real) {
@@ -155,7 +155,8 @@ func Borders(n *scene.Node) (left, right, bottom, top math.Real) {
 	o.RLock()
 	defer o.RUnlock()
 
-	return o.patches.Left, o.patches.Right, o.patches.Bottom, o.patches.Top
+	p := o.patches
+	return math.Real(p.Left), math.Real(p.Right), math.Real(p.Bottom), math.Real(p.Top)
 }
 
 func ClearBorders(n *scene.Node) {

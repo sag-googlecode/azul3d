@@ -14,13 +14,13 @@ import (
 // Patches describes the size of the patches in an nine-patch mesh.
 type Patches struct {
 	// Width and height of center patch.
-	Width, Height math.Real
+	Width, Height float32
 
 	// Width of left and right patches.
-	Left, Right math.Real
+	Left, Right float32
 
 	// Height of bottom and top patches.
-	Bottom, Top math.Real
+	Bottom, Top float32
 }
 
 // Regions describes the texture regions of all nine patches of an nine-patch
@@ -42,7 +42,7 @@ type Regions struct {
 // patches, then an procedural.Card() is returned instead of an nine-patch
 // mesh.
 func Ninepatch(p *Patches, r *Regions, hint geom.Hint) *geom.Mesh {
-	if p.Left.Equals(0) && p.Right.Equals(0) && p.Bottom.Equals(0) && p.Top.Equals(0) {
+	if math.Real(p.Left).Equals(0) && math.Real(p.Right).Equals(0) && math.Real(p.Bottom).Equals(0) && math.Real(p.Top).Equals(0) {
 		w2 := p.Width / 2
 		h2 := p.Height / 2
 		return procedural.Card(-w2, w2, -h2, h2, r.Center, hint)
