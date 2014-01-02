@@ -146,7 +146,7 @@ func Handle(eventName interface{}, handler func(*Event)) (stop func()) {
 // This is a simple wrapper around the Handle() function for convenience.
 func Define(h Handlers) (stop func()) {
 	if len(h) == 0 {
-		return
+		return func() {}
 	}
 	stoppers := make([]func(), len(h))
 	i := 0

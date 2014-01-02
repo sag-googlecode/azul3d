@@ -31,3 +31,12 @@ func TestEvent(t *testing.T) {
 		t.Fail()
 	}
 }
+
+func TestStopZero(t *testing.T) {
+	var zeroHandlers Handlers
+	stop := Define(zeroHandlers)
+	if stop == nil {
+		t.Log("Define() returned nil for zero handlers!")
+		t.Fail()
+	}
+}
