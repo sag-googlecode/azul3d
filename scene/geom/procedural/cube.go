@@ -5,13 +5,12 @@
 package procedural
 
 import (
-	"code.google.com/p/azul3d/math"
 	"code.google.com/p/azul3d/scene/geom"
 	"code.google.com/p/azul3d/scene/texture"
 )
 
 // Cube builds and returns an new 3D cube mesh.
-func Cube(scale math.Real, hint geom.Hint) *geom.Mesh {
+func Cube(scale float32, hint geom.Hint) *geom.Mesh {
 	s := scale
 
 	vertices := []geom.Vertex{

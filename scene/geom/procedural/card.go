@@ -5,13 +5,12 @@
 package procedural
 
 import (
-	"code.google.com/p/azul3d/math"
 	"code.google.com/p/azul3d/scene/geom"
 	"code.google.com/p/azul3d/scene/texture"
 )
 
 // Card builds and returns an new textured card mesh.
-func Card(left, right, bottom, top math.Real, tex texture.Region, hint geom.Hint) *geom.Mesh {
+func Card(left, right, bottom, top float32, tex texture.Region, hint geom.Hint) *geom.Mesh {
 	l, r, b, t := left, right, bottom, top
 
 	indices := []uint32{
