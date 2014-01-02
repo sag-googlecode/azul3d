@@ -6,6 +6,8 @@
 
 package math
 
+import "math"
+
 // Real represents an 64 bit or 32 bit floating point number, based on weather the build tag
 // "float64" is present.
 //
