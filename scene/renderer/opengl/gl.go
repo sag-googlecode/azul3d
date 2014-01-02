@@ -41,7 +41,7 @@ type Renderer struct {
 	lcAccess                     sync.Mutex
 	gl                           *opengl.Context
 	width, height                int
-	glArbMultisample bool
+	glArbMultisample             bool
 
 	texturesToFreeAccess     sync.RWMutex
 	texturesToFree           []uint32
