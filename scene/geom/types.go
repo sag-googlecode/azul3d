@@ -4,13 +4,9 @@
 
 package geom
 
-import (
-	"code.google.com/p/azul3d/math"
-)
-
 // Vertex represents a single vertex.
 type Vertex struct {
-	X, Y, Z math.Real
+	X, Y, Z float32
 }
 
 // Normal represents a single surface normal.

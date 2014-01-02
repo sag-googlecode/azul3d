@@ -278,7 +278,10 @@ func (m *Mesh) MakePixelPerfect() {
 	defer m.Unlock()
 
 	for vi, v := range m.Vertices {
-		m.Vertices[vi] = Vertex{v.X.Rounded() + 0.5, v.Y.Rounded() + 0.5, v.Z.Rounded() + 0.5}
+		rx := float32(math.Real(v.X).Rounded())
+		ry := float32(math.Real(v.Y).Rounded())
+		rz := float32(math.Real(v.Z).Rounded())
+		m.Vertices[vi] = Vertex{rx + +0.5, ry + 0.5, rz + 0.5}
 	}
 }
 
@@ -291,9 +294,9 @@ func (m *Mesh) Transform(mat *math.Mat4) {
 	defer m.Unlock()
 
 	for vi, v := range m.Vertices {
-		vect := math.Vector3(v.X, v.Y, v.Z)
+		vect := math.Vector3(math.Real(v.X), math.Real(v.Y), math.Real(v.Z))
 		vect = vect.TransformMat4(mat)
-		m.Vertices[vi] = Vertex{vect.X, vect.Y, vect.Z}
+		m.Vertices[vi] = Vertex{float32(vect.X), float32(vect.Y), float32(vect.Z)}
 	}
 }
 
@@ -347,22 +350,26 @@ func (m *Mesh) CalculateBounds() {
 		min := new(math.Vec3)
 		max := new(math.Vec3)
 		for _, vert := range m.Vertices {
-			if vert.X < min.X {
-				min.X = vert.X
-			} else if vert.X > max.X {
-				max.X = vert.X
+			vx := math.Real(vert.X)
+			vy := math.Real(vert.Y)
+			vz := math.Real(vert.Z)
+
+			if vx < min.X {
+				min.X = vx
+			} else if vx > max.X {
+				max.X = vx
 			}
 
-			if vert.Y < min.Y {
-				min.Y = vert.Y
-			} else if vert.Y > max.Y {
-				max.Y = vert.Y
+			if vy < min.Y {
+				min.Y = vy
+			} else if vy > max.Y {
+				max.Y = vy
 			}
 
-			if vert.Z < min.Z {
-				min.Z = vert.Z
-			} else if vert.Z > max.Z {
-				max.Z = vert.Z
+			if vz < min.Z {
+				min.Z = vz
+			} else if vz > max.Z {
+				max.Z = vz
 			}
 		}
 		bb.Min = min
