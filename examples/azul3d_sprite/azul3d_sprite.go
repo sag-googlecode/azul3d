@@ -8,6 +8,7 @@ import (
 	"code.google.com/p/azul3d/math"
 	"code.google.com/p/azul3d/scene"
 	"code.google.com/p/azul3d/scene/camera"
+	"code.google.com/p/azul3d/scene/geom/procedural"
 	"code.google.com/p/azul3d/scene/renderer"
 	"code.google.com/p/azul3d/scene/sprite"
 	"code.google.com/p/azul3d/scene/texture"
@@ -152,7 +153,7 @@ func program() {
 		log.Println("Loaded the texture.")
 
 		// Configure where the texture will show
-		sprite.SetTextureRegions(player, &sprite.Regions{
+		sprite.SetTextureRegions(player, &procedural.NineRegions{
 			Center: tex.Region(0, 0, 128, 128),
 		})
 

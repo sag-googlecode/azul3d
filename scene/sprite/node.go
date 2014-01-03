@@ -9,6 +9,7 @@ import (
 	"code.google.com/p/azul3d/math"
 	"code.google.com/p/azul3d/scene"
 	"code.google.com/p/azul3d/scene/geom"
+	"code.google.com/p/azul3d/scene/geom/procedural"
 	"code.google.com/p/azul3d/scene/texture"
 	"sync"
 	"time"
@@ -19,8 +20,8 @@ type obj struct {
 	node    *scene.Node
 	updated bool
 	mesh    *geom.Mesh
-	patches *Patches
-	regions *Regions
+	patches *procedural.NinePatches
+	regions *procedural.NineRegions
 
 	frames           []texture.Region
 	currentFrame     int
@@ -32,7 +33,7 @@ type obj struct {
 
 func (o *obj) update() {
 	geom.Remove(o.node, o.mesh)
-	o.mesh = Ninepatch(o.patches, o.regions, geom.Dynamic)
+	o.mesh = procedural.Ninepatch(o.patches, o.regions, geom.Dynamic)
 
 	o.mesh.MakePixelPerfect()
 
@@ -81,12 +82,12 @@ func New(name string) *scene.Node {
 	o := new(obj)
 	o.stopPlaying = make(chan bool, 1)
 
-	o.patches = &Patches{
+	o.patches = &procedural.NinePatches{
 		Width:  100,
 		Height: 100,
 	}
 
-	o.regions = &Regions{
+	o.regions = &procedural.NineRegions{
 		Center: texture.Region{0, 0, 1, 1},
 	}
 
@@ -163,7 +164,7 @@ func ClearBorders(n *scene.Node) {
 	SetBorders(n, 0, 0, 0, 0)
 }
 
-func SetTextureRegions(n *scene.Node, regions *Regions) {
+func SetTextureRegions(n *scene.Node, regions *procedural.NineRegions) {
 	o := mustGetObj(n)
 	o.Lock()
 	defer o.Unlock()
@@ -174,7 +175,7 @@ func SetTextureRegions(n *scene.Node, regions *Regions) {
 	o.regions = &cpy
 }
 
-func TextureRegions(n *scene.Node) *Regions {
+func TextureRegions(n *scene.Node) *procedural.NineRegions {
 	o := mustGetObj(n)
 	o.RLock()
 	defer o.RUnlock()
@@ -270,7 +271,7 @@ func SetFrame(n *scene.Node, frame int) {
 
 	o.Unlock()
 
-	SetTextureRegions(n, &Regions{
+	SetTextureRegions(n, &procedural.NineRegions{
 		Center: FrameRegion(n, Frame(n)),
 	})
 }

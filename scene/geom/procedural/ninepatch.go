@@ -2,17 +2,16 @@
 // This source code is subject to the terms and
 // conditions defined in the "License.txt" file.
 
-package sprite
+package procedural
 
 import (
 	"code.google.com/p/azul3d/math"
 	"code.google.com/p/azul3d/scene/geom"
-	"code.google.com/p/azul3d/scene/geom/procedural"
 	"code.google.com/p/azul3d/scene/texture"
 )
 
-// Patches describes the size of the patches in an nine-patch mesh.
-type Patches struct {
+// NinePatches describes the size of the patches in an nine-patch mesh.
+type NinePatches struct {
 	// Width and height of center patch.
 	Width, Height float32
 
@@ -23,9 +22,9 @@ type Patches struct {
 	Bottom, Top float32
 }
 
-// Regions describes the texture regions of all nine patches of an nine-patch
+// NineRegions describes the texture regions of all nine patches of an nine-patch
 // mesh.
-type Regions struct {
+type NineRegions struct {
 	// Region of center patch.
 	Center texture.Region
 
@@ -39,13 +38,13 @@ type Regions struct {
 // Ninepatch builds and returns an new nine patch geom
 //
 // If width and height are the only non-zero demensions specified in the
-// patches, then an procedural.Card() is returned instead of an nine-patch
+// patches, then an Card() is returned instead of an nine-patch
 // mesh.
-func Ninepatch(p *Patches, r *Regions, hint geom.Hint) *geom.Mesh {
+func Ninepatch(p *NinePatches, r *NineRegions, hint geom.Hint) *geom.Mesh {
 	if math.Real(p.Left).Equals(0) && math.Real(p.Right).Equals(0) && math.Real(p.Bottom).Equals(0) && math.Real(p.Top).Equals(0) {
 		w2 := p.Width / 2
 		h2 := p.Height / 2
-		return procedural.Card(-w2, w2, -h2, h2, r.Center, hint)
+		return Card(-w2, w2, -h2, h2, r.Center, hint)
 	}
 
 	// ------------------------------------
