@@ -122,6 +122,11 @@ func (w *NativeWindow) doRebuildWindow() (err error) {
 	windowClass := win32.NewWNDCLASSEX()
 	windowClass.SetLpfnWndProc()
 	windowClass.SetHbrBackground(win32.CreateSolidBrush(0x00000000))
+
+	// CS_OWNDC is needed to avoid some bugs with multiple windows, older
+	// versions of windows, and some different (archaic?) graphics drivers.
+	windowClass.SetStyle(win32.CS_OWNDC)
+
 	//windowClass.SetHIcon(win32.LoadIcon(hInstance, szAppName))
 	//windowClass.SetHCursor(win32.LoadCursor(nil, win32.IDC_ARROW))
 	//windowClass.SetHbrBackground(win32.IntToHBRUSH(win32.COLOR_WINDOW+2)) // Black background
