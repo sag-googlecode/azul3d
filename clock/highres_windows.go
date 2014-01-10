@@ -35,6 +35,8 @@ const (
 	// with bugged BIOS will eventually give us the correct processor value after one of these
 	// attempts.
 	hrAttempts = 4
+
+	minDelta = 100 * time.Microsecond
 )
 
 var (
@@ -42,7 +44,16 @@ var (
 	freqNs         float64
 	doFallback     bool
 	lastQueryValue time.Duration
+	programStart   = time.Now()
 )
+
+func highResTimeFallback() time.Duration {
+	s := time.Since(programStart)
+	if s < minDelta {
+		s = minDelta
+	}
+	return s
+}
 
 func init() {
 	if C.QueryPerformanceCounter((*C.LARGE_INTEGER)(unsafe.Pointer(&start))) == 0 {
