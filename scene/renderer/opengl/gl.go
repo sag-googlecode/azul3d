@@ -58,8 +58,8 @@ type Renderer struct {
 	lastScissorX, lastScissorY, lastScissorWidth, lastScissorHeight     uint
 	lastViewportX, lastViewportY, lastViewportWidth, lastViewportHeight uint
 
-	maxTextureCoords, maxTextureLayers, maxTextureSize, maxMemoryBytes int
-	gpuName, gpuVendorName                                             string
+	maxTextureSize         int
+	gpuName, gpuVendorName string
 }
 
 func (r *Renderer) useRegion(region *camera.Region) {
@@ -809,87 +809,121 @@ func (r *Renderer) updateShaderInput(gls *GLShader, name string, value interface
 	case float32:
 		r.gl.Uniform1fv(location, 1, &v)
 	case []float32:
-		r.gl.Uniform1fv(location, uint32(len(v)), &v[0])
+		if len(v) > 0 {
+			r.gl.Uniform1fv(location, uint32(len(v)), &v[0])
+		}
 
 	case shader.Vec2:
 		r.gl.Uniform2fv(location, 1, &v[0])
 	case []shader.Vec2:
-		r.gl.Uniform2fv(location, uint32(len(v)), &v[0][0])
+		if len(v) > 0 {
+			r.gl.Uniform2fv(location, uint32(len(v)), &v[0][0])
+		}
 
 	case shader.Vec3:
 		r.gl.Uniform3fv(location, 1, &v[0])
 	case []shader.Vec3:
-		r.gl.Uniform3fv(location, uint32(len(v)), &v[0][0])
+		if len(v) > 0 {
+			r.gl.Uniform3fv(location, uint32(len(v)), &v[0][0])
+		}
 
 	case shader.Vec4:
 		r.gl.Uniform4fv(location, 1, &v[0])
 	case []shader.Vec4:
-		r.gl.Uniform4fv(location, uint32(len(v)), &v[0][0])
+		if len(v) > 0 {
+			r.gl.Uniform4fv(location, uint32(len(v)), &v[0][0])
+		}
 
 	case int32:
 		r.gl.Uniform1iv(location, 1, &v)
 	case []int32:
-		r.gl.Uniform1iv(location, uint32(len(v)), &v[0])
+		if len(v) > 0 {
+			r.gl.Uniform1iv(location, uint32(len(v)), &v[0])
+		}
 
 	case shader.Vec2i:
 		r.gl.Uniform2iv(location, 1, &v[0])
 	case []shader.Vec2i:
-		r.gl.Uniform2iv(location, uint32(len(v)), &v[0][0])
+		if len(v) > 0 {
+			r.gl.Uniform2iv(location, uint32(len(v)), &v[0][0])
+		}
 
 	case shader.Vec3i:
 		r.gl.Uniform3iv(location, 1, &v[0])
 	case []shader.Vec3i:
-		r.gl.Uniform3iv(location, uint32(len(v)), &v[0][0])
+		if len(v) > 0 {
+			r.gl.Uniform3iv(location, uint32(len(v)), &v[0][0])
+		}
 
 	case shader.Vec4i:
 		r.gl.Uniform4iv(location, 1, &v[0])
 	case []shader.Vec4i:
-		r.gl.Uniform4iv(location, uint32(len(v)), &v[0][0])
+		if len(v) > 0 {
+			r.gl.Uniform4iv(location, uint32(len(v)), &v[0][0])
+		}
 
 	case uint32:
 		r.gl.Uniform1uiv(location, 1, &v)
 	case []uint32:
-		r.gl.Uniform1uiv(location, uint32(len(v)), &v[0])
+		if len(v) > 0 {
+			r.gl.Uniform1uiv(location, uint32(len(v)), &v[0])
+		}
 
 	case shader.Vec2ui:
 		r.gl.Uniform2uiv(location, 1, &v[0])
 	case []shader.Vec2ui:
-		r.gl.Uniform2uiv(location, uint32(len(v)), &v[0][0])
+		if len(v) > 0 {
+			r.gl.Uniform2uiv(location, uint32(len(v)), &v[0][0])
+		}
 
 	case shader.Vec3ui:
 		r.gl.Uniform3uiv(location, 1, &v[0])
 	case []shader.Vec3ui:
-		r.gl.Uniform3uiv(location, uint32(len(v)), &v[0][0])
+		if len(v) > 0 {
+			r.gl.Uniform3uiv(location, uint32(len(v)), &v[0][0])
+		}
 
 	case shader.Vec4ui:
 		r.gl.Uniform4uiv(location, 1, &v[0])
 	case []shader.Vec4ui:
-		r.gl.Uniform4uiv(location, uint32(len(v)), &v[0][0])
+		if len(v) > 0 {
+			r.gl.Uniform4uiv(location, uint32(len(v)), &v[0][0])
+		}
 
 	case shader.Mat2:
 		r.gl.UniformMatrix2fv(location, 1, opengl.GLBool(false), &v[0][0])
 	case []shader.Mat2:
-		r.gl.UniformMatrix2fv(location, uint32(len(v)), opengl.GLBool(false), &v[0][0][0])
+		if len(v) > 0 {
+			r.gl.UniformMatrix2fv(location, uint32(len(v)), opengl.GLBool(false), &v[0][0][0])
+		}
 
 	case shader.Mat3:
 		r.gl.UniformMatrix3fv(location, 1, opengl.GLBool(false), &v[0][0])
 	case []shader.Mat3:
-		r.gl.UniformMatrix3fv(location, uint32(len(v)), opengl.GLBool(false), &v[0][0][0])
+		if len(v) > 0 {
+			r.gl.UniformMatrix3fv(location, uint32(len(v)), opengl.GLBool(false), &v[0][0][0])
+		}
 
 	case shader.Mat4:
 		r.gl.UniformMatrix4fv(location, 1, opengl.GLBool(false), &v[0][0])
 	case []shader.Mat4:
-		r.gl.UniformMatrix4fv(location, uint32(len(v)), opengl.GLBool(false), &v[0][0][0])
+		if len(v) > 0 {
+			r.gl.UniformMatrix4fv(location, uint32(len(v)), opengl.GLBool(false), &v[0][0][0])
+		}
 
 	case shader.Mat2x3:
 		r.gl.UniformMatrix2x3fv(location, 1, opengl.GLBool(false), &v[0][0])
 	case []shader.Mat2x3:
-		r.gl.UniformMatrix2x3fv(location, uint32(len(v)), opengl.GLBool(false), &v[0][0][0])
+		if len(v) > 0 {
+			r.gl.UniformMatrix2x3fv(location, uint32(len(v)), opengl.GLBool(false), &v[0][0][0])
+		}
 
 	case shader.Mat3x2:
 		r.gl.UniformMatrix3x2fv(location, 1, opengl.GLBool(false), &v[0][0])
 	case []shader.Mat3x2:
-		r.gl.UniformMatrix3x2fv(location, uint32(len(v)), opengl.GLBool(false), &v[0][0][0])
+		if len(v) > 0 {
+			r.gl.UniformMatrix3x2fv(location, uint32(len(v)), opengl.GLBool(false), &v[0][0][0])
+		}
 
 	case shader.Mat2x4:
 		r.gl.UniformMatrix2x4fv(location, 1, opengl.GLBool(false), &v[0][0])
@@ -899,17 +933,23 @@ func (r *Renderer) updateShaderInput(gls *GLShader, name string, value interface
 	case shader.Mat4x2:
 		r.gl.UniformMatrix4x2fv(location, 1, opengl.GLBool(false), &v[0][0])
 	case []shader.Mat4x2:
-		r.gl.UniformMatrix4x2fv(location, uint32(len(v)), opengl.GLBool(false), &v[0][0][0])
+		if len(v) > 0 {
+			r.gl.UniformMatrix4x2fv(location, uint32(len(v)), opengl.GLBool(false), &v[0][0][0])
+		}
 
 	case shader.Mat3x4:
 		r.gl.UniformMatrix3x4fv(location, 1, opengl.GLBool(false), &v[0][0])
 	case []shader.Mat3x4:
-		r.gl.UniformMatrix3x4fv(location, uint32(len(v)), opengl.GLBool(false), &v[0][0][0])
+		if len(v) > 0 {
+			r.gl.UniformMatrix3x4fv(location, uint32(len(v)), opengl.GLBool(false), &v[0][0][0])
+		}
 
 	case shader.Mat4x3:
 		r.gl.UniformMatrix4x3fv(location, 1, opengl.GLBool(false), &v[0][0])
 	case []shader.Mat4x3:
-		r.gl.UniformMatrix4x3fv(location, uint32(len(v)), opengl.GLBool(false), &v[0][0][0])
+		if len(v) > 0 {
+			r.gl.UniformMatrix4x3fv(location, uint32(len(v)), opengl.GLBool(false), &v[0][0][0])
+		}
 
 	default:
 		panic("Invalid shader input type!")
