@@ -53,3 +53,36 @@ func (r *Renderer) MaxTextureSize() int {
 	r.maxTextureSize = int(maxTextureSize)
 	return r.maxTextureSize
 }
+
+func (r *Renderer) GLSLMaxVaryingFloats() int {
+	if r.glslMaxVaryingFloats != 0 {
+		return r.glslMaxVaryingFloats
+	}
+
+	var glslMaxVaryingFloats int32
+	r.gl.GetIntegerv(opengl.MAX_VARYING_FLOATS, &glslMaxVaryingFloats)
+	r.glslMaxVaryingFloats = int(glslMaxVaryingFloats)
+	return r.glslMaxVaryingFloats
+}
+
+func (r *Renderer) GLSLMaxVertexShaderInputs() int {
+	if r.glslMaxVertexShaderInputs != 0 {
+		return r.glslMaxVertexShaderInputs
+	}
+
+	var glslMaxVertexShaderInputs int32
+	r.gl.GetIntegerv(opengl.MAX_VERTEX_UNIFORM_COMPONENTS, &glslMaxVertexShaderInputs)
+	r.glslMaxVertexShaderInputs = int(glslMaxVertexShaderInputs)
+	return r.glslMaxVertexShaderInputs
+}
+
+func (r *Renderer) GLSLMaxFragmentShaderInputs() int {
+	if r.glslMaxFragmentShaderInputs != 0 {
+		return r.glslMaxFragmentShaderInputs
+	}
+
+	var glslMaxFragmentShaderInputs int32
+	r.gl.GetIntegerv(opengl.MAX_FRAGMENT_UNIFORM_COMPONENTS, &glslMaxFragmentShaderInputs)
+	r.glslMaxFragmentShaderInputs = int(glslMaxFragmentShaderInputs)
+	return r.glslMaxFragmentShaderInputs
+}

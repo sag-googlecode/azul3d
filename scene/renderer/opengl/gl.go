@@ -58,7 +58,9 @@ type Renderer struct {
 	lastScissorX, lastScissorY, lastScissorWidth, lastScissorHeight     uint
 	lastViewportX, lastViewportY, lastViewportWidth, lastViewportHeight uint
 
-	maxTextureSize         int
+	maxTextureSize, glslMaxVaryingFloats, glslMaxVertexShaderInputs,
+	glslMaxFragmentShaderInputs int
+
 	gpuName, gpuVendorName string
 }
 
