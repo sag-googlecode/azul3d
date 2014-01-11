@@ -52,3 +52,32 @@ func GLSLVersion(n *scene.Node) (major, minor int) {
 	o := mustGetObj(n)
 	return o.glslMajorVersion, o.glslMinorVersion
 }
+
+// GLSLMaxVaryingFloats returns the maximum number of floating point variables
+// available for varying variables inside GLSL programs.
+//
+// Always at least 32.
+func GLSLMaxVaryingFloats(n *scene.Node) int {
+	o := mustGetObj(n)
+	return o.glslMaxVaryingFloats
+}
+
+// GLSLMaxVertexShaderInputs returns the maximum number of shader inputs (i.e.
+// floating point values, e.g. a 4x4 matrix is 16 inputs) that can be used
+// inside a GLSL vertex shader.
+//
+// Always at least 512.
+func GLSLMaxVertexShaderInputs(n *scene.Node) int {
+	o := mustGetObj(n)
+	return o.glslMaxVertexShaderInputs
+}
+
+// GLSLMaxFragmentShaderInputs returns the maximum number of shader inputs (i.e.
+// floating point values, e.g. a 4x4 matrix is 16 inputs) that can be used
+// inside a GLSL fragment shader.
+//
+// Always at least 64.
+func GLSLMaxFragmentShaderInputs(n *scene.Node) int {
+	o := mustGetObj(n)
+	return o.glslMaxFragmentShaderInputs
+}

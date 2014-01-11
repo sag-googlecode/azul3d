@@ -37,6 +37,9 @@ type backend interface {
 	GPUDriverVersion() int
 	GLVersion() (major, minor int)
 	GLSLVersion() (major, minor int)
+	GLSLMaxVaryingFloats() int
+	GLSLMaxVertexShaderInputs() int
+	GLSLMaxFragmentShaderInputs() int
 	GLExtensions() []string
 }
 
@@ -66,7 +69,9 @@ type obj struct {
 	vsync        chippy.VSyncMode
 
 	maxTextureSize, gpuDriverVersion, glMajorVersion, glMinorVersion,
-	glslMajorVersion, glslMinorVersion int
+	glslMajorVersion, glslMinorVersion, glslMaxVaryingFloats,
+	glslMaxVertexShaderInputs, glslMaxFragmentShaderInputs int
+
 	gpuName, gpuVendor string
 	glExtensions       []string
 
@@ -460,6 +465,10 @@ func (o *obj) setup() error {
 			o.glExtensions = render.GLExtensions()
 			o.glMajorVersion, o.glMinorVersion = render.GLVersion()
 			o.glslMajorVersion, o.glslMinorVersion = render.GLSLVersion()
+
+			o.glslMaxVaryingFloats = render.GLSLMaxVaryingFloats()
+			o.glslMaxVertexShaderInputs = render.GLSLMaxVertexShaderInputs()
+			o.glslMaxFragmentShaderInputs = render.GLSLMaxFragmentShaderInputs()
 		}
 	}
 	<-o.rendererCreateComplete
