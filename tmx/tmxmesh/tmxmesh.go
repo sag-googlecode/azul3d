@@ -129,8 +129,8 @@ func Load(m *tmx.Map, c *Config, tsImages map[string]*image.RGBA) *scene.Node {
 						texturedNodes[tex] = tsImageNode
 					}
 
-					halfWidth := math.Real(tileset.Width) / 2
-					halfHeight := math.Real(tileset.Height) / 2
+					halfWidth := float32(tileset.Width) / 2
+					halfHeight := float32(tileset.Height) / 2
 					card := procedural.Card(-halfWidth, halfWidth, -halfHeight, halfHeight, region, geom.Static)
 
 					// apply necessary flips
@@ -162,8 +162,8 @@ func Load(m *tmx.Map, c *Config, tsImages map[string]*image.RGBA) *scene.Node {
 
 					// Move the card,
 					trans = math.Mat4Identity.Copy()
-					tileX := math.Real(x*m.TileWidth) + halfWidth
-					tileY := -math.Real(y*m.TileHeight) - halfHeight
+					tileX := math.Real(x*m.TileWidth) + math.Real(halfWidth)
+					tileY := -math.Real(y*m.TileHeight) - math.Real(halfHeight)
 					tileLayerOffset := -0.25 * float64(x) // * float64(x * y)
 					trans.SetTranslation(math.Vector3(tileX, math.Real(tileLayerOffset), tileY))
 					card.Transform(trans)
