@@ -10,7 +10,6 @@ import (
 	"code.google.com/p/azul3d/chippy/thirdparty/resize"
 	"code.google.com/p/azul3d/chippy/wrappers/x11"
 	"errors"
-	"fmt"
 	"image"
 	"image/draw"
 	"math"
