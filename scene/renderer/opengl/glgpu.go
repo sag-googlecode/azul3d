@@ -50,6 +50,7 @@ func (r *Renderer) MaxTextureSize() int {
 
 	var maxTextureSize int32
 	r.gl.GetIntegerv(opengl.MAX_TEXTURE_SIZE, &maxTextureSize)
+	r.gl.Execute()
 	r.maxTextureSize = int(maxTextureSize)
 	return r.maxTextureSize
 }
@@ -61,6 +62,7 @@ func (r *Renderer) GLSLMaxVaryingFloats() int {
 
 	var glslMaxVaryingFloats int32
 	r.gl.GetIntegerv(opengl.MAX_VARYING_FLOATS, &glslMaxVaryingFloats)
+	r.gl.Execute()
 	r.glslMaxVaryingFloats = int(glslMaxVaryingFloats)
 	return r.glslMaxVaryingFloats
 }
@@ -72,6 +74,7 @@ func (r *Renderer) GLSLMaxVertexShaderInputs() int {
 
 	var glslMaxVertexShaderInputs int32
 	r.gl.GetIntegerv(opengl.MAX_VERTEX_UNIFORM_COMPONENTS, &glslMaxVertexShaderInputs)
+	r.gl.Execute()
 	r.glslMaxVertexShaderInputs = int(glslMaxVertexShaderInputs)
 	return r.glslMaxVertexShaderInputs
 }

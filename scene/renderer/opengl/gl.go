@@ -9,15 +9,9 @@ import (
 	"code.google.com/p/azul3d/native/gl"
 	"code.google.com/p/azul3d/scene"
 	"code.google.com/p/azul3d/scene/camera"
-	"code.google.com/p/azul3d/scene/geom"
 	"code.google.com/p/azul3d/scene/shader"
-	"code.google.com/p/azul3d/scene/texture"
-	"fmt"
-	"runtime"
 	"strconv"
-	"strings"
 	"sync"
-	"unsafe"
 )
 
 // Used as the native identity of geom.Mesh.
@@ -39,7 +33,7 @@ type GLShader struct {
 type Renderer struct {
 	dcMakeCurrent, lcMakeCurrent func(current bool)
 	lcAccess                     sync.Mutex
-	gl                           *opengl.Context
+	gl, lcgl                     *opengl.Context
 	width, height                int
 	glArbMultisample             bool
 
@@ -186,6 +180,7 @@ func (r *Renderer) drawGeom(current *sortedGeom) {
 			b := []byte(name)
 			b = append(b, 0)
 			i := r.gl.GetAttribLocation(gls.Program, &b[0])
+			r.gl.Execute()
 			if i >= 0 {
 				return uint32(i), true
 			}
@@ -290,828 +285,6 @@ func (r *Renderer) drawGeom(current *sortedGeom) {
 	}
 }
 
-func (r *Renderer) loadTexture(t texture.Type, now bool) {
-	if !texture.IsValid(t) {
-		panic("LoadTexture(): Invalid texture type!")
-	}
-
-	if t.Loaded() || t.Loading() {
-		return
-	}
-
-	// Create the texture
-	switch tex := t.(type) {
-	case *texture.Texture2D:
-		img := tex.Image()
-		if img == nil || len(img.Pix) == 0 {
-			// Cannot upload texture without image specified
-			return
-		}
-
-	default:
-		panic("LoadTexture(): Renderer does not support texture type!")
-	}
-
-	t.MarkLoading()
-
-	doLoadTexture := func() {
-		if now {
-			// Release our display context
-			r.dcMakeCurrent(false)
-
-			// Later on we will use it
-			defer r.dcMakeCurrent(true)
-		} else {
-			runtime.LockOSThread()
-			defer runtime.UnlockOSThread()
-		}
-
-		// Lock the loading context to thread
-		r.lcAccess.Lock()
-		defer r.lcAccess.Unlock()
-
-		// Make the loading context active for this OS thread.
-		r.lcMakeCurrent(true)
-
-		// Later on release the loading context.
-		defer r.lcMakeCurrent(false)
-
-		// Create the texture
-		switch tex := t.(type) {
-		case *texture.Texture2D:
-			r.createTexture2D(tex)
-		}
-
-		// Wait for texture to be uploaded
-		r.gl.Finish()
-
-		// Notify of completion
-		t.MarkLoaded()
-	}
-	if now {
-		doLoadTexture()
-	} else {
-		go doLoadTexture()
-	}
-}
-
-// As with other renderer calls, this is made inside an single OS thread only.
-//
-// But we may push it to an different thread if we wish to (we want to, of
-// course).
-func (r *Renderer) LoadTexture(t texture.Type) {
-	r.loadTexture(t, false)
-}
-
-func (r *Renderer) loadMesh(g *geom.Mesh, now bool) {
-	doUpdateMesh := func() {
-		bm := g.NativeIdentity().(*GLBufferedMesh)
-
-		g.Lock()
-		defer g.Unlock()
-
-		indicesChanged := g.IndicesChanged
-		verticesChanged := g.VerticesChanged
-		normalsChanged := g.NormalsChanged
-		tangentsChanged := g.TangentsChanged
-		bitangentsChanged := g.BitangentsChanged
-		colorsChanged := g.ColorsChanged
-		boneWeightsChanged := g.BoneWeightsChanged
-		anyTextureCoordsChanged := len(g.TextureCoordsChanged) > 0
-
-		// Check to avoid a (possibly expensive) context switch.
-		if indicesChanged || verticesChanged || normalsChanged || tangentsChanged || bitangentsChanged || colorsChanged || boneWeightsChanged || anyTextureCoordsChanged {
-
-			if now {
-				// Release our display context
-				r.dcMakeCurrent(false)
-
-				// Later on we will use it
-				defer r.dcMakeCurrent(true)
-			} else {
-				runtime.LockOSThread()
-				defer runtime.UnlockOSThread()
-			}
-
-			// Lock the loading context to thread
-			r.lcAccess.Lock()
-			defer r.lcAccess.Unlock()
-
-			// Make the loading context active for this OS thread.
-			r.lcMakeCurrent(true)
-
-			// Later on release the loading context.
-			defer r.lcMakeCurrent(false)
-
-			usageHint := opengl.STATIC_DRAW
-			if g.Hint == geom.Dynamic {
-				usageHint = opengl.DYNAMIC_DRAW
-			}
-
-			// Update Indices VBO
-			if indicesChanged {
-				if g.Indices == nil || len(g.Indices) == 0 {
-					// Remove Indices VBO
-					r.gl.DeleteBuffers(1, &bm.Indices)
-					bm.Indices = 0
-				} else {
-					// Update Indices VBO
-					r.gl.BindBuffer(opengl.ARRAY_BUFFER, bm.Indices)
-
-					sz := int(unsafe.Sizeof(g.Indices[0]))
-					r.gl.BufferData(
-						opengl.ARRAY_BUFFER,
-						uintptr(sz*len(g.Indices)),
-						unsafe.Pointer(&g.Indices[0]),
-						usageHint,
-					)
-				}
-				g.IndicesChanged = false
-			}
-
-			// Update Vertices VBO
-			if verticesChanged {
-				if g.Vertices == nil || len(g.Vertices) == 0 {
-					// Remove Vertices VBO
-					r.gl.DeleteBuffers(1, &bm.Vertices)
-					bm.Vertices = 0
-				} else {
-					// Update Vertices VBO
-					r.gl.BindBuffer(opengl.ARRAY_BUFFER, bm.Vertices)
-
-					sz := int(unsafe.Sizeof(g.Vertices[0]))
-					r.gl.BufferData(
-						opengl.ARRAY_BUFFER,
-						uintptr(sz*len(g.Vertices)),
-						unsafe.Pointer(&g.Vertices[0]),
-						usageHint,
-					)
-				}
-				g.VerticesChanged = false
-			}
-
-			// Update Normals VBO
-			if normalsChanged {
-				if g.Normals == nil || len(g.Normals) == 0 {
-					// Remove Normals VBO
-					r.gl.DeleteBuffers(1, &bm.Normals)
-					bm.Normals = 0
-				} else {
-					// Update Normals VBO
-					r.gl.BindBuffer(opengl.ARRAY_BUFFER, bm.Normals)
-
-					sz := int(unsafe.Sizeof(g.Normals[0]))
-					r.gl.BufferData(
-						opengl.ARRAY_BUFFER,
-						uintptr(sz*len(g.Normals)),
-						unsafe.Pointer(&g.Normals[0]),
-						usageHint,
-					)
-				}
-				g.NormalsChanged = false
-			}
-
-			// Update Tangents VBO
-			if tangentsChanged {
-				if g.Tangents == nil || len(g.Tangents) == 0 {
-					// Remove Tangents VBO
-					r.gl.DeleteBuffers(1, &bm.Tangents)
-					bm.Tangents = 0
-				} else {
-					// Update Tangents VBO
-					r.gl.BindBuffer(opengl.ARRAY_BUFFER, bm.Tangents)
-
-					sz := int(unsafe.Sizeof(g.Tangents[0]))
-					r.gl.BufferData(
-						opengl.ARRAY_BUFFER,
-						uintptr(sz*len(g.Tangents)),
-						unsafe.Pointer(&g.Tangents[0]),
-						usageHint,
-					)
-				}
-				g.TangentsChanged = false
-			}
-
-			// Update Bitangents VBO
-			if bitangentsChanged {
-				if g.Bitangents == nil || len(g.Bitangents) == 0 {
-					// Remove Bitangents VBO
-					r.gl.DeleteBuffers(1, &bm.Bitangents)
-					bm.Bitangents = 0
-				} else {
-					// Update Bitangents VBO
-					r.gl.BindBuffer(opengl.ARRAY_BUFFER, bm.Bitangents)
-
-					sz := int(unsafe.Sizeof(g.Bitangents[0]))
-					r.gl.BufferData(
-						opengl.ARRAY_BUFFER,
-						uintptr(sz*len(g.Bitangents)),
-						unsafe.Pointer(&g.Bitangents[0]),
-						usageHint,
-					)
-				}
-				g.BitangentsChanged = false
-			}
-
-			// Update Colors VBO
-			if colorsChanged {
-				if g.Colors == nil || len(g.Colors) == 0 {
-					// Remove Colors VBO
-					r.gl.DeleteBuffers(1, &bm.Colors)
-					bm.Colors = 0
-				} else {
-					// Update Colors VBO
-					r.gl.BindBuffer(opengl.ARRAY_BUFFER, bm.Colors)
-
-					sz := int(unsafe.Sizeof(g.Colors[0]))
-					r.gl.BufferData(
-						opengl.ARRAY_BUFFER,
-						uintptr(sz*len(g.Colors)),
-						unsafe.Pointer(&g.Colors[0]),
-						usageHint,
-					)
-				}
-				g.ColorsChanged = false
-			}
-
-			// Update BoneWeights VBO
-			if boneWeightsChanged {
-				if g.BoneWeights == nil || len(g.BoneWeights) == 0 {
-					// Remove BoneWeights VBO
-					r.gl.DeleteBuffers(1, &bm.BoneWeights)
-					bm.BoneWeights = 0
-				} else {
-					// Update BoneWeights VBO
-					r.gl.BindBuffer(opengl.ARRAY_BUFFER, bm.BoneWeights)
-
-					sz := int(unsafe.Sizeof(g.BoneWeights[0]))
-					r.gl.BufferData(
-						opengl.ARRAY_BUFFER,
-						uintptr(sz*len(g.BoneWeights)),
-						unsafe.Pointer(&g.BoneWeights[0]),
-						usageHint,
-					)
-				}
-				g.BoneWeightsChanged = false
-			}
-
-			// Update TextureCoords VBO's
-			for index, texCoords := range g.TextureCoords {
-				changed, ok := g.TextureCoordsChanged[index]
-				if ok && changed {
-					if texCoords == nil || len(texCoords) == 0 {
-						// Remove TextureCoord VBO
-						r.gl.DeleteBuffers(1, &bm.TextureCoords[index])
-						bm.TextureCoords[index] = 0
-					} else {
-						// Update TextureCoord VBO
-						r.gl.BindBuffer(opengl.ARRAY_BUFFER, bm.TextureCoords[index])
-
-						sz := int(unsafe.Sizeof(texCoords[0]))
-						r.gl.BufferData(
-							opengl.ARRAY_BUFFER,
-							uintptr(sz*len(texCoords)),
-							unsafe.Pointer(&texCoords[0]),
-							usageHint,
-						)
-					}
-					delete(g.TextureCoordsChanged, index)
-				}
-			}
-
-			// Bind buffer 0 -- make no-buffer active
-			r.gl.BindBuffer(opengl.ARRAY_BUFFER, 0)
-
-			//r.gl.Flush()
-
-			// Wait for geom to be uploaded
-			r.gl.Finish()
-
-		}
-	}
-
-	doLoadMesh := func() {
-		if now {
-			// Release our display context
-			r.dcMakeCurrent(false)
-
-			// Later on we will use it
-			defer r.dcMakeCurrent(true)
-		} else {
-			runtime.LockOSThread()
-			defer runtime.UnlockOSThread()
-		}
-
-		// Lock the loading context to thread
-		r.lcAccess.Lock()
-		defer r.lcAccess.Unlock()
-
-		// Make the loading context active for this OS thread.
-		r.lcMakeCurrent(true)
-
-		// Later on release the loading context.
-		defer r.lcMakeCurrent(false)
-
-		usageHint := opengl.STATIC_DRAW
-		if g.Hint == geom.Dynamic {
-			usageHint = opengl.DYNAMIC_DRAW
-		}
-
-		// Lock the mesh
-		g.RLock()
-
-		// Create the object
-		bm := new(GLBufferedMesh)
-
-		if len(g.Vertices) > 0 {
-			// Create vertices buffer
-			r.gl.GenBuffers(1, &bm.Vertices)
-			r.gl.BindBuffer(opengl.ARRAY_BUFFER, bm.Vertices)
-
-			sz := int(unsafe.Sizeof(g.Vertices[0]))
-			r.gl.BufferData(
-				opengl.ARRAY_BUFFER,
-				uintptr(sz*len(g.Vertices)),
-				unsafe.Pointer(&g.Vertices[0]),
-				usageHint,
-			)
-
-			if len(g.Indices) > 0 {
-				// Create indices buffer
-				r.gl.GenBuffers(1, &bm.Indices)
-				r.gl.BindBuffer(opengl.ARRAY_BUFFER, bm.Indices)
-
-				sz := int(unsafe.Sizeof(g.Indices[0]))
-				r.gl.BufferData(
-					opengl.ARRAY_BUFFER,
-					uintptr(sz*len(g.Indices)),
-					unsafe.Pointer(&g.Indices[0]),
-					usageHint,
-				)
-			}
-
-			if len(g.Normals) > 0 {
-				// Create normals buffer
-				r.gl.GenBuffers(1, &bm.Normals)
-				r.gl.BindBuffer(opengl.ARRAY_BUFFER, bm.Normals)
-
-				sz := int(unsafe.Sizeof(g.Normals[0]))
-				r.gl.BufferData(
-					opengl.ARRAY_BUFFER,
-					uintptr(sz*len(g.Normals)),
-					unsafe.Pointer(&g.Normals[0]),
-					usageHint,
-				)
-			}
-
-			if len(g.Tangents) > 0 {
-				// Create tangents buffer
-				r.gl.GenBuffers(1, &bm.Tangents)
-				r.gl.BindBuffer(opengl.ARRAY_BUFFER, bm.Tangents)
-
-				sz := int(unsafe.Sizeof(g.Tangents[0]))
-				r.gl.BufferData(
-					opengl.ARRAY_BUFFER,
-					uintptr(sz*len(g.Tangents)),
-					unsafe.Pointer(&g.Tangents[0]),
-					usageHint,
-				)
-			}
-
-			if len(g.Bitangents) > 0 {
-				// Create bitangent buffer
-				r.gl.GenBuffers(1, &bm.Bitangents)
-				r.gl.BindBuffer(opengl.ARRAY_BUFFER, bm.Bitangents)
-
-				sz := int(unsafe.Sizeof(g.Bitangents[0]))
-				r.gl.BufferData(
-					opengl.ARRAY_BUFFER,
-					uintptr(sz*len(g.Bitangents)),
-					unsafe.Pointer(&g.Bitangents[0]),
-					usageHint,
-				)
-			}
-
-			if len(g.Colors) > 0 {
-				// Create colors buffer
-				r.gl.GenBuffers(1, &bm.Colors)
-				r.gl.BindBuffer(opengl.ARRAY_BUFFER, bm.Colors)
-
-				sz := int(unsafe.Sizeof(g.Colors[0]))
-				r.gl.BufferData(
-					opengl.ARRAY_BUFFER,
-					uintptr(sz*len(g.Colors)),
-					unsafe.Pointer(&g.Colors[0]),
-					usageHint,
-				)
-			}
-
-			if len(g.BoneWeights) > 0 {
-				// Create bone weights buffer
-				r.gl.GenBuffers(1, &bm.BoneWeights)
-				r.gl.BindBuffer(opengl.ARRAY_BUFFER, bm.BoneWeights)
-
-				sz := int(unsafe.Sizeof(g.BoneWeights[0]))
-				r.gl.BufferData(
-					opengl.ARRAY_BUFFER,
-					uintptr(sz*len(g.BoneWeights)),
-					unsafe.Pointer(&g.BoneWeights[0]),
-					usageHint,
-				)
-			}
-
-			bm.TextureCoords = make([]uint32, len(g.TextureCoords))
-			for index, texCoords := range g.TextureCoords {
-				// Create texture coordinates buffer
-				r.gl.GenBuffers(1, &bm.TextureCoords[index])
-				r.gl.BindBuffer(opengl.ARRAY_BUFFER, bm.TextureCoords[index])
-
-				sz := int(unsafe.Sizeof(texCoords[0]))
-				r.gl.BufferData(
-					opengl.ARRAY_BUFFER,
-					uintptr(sz*len(texCoords)),
-					unsafe.Pointer(&texCoords[0]),
-					usageHint,
-				)
-			}
-
-			// Bind buffer 0 -- make no-buffer active
-			r.gl.BindBuffer(opengl.ARRAY_BUFFER, 0)
-		}
-
-		// Unlock the mesh
-		g.RUnlock()
-
-		// Store the native identity
-		g.SetNativeIdentity(bm)
-
-		// Attach finalizer
-		runtime.SetFinalizer(g, func(g *geom.Mesh) {
-			r.meshesToFreeAccess.Lock()
-			defer r.meshesToFreeAccess.Unlock()
-
-			bm := g.NativeIdentity().(*GLBufferedMesh)
-			r.meshesToFree = append(r.meshesToFree, bm)
-		})
-
-		// Wait for geom to be uploaded
-		r.gl.Finish()
-
-		// Notify of completion
-		g.MarkLoaded()
-	}
-
-	if g.IsLoaded() {
-		if now {
-			doUpdateMesh()
-		} else {
-			go doUpdateMesh()
-		}
-	} else {
-		if now {
-			doLoadMesh()
-		} else {
-			go doLoadMesh()
-		}
-	}
-}
-
-// As with other renderer calls, this is made inside an single OS thread only.
-//
-// But we may push it to an different thread if we wish to (we want to, of
-// course).
-func (r *Renderer) LoadMesh(m *geom.Mesh) {
-	r.loadMesh(m, false)
-}
-
-func (r *Renderer) updateShaderInput(gls *GLShader, name string, value interface{}) {
-	bts := []byte(name)
-	bts = append(bts, 0)
-	location := r.gl.GetUniformLocation(gls.Program, &bts[0])
-	if location < 0 {
-		return
-	}
-
-	switch v := value.(type) {
-	case float32:
-		r.gl.Uniform1fv(location, 1, &v)
-	case []float32:
-		if len(v) > 0 {
-			r.gl.Uniform1fv(location, uint32(len(v)), &v[0])
-		}
-
-	case shader.Vec2:
-		r.gl.Uniform2fv(location, 1, &v[0])
-	case []shader.Vec2:
-		if len(v) > 0 {
-			r.gl.Uniform2fv(location, uint32(len(v)), &v[0][0])
-		}
-
-	case shader.Vec3:
-		r.gl.Uniform3fv(location, 1, &v[0])
-	case []shader.Vec3:
-		if len(v) > 0 {
-			r.gl.Uniform3fv(location, uint32(len(v)), &v[0][0])
-		}
-
-	case shader.Vec4:
-		r.gl.Uniform4fv(location, 1, &v[0])
-	case []shader.Vec4:
-		if len(v) > 0 {
-			r.gl.Uniform4fv(location, uint32(len(v)), &v[0][0])
-		}
-
-	case int32:
-		r.gl.Uniform1iv(location, 1, &v)
-	case []int32:
-		if len(v) > 0 {
-			r.gl.Uniform1iv(location, uint32(len(v)), &v[0])
-		}
-
-	case shader.Vec2i:
-		r.gl.Uniform2iv(location, 1, &v[0])
-	case []shader.Vec2i:
-		if len(v) > 0 {
-			r.gl.Uniform2iv(location, uint32(len(v)), &v[0][0])
-		}
-
-	case shader.Vec3i:
-		r.gl.Uniform3iv(location, 1, &v[0])
-	case []shader.Vec3i:
-		if len(v) > 0 {
-			r.gl.Uniform3iv(location, uint32(len(v)), &v[0][0])
-		}
-
-	case shader.Vec4i:
-		r.gl.Uniform4iv(location, 1, &v[0])
-	case []shader.Vec4i:
-		if len(v) > 0 {
-			r.gl.Uniform4iv(location, uint32(len(v)), &v[0][0])
-		}
-
-	case uint32:
-		r.gl.Uniform1uiv(location, 1, &v)
-	case []uint32:
-		if len(v) > 0 {
-			r.gl.Uniform1uiv(location, uint32(len(v)), &v[0])
-		}
-
-	case shader.Vec2ui:
-		r.gl.Uniform2uiv(location, 1, &v[0])
-	case []shader.Vec2ui:
-		if len(v) > 0 {
-			r.gl.Uniform2uiv(location, uint32(len(v)), &v[0][0])
-		}
-
-	case shader.Vec3ui:
-		r.gl.Uniform3uiv(location, 1, &v[0])
-	case []shader.Vec3ui:
-		if len(v) > 0 {
-			r.gl.Uniform3uiv(location, uint32(len(v)), &v[0][0])
-		}
-
-	case shader.Vec4ui:
-		r.gl.Uniform4uiv(location, 1, &v[0])
-	case []shader.Vec4ui:
-		if len(v) > 0 {
-			r.gl.Uniform4uiv(location, uint32(len(v)), &v[0][0])
-		}
-
-	case shader.Mat2:
-		r.gl.UniformMatrix2fv(location, 1, opengl.GLBool(false), &v[0][0])
-	case []shader.Mat2:
-		if len(v) > 0 {
-			r.gl.UniformMatrix2fv(location, uint32(len(v)), opengl.GLBool(false), &v[0][0][0])
-		}
-
-	case shader.Mat3:
-		r.gl.UniformMatrix3fv(location, 1, opengl.GLBool(false), &v[0][0])
-	case []shader.Mat3:
-		if len(v) > 0 {
-			r.gl.UniformMatrix3fv(location, uint32(len(v)), opengl.GLBool(false), &v[0][0][0])
-		}
-
-	case shader.Mat4:
-		r.gl.UniformMatrix4fv(location, 1, opengl.GLBool(false), &v[0][0])
-	case []shader.Mat4:
-		if len(v) > 0 {
-			r.gl.UniformMatrix4fv(location, uint32(len(v)), opengl.GLBool(false), &v[0][0][0])
-		}
-
-	case shader.Mat2x3:
-		r.gl.UniformMatrix2x3fv(location, 1, opengl.GLBool(false), &v[0][0])
-	case []shader.Mat2x3:
-		if len(v) > 0 {
-			r.gl.UniformMatrix2x3fv(location, uint32(len(v)), opengl.GLBool(false), &v[0][0][0])
-		}
-
-	case shader.Mat3x2:
-		r.gl.UniformMatrix3x2fv(location, 1, opengl.GLBool(false), &v[0][0])
-	case []shader.Mat3x2:
-		if len(v) > 0 {
-			r.gl.UniformMatrix3x2fv(location, uint32(len(v)), opengl.GLBool(false), &v[0][0][0])
-		}
-
-	case shader.Mat2x4:
-		r.gl.UniformMatrix2x4fv(location, 1, opengl.GLBool(false), &v[0][0])
-	case []shader.Mat2x4:
-		r.gl.UniformMatrix2x4fv(location, uint32(len(v)), opengl.GLBool(false), &v[0][0][0])
-
-	case shader.Mat4x2:
-		r.gl.UniformMatrix4x2fv(location, 1, opengl.GLBool(false), &v[0][0])
-	case []shader.Mat4x2:
-		if len(v) > 0 {
-			r.gl.UniformMatrix4x2fv(location, uint32(len(v)), opengl.GLBool(false), &v[0][0][0])
-		}
-
-	case shader.Mat3x4:
-		r.gl.UniformMatrix3x4fv(location, 1, opengl.GLBool(false), &v[0][0])
-	case []shader.Mat3x4:
-		if len(v) > 0 {
-			r.gl.UniformMatrix3x4fv(location, uint32(len(v)), opengl.GLBool(false), &v[0][0][0])
-		}
-
-	case shader.Mat4x3:
-		r.gl.UniformMatrix4x3fv(location, 1, opengl.GLBool(false), &v[0][0])
-	case []shader.Mat4x3:
-		if len(v) > 0 {
-			r.gl.UniformMatrix4x3fv(location, uint32(len(v)), opengl.GLBool(false), &v[0][0][0])
-		}
-
-	default:
-		panic("Invalid shader input type!")
-	}
-}
-
-func (r *Renderer) updateShaderInputs(n *scene.Node, s *shader.Shader, gls *GLShader) {
-	r.gl.UseProgram(gls.Program)
-
-	for name, value := range shader.Inputs(n) {
-		r.updateShaderInput(gls, name, value)
-	}
-}
-
-func (r *Renderer) loadShader(s *shader.Shader, now bool) {
-	if s.Loaded() {
-		return
-	}
-
-	doLoadShader := func() {
-		if now {
-			// Release our display context
-			r.dcMakeCurrent(false)
-
-			// Later on we will use it
-			defer r.dcMakeCurrent(true)
-		} else {
-			runtime.LockOSThread()
-			defer runtime.UnlockOSThread()
-		}
-
-		// Lock the loading context to thread
-		r.lcAccess.Lock()
-		defer r.lcAccess.Unlock()
-
-		// Make the loading context active for this OS thread.
-		r.lcMakeCurrent(true)
-
-		// Later on release the loading context.
-		defer r.lcMakeCurrent(false)
-
-		// Create the shader
-		gls := new(GLShader)
-
-		shaderCompilerLog := func(s uint32) []byte {
-			var ok int32
-			r.gl.GetShaderiv(s, opengl.COMPILE_STATUS, &ok)
-			if ok == 0 {
-				// Shader compiler error
-				var logSize int32
-				r.gl.GetShaderiv(s, opengl.INFO_LOG_LENGTH, &logSize)
-
-				log := make([]byte, logSize)
-				r.gl.GetShaderInfoLog(s, uint32(logSize), nil, &log[0])
-				return log
-			}
-			return nil
-		}
-
-		appendError := func(err []byte) {
-			s.SetError(append(s.Error(), err...))
-		}
-
-		vertSource := s.Source(shader.Vertex)
-		if vertSource != nil {
-			sVertSource := string(vertSource)
-			sVertSource = strings.Replace(sVertSource, " ", "", -1)
-			sVertSource = strings.Replace(sVertSource, "\t", "", -1)
-			sVertSource = strings.Replace(sVertSource, "\n", "", -1)
-			sVertSource = strings.Replace(sVertSource, "\r", "", -1)
-			sVertSource = strings.Replace(sVertSource, "\r\n", "", -1)
-			if len(sVertSource) == 0 {
-				// Behavior is undefined (normally driver crashes).
-				appendError([]byte(s.Name() + " | Vertex shader with no source code.\n"))
-
-			} else {
-				// Build vertex shader
-				gls.Vertex = r.gl.CreateShader(opengl.VERTEX_SHADER)
-				lengths := int32(len(vertSource))
-				sources := &vertSource[0]
-				r.gl.ShaderSource(gls.Vertex, 1, &sources, &lengths)
-				r.gl.CompileShader(gls.Vertex)
-
-				log := shaderCompilerLog(gls.Vertex)
-				if log != nil {
-					// Sanity
-					gls.Vertex = 0
-
-					appendError([]byte(s.Name() + " | Vertex shader errors:\n"))
-					appendError(log)
-				}
-			}
-		}
-
-		fragSource := s.Source(shader.Fragment)
-		if fragSource != nil {
-			sFragSource := string(fragSource)
-			sFragSource = strings.Replace(sFragSource, " ", "", -1)
-			sFragSource = strings.Replace(sFragSource, "\t", "", -1)
-			sFragSource = strings.Replace(sFragSource, "\n", "", -1)
-			sFragSource = strings.Replace(sFragSource, "\r", "", -1)
-			sFragSource = strings.Replace(sFragSource, "\r\n", "", -1)
-			if len(sFragSource) == 0 {
-				// Behavior is undefined (normally driver crashes).
-				appendError([]byte(s.Name() + " | Fragment shader with no source code.\n"))
-
-			} else {
-				// Build fragment shader
-				gls.Fragment = r.gl.CreateShader(opengl.FRAGMENT_SHADER)
-				lengths := int32(len(fragSource))
-				sources := &fragSource[0]
-				r.gl.ShaderSource(gls.Fragment, 1, &sources, &lengths)
-				r.gl.CompileShader(gls.Fragment)
-
-				log := shaderCompilerLog(gls.Fragment)
-				if log != nil {
-					// Sanity
-					gls.Fragment = 0
-
-					appendError([]byte(s.Name() + " | Fragment shader errors:\n"))
-					appendError(log)
-				}
-			}
-		}
-
-		if gls.Vertex != 0 && gls.Fragment != 0 {
-			gls.Program = r.gl.CreateProgram()
-
-			r.gl.AttachShader(gls.Program, gls.Vertex)
-			r.gl.AttachShader(gls.Program, gls.Fragment)
-			r.gl.LinkProgram(gls.Program)
-
-			// Link shader program
-			var ok int32
-			r.gl.GetProgramiv(gls.Program, opengl.LINK_STATUS, &ok)
-			if ok == 0 {
-				// Program linker error
-				var logSize int32
-				r.gl.GetProgramiv(gls.Program, opengl.INFO_LOG_LENGTH, &logSize)
-
-				log := make([]byte, logSize)
-				r.gl.GetProgramInfoLog(gls.Program, uint32(logSize), nil, &log[0])
-
-				// Sanity
-				gls.Program = 0
-
-				appendError([]byte(s.Name() + " | Linker errors:\n"))
-				appendError(log)
-			}
-		}
-
-		// Store the native identity
-		s.SetNativeIdentity(gls)
-
-		// Wait for shader to be compiled
-		r.gl.Finish()
-
-		// Notify of completion
-		s.MarkLoaded()
-	}
-	if now {
-		doLoadShader()
-	} else {
-		go doLoadShader()
-	}
-}
-
-// As with other renderer calls, this is made inside an single OS thread only.
-//
-// But we may push it to an different thread if we wish to (we want to, of
-// course).
-func (r *Renderer) LoadShader(s *shader.Shader) {
-	r.loadShader(s, false)
-}
-
 func (r *Renderer) Render(rootNode *scene.Node) func() {
 	// Locate cameras in the scene who are active, have an scene specified, and have at least one
 	// camera region.
@@ -1175,6 +348,7 @@ func (r *Renderer) Render(rootNode *scene.Node) func() {
 	return func() {
 		if len(texturesToFree) > 0 {
 			r.gl.DeleteTextures(uint32(len(texturesToFree)), &texturesToFree[0])
+			r.gl.Execute()
 		}
 
 		if len(meshesToFree) > 0 {
@@ -1200,9 +374,11 @@ func (r *Renderer) Render(rootNode *scene.Node) func() {
 				if bm.BoneWeights != 0 {
 					r.gl.DeleteBuffers(1, &bm.BoneWeights)
 				}
+				r.gl.Execute()
 				for _, vboId := range bm.TextureCoords {
 					if vboId != 0 {
 						r.gl.DeleteBuffers(1, &vboId)
+						r.gl.Execute()
 					}
 				}
 			}
@@ -1226,6 +402,7 @@ func (r *Renderer) Render(rootNode *scene.Node) func() {
 		}
 
 		r.gl.Flush()
+		r.gl.Execute()
 	}
 }
 
@@ -1235,6 +412,7 @@ func (r *Renderer) Resize(width, height int) {
 
 	// Reset viewport now
 	r.viewport(0, 0, width, height)
+	r.gl.Execute()
 }
 
 func NewRenderer(dcMakeCurrent, lcMakeCurrent func(current bool)) (*Renderer, error) {
@@ -1246,9 +424,11 @@ func NewRenderer(dcMakeCurrent, lcMakeCurrent func(current bool)) (*Renderer, er
 	r.dcMakeCurrent(true)
 
 	r.gl = opengl.New()
-	if r.gl == nil {
-		return nil, fmt.Errorf("No support for OpenGL 2.0 found.")
-	}
+	// FIXME: turning batching on here causes things not to render properly.
+	//r.gl.SetBatching(true)
+
+	r.lcgl = opengl.New()
+	r.lcgl.SetBatching(true)
 
 	r.glArbMultisample = r.gl.Extension("GL_ARB_multisample")
 	if r.glArbMultisample {
@@ -1265,9 +445,11 @@ func NewRenderer(dcMakeCurrent, lcMakeCurrent func(current bool)) (*Renderer, er
 
 	var numFormats int32
 	r.gl.GetIntegerv(opengl.NUM_COMPRESSED_TEXTURE_FORMATS, &numFormats)
+	r.gl.Execute()
 
 	r.compressedTextureFormats = make([]int32, numFormats)
 	r.gl.GetIntegerv(opengl.COMPRESSED_TEXTURE_FORMATS, &r.compressedTextureFormats[0])
+	r.gl.Execute()
 
 	return r, nil
 }

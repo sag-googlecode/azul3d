@@ -12,17 +12,18 @@ import (
 	"unsafe"
 )
 
-func (r *Renderer) createTexture2D(t *texture.Texture2D) {
+func (r *Renderer) createTexture2D(ctx *opengl.Context, t *texture.Texture2D) {
 	img := t.Image()
 
 	// Create texture identity
 	var ident uint32
-	r.gl.GenTextures(1, &ident)
+	ctx.GenTextures(1, &ident)
+	ctx.Execute()
 	t.SetNativeIdentity(ident)
 
 	// Select the texture
-	r.gl.BindTexture(opengl.TEXTURE_2D, ident)
-	defer r.gl.BindTexture(opengl.TEXTURE_2D, 0)
+	ctx.BindTexture(opengl.TEXTURE_2D, ident)
+	defer ctx.BindTexture(opengl.TEXTURE_2D, 0)
 
 	// Setup wrap modes
 	var glWrapU, glWrapV int32
@@ -57,11 +58,12 @@ func (r *Renderer) createTexture2D(t *texture.Texture2D) {
 		// If either wrap mode is BorderColor, we need to specify the actual
 		// border color.
 		borderColor := t.BorderColorFloat32()
-		r.gl.TexParameterfv(opengl.TEXTURE_2D, opengl.TEXTURE_BORDER_COLOR, &borderColor[0])
+		ctx.TexParameterfv(opengl.TEXTURE_2D, opengl.TEXTURE_BORDER_COLOR, &borderColor[0])
+		ctx.Execute()
 	}
 
-	r.gl.TexParameteri(opengl.TEXTURE_2D, opengl.TEXTURE_WRAP_S, int32(glWrapU))
-	r.gl.TexParameteri(opengl.TEXTURE_2D, opengl.TEXTURE_WRAP_T, int32(glWrapV))
+	ctx.TexParameteri(opengl.TEXTURE_2D, opengl.TEXTURE_WRAP_S, int32(glWrapU))
+	ctx.TexParameteri(opengl.TEXTURE_2D, opengl.TEXTURE_WRAP_T, int32(glWrapV))
 
 	// Setup min/mag filters
 	var glMinFilter, glMagFilter int32
@@ -98,12 +100,12 @@ func (r *Renderer) createTexture2D(t *texture.Texture2D) {
 		glMagFilter = opengl.LINEAR_MIPMAP_LINEAR
 	}
 
-	r.gl.TexParameteri(opengl.TEXTURE_2D, opengl.TEXTURE_MIN_FILTER, int32(glMinFilter))
-	r.gl.TexParameteri(opengl.TEXTURE_2D, opengl.TEXTURE_MAG_FILTER, int32(glMagFilter))
+	ctx.TexParameteri(opengl.TEXTURE_2D, opengl.TEXTURE_MIN_FILTER, int32(glMinFilter))
+	ctx.TexParameteri(opengl.TEXTURE_2D, opengl.TEXTURE_MAG_FILTER, int32(glMagFilter))
 
 	// Enable mipmap generation if either filter is mipmapped.
 	if minFilter.Mipmapped() || magFilter.Mipmapped() {
-		r.gl.TexParameteri(opengl.TEXTURE_2D, opengl.GENERATE_MIPMAP, int32(opengl.TRUE))
+		ctx.TexParameteri(opengl.TEXTURE_2D, opengl.GENERATE_MIPMAP, int32(opengl.TRUE))
 	}
 
 	// Determine formatting, load texture into OpenGL
@@ -125,7 +127,8 @@ func (r *Renderer) createTexture2D(t *texture.Texture2D) {
 
 	t.RLock()
 	img = t.Source.(*image.RGBA)
-	r.gl.TexImage2D(opengl.TEXTURE_2D, 0, int32(internalFormat), uint32(sz.X), uint32(sz.Y), 0, opengl.RGBA, opengl.UNSIGNED_BYTE, unsafe.Pointer(&img.Pix[0]))
+	ctx.TexImage2D(opengl.TEXTURE_2D, 0, int32(internalFormat), uint32(sz.X), uint32(sz.Y), 0, opengl.RGBA, opengl.UNSIGNED_BYTE, unsafe.Pointer(&img.Pix[0]))
+	ctx.Execute()
 	t.RUnlock()
 
 	runtime.SetFinalizer(t, func(t *texture.Texture2D) {
