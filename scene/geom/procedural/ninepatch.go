@@ -35,16 +35,17 @@ type NineRegions struct {
 	TopLeft, TopRight, BottomLeft, BottomRight texture.Region
 }
 
-// Ninepatch builds and returns an new nine patch geom
+// AppendNinepatch builds and appends a new nine patch mesh to the specified
+// mesh 'm'.
 //
 // If width and height are the only non-zero demensions specified in the
-// patches, then an Card() is returned instead of an nine-patch
-// mesh.
-func Ninepatch(p *NinePatches, r *NineRegions, hint geom.Hint) *geom.Mesh {
+// patches, then a card mesh is appended instead of a nine-patch mesh.
+func AppendNinepatch(m *geom.Mesh, p *NinePatches, r *NineRegions) {
 	if math.Real(p.Left).Equals(0) && math.Real(p.Right).Equals(0) && math.Real(p.Bottom).Equals(0) && math.Real(p.Top).Equals(0) {
 		w2 := p.Width / 2
 		h2 := p.Height / 2
-		return Card(-w2, w2, -h2, h2, r.Center, hint)
+		AppendCard(m, -w2, w2, -h2, h2, r.Center)
+		return
 	}
 
 	// ------------------------------------
@@ -247,11 +248,25 @@ func Ninepatch(p *NinePatches, r *NineRegions, hint geom.Hint) *geom.Mesh {
 		texture.UV(r.BottomRight.S, r.BottomRight.V),
 	}
 
-	return &geom.Mesh{
-		Hint:     hint,
-		Vertices: vertices,
-		TextureCoords: [][]texture.Coord{
-			textureCoords,
-		},
+	m.Lock()
+	defer m.Unlock()
+	m.Vertices = append(m.Vertices, vertices...)
+
+	if len(m.TextureCoords) > 0 {
+		m.TextureCoords[0] = append(m.TextureCoords[0], textureCoords...)
+		return
 	}
+	m.TextureCoords = append(m.TextureCoords, textureCoords)
+}
+
+// Ninepatch builds and returns an new nine patch geom
+//
+// If width and height are the only non-zero demensions specified in the
+// patches, then an Card() is returned instead of an nine-patch
+// mesh.
+func Ninepatch(p *NinePatches, r *NineRegions, hint geom.Hint) *geom.Mesh {
+	m := new(geom.Mesh)
+	m.Hint = hint
+	AppendNinepatch(m, p, r)
+	return m
 }
