@@ -101,10 +101,12 @@ func (r *Renderer) drawGeom(current *sortedGeom) {
 		return
 	}
 
+	// Load the mesh into OpenGL
 	r.loadMesh(g, true)
 
 	// Load the shader into OpenGL
 	r.loadShader(current.shader, true)
+
 	gls := current.shader.NativeIdentity().(*GLShader)
 	if gls.Program == 0 {
 		return
@@ -424,8 +426,7 @@ func NewRenderer(dcMakeCurrent, lcMakeCurrent func(current bool)) (*Renderer, er
 	r.dcMakeCurrent(true)
 
 	r.gl = opengl.New()
-	// FIXME: turning batching on here causes things not to render properly.
-	//r.gl.SetBatching(true)
+	r.gl.SetBatching(true)
 
 	r.lcgl = opengl.New()
 	r.lcgl.SetBatching(true)
