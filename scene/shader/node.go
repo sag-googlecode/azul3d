@@ -112,9 +112,11 @@ func Input(n *scene.Node, name string) (value interface{}, ok bool) {
 	return
 }
 
-// Inputs returns a map of shader input names and their corrisponding values
-// for the given node.
-func Inputs(n *scene.Node) map[string]interface{} {
+// RInputs returns a read-only map of shader input names and their
+// corrisponding values for the given node.
+//
+// The returned map should be considered read-only and should not be modified.
+func RInputs(n *scene.Node) map[string]interface{} {
 	lock := getLock(n)
 	lock.RLock()
 	defer lock.RUnlock()
@@ -124,7 +126,13 @@ func Inputs(n *scene.Node) map[string]interface{} {
 		return make(map[string]interface{}, 0)
 	}
 	inputs := i.(map[string]interface{})
+	return inputs
+}
 
+// Inputs returns a map of shader input names and their corrisponding values
+// for the given node.
+func Inputs(n *scene.Node) map[string]interface{} {
+	inputs := RInputs(n)
 	cpy := make(map[string]interface{}, len(inputs))
 	for k, v := range inputs {
 		cpy[k] = v
