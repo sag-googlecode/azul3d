@@ -21,8 +21,4 @@ var (
 	// Only Microsoft Windows will ever return this error, systems that use DualView will sometimes
 	// ignore screen mode change requests.
 	ErrDualViewCapable = errors.New("unable to switch screen mode; the system is DualView capable.")
-
-	// If there is no support for gamma ramps due to either lack of hardware or software support
-	// for them.
-	ErrGammaRampsNotSupported = errors.New("unable to use gamma ramps; the hardware has no support for them.")
 )
