@@ -2,7 +2,7 @@
 // This source code is subject to the terms and
 // conditions defined in the "License.txt" file.
 
-// Package mouse implements various keyboard related data types.
+// Package keyboard implements various keyboard related data types.
 package keyboard
 
 import (
