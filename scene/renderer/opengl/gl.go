@@ -50,6 +50,7 @@ type Renderer struct {
 	scissorStack       [][]uint
 	meshesToFreeAccess sync.RWMutex
 	meshesToFree       []*GLBufferedMesh
+	lastSortedGeoms    sortedGeoms
 
 	lastRegion                                                          *camera.Region
 	lastColorClear                                                      *math.Vec4
@@ -961,7 +962,7 @@ func (r *Renderer) updateShaderInput(gls *GLShader, name string, value interface
 func (r *Renderer) updateShaderInputs(n *scene.Node, s *shader.Shader, gls *GLShader) {
 	r.gl.UseProgram(gls.Program)
 
-	for name, value := range shader.Inputs(n) {
+	for name, value := range shader.RInputs(n) {
 		r.updateShaderInput(gls, name, value)
 	}
 }

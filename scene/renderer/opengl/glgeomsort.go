@@ -102,7 +102,8 @@ func (s sortedGeoms) Less(i, j int) bool {
 }
 
 func (r *Renderer) sortGeoms(root *scene.Node, cameras []*scene.Node) sortedGeoms {
-	var geoms sortedGeoms
+	r.lastSortedGeoms = r.lastSortedGeoms[:0]
+	geoms := r.lastSortedGeoms
 
 	// Search for geom nodes inside each region's camera's scene.
 	for _, camNode := range cameras {
@@ -223,15 +224,6 @@ func (r *Renderer) sortGeoms(root *scene.Node, cameras []*scene.Node) sortedGeom
 	}
 
 	sort.Sort(geoms)
-
-	//if debug {
-	//	fmt.Println("\nAfter sorting geoms")
-	//	for _, geom := range geoms {
-	//		fmt.Println(geom)
-	//	}
-	//}
-
-	//sort.Sort(geoms)
-
+	r.lastSortedGeoms = geoms
 	return geoms
 }
