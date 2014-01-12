@@ -66,7 +66,6 @@ func (w *NativeWindow) open(screen *Screen) (err error) {
 
 	w.r.trySetFocused(true)
 
-	debug("Open()")
 	unlock()
 	dispatch(func() {
 		err = w.doRebuildWindow()
@@ -1414,8 +1413,6 @@ func mainWindowProc(hwnd win32.HWND, msg win32.UINT, wParam win32.WPARAM, lParam
 
 		switch {
 		case msg == win32.WM_PAINT:
-			debug("WM_PAINT")
-
 			rect := new(win32.RECT)
 			if win32.GetUpdateRect(w.hwnd, rect, false) {
 				win32.ValidateRect(w.hwnd, nil)
@@ -1437,12 +1434,10 @@ func mainWindowProc(hwnd win32.HWND, msg win32.UINT, wParam win32.WPARAM, lParam
 			return 0
 
 		case msg == win32.WM_ERASEBKGND:
-			debug("WM_ERASEBKGND")
 			//w.addPaintEvent()
 			return 1
 
 		case msg == win32.WM_GETMINMAXINFO:
-			debug("WM_GETMINMAXINFO")
 			ratio := w.r.AspectRatio()
 
 			// Add extents, so we operate on client region space only
@@ -1486,7 +1481,6 @@ func mainWindowProc(hwnd win32.HWND, msg win32.UINT, wParam win32.WPARAM, lParam
 			return 0
 
 		case msg == win32.WM_SIZING:
-			debug("WM_SIZING")
 			ratio := w.r.AspectRatio()
 			r := lParam.RECT()
 
@@ -1531,7 +1525,6 @@ func mainWindowProc(hwnd win32.HWND, msg win32.UINT, wParam win32.WPARAM, lParam
 			return 0
 
 		case msg == win32.WM_SIZE:
-			debug("WM_SIZE")
 			if wParam == win32.SIZE_MAXIMIZED {
 				w.r.trySetMinimized(false)
 				w.r.trySetMaximized(true)
@@ -1551,7 +1544,6 @@ func mainWindowProc(hwnd win32.HWND, msg win32.UINT, wParam win32.WPARAM, lParam
 			return 0
 
 		case msg == win32.WM_MOVE:
-			debug("WM_MOVE")
 			xPos := int(int16(lParam))
 			yPos := int(int16((uint32(lParam) >> 16) & 0xFFFF))
 
@@ -1565,7 +1557,6 @@ func mainWindowProc(hwnd win32.HWND, msg win32.UINT, wParam win32.WPARAM, lParam
 			return 0
 
 		case msg == win32.WM_EXITSIZEMOVE:
-			debug("WM_EXITSIZEMOVE")
 			hMonitor := win32.MonitorFromWindow(w.hwnd, win32.MONITOR_DEFAULTTONEAREST)
 
 			mi := new(win32.MONITORINFOEX)
@@ -1587,7 +1578,6 @@ func mainWindowProc(hwnd win32.HWND, msg win32.UINT, wParam win32.WPARAM, lParam
 			return 0
 
 		case msg == win32.WM_ACTIVATE:
-			debug("WM_ACTIVATE")
 			if wParam.LOWORD() == win32.WA_INACTIVE || wParam.HIWORD() != 0 {
 				if w.r.trySetFocused(false) {
 					// If the window loses focus due to another window coming into the foreground,
@@ -1624,7 +1614,6 @@ func mainWindowProc(hwnd win32.HWND, msg win32.UINT, wParam win32.WPARAM, lParam
 			return 0
 
 		case msg == win32.WM_GETICON:
-			debug("WM_GETICON")
 			switch wParam {
 			case win32.ICON_BIG:
 				if w.hIcon != nil {
@@ -1643,15 +1632,12 @@ func mainWindowProc(hwnd win32.HWND, msg win32.UINT, wParam win32.WPARAM, lParam
 			}
 
 		case msg == win32.WM_CHAR:
-			debug("WM_CHAR")
-
 			w.r.send(&keyboard.TypedEvent{
 				T:    time.Now(),
 				Rune: rune(wParam),
 			})
 
 		case msg == win32.WM_KEYDOWN || msg == win32.WM_SYSKEYDOWN || msg == win32.WM_KEYUP || msg == win32.WM_SYSKEYUP:
-			debug("WM_KEYDOWN || WM_SYSKEYDOWN || WM_KEYUP || WM_SYSKEYUP")
 			if msg == win32.WM_KEYDOWN || msg == win32.WM_SYSKEYDOWN {
 				keyRepeat := (lParam & 0x40000000) > 0
 				if keyRepeat {
@@ -1756,7 +1742,6 @@ func mainWindowProc(hwnd win32.HWND, msg win32.UINT, wParam win32.WPARAM, lParam
 			return 0
 
 		case msg == win32.WM_MOUSEMOVE:
-			debug("WM_MOUSEMOVE")
 			cursorX := int(int16(lParam))
 			cursorY := int(int16((uint32(lParam) >> 16) & 0xFFFF))
 
@@ -1820,7 +1805,6 @@ func mainWindowProc(hwnd win32.HWND, msg win32.UINT, wParam win32.WPARAM, lParam
 			return 0
 
 		case msg == win32.WM_INPUT:
-			debug("WM_INPUT")
 			if w.r.CursorWithin() && w.r.CursorGrabbed() {
 				var raw win32.RAWINPUT
 				cbSize := win32.UINT(unsafe.Sizeof(raw))
@@ -1843,7 +1827,6 @@ func mainWindowProc(hwnd win32.HWND, msg win32.UINT, wParam win32.WPARAM, lParam
 
 		// Mouse Buttons
 		case msg == win32.WM_LBUTTONDOWN:
-			debug("WM_LBUTTONDOWN")
 			w.r.send(&mouse.Event{
 				T:      time.Now(),
 				Button: mouse.Left,
@@ -1852,7 +1835,6 @@ func mainWindowProc(hwnd win32.HWND, msg win32.UINT, wParam win32.WPARAM, lParam
 			return 0
 
 		case msg == win32.WM_LBUTTONUP:
-			debug("WM_LBUTTONUP")
 			w.r.send(&mouse.Event{
 				T:      time.Now(),
 				Button: mouse.Left,
@@ -1861,7 +1843,6 @@ func mainWindowProc(hwnd win32.HWND, msg win32.UINT, wParam win32.WPARAM, lParam
 			return 0
 
 		case msg == win32.WM_RBUTTONDOWN:
-			debug("WM_RBUTTONDOWN")
 			w.r.send(&mouse.Event{
 				T:      time.Now(),
 				Button: mouse.Right,
@@ -1870,7 +1851,6 @@ func mainWindowProc(hwnd win32.HWND, msg win32.UINT, wParam win32.WPARAM, lParam
 			return 0
 
 		case msg == win32.WM_RBUTTONUP:
-			debug("WM_RBUTTONUP")
 			w.r.send(&mouse.Event{
 				T:      time.Now(),
 				Button: mouse.Right,
@@ -1879,7 +1859,6 @@ func mainWindowProc(hwnd win32.HWND, msg win32.UINT, wParam win32.WPARAM, lParam
 			return 0
 
 		case msg == win32.WM_MBUTTONDOWN:
-			debug("WM_MBUTTONDOWN")
 			w.r.send(&mouse.Event{
 				T:      time.Now(),
 				Button: mouse.Wheel,
@@ -1888,7 +1867,6 @@ func mainWindowProc(hwnd win32.HWND, msg win32.UINT, wParam win32.WPARAM, lParam
 			return 0
 
 		case msg == win32.WM_MBUTTONUP:
-			debug("WM_MBUTTONUP")
 			w.r.send(&mouse.Event{
 				T:      time.Now(),
 				Button: mouse.Wheel,
@@ -1897,7 +1875,6 @@ func mainWindowProc(hwnd win32.HWND, msg win32.UINT, wParam win32.WPARAM, lParam
 			return 0
 
 		case msg == win32.WM_XBUTTONDOWN:
-			debug("WM_XBUTTONDOWN")
 			var button mouse.Button
 
 			switch int16(wParam) {
@@ -1916,7 +1893,6 @@ func mainWindowProc(hwnd win32.HWND, msg win32.UINT, wParam win32.WPARAM, lParam
 			return 0
 
 		case msg == win32.WM_XBUTTONUP:
-			debug("WM_XBUTTONUP")
 			var button mouse.Button
 
 			switch int16(wParam) {
@@ -1935,7 +1911,6 @@ func mainWindowProc(hwnd win32.HWND, msg win32.UINT, wParam win32.WPARAM, lParam
 			return 0
 
 		case msg == win32.WM_MOUSEWHEEL:
-			debug("WM_MOUSEWHEEL")
 			delta := float64(int16((uint32(wParam) >> 16) & 0xFFFF))
 			ticks := int(math.Abs(delta / 120))
 
@@ -1959,21 +1934,17 @@ func mainWindowProc(hwnd win32.HWND, msg win32.UINT, wParam win32.WPARAM, lParam
 			return 0
 
 		case msg == win32.WM_CLOSE:
-			debug("WM_CLOSE")
 			w.r.send(&CloseEvent{
 				T: time.Now(),
 			})
 			return 0
 
 		default:
-			debug(fmt.Sprintf("WM_UNKNOWN (msg=0x%x)", msg))
-
 			// We continue onto DefWindowProc(), which might call us again, so make sure to unlock.
 			unlock()
 		}
 	}
 
-	debug("DefWindowProc()")
 	return win32.DefWindowProc(hwnd, msg, wParam, lParam)
 }
 

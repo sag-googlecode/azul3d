@@ -829,7 +829,6 @@ func (w *NativeWindow) handleEvent(ref *x11.GenericEvent, e interface{}) {
 			if better != -1 {
 				r = better
 			}
-			debug(fmt.Sprintf("KeyPressEvent(): keysym 0x%x\n", keysym))
 		}
 
 		if r != utf8.RuneError && r != 0 {
