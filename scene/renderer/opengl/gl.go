@@ -110,23 +110,17 @@ func (r *Renderer) drawGeom(current *sortedGeom) {
 	r.loadMesh(g, true)
 
 	// Load the shader into OpenGL
-	s, ok := shader.Active(current.node)
-	if !ok {
-		// No custom shader, use default one.
-		s = defaultShader
-	}
-	r.loadShader(s, true)
-	gls := s.NativeIdentity().(*GLShader)
+	r.loadShader(current.shader, true)
+	gls := current.shader.NativeIdentity().(*GLShader)
 	if gls.Program == 0 {
 		return
 	}
 	r.gl.UseProgram(gls.Program)
 
 	// Add texture shader inputs, and drop textures that are not loaded
-	layeredTextures := texture.Textures(current.node)
-	inputTextures := make([]int32, len(layeredTextures))
+	inputTextures := make([]int32, len(current.textures))
 	count := int32(0)
-	for layer, tex := range layeredTextures {
+	for layer, tex := range current.textures {
 		// If the texture is not loaded yet, then we simply never render with
 		// it.
 		//
@@ -141,7 +135,7 @@ func (r *Renderer) drawGeom(current *sortedGeom) {
 			// It's possible the texture could not load (no source, for instance)
 			if tex.NativeIdentity() == nil {
 				// Not loaded yet; remove from map.
-				delete(layeredTextures, layer)
+				delete(current.textures, layer)
 				continue
 			}
 		}
@@ -152,18 +146,8 @@ func (r *Renderer) drawGeom(current *sortedGeom) {
 	}
 
 	shader.SetInput(current.node, "Textures", inputTextures)
-	shader.SetInput(current.node, "Projection", current.projection)
-	shader.SetInput(current.node, "ModelView", current.modelView)
-	shader.SetInput(current.node, "ModelViewProjection", current.modelViewProjection)
 
-	transparency := current.node.ActiveTransparency()
-	if transparency == scene.Binary {
-		shader.SetInput(current.node, "BinaryTransparency", int32(1))
-	} else {
-		shader.SetInput(current.node, "BinaryTransparency", int32(0))
-	}
-
-	switch transparency {
+	switch current.transparency {
 	case scene.Multisample:
 		if r.glArbMultisample {
 			r.gl.Enable(opengl.SAMPLE_ALPHA_TO_COVERAGE)
@@ -177,7 +161,7 @@ func (r *Renderer) drawGeom(current *sortedGeom) {
 		r.gl.BlendFunc(opengl.SRC_ALPHA, opengl.ONE_MINUS_SRC_ALPHA)
 	}
 
-	r.updateShaderInputs(current.node, s, gls)
+	r.updateShaderInputs(current.node, current.shader, gls)
 
 	bm := g.NativeIdentity().(*GLBufferedMesh)
 
@@ -285,7 +269,7 @@ func (r *Renderer) drawGeom(current *sortedGeom) {
 		}
 
 		count := 0
-		for _, tex := range layeredTextures {
+		for _, tex := range current.textures {
 			ident := tex.NativeIdentity().(uint32)
 			r.gl.ActiveTexture(opengl.TEXTURE0 + int32(count))
 			r.gl.BindTexture(opengl.TEXTURE_2D, ident)
@@ -299,7 +283,7 @@ func (r *Renderer) drawGeom(current *sortedGeom) {
 			r.gl.DrawArrays(opengl.TRIANGLES, 0, uint32(len(g.Vertices)))
 		}
 
-		for count := 0; count < len(layeredTextures); count++ {
+		for count := 0; count < len(current.textures); count++ {
 			r.gl.ActiveTexture(opengl.TEXTURE0 + int32(count))
 			r.gl.BindTexture(opengl.TEXTURE_2D, 0)
 		}
@@ -962,7 +946,7 @@ func (r *Renderer) updateShaderInput(gls *GLShader, name string, value interface
 func (r *Renderer) updateShaderInputs(n *scene.Node, s *shader.Shader, gls *GLShader) {
 	r.gl.UseProgram(gls.Program)
 
-	for name, value := range shader.RInputs(n) {
+	for name, value := range shader.Inputs(n) {
 		r.updateShaderInput(gls, name, value)
 	}
 }

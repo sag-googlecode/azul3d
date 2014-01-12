@@ -10,19 +10,21 @@ import (
 	"code.google.com/p/azul3d/scene/camera"
 	"code.google.com/p/azul3d/scene/geom"
 	"code.google.com/p/azul3d/scene/shader"
+	"code.google.com/p/azul3d/scene/texture"
 	"fmt"
 	"sort"
 )
 
 type sortedGeom struct {
-	region                                     *camera.Region
-	sorter                                     *scene.Sorter
-	traversalSort                              uint
-	geom                                       *geom.Mesh
-	node                                       *scene.Node
-	camera                                     *scene.Node
-	transparency                               scene.TransparencyMode
-	projection, modelView, modelViewProjection shader.Mat4
+	region        *camera.Region
+	sorter        *scene.Sorter
+	traversalSort uint
+	geom          *geom.Mesh
+	node          *scene.Node
+	camera        *scene.Node
+	transparency  scene.TransparencyMode
+	textures      map[*texture.Layer]texture.Type
+	shader        *shader.Shader
 }
 
 func (s sortedGeom) String() string {
@@ -157,6 +159,19 @@ func (r *Renderer) sortGeoms(root *scene.Node, cameras []*scene.Node) sortedGeom
 
 					activeSorter, hasActiveSorter := n.ActiveSorter()
 					activeTransparency := n.ActiveTransparency()
+					if activeTransparency == scene.Binary {
+						shader.SetInput(n, "BinaryTransparency", int32(1))
+					} else {
+						shader.SetInput(n, "BinaryTransparency", int32(0))
+					}
+
+					activeShader, ok := shader.Active(n)
+					if !ok {
+						// No custom shader, use default one.
+						activeShader = defaultShader
+					}
+
+					textures := texture.Textures(n)
 
 					// Calculate an world-transformed matrix.
 					nWorldTransform := n.RelativeTransform(root)
@@ -183,6 +198,10 @@ func (r *Renderer) sortGeoms(root *scene.Node, cameras []*scene.Node) sortedGeom
 						[4]float32{float32(mvp[3][0]), float32(mvp[3][1]), float32(mvp[3][2]), float32(mvp[3][3])},
 					}
 
+					shader.SetInput(n, "Projection", lensProjection)
+					shader.SetInput(n, "ModelView", modelView)
+					shader.SetInput(n, "ModelViewProjection", modelViewProjection)
+
 					for _, theGeom := range nGeoms {
 						theGeom.RLock()
 						defer theGeom.RUnlock()
@@ -193,15 +212,14 @@ func (r *Renderer) sortGeoms(root *scene.Node, cameras []*scene.Node) sortedGeom
 						}
 
 						g := &sortedGeom{
-							region:              region,
-							geom:                theGeom,
-							node:                n,
-							traversalSort:       traversalSort,
-							camera:              camNode,
-							transparency:        activeTransparency,
-							projection:          lensProjection,
-							modelView:           modelView,
-							modelViewProjection: modelViewProjection,
+							region:        region,
+							geom:          theGeom,
+							node:          n,
+							traversalSort: traversalSort,
+							camera:        camNode,
+							transparency:  activeTransparency,
+							textures:      textures,
+							shader:        activeShader,
 						}
 
 						if hasActiveSorter {
