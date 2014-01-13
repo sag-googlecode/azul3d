@@ -25,15 +25,16 @@ var (
 type Node struct {
 	access sync.RWMutex
 
-	id                     uint
-	name                   string
-	parent                 *Node
-	parents                []*Node
-	children               []*Node
-	tags                   map[interface{}]interface{}
-	props, activePropCache map[interface{}]interface{}
-	forcedProps            map[interface{}]bool
-	transform              *Transform
+	id              uint
+	name            string
+	parent          *Node
+	parents         []*Node
+	children        []*Node
+	tags            map[interface{}]interface{}
+	props           map[interface{}]interface{}
+	activePropCache map[interface{}]mapLookupPair
+	forcedProps     map[interface{}]bool
+	transform       *Transform
 }
 
 // String returns a string representation of this node.

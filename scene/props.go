@@ -23,26 +23,29 @@ func NewProp(name string) *Prop {
 	return &p
 }
 
-func (n *Node) saveActiveProp(prop, value interface{}) {
-	n.access.Lock()
-	defer n.access.Unlock()
-
-	if n.activePropCache == nil {
-		n.activePropCache = make(map[interface{}]interface{})
-	}
-	n.activePropCache[prop] = value
+type mapLookupPair struct {
+	value interface{}
+	ok    bool
 }
 
-func (n *Node) loadActiveProp(prop interface{}) (value interface{}, ok bool) {
-	return nil, false
-
+func (n *Node) saveActiveProp(prop interface{}, pair mapLookupPair) {
 	n.access.Lock()
 	defer n.access.Unlock()
 
 	if n.activePropCache == nil {
-		return nil, false
+		n.activePropCache = make(map[interface{}]mapLookupPair)
 	}
-	value, ok = n.activePropCache[prop]
+	n.activePropCache[prop] = pair
+}
+
+func (n *Node) loadActiveProp(prop interface{}) (pair mapLookupPair, ok bool) {
+	n.access.RLock()
+	defer n.access.RUnlock()
+
+	if n.activePropCache == nil {
+		return mapLookupPair{}, false
+	}
+	pair, ok = n.activePropCache[prop]
 	return
 }
 
@@ -83,9 +86,9 @@ func (n *Node) doRecursiveClearActiveProps() {
 // nodes wishes), or weather or not SetPropForced(prop, true) was used on this
 // node, etc.
 func (n *Node) ActiveProp(prop interface{}) (value interface{}, ok bool) {
-	value, ok = n.loadActiveProp(prop)
-	if ok {
-		return
+	pair, havePair := n.loadActiveProp(prop)
+	if havePair {
+		return pair.value, pair.ok
 	}
 
 	// If we are forcing the property to an value, then return that now.
@@ -112,7 +115,7 @@ func (n *Node) ActiveProp(prop interface{}) (value interface{}, ok bool) {
 		parent := parents[i-1]
 		value, ok = parent.Prop(prop)
 		if ok {
-			n.saveActiveProp(prop, value)
+			n.saveActiveProp(prop, mapLookupPair{value, ok})
 			return
 		}
 	}
@@ -120,9 +123,7 @@ func (n *Node) ActiveProp(prop interface{}) (value interface{}, ok bool) {
 	// It seems that no parents have the given property at this point. We can
 	// see if this node itself has the property, though.
 	value, ok = n.Prop(prop)
-	if ok {
-		n.saveActiveProp(prop, value)
-	}
+	n.saveActiveProp(prop, mapLookupPair{value, ok})
 
 	return
 }
