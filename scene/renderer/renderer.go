@@ -12,7 +12,7 @@ import (
 	"code.google.com/p/azul3d/event"
 	"code.google.com/p/azul3d/scene"
 	"code.google.com/p/azul3d/scene/geom"
-	"code.google.com/p/azul3d/scene/renderer/opengl"
+	"code.google.com/p/azul3d/scene/renderer/gl"
 	"code.google.com/p/azul3d/scene/shader"
 	"code.google.com/p/azul3d/scene/texture"
 	"fmt"
@@ -453,7 +453,7 @@ func (o *obj) setup() error {
 			return
 		}
 
-		render, err = opengl.NewRenderer(dcMakeCurrent, lcMakeCurrent)
+		render, err = gl.NewRenderer(dcMakeCurrent, lcMakeCurrent)
 		if err == nil {
 			width, height := o.Window.Size()
 			render.Resize(width, height)
