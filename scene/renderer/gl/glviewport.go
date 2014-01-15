@@ -2,7 +2,7 @@
 // This source code is subject to the terms and
 // conditions defined in the "License.txt" file.
 
-package opengl
+package gl
 
 func (r *Renderer) stateClearViewport() {
 	r.lastViewportX = 0xFFFFFF

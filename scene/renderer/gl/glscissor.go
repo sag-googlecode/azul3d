@@ -2,7 +2,7 @@
 // This source code is subject to the terms and
 // conditions defined in the "License.txt" file.
 
-package opengl
+package gl
 
 func (r *Renderer) scissor(x, y, width, height uint) {
 	if x == 0 && y == 0 && width == 0 && height == 0 {
