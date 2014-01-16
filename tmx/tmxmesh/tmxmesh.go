@@ -17,6 +17,7 @@ import (
 	"code.google.com/p/azul3d/scene/geom"
 	"code.google.com/p/azul3d/scene/geom/procedural"
 	"code.google.com/p/azul3d/scene/texture"
+	"code.google.com/p/azul3d/scene/transparency"
 	"code.google.com/p/azul3d/tmx"
 	"image"
 	"image/draw"
@@ -88,7 +89,7 @@ func Load(m *tmx.Map, c *Config, tsImages map[string]*image.RGBA) *scene.Node {
 
 	// The map node will use multisample transparency (that is, order
 	// independent transparency)
-	mapNode.SetTransparency(scene.Multisample)
+	transparency.Set(mapNode, transparency.Multisample)
 
 	textures := make(map[string]*texture.Texture2D)
 	layerOffset := 0.0
