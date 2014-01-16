@@ -441,7 +441,8 @@ func (o *obj) setup() error {
 	}
 
 	o.rendererCreateExecute <- func() {
-		o.Window.GLSetConfig(chippy.GLChooseConfig(o.Window.GLConfigs(), chippy.GLWorstConfig, chippy.GLBestConfig))
+		config := chippy.GLChooseConfig(o.Window.GLConfigs(), chippy.GLWorstConfig, chippy.GLBestConfig)
+		o.Window.GLSetConfig(config)
 
 		o.loaderContext, err = o.Window.GLCreateContext(2, 0, glContextFlags, nil)
 		if err != nil {
@@ -453,7 +454,7 @@ func (o *obj) setup() error {
 			return
 		}
 
-		render, err = gl.NewRenderer(dcMakeCurrent, lcMakeCurrent)
+		render, err = gl.NewRenderer(dcMakeCurrent, lcMakeCurrent, config)
 		if err == nil {
 			width, height := o.Window.Size()
 			render.Resize(width, height)

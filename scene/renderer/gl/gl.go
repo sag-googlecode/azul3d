@@ -5,6 +5,7 @@
 package gl
 
 import (
+	"code.google.com/p/azul3d/chippy"
 	"code.google.com/p/azul3d/math"
 	"code.google.com/p/azul3d/native/gl"
 	"code.google.com/p/azul3d/scene"
@@ -36,6 +37,7 @@ type Renderer struct {
 	lcAccess                     sync.Mutex
 	gl, lcgl                     *opengl.Context
 	width, height                int
+	config                       *chippy.GLConfig
 	glArbMultisample             bool
 
 	texturesToFreeAccess     sync.RWMutex
@@ -146,7 +148,7 @@ func (r *Renderer) drawGeom(current *sortedGeom) {
 
 	switch current.transparency {
 	case transparency.Multisample:
-		if r.glArbMultisample {
+		if r.glArbMultisample && r.config.Samples > 0 {
 			r.gl.Enable(opengl.SAMPLE_ALPHA_TO_COVERAGE)
 			defer r.gl.Disable(opengl.SAMPLE_ALPHA_TO_COVERAGE)
 		} else {
@@ -418,11 +420,12 @@ func (r *Renderer) Resize(width, height int) {
 	r.gl.Execute()
 }
 
-func NewRenderer(dcMakeCurrent, lcMakeCurrent func(current bool)) (*Renderer, error) {
+func NewRenderer(dcMakeCurrent, lcMakeCurrent func(current bool), config *chippy.GLConfig) (*Renderer, error) {
 	r := new(Renderer)
 
 	r.dcMakeCurrent = dcMakeCurrent
 	r.lcMakeCurrent = lcMakeCurrent
+	r.config = config
 
 	r.dcMakeCurrent(true)
 
