@@ -11,6 +11,7 @@ import (
 	"code.google.com/p/azul3d/scene/geom"
 	"code.google.com/p/azul3d/scene/shader"
 	"code.google.com/p/azul3d/scene/texture"
+	"code.google.com/p/azul3d/scene/transparency"
 	"fmt"
 	"sort"
 )
@@ -22,7 +23,7 @@ type sortedGeom struct {
 	geom          *geom.Mesh
 	node          *scene.Node
 	camera        *scene.Node
-	transparency  scene.TransparencyMode
+	transparency  transparency.ModeType
 	textures      map[*texture.Layer]texture.Type
 	shader        *shader.Shader
 }
@@ -158,8 +159,8 @@ func (r *Renderer) sortGeoms(root *scene.Node, cameras []*scene.Node) sortedGeom
 					traversalSort += uint(index) + 1
 
 					activeSorter, hasActiveSorter := n.ActiveSorter()
-					activeTransparency := n.ActiveTransparency()
-					if activeTransparency == scene.Binary {
+					activeTransparency := transparency.ActiveMode(n)
+					if activeTransparency == transparency.Binary {
 						shader.SetInput(n, "BinaryTransparency", int32(1))
 					} else {
 						shader.SetInput(n, "BinaryTransparency", int32(0))
@@ -225,7 +226,7 @@ func (r *Renderer) sortGeoms(root *scene.Node, cameras []*scene.Node) sortedGeom
 						if hasActiveSorter {
 							g.sorter = activeSorter
 						} else {
-							if activeTransparency == scene.NoTransparency {
+							if activeTransparency == transparency.None {
 								g.sorter = scene.Unsorted
 							} else {
 								g.sorter = scene.BackToFront

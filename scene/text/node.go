@@ -10,6 +10,7 @@ import (
 	"code.google.com/p/azul3d/scene"
 	"code.google.com/p/azul3d/scene/geom"
 	"code.google.com/p/azul3d/scene/texture"
+	"code.google.com/p/azul3d/scene/transparency"
 	"image"
 	"sync"
 )
@@ -219,7 +220,7 @@ func getObj(n *scene.Node) *textObject {
 
 // [foo]This sounds [u]great [/foo][b]because...[/u] it is. [[this has brackets]].[/b]
 func Set(n *scene.Node, text string) {
-	n.SetTransparency(scene.Multisample)
+	transparency.Set(n, transparency.Multisample)
 	i, ok := n.Prop(PTextObject)
 	if !ok {
 		o := newTextObject(n)

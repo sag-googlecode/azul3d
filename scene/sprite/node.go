@@ -11,6 +11,7 @@ import (
 	"code.google.com/p/azul3d/scene/geom"
 	"code.google.com/p/azul3d/scene/geom/procedural"
 	"code.google.com/p/azul3d/scene/texture"
+	"code.google.com/p/azul3d/scene/transparency"
 	"sync"
 	"time"
 )
@@ -78,7 +79,7 @@ func mustGetObj(n *scene.Node) *obj {
 
 func New(name string) *scene.Node {
 	n := scene.New(name)
-	n.SetTransparency(scene.Multisample)
+	transparency.Set(n, transparency.Multisample)
 	o := new(obj)
 	o.stopPlaying = make(chan bool, 1)
 

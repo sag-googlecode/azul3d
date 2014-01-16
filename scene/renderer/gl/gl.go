@@ -10,6 +10,7 @@ import (
 	"code.google.com/p/azul3d/scene"
 	"code.google.com/p/azul3d/scene/camera"
 	"code.google.com/p/azul3d/scene/shader"
+	"code.google.com/p/azul3d/scene/transparency"
 	"strconv"
 	"sync"
 )
@@ -144,14 +145,14 @@ func (r *Renderer) drawGeom(current *sortedGeom) {
 	shader.SetInput(current.node, "Textures", inputTextures)
 
 	switch current.transparency {
-	case scene.Multisample:
+	case transparency.Multisample:
 		if r.glArbMultisample {
 			r.gl.Enable(opengl.SAMPLE_ALPHA_TO_COVERAGE)
 			defer r.gl.Disable(opengl.SAMPLE_ALPHA_TO_COVERAGE)
 		} else {
 			shader.SetInput(current.node, "BinaryTransparency", int32(1))
 		}
-	case scene.Transparency:
+	case transparency.AlphaBlend:
 		r.gl.Enable(opengl.BLEND)
 		defer r.gl.Disable(opengl.BLEND)
 		r.gl.BlendFunc(opengl.SRC_ALPHA, opengl.ONE_MINUS_SRC_ALPHA)

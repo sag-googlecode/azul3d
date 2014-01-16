@@ -12,6 +12,7 @@ import (
 	"code.google.com/p/azul3d/scene/geom/procedural"
 	"code.google.com/p/azul3d/scene/renderer"
 	"code.google.com/p/azul3d/scene/texture"
+	"code.google.com/p/azul3d/scene/transparency"
 	_ "image/jpeg"
 	_ "image/png"
 	"log"
@@ -40,7 +41,7 @@ func createCube(name string, c color.Color) *scene.Node {
 	geom.Add(geomNode, cube)
 
 	// Enable multisample transparency on the node
-	geomNode.SetTransparency(scene.Multisample)
+	transparency.Set(geomNode, transparency.Multisample)
 
 	// Load texture file
 	//
@@ -146,17 +147,17 @@ func toggleCursorGrabbed(ev *event.Event) {
 // Event handler which toggles transparency
 func toggleTransparency(ev *event.Event) {
 	n := azul3d.Scene2d
-	switch n.Transparency() {
-	case scene.NoTransparency:
-		n.SetTransparency(scene.Transparency)
-	case scene.Transparency:
-		n.SetTransparency(scene.Binary)
-	case scene.Binary:
-		n.SetTransparency(scene.Multisample)
-	case scene.Multisample:
-		n.SetTransparency(scene.NoTransparency)
+	switch transparency.Mode(n) {
+	case transparency.None:
+		transparency.Set(n, transparency.AlphaBlend)
+	case transparency.AlphaBlend:
+		transparency.Set(n, transparency.Binary)
+	case transparency.Binary:
+		transparency.Set(n, transparency.Multisample)
+	case transparency.Multisample:
+		transparency.Set(n, transparency.None)
 	}
-	log.Println(n.Transparency())
+	log.Println(transparency.Mode(n))
 }
 
 // Our scene graph will look like this:
