@@ -49,22 +49,6 @@ func (n *Node) loadActiveProp(prop interface{}) (pair mapLookupPair, ok bool) {
 	return
 }
 
-func (n *Node) doClearActiveProp(prop interface{}) {
-	delete(n.activePropCache, prop)
-}
-
-func (n *Node) doClearActiveProps() {
-	n.activePropCache = nil
-	n.parents = nil
-}
-
-func (n *Node) clearActiveProps() {
-	n.access.Lock()
-	defer n.access.Unlock()
-
-	n.doClearActiveProps()
-}
-
 func (n *Node) recursiveClearActiveProps() {
 	n.access.Lock()
 	defer n.access.Unlock()
@@ -73,7 +57,8 @@ func (n *Node) recursiveClearActiveProps() {
 }
 
 func (n *Node) doRecursiveClearActiveProps() {
-	n.doClearActiveProps()
+	n.activePropCache = nil
+	n.parents = nil
 	for _, child := range n.children {
 		child.recursiveClearActiveProps()
 	}
@@ -143,7 +128,7 @@ func (n *Node) SetProp(prop, value interface{}) {
 	}
 	n.props[prop] = value
 
-	n.doClearActiveProp(prop)
+	n.doRecursiveClearActiveProps()
 }
 
 // Prop returns the property value of the named property for this node.
@@ -168,7 +153,7 @@ func (n *Node) ClearProp(prop interface{}) {
 	defer n.access.Unlock()
 
 	delete(n.props, prop)
-	n.doClearActiveProp(prop)
+	n.doRecursiveClearActiveProps()
 }
 
 // Props returns a map of property names and values for this node.
@@ -189,7 +174,7 @@ func (n *Node) ClearProps() {
 	defer n.access.Unlock()
 
 	n.props = nil
-	n.doClearActiveProps()
+	n.doRecursiveClearActiveProps()
 }
 
 // SetPropForced specifies the property should be explicitly forced to be
@@ -206,6 +191,7 @@ func (n *Node) SetPropForced(prop interface{}, forced bool) {
 		}
 		n.forcedProps[prop] = forced
 	}
+	n.doRecursiveClearActiveProps()
 }
 
 // PropForced tells if the specified property is explicitly forced to be
