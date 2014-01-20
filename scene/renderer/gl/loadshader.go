@@ -22,6 +22,13 @@ func (r *Renderer) updateShaderInput(gls *GLShader, name string, value interface
 	}
 
 	switch v := value.(type) {
+	case bool:
+		var intBool int32
+		if v {
+			intBool = 1
+		}
+		r.gl.Uniform1iv(location, 1, &intBool)
+
 	case float32:
 		r.gl.Uniform1fv(location, 1, &v)
 	case []float32:
