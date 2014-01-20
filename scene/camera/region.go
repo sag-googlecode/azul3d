@@ -5,20 +5,24 @@
 package camera
 
 import (
+	"code.google.com/p/azul3d/scene/color"
 	"fmt"
 	"sync"
 )
 
-// An camera region is an area on which the camera will draw it's associated scene (it can draw
-// the scene to multiple display regions, too).
+// Region describes a single area on the final render surface (e.g. a window)
+// that a camera will draw it's associated scene into. It also describes the
+// area that will be cleared before each frame and weather or not the depth
+// buffer will be cleared, etc.
 type Region struct {
-	*Clearable
-
 	access sync.RWMutex
 
-	id                  uint
 	x, y, width, height uint
-	sort                uint
+	sort int
+	clearColor, clearDepth, clearStencil bool
+	color                                color.Color
+	depth                                float64
+	stencil                              uint
 }
 
 // String returns an string representation of this region.
@@ -37,20 +41,11 @@ func (r *Region) String() string {
 	}
 
 	x, y, width, height := r.Region()
-	return fmt.Sprintf("Region(Id=%v, Sort=%v, [%v, %v, %v, %v]%s%s%s)", r.Id(), r.Sort(), x, y, width, height, e1, e2, e3)
+	return fmt.Sprintf("Region(Sort=%v, [%v, %v, %v, %v]%s%s%s)", r.Sort(), x, y, width, height, e1, e2, e3)
 }
 
-// Id returns the unique identifier number of this region -- which is transfered when this region
-// is copied.
-func (r *Region) Id() uint {
-	r.access.RLock()
-	defer r.access.RUnlock()
-
-	return r.id
-}
-
-// Equals tells if the two regions share the same exact features, by comparing each underlying
-// value.
+// Equals tells if the two regions share the same exact features, by comparing
+// each underlying value.
 func (r *Region) Equals(b *Region) bool {
 	// If pointer is identical, then they're the same.
 	if r == b {
@@ -71,55 +66,65 @@ func (r *Region) Equals(b *Region) bool {
 		return false
 	}
 
-	return r.Clearable.Equals(b.Clearable)
+	if r.clearColor != b.clearColor || r.clearDepth != b.clearDepth || r.clearStencil != b.clearStencil {
+		return false
+	}
+
+	if r.depth != b.depth || r.stencil != b.stencil {
+		return false
+	}
+
+	if !r.color.Equals(b.color) {
+		return false
+	}
+	return true
 }
 
 // Copy returns an new 1:1 copy of this region.
-//
-// Note: If you intend to use this new copied region as an individual region itself, you should
-// invoke ResetId() right after calling this function.
 func (r *Region) Copy() *Region {
 	r.access.RLock()
 	defer r.access.RUnlock()
 
-	c := new(Region)
-	c.id = r.id
-	c.x = r.x
-	c.y = r.y
-	c.width = r.width
-	c.height = r.height
-	c.sort = r.sort
-
-	c.Clearable = new(Clearable)
-	*c.Clearable = *r.Clearable
-	return c
+	return &Region{
+		sync.RWMutex{},
+		r.x, r.y, r.width, r.height,
+		r.sort,
+		r.clearColor, r.clearDepth, r.clearStencil,
+		r.color,
+		r.depth,
+		r.stencil,
+	}
 }
 
-// SetSort specifies the sort value of this region, an lower value means that this region will be
-// drawn first, an higher sort value means this region will be drawn last.
-func (r *Region) SetSort(sort uint) {
+// SetSort specifies the sort sorting value of this region, where a lower
+// value would have the region rendered first and a higher value would have the
+// region rendered last.
+func (r *Region) SetSort(sort int) {
 	r.access.Lock()
 	defer r.access.Unlock()
 
 	r.sort = sort
 }
 
-// Sort returns the sort value of this region, an lower value means that this region will be drawn
-// first, an higher sort value means this region will be drawn last.
-func (r *Region) Sort() uint {
+// Sort returns the sort sorting value of this region, where a lower value
+// would have the region rendered first and a higher value would have the
+// region rendered last.
+func (r *Region) Sort() int {
 	r.access.RLock()
 	defer r.access.RUnlock()
 
 	return r.sort
 }
 
-// SetRegion specifies the X and Y position, as well as width and height (all in pixels) of this
-// camera region, where X and Y specify the starting position of the region (where +X and +Y extend
-// to the right and downward) and the width and height specify how far to the right and down the
-// region extends to.
+// SetRegion specifies the X and Y position, as well as width and height (all
+// in pixels) of this camera region.
 //
-// The special region of [x=0, y=0, width=0, height=0] implies that the region should cover the
-// entire area.
+// X and Y specify the starting position of the region (where positive X and Y
+// extend to the right and downward) and the width and height specify how far
+// to the right and down the region extends to.
+//
+// The special region of [x=0, y=0, width=0, height=0] implies that the region
+// should cover the entire render area.
 func (r *Region) SetRegion(x, y, width, height uint) {
 	r.access.Lock()
 	defer r.access.Unlock()
@@ -130,13 +135,15 @@ func (r *Region) SetRegion(x, y, width, height uint) {
 	r.height = height
 }
 
-// Region returns the X and Y position, as well as width and height (all in pixels) of this camera
-// region, where X and Y specify the starting position of the region (where +X and +Y extend to the
-// right and downward) and the width and height specify how far to the right and down the region
-// extends to.
+// Region returns the X and Y position, as well as width and height (all in
+// pixels) of this camera region.
 //
-// The special region of [x=0, y=0, width=0, height=0] implies that the region should cover the
-// entire area.
+// X and Y specify the starting position of the region (where positive X and Y
+// extend to the right and downward) and the width and height specify how far
+// to the right and down the region extends to.
+//
+// The special region of [x=0, y=0, width=0, height=0] implies that the region
+// should cover the entire render area.
 func (r *Region) Region() (x, y, width, height uint) {
 	r.access.RLock()
 	defer r.access.RUnlock()
@@ -144,46 +151,170 @@ func (r *Region) Region() (x, y, width, height uint) {
 	return r.x, r.y, r.width, r.height
 }
 
-var (
-	regionIdCounterAccess sync.Mutex
-	regionIdCounter       uint
-)
-
-// ResetId resets the unique identifier number of this region. When an region is copied, the id
-// number will also be copied. This allows comparison of region's id numbers to determine if they
-// are equal.
+// SetClearColorActive specifies weather or not clearing the color buffer is
+// enabled.
 //
-// However, if you make an copy of an region and intend to use it as an seperate region (and do not
-// wish for it to be confused with the region you originally copied) then invoking this function
-// right after an Copy() operation is needed.
-func (r *Region) ResetId() {
-	regionIdCounterAccess.Lock()
-	regionIdCounter++
-	ourId := regionIdCounter
-	regionIdCounterAccess.Unlock()
-
+// Default: true
+func (r *Region) SetClearColorActive(clear bool) {
 	r.access.Lock()
 	defer r.access.Unlock()
 
-	r.id = ourId
+	r.clearColor = clear
+}
+
+// ClearColorActive tells if clearing the color buffer is enabled.
+//
+// Default: true
+func (r *Region) ClearColorActive() bool {
+	r.access.RLock()
+	defer r.access.RUnlock()
+
+	return r.clearColor
+}
+
+// SetClearColor specifies the color value to be used when clearing the color
+// buffer.
+//
+// Default (light blue): color.New(0.53, 0.81, 0.98, 1.0)
+func (r *Region) SetClearColor(color color.Color) {
+	r.access.Lock()
+	defer r.access.Unlock()
+
+	r.color = color
+}
+
+// ClearColor returns the color value that is used when clearing the color
+// buffer.
+//
+// Default (light blue): color.New(0.53, 0.81, 0.98, 1.0)
+func (r *Region) ClearColor() color.Color {
+	r.access.RLock()
+	defer r.access.RUnlock()
+
+	return r.color
+}
+
+// SetClearDepthActive specifies weather or not clearing the depth buffer is
+// enabled.
+//
+// Default: true
+func (r *Region) SetClearDepthActive(clear bool) {
+	r.access.Lock()
+	defer r.access.Unlock()
+
+	r.clearDepth = clear
+}
+
+// ClearDepthActive tells if clearing the depth buffer is enabled.
+//
+// Default: true
+func (r *Region) ClearDepthActive() bool {
+	r.access.RLock()
+	defer r.access.RUnlock()
+
+	return r.clearDepth
+}
+
+// SetClearDepth specifies the depth value to be used when clearing the depth
+// buffer.
+//
+// Default: 1
+func (r *Region) SetClearDepth(depth float64) {
+	r.access.Lock()
+	defer r.access.Unlock()
+
+	r.depth = depth
+}
+
+// ClearDepth returns the depth value that is used when clearing the depth
+// buffer.
+//
+// Default: 1
+func (r *Region) ClearDepth() float64 {
+	r.access.RLock()
+	defer r.access.RUnlock()
+
+	return r.depth
+}
+
+// SetClearStencilActive specifies weather or not clearing the stencil buffer
+// is enabled.
+//
+// Default: true
+func (r *Region) SetClearStencilActive(clear bool) {
+	r.access.Lock()
+	defer r.access.Unlock()
+
+	r.clearStencil = clear
+}
+
+// ClearStencilActive tells if clearing the stencil buffer is enabled.
+//
+// Default: true
+func (r *Region) ClearStencilActive() bool {
+	r.access.RLock()
+	defer r.access.RUnlock()
+
+	return r.clearStencil
+}
+
+// SetClearStencil specifies the stencil value to be used when clearing the
+// stencil buffer.
+//
+// Default: 0
+func (r *Region) SetClearStencil(stencil uint) {
+	r.access.Lock()
+	defer r.access.Unlock()
+
+	r.stencil = stencil
+}
+
+// ClearStencil returns the stencil value that is used when clearing the
+// stencil buffer.
+//
+// Default: 0
+func (r *Region) ClearStencil() uint {
+	r.access.RLock()
+	defer r.access.RUnlock()
+
+	return r.stencil
+}
+
+// AnyClearActive tells if clearing of any of the color, depth, or stencil
+// buffers is enabled.
+func (r *Region) AnyClearActive() bool {
+	r.access.RLock()
+	defer r.access.RUnlock()
+
+	return r.clearColor || r.clearDepth || r.clearStencil
 }
 
 // NewRegion returns an new region given it's x, y, width, and height values.
 //
-// The color clear value is by default set to math.Vector4(0.53, 0.81, 0.98, 0) (AKA. light blue).
+// X and Y specify the starting position of the region (where positive X and Y
+// extend to the right and downward) and the width and height specify how far
+// to the right and down the region extends to.
 //
-// The stencil clear value defaults to 0.
+// The color clear value of the region is set to color.New(0.53, 0.81, 0.98, 1.0)
+// (AKA. light blue).
 //
-// The depth clear value defaults to 1.
+// The stencil clear value of the region is set to zero.
 //
+// The depth clear value of the region is set to one.
+//
+// Actively clearing the color, depth, and stencil buffers is set to true.
 func NewRegion(x, y, width, height uint) *Region {
 	r := &Region{
-		Clearable: NewClearable(),
 		x:         x,
 		y:         y,
 		width:     width,
 		height:    height,
+		clearColor:   true,
+		clearDepth:   true,
+		clearStencil: true,
+		color:        color.New(0.53, 0.81, 0.98, 1.0),
+		depth:        1,
+		stencil:      0,
 	}
-	r.ResetId()
 	return r
 }
