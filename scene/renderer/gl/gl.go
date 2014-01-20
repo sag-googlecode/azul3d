@@ -151,13 +151,22 @@ func (r *Renderer) drawGeom(current *sortedGeom) {
 		if r.glArbMultisample && r.config.Samples > 0 {
 			r.gl.Enable(opengl.SAMPLE_ALPHA_TO_COVERAGE)
 			defer r.gl.Disable(opengl.SAMPLE_ALPHA_TO_COVERAGE)
+			shader.SetInput(current.node, "BinaryTransparency", false)
 		} else {
-			shader.SetInput(current.node, "BinaryTransparency", int32(1))
+			shader.SetInput(current.node, "BinaryTransparency", true)
 		}
+
 	case transparency.AlphaBlend:
 		r.gl.Enable(opengl.BLEND)
 		defer r.gl.Disable(opengl.BLEND)
 		r.gl.BlendFunc(opengl.SRC_ALPHA, opengl.ONE_MINUS_SRC_ALPHA)
+		shader.SetInput(current.node, "BinaryTransparency", false)
+
+	case transparency.Binary:
+		shader.SetInput(current.node, "BinaryTransparency", true)
+
+	default:
+		shader.SetInput(current.node, "BinaryTransparency", false)
 	}
 
 	r.updateShaderInputs(current.node, current.shader, gls)
