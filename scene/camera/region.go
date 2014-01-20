@@ -17,8 +17,8 @@ import (
 type Region struct {
 	access sync.RWMutex
 
-	x, y, width, height uint
-	sort int
+	x, y, width, height                  uint
+	sort                                 int
 	clearColor, clearDepth, clearStencil bool
 	color                                color.Color
 	depth                                float64
@@ -305,10 +305,10 @@ func (r *Region) AnyClearActive() bool {
 // Actively clearing the color, depth, and stencil buffers is set to true.
 func NewRegion(x, y, width, height uint) *Region {
 	r := &Region{
-		x:         x,
-		y:         y,
-		width:     width,
-		height:    height,
+		x:            x,
+		y:            y,
+		width:        width,
+		height:       height,
 		clearColor:   true,
 		clearDepth:   true,
 		clearStencil: true,
