@@ -62,6 +62,8 @@ func (s *Shader) Copy() *Shader {
 // input value.
 func IsValidType(value interface{}) bool {
 	switch value.(type) {
+	case bool:
+		break
 	case float32:
 		break
 	case int32:
