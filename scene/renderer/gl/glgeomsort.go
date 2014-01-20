@@ -55,15 +55,8 @@ func (s sortedGeoms) Less(i, j int) bool {
 	b := s[j]
 
 	// If inside different regions, then sort by region sort first.
-	if a.region.Id() != b.region.Id() {
-		// If they share an identical sort value -- incorrect ordering and flickering could occur,
-		// so to fix this we sort by their id's in that case.
-		aSort := a.region.Sort()
-		bSort := b.region.Sort()
-		if aSort != bSort {
-			return aSort < bSort
-		}
-		return a.region.Id() < b.region.Id()
+	if !a.region.Equals(b.region) {
+		return a.region.Sort() < b.region.Sort()
 	}
 
 	// If they're under different sorters, then we sort them based off their sorters sort values.

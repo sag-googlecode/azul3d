@@ -6,10 +6,10 @@ package gl
 
 import (
 	"code.google.com/p/azul3d/chippy"
-	"code.google.com/p/azul3d/math"
 	"code.google.com/p/azul3d/native/gl"
 	"code.google.com/p/azul3d/scene"
 	"code.google.com/p/azul3d/scene/camera"
+	"code.google.com/p/azul3d/scene/color"
 	"code.google.com/p/azul3d/scene/shader"
 	"code.google.com/p/azul3d/scene/transparency"
 	"strconv"
@@ -50,8 +50,8 @@ type Renderer struct {
 	lastSortedGeoms    sortedGeoms
 
 	lastRegion                                                          *camera.Region
-	lastColorClear                                                      *math.Vec4
-	lastDepthClear                                                      math.Real
+	lastColorClear                                                      color.Color
+	lastDepthClear                                                      float64
 	lastStencilClear                                                    uint
 	lastScissorX, lastScissorY, lastScissorWidth, lastScissorHeight     uint
 	lastViewportX, lastViewportY, lastViewportWidth, lastViewportHeight uint
@@ -63,7 +63,7 @@ type Renderer struct {
 }
 
 func (r *Renderer) useRegion(region *camera.Region) {
-	if r.lastRegion != nil && r.lastRegion.Id() == region.Id() {
+	if r.lastRegion != nil && region.Equals(r.lastRegion) {
 		return
 	}
 	r.lastRegion = region

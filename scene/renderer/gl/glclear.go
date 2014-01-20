@@ -5,17 +5,17 @@
 package gl
 
 import (
-	"code.google.com/p/azul3d/math"
+	"code.google.com/p/azul3d/scene/color"
 )
 
 func (r *Renderer) stateClearClearColor() {
-	r.lastColorClear = nil
+	r.lastColorClear = color.None
 }
 
-func (r *Renderer) clearColor(color *math.Vec4) {
-	if r.lastColorClear == nil || !r.lastColorClear.Equals(color) {
-		r.lastColorClear = color
-		r.gl.ClearColor(float32(color.X), float32(color.Y), float32(color.Z), float32(color.W))
+func (r *Renderer) clearColor(c color.Color) {
+	if r.lastColorClear.Equals(color.None) || !r.lastColorClear.Equals(c) {
+		r.lastColorClear = c
+		r.gl.ClearColor(c.R, c.G, c.B, c.A)
 	}
 }
 
@@ -23,10 +23,10 @@ func (r *Renderer) stateClearClearDepth() {
 	r.lastDepthClear = 0xFFFFFF
 }
 
-func (r *Renderer) clearDepth(depth math.Real) {
-	if !r.lastDepthClear.Equals(depth) {
+func (r *Renderer) clearDepth(depth float64) {
+	if r.lastDepthClear != depth {
 		r.lastDepthClear = depth
-		r.gl.ClearDepth(float64(depth))
+		r.gl.ClearDepth(depth)
 	}
 }
 
