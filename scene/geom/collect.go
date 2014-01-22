@@ -1,9 +1,9 @@
 package geom
 
 import (
-	"code.google.com/p/azul3d/math"
-	"code.google.com/p/azul3d/scene"
-	"code.google.com/p/azul3d/scene/texture"
+	"azul3d.org/math"
+	"azul3d.org/scene"
+	"azul3d.org/scene/texture"
 )
 
 // Collect 'collects' the specified node and all children nodes below it, by

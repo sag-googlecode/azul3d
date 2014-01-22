@@ -5,8 +5,8 @@
 package geom
 
 import (
-	"code.google.com/p/azul3d/scene"
-	"code.google.com/p/azul3d/scene/color"
+	"azul3d.org/scene"
+	"azul3d.org/scene/color"
 	"sync"
 )
 
