@@ -12,13 +12,13 @@
 package tmxmesh
 
 import (
-	"code.google.com/p/azul3d/math"
-	"code.google.com/p/azul3d/scene"
-	"code.google.com/p/azul3d/scene/geom"
-	"code.google.com/p/azul3d/scene/geom/procedural"
-	"code.google.com/p/azul3d/scene/texture"
-	"code.google.com/p/azul3d/scene/transparency"
-	"code.google.com/p/azul3d/tmx"
+	"azul3d.org/math"
+	"azul3d.org/scene"
+	"azul3d.org/scene/geom"
+	"azul3d.org/scene/geom/procedural"
+	"azul3d.org/scene/texture"
+	"azul3d.org/scene/transparency"
+	"azul3d.org/tmx"
 	"image"
 	"image/draw"
 	"io/ioutil"
