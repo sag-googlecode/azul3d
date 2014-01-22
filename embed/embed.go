@@ -6,7 +6,7 @@
 package main
 
 import (
-	"code.google.com/p/azul3d/embed/embed"
+	"azul3d.org/embed/embed"
 	"flag"
 	"io"
 	"log"
