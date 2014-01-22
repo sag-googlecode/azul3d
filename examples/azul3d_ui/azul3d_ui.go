@@ -1,8 +1,8 @@
 package main
 
 import (
-	"code.google.com/p/azul3d"
 	"code.google.com/p/azul3d/chippy/keyboard"
+	"code.google.com/p/azul3d/engine"
 	"code.google.com/p/azul3d/event"
 	"code.google.com/p/azul3d/scene/color"
 	"code.google.com/p/azul3d/scene/ui"
@@ -20,7 +20,7 @@ func program() {
 	rand.Seed(time.Now().Unix())
 
 	panel := ui.New("panel")
-	panel.SetParent(azul3d.Scene2d)
+	panel.SetParent(engine.Scene2d)
 	panel.SetPos(160, 0, -110)
 
 	//panel.SetOption(ui.Width, 300)
@@ -96,5 +96,5 @@ func program() {
 
 func main() {
 	// Run our program, enter main loop.
-	azul3d.Run(program)
+	engine.Run(program)
 }

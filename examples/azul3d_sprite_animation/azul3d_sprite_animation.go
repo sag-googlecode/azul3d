@@ -1,9 +1,9 @@
 package main
 
 import (
-	"code.google.com/p/azul3d"
 	"code.google.com/p/azul3d/chippy"
 	"code.google.com/p/azul3d/chippy/keyboard"
+	"code.google.com/p/azul3d/engine"
 	"code.google.com/p/azul3d/event"
 	"code.google.com/p/azul3d/math"
 	"code.google.com/p/azul3d/scene"
@@ -27,11 +27,11 @@ func onCursorPosition(ev *event.Event) {
 	pos := ev.Data.(*chippy.CursorPositionEvent)
 
 	// If the cursor is not grabbed, we do not transform cubes.
-	if !azul3d.Window.CursorGrabbed() {
+	if !engine.Window.CursorGrabbed() {
 		return
 	}
 
-	kb := azul3d.Window.Keyboard
+	kb := engine.Window.Keyboard
 	if kb.Down(keyboard.LeftCtrl) {
 		// If left ctrl key is currently down, we apply scaling to current
 		// cube.
@@ -86,15 +86,15 @@ func resetTransforms(ev *event.Event) {
 }
 
 func printViewed(ev *event.Event) {
-	inView := camera.InView(azul3d.Camera2d, player.PosVec3(), player.Parent())
+	inView := camera.InView(engine.Camera2d, player.PosVec3(), player.Parent())
 
 	log.Printf("Visibility: %s=%t\n", player.Name(), inView)
 }
 
 // Event handler which toggles cursor grab
 func toggleCursorGrabbed(ev *event.Event) {
-	isGrabbed := azul3d.Window.CursorGrabbed()
-	azul3d.Window.SetCursorGrabbed(!isGrabbed)
+	isGrabbed := engine.Window.CursorGrabbed()
+	engine.Window.SetCursorGrabbed(!isGrabbed)
 }
 
 // Our scene graph will look like this:
@@ -110,7 +110,7 @@ func program() {
 
 	// Center size
 	sprite.SetSize(player, 256, 256) // Actual size of the sprite is 16x16, but we will scale it up here
-	player.SetParent(azul3d.Scene2d)
+	player.SetParent(engine.Scene2d)
 
 	width, height := sprite.TotalSize(player)
 	halfWidth := width / 2
@@ -119,7 +119,7 @@ func program() {
 	player.SetSort(1000)
 	player.SetSorter(scene.Unsorted)
 
-	t, err := renderer.LoadTextureFile(azul3d.Renderer, "src/code.google.com/p/azul3d/assets/textures/player.png")
+	t, err := renderer.LoadTextureFile(engine.Renderer, "src/code.google.com/p/azul3d/assets/textures/player.png")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -171,10 +171,10 @@ func program() {
 	}()
 
 	// Print scene graph
-	azul3d.Renderer.PrintTree()
+	engine.Renderer.PrintTree()
 
 	// Grab the cursor
-	azul3d.Window.SetCursorGrabbed(true)
+	engine.Window.SetCursorGrabbed(true)
 
 	var stop func()
 	stop = event.Define(event.Handlers{
@@ -206,5 +206,5 @@ func program() {
 
 func main() {
 	// Run our program, enter main loop.
-	azul3d.Run(program)
+	engine.Run(program)
 }

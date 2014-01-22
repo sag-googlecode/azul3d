@@ -1,34 +1,34 @@
 package main
 
 import (
-	"code.google.com/p/azul3d"
+	"code.google.com/p/azul3d/engine"
 	"code.google.com/p/azul3d/scene/renderer"
 	"log"
 )
 
 func program() {
 	// Hide window
-	azul3d.Window.SetVisible(false)
+	engine.Window.SetVisible(false)
 
-	log.Println("GPU Name:", renderer.GPUName(azul3d.Renderer))
-	log.Println("GPU Vendor:", renderer.GPUVendor(azul3d.Renderer))
-	log.Println("GPU Driver Version:", renderer.GPUDriverVersion(azul3d.Renderer))
+	log.Println("GPU Name:", renderer.GPUName(engine.Renderer))
+	log.Println("GPU Vendor:", renderer.GPUVendor(engine.Renderer))
+	log.Println("GPU Driver Version:", renderer.GPUDriverVersion(engine.Renderer))
 
-	log.Println("Max Texture Size:", renderer.MaxTextureSize(azul3d.Renderer))
+	log.Println("Max Texture Size:", renderer.MaxTextureSize(engine.Renderer))
 
-	glMajor, glMinor := renderer.GLVersion(azul3d.Renderer)
+	glMajor, glMinor := renderer.GLVersion(engine.Renderer)
 	log.Printf("OpenGL Version %d.%d\n", glMajor, glMinor)
 
-	glslMajor, glslMinor := renderer.GLSLVersion(azul3d.Renderer)
+	glslMajor, glslMinor := renderer.GLSLVersion(engine.Renderer)
 	log.Printf("GLSL Version %d.%d\n", glslMajor, glslMinor)
 
-	log.Println("OpenGL Extensions:", renderer.GLExtensions(azul3d.Renderer))
+	log.Println("OpenGL Extensions:", renderer.GLExtensions(engine.Renderer))
 
 	// Quit right away instead of waiting for window to be closed
-	azul3d.Exit()
+	engine.Exit()
 }
 
 func main() {
 	// Run our program, enter main loop.
-	azul3d.Run(program)
+	engine.Run(program)
 }
