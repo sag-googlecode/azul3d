@@ -7,7 +7,7 @@
 package main
 
 import (
-	"code.google.com/p/azul3d"
+	"code.google.com/p/azul3d/engine"
 	"code.google.com/p/azul3d/chippy"
 	"code.google.com/p/azul3d/event"
 	"code.google.com/p/azul3d/math"
@@ -22,26 +22,26 @@ func onCursorPosition(ev *event.Event) {
 	pos := ev.Data.(*chippy.CursorPositionEvent)
 
 	// If the cursor is not grabbed, we do not transform the camera.
-	if !azul3d.Window.CursorGrabbed() {
+	if !engine.Window.CursorGrabbed() {
 		return
 	}
 
 	// Apply relative mouse movement to the 2D camera
 	x := math.Real(pos.X) * 0.1
 	z := math.Real(-pos.Y) * 0.1
-	azul3d.Camera2d.SetRelativePos(azul3d.Camera2d, x.Rounded(), 0, z.Rounded())
+	engine.Camera2d.SetRelativePos(engine.Camera2d, x.Rounded(), 0, z.Rounded())
 }
 
 // Event handler to reset cube transforms (their positions, scales, etc)
 func resetTransforms(ev *event.Event) {
 	log.Println("Reset")
-	azul3d.Camera2d.ResetTransform()
+	engine.Camera2d.ResetTransform()
 }
 
 // Event handler which toggles cursor grab
 func toggleCursorGrabbed(ev *event.Event) {
-	isGrabbed := azul3d.Window.CursorGrabbed()
-	azul3d.Window.SetCursorGrabbed(!isGrabbed)
+	isGrabbed := engine.Window.CursorGrabbed()
+	engine.Window.SetCursorGrabbed(!isGrabbed)
 }
 
 var(
@@ -59,10 +59,10 @@ func program() {
 		log.Fatal(err)
 	}
 
-	tmxMap.SetParent(azul3d.Scene2d)
+	tmxMap.SetParent(engine.Scene2d)
 
 	// Grab the cursor
-	azul3d.Window.SetCursorGrabbed(true)
+	engine.Window.SetCursorGrabbed(true)
 
 	var stop func()
 	stop = event.Define(event.Handlers{
@@ -84,5 +84,5 @@ func program() {
 
 func main() {
 	// Run our program, enter main loop.
-	azul3d.Run(program)
+	engine.Run(program)
 }
