@@ -1,7 +1,7 @@
 package aio
 
 import (
-	"code.google.com/p/azul3d/audio"
+	"azul3d.org/audio"
 	"fmt"
 )
 

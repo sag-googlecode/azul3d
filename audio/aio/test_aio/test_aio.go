@@ -2,9 +2,9 @@
 package main
 
 import (
-	"code.google.com/p/azul3d/audio"
-	"code.google.com/p/azul3d/audio/aio"
-	_ "code.google.com/p/azul3d/audio/wav"
+	"azul3d.org/audio"
+	"azul3d.org/audio/aio"
+	_ "azul3d.org/audio/wav"
 	"log"
 	"math"
 	"os"
@@ -41,7 +41,7 @@ func main() {
 		return
 	}
 
-	file, err := os.Open("src/code.google.com/p/azul3d/assets/audio/tune_stereo_44100hz_int16.wav")
+	file, err := os.Open("src/azul3d.org/assets/audio/tune_stereo_44100hz_int16.wav")
 	if err != nil {
 		log.Fatal(err)
 	}
