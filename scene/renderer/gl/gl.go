@@ -5,13 +5,13 @@
 package gl
 
 import (
-	"code.google.com/p/azul3d/chippy"
-	"code.google.com/p/azul3d/native/gl"
-	"code.google.com/p/azul3d/scene"
-	"code.google.com/p/azul3d/scene/camera"
-	"code.google.com/p/azul3d/scene/color"
-	"code.google.com/p/azul3d/scene/shader"
-	"code.google.com/p/azul3d/scene/transparency"
+	"azul3d.org/chippy"
+	"azul3d.org/native/gl"
+	"azul3d.org/scene"
+	"azul3d.org/scene/camera"
+	"azul3d.org/scene/color"
+	"azul3d.org/scene/shader"
+	"azul3d.org/scene/transparency"
 	"strconv"
 	"sync"
 )

@@ -5,7 +5,7 @@
 package gl
 
 import (
-	"code.google.com/p/azul3d/scene/color"
+	"azul3d.org/scene/color"
 )
 
 func (r *Renderer) stateClearClearColor() {

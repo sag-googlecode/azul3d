@@ -5,7 +5,7 @@
 package gl
 
 import (
-	"code.google.com/p/azul3d/scene/shader"
+	"azul3d.org/scene/shader"
 )
 
 var defaultShader = shader.New("DefaultShader")

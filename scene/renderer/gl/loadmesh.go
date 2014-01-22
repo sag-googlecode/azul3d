@@ -5,8 +5,8 @@
 package gl
 
 import (
-	"code.google.com/p/azul3d/native/gl"
-	"code.google.com/p/azul3d/scene/geom"
+	"azul3d.org/native/gl"
+	"azul3d.org/scene/geom"
 	"runtime"
 	"unsafe"
 )

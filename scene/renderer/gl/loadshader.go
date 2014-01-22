@@ -5,9 +5,9 @@
 package gl
 
 import (
-	"code.google.com/p/azul3d/native/gl"
-	"code.google.com/p/azul3d/scene"
-	"code.google.com/p/azul3d/scene/shader"
+	"azul3d.org/native/gl"
+	"azul3d.org/scene"
+	"azul3d.org/scene/shader"
 	"runtime"
 	"strings"
 )
