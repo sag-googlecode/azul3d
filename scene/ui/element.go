@@ -5,10 +5,10 @@
 package ui
 
 import (
-	"code.google.com/p/azul3d/math"
-	"code.google.com/p/azul3d/scene"
-	"code.google.com/p/azul3d/scene/color"
-	"code.google.com/p/azul3d/scene/sprite"
+	"azul3d.org/math"
+	"azul3d.org/scene"
+	"azul3d.org/scene/color"
+	"azul3d.org/scene/sprite"
 	"sync"
 )
 
