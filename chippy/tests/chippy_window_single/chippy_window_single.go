@@ -11,8 +11,8 @@ package main
 // to hide the command prompt
 
 import (
-	"code.google.com/p/azul3d/chippy/keyboard"
-	"code.google.com/p/azul3d/chippy"
+	"azul3d.org/chippy/keyboard"
+	"azul3d.org/chippy"
 	"unicode/utf8"
 	"fmt"
 	"log"

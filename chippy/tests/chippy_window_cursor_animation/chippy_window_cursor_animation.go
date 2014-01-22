@@ -7,7 +7,7 @@
 package main
 
 import (
-	"code.google.com/p/azul3d/chippy"
+	"azul3d.org/chippy"
 	"fmt"
 	"image"
 	_ "image/png"
@@ -32,7 +32,7 @@ func program() {
 	var cursors []*chippy.Cursor
 	for i := 1; i < 25; i++ {
 		// Load the image frame that we'll use for the animated cursor
-		file, err := os.Open(fmt.Sprintf("src/code.google.com/p/azul3d/chippy/tests/data/loading/%d.png", i))
+		file, err := os.Open(fmt.Sprintf("src/azul3d.org/chippy/tests/data/loading/%d.png", i))
 		if err != nil {
 			log.Fatal(err)
 		}

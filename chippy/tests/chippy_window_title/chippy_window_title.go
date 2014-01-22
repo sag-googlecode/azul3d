@@ -7,7 +7,7 @@
 package main
 
 import (
-	"code.google.com/p/azul3d/chippy"
+	"azul3d.org/chippy"
 	"log"
 	"os"
 	"time"

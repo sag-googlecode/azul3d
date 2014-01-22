@@ -7,11 +7,11 @@
 package main
 
 import (
-	"code.google.com/p/azul3d/chippy/keyboard"
-	"code.google.com/p/azul3d/chippy"
-	"code.google.com/p/azul3d/clock"
-	"code.google.com/p/azul3d/native/gl"
-	"code.google.com/p/azul3d/math"
+	"azul3d.org/chippy/keyboard"
+	"azul3d.org/chippy"
+	"azul3d.org/clock"
+	"azul3d.org/native/gl"
+	"azul3d.org/math"
 	"unsafe"
 	"log"
 	"os"

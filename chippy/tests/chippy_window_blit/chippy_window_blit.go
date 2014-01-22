@@ -7,7 +7,7 @@
 package main
 
 import (
-	"code.google.com/p/azul3d/chippy"
+	"azul3d.org/chippy"
 	"runtime/pprof"
 	"image"
 	"image/draw"
@@ -26,7 +26,7 @@ func program() {
 	var err error
 
 	// Load the image that we'll use for the window icon
-	file, err := os.Open("src/code.google.com/p/azul3d/chippy/tests/data/chippy_720x320.png")
+	file, err := os.Open("src/azul3d.org/chippy/tests/data/chippy_720x320.png")
 	if err != nil {
 		log.Fatal(err)
 	}
