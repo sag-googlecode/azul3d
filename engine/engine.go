@@ -12,13 +12,13 @@
 package engine
 
 import (
-	"code.google.com/p/azul3d/chippy"
-	"code.google.com/p/azul3d/clock"
-	"code.google.com/p/azul3d/event"
-	"code.google.com/p/azul3d/math"
-	"code.google.com/p/azul3d/scene"
-	"code.google.com/p/azul3d/scene/camera"
-	"code.google.com/p/azul3d/scene/renderer"
+	"azul3d.org/chippy"
+	"azul3d.org/clock"
+	"azul3d.org/event"
+	"azul3d.org/math"
+	"azul3d.org/scene"
+	"azul3d.org/scene/camera"
+	"azul3d.org/scene/renderer"
 	"fmt"
 	"log"
 	"os"
