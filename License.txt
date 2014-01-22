@@ -1,4 +1,4 @@
-This directory ("code.google.com/p/azul3d") contains several source code
+This directory ("azul3d.org") contains several source code
 packages and assets.
 
 The source code packages are license under their respective licenses, found in
