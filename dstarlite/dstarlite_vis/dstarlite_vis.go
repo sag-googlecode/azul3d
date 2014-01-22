@@ -7,7 +7,7 @@
 package main
 
 import(
-	"code.google.com/p/azul3d/dstarlite/grid"
+	"azul3d.org/dstarlite/grid"
 	"github.com/nsf/termbox-go"
 	"log"
 )
