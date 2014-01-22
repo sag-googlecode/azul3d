@@ -6,7 +6,7 @@
 package main
 
 import(
-	"code.google.com/p/azul3d/scene/text"
+	"azul3d.org/scene/text"
 	"image/png"
 	"image"
 	"io/ioutil"
@@ -17,7 +17,7 @@ import(
 
 func main() {
 	// Open font file
-	file, err := os.Open("src/code.google.com/p/azul3d/assets/fonts/vera/Vera.ttf")
+	file, err := os.Open("src/azul3d.org/assets/fonts/vera/Vera.ttf")
 	if err != nil {
 		log.Fatal(err)
 	}

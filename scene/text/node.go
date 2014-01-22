@@ -5,12 +5,12 @@
 package text
 
 import (
-	"code.google.com/p/azul3d/event"
-	"code.google.com/p/azul3d/math"
-	"code.google.com/p/azul3d/scene"
-	"code.google.com/p/azul3d/scene/geom"
-	"code.google.com/p/azul3d/scene/texture"
-	"code.google.com/p/azul3d/scene/transparency"
+	"azul3d.org/event"
+	"azul3d.org/math"
+	"azul3d.org/scene"
+	"azul3d.org/scene/geom"
+	"azul3d.org/scene/texture"
+	"azul3d.org/scene/transparency"
 	"image"
 	"sync"
 )
