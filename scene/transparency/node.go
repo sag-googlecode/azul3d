@@ -5,7 +5,7 @@
 package transparency
 
 import (
-	"code.google.com/p/azul3d/scene"
+	"azul3d.org/scene"
 )
 
 var (
