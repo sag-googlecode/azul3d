@@ -5,10 +5,10 @@
 package chippy
 
 import (
-	"code.google.com/p/azul3d/chippy/keyboard"
-	"code.google.com/p/azul3d/chippy/mouse"
-	"code.google.com/p/azul3d/chippy/thirdparty/resize"
-	"code.google.com/p/azul3d/chippy/wrappers/win32"
+	"azul3d.org/chippy/keyboard"
+	"azul3d.org/chippy/mouse"
+	"azul3d.org/chippy/thirdparty/resize"
+	"azul3d.org/chippy/wrappers/win32"
 	"errors"
 	"fmt"
 	"image"

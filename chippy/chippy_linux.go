@@ -5,7 +5,7 @@
 package chippy
 
 import (
-	"code.google.com/p/azul3d/chippy/wrappers/x11"
+	"azul3d.org/chippy/wrappers/x11"
 	"errors"
 	"fmt"
 	"image"
