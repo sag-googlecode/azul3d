@@ -1,11 +1,11 @@
 package main
 
 import (
-	"code.google.com/p/azul3d/chippy/keyboard"
-	"code.google.com/p/azul3d/engine"
-	"code.google.com/p/azul3d/event"
-	"code.google.com/p/azul3d/scene/color"
-	"code.google.com/p/azul3d/scene/ui"
+	"azul3d.org/chippy/keyboard"
+	"azul3d.org/engine"
+	"azul3d.org/event"
+	"azul3d.org/scene/color"
+	"azul3d.org/scene/ui"
 	_ "image/png"
 	"log"
 	"math/rand"

@@ -1,8 +1,8 @@
 package main
 
 import (
-	"code.google.com/p/azul3d/engine"
-	"code.google.com/p/azul3d/scene/renderer"
+	"azul3d.org/engine"
+	"azul3d.org/scene/renderer"
 	"log"
 )
 

@@ -1,18 +1,18 @@
 package main
 
 import (
-	"code.google.com/p/azul3d/chippy"
-	"code.google.com/p/azul3d/chippy/keyboard"
-	"code.google.com/p/azul3d/engine"
-	"code.google.com/p/azul3d/event"
-	"code.google.com/p/azul3d/math"
-	"code.google.com/p/azul3d/scene"
-	"code.google.com/p/azul3d/scene/color"
-	"code.google.com/p/azul3d/scene/geom"
-	"code.google.com/p/azul3d/scene/geom/procedural"
-	"code.google.com/p/azul3d/scene/renderer"
-	"code.google.com/p/azul3d/scene/texture"
-	"code.google.com/p/azul3d/scene/transparency"
+	"azul3d.org/chippy"
+	"azul3d.org/chippy/keyboard"
+	"azul3d.org/engine"
+	"azul3d.org/event"
+	"azul3d.org/math"
+	"azul3d.org/scene"
+	"azul3d.org/scene/color"
+	"azul3d.org/scene/geom"
+	"azul3d.org/scene/geom/procedural"
+	"azul3d.org/scene/renderer"
+	"azul3d.org/scene/texture"
+	"azul3d.org/scene/transparency"
 	_ "image/jpeg"
 	_ "image/png"
 	"log"
@@ -50,7 +50,7 @@ func createCube(name string, c color.Color) *scene.Node {
 	//
 	// Note that the larger the texture the more memory it will consume, and it
 	// could eat all your system's memory.
-	prefix := "src/code.google.com/p/azul3d/assets/textures"
+	prefix := "src/azul3d.org/assets/textures"
 	//texFilePath := prefix + "/clouds_8192x8192.jpg"
 	//texFilePath := prefix+"/clouds_4096x4096.jpg"
 	//texFilePath := prefix+"/clouds_2048x2048.jpg"

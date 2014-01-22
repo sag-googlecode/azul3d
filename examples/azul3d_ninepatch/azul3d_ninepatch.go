@@ -1,16 +1,16 @@
 package main
 
 import (
-	"code.google.com/p/azul3d/chippy"
-	"code.google.com/p/azul3d/chippy/keyboard"
-	"code.google.com/p/azul3d/engine"
-	"code.google.com/p/azul3d/event"
-	"code.google.com/p/azul3d/math"
-	"code.google.com/p/azul3d/scene"
-	"code.google.com/p/azul3d/scene/geom/procedural"
-	"code.google.com/p/azul3d/scene/renderer"
-	"code.google.com/p/azul3d/scene/sprite"
-	"code.google.com/p/azul3d/scene/texture"
+	"azul3d.org/chippy"
+	"azul3d.org/chippy/keyboard"
+	"azul3d.org/engine"
+	"azul3d.org/event"
+	"azul3d.org/math"
+	"azul3d.org/scene"
+	"azul3d.org/scene/geom/procedural"
+	"azul3d.org/scene/renderer"
+	"azul3d.org/scene/sprite"
+	"azul3d.org/scene/texture"
 	_ "image/png"
 	"log"
 )
@@ -112,7 +112,7 @@ func program() {
 	halfHeight := height / 2
 	player.SetPos(halfWidth.Rounded(), player.PosVec3().Y, -halfHeight.Rounded())
 
-	t, err := renderer.LoadTextureFile(engine.Renderer, "src/code.google.com/p/azul3d/assets/textures/panel.9.png")
+	t, err := renderer.LoadTextureFile(engine.Renderer, "src/azul3d.org/assets/textures/panel.9.png")
 	if err != nil {
 		log.Fatal(err)
 	}
