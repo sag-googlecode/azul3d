@@ -5,9 +5,9 @@
 package procedural
 
 import (
-	"code.google.com/p/azul3d/math"
-	"code.google.com/p/azul3d/scene/geom"
-	"code.google.com/p/azul3d/scene/texture"
+	"azul3d.org/math"
+	"azul3d.org/scene/geom"
+	"azul3d.org/scene/texture"
 )
 
 // NinePatches describes the size of the patches in an nine-patch mesh.
