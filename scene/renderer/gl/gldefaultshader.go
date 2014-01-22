@@ -57,7 +57,7 @@ uniform bool BinaryTransparency;
 
 void main()
 {
-	vec4 final;
+	vec4 final = vec4(0, 0, 0, 0);
 	for(int t = 0; t < NumTextures; t++) {
 		vec4 tc = texture2D(Textures[t], tc0);
 		final = mix(final, tc, tc.a);
