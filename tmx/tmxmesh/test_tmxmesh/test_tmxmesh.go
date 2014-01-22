@@ -7,11 +7,11 @@
 package main
 
 import (
-	"code.google.com/p/azul3d/engine"
-	"code.google.com/p/azul3d/chippy"
-	"code.google.com/p/azul3d/event"
-	"code.google.com/p/azul3d/math"
-	"code.google.com/p/azul3d/tmx/tmxmesh"
+	"azul3d.org/engine"
+	"azul3d.org/chippy"
+	"azul3d.org/event"
+	"azul3d.org/math"
+	"azul3d.org/tmx/tmxmesh"
 	_ "image/png"
 	"flag"
 	"log"
@@ -45,7 +45,7 @@ func toggleCursorGrabbed(ev *event.Event) {
 }
 
 var(
-	defaultMapFile = "src/code.google.com/p/azul3d/tmx/testdata/test_csv_tsx.tmx"
+	defaultMapFile = "src/azul3d.org/tmx/testdata/test_csv_tsx.tmx"
 	mapFile = flag.String("file", defaultMapFile, "tmx map file to load")
 )
 
