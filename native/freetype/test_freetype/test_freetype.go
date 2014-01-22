@@ -7,7 +7,7 @@
 package main
 
 import (
-	"code.google.com/p/azul3d/native/freetype"
+	"azul3d.org/native/freetype"
 	"image/png"
 	"io/ioutil"
 	"log"
@@ -21,7 +21,7 @@ func main() {
 	}
 	log.Println("FreeType context initialized")
 
-	fontFile, err := os.Open("src/code.google.com/p/azul3d/assets/fonts/vera/Vera.ttf")
+	fontFile, err := os.Open("src/azul3d.org/assets/fonts/vera/Vera.ttf")
 	if err != nil {
 		log.Fatal(err)
 	}
