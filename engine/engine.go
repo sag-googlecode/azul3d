@@ -2,14 +2,14 @@
 // This source code is subject to the terms and
 // conditions defined in the "License.txt" file.
 
-// Package azul3d is a 3D game engine.
+// Package engine is a thin wrapper around the various azul3d packages.
 //
 // This package is a very thin wrapper around the various other sub-packages
 // found inside this package directory.
 //
 // Serious applications will not make use of this package, but instead use it
 // as a reference.
-package azul3d
+package engine
 
 import (
 	"code.google.com/p/azul3d/chippy"
