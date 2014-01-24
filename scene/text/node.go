@@ -8,6 +8,7 @@ import (
 	"azul3d.org/event"
 	"azul3d.org/math"
 	"azul3d.org/scene"
+	"azul3d.org/scene/bucket"
 	"azul3d.org/scene/geom"
 	"azul3d.org/scene/texture"
 	"azul3d.org/scene/transparency"
@@ -220,7 +221,8 @@ func getObj(n *scene.Node) *textObject {
 
 // [foo]This sounds [u]great [/foo][b]because...[/u] it is. [[this has brackets]].[/b]
 func Set(n *scene.Node, text string) {
-	transparency.Set(n, transparency.Multisample)
+	transparency.Set(n, transparency.AlphaBlend)
+	bucket.Set(n, bucket.Transparent)
 	i, ok := n.Prop(PTextObject)
 	if !ok {
 		o := newTextObject(n)
