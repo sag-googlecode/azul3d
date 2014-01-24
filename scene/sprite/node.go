@@ -8,6 +8,7 @@ import (
 	"azul3d.org/event"
 	"azul3d.org/math"
 	"azul3d.org/scene"
+	"azul3d.org/scene/bucket"
 	"azul3d.org/scene/geom"
 	"azul3d.org/scene/geom/procedural"
 	"azul3d.org/scene/texture"
@@ -79,7 +80,8 @@ func mustGetObj(n *scene.Node) *obj {
 
 func New(name string) *scene.Node {
 	n := scene.New(name)
-	transparency.Set(n, transparency.Multisample)
+	transparency.Set(n, transparency.AlphaBlend)
+	bucket.Set(n, bucket.Transparent)
 	o := new(obj)
 	o.stopPlaying = make(chan bool, 1)
 
