@@ -6,35 +6,46 @@ package texture
 
 import (
 	"azul3d.org/scene"
+	"sort"
 	"sync"
 )
 
 var (
-	// Property for storing the texture map on a node.
-	PTextureMap = scene.NewProp("TextureMap")
+	// A slice of texture layers that the node uses. Each texture is stored
+	// uniquely as it's own property where the key is the *Layer and the value
+	// is the *Texture, but to get all of the active textures on a node we must
+	// maintain this list.
+	PLayers = scene.NewProp("Layers")
 
-	// Property for storing the texture map lock on a node.
-	PTextureMapLock = scene.NewProp("TextureMapLock")
+	// Stores the *sync.RWMutex used for synchronization of the slice stored in
+	// the PLayers property above.
+	PLayersLock = scene.NewProp("LayersLock")
 )
 
-func getLock(n *scene.Node) *sync.RWMutex {
-	l, ok := n.Prop(PTextureMapLock)
+func getLayersLock(n *scene.Node) *sync.RWMutex {
+	l, ok := n.Prop(PLayersLock)
 	if !ok {
 		newLock := new(sync.RWMutex)
-		n.SetProp(PTextureMapLock, newLock)
+		n.SetProp(PLayersLock, newLock)
 		return newLock
 	}
 	return l.(*sync.RWMutex)
 }
 
-func getTextures(n *scene.Node) map[*Layer]Type {
-	i, ok := n.Prop(PTextureMap)
+func getLayers(n *scene.Node) []*Layer {
+	i, ok := n.Prop(PLayers)
 	if !ok {
-		newMap := make(map[*Layer]Type)
-		n.SetProp(PTextureMap, newMap)
-		return newMap
+		return nil
 	}
-	return i.(map[*Layer]Type)
+	return i.([]*Layer)
+}
+
+func getActiveLayers(n *scene.Node) []*Layer {
+	i, ok := n.ActiveProp(PLayers)
+	if !ok {
+		return nil
+	}
+	return i.([]*Layer)
 }
 
 // Set stores the given texture into the given texture layer of this node.
@@ -48,52 +59,147 @@ func Set(n *scene.Node, l *Layer, t Type) {
 	}
 	if t == nil {
 		panic("Set(): Texture is nil!")
-		return
 	}
 	if !IsValid(t) {
 		panic("Set(): Invalid texture type.")
 	}
 
-	access := getLock(n)
+	access := getLayersLock(n)
 	access.Lock()
 	defer access.Unlock()
 
-	textures := getTextures(n)
-	textures[l] = t
+	// Store the layer.
+	updatedLayers := append(getLayers(n), l)
+	n.SetProp(PLayers, updatedLayers)
+
+	// Pair the layer to the texture value.
+	n.SetProp(l, t)
 }
 
 // Get returns the texture currently stored in the given texture layer.
+//
+// Returns t=nil, ok=false in the event that there is no texture for the given
+// layer on the specified node.
 func Get(n *scene.Node, l *Layer) (t Type, ok bool) {
-	access := getLock(n)
-	access.RLock()
-	defer access.RUnlock()
-
-	textures := getTextures(n)
-	t, ok = textures[l]
-	return
+	i, ok := n.Prop(l)
+	if !ok {
+		return nil, false
+	}
+	return i.(Type), true
 }
 
-// Remove removes the texture currently stored in the given texture layer.
+// Active returns the active texture for the specified node currently stored in
+// the given texture layer.
+//
+// Returns t=nil, ok=false in the event that there is no active texture for the
+// given layer on the specified node.
+func Active(n *scene.Node, l *Layer) (t Type, ok bool) {
+	i, ok := n.ActiveProp(l)
+	if !ok {
+		return nil, false
+	}
+	return i.(Type), true
+}
+
+// Remove removes the texture currently stored in the given texture layer from
+// the specified node.
 func Remove(n *scene.Node, l *Layer) {
-	access := getLock(n)
+	// Remove the pairing between the layer and texture value.
+	n.ClearProp(l)
+
+	access := getLayersLock(n)
 	access.Lock()
 	defer access.Unlock()
 
-	textures := getTextures(n)
-	delete(textures, l)
+	// Search through the layers slice for the given layer's index.
+	layers := getLayers(n)
+	found := -1
+	for index, existingLayer := range layers {
+		if existingLayer == l {
+			found = index
+			break
+		}
+	}
+	if found != -1 {
+		// We found the layer we want to remove, so remove it from the slice
+		// and update the property.
+		layers = append(layers[:found], layers[found:]...)
+		n.SetProp(PLayers, layers)
+	}
 }
 
-// Textures returns a copy of the internal map used to hold texture layers and
-// their associated textures.
+// Textures returns a map of texture layer's to their respective textures.
 func Textures(n *scene.Node) map[*Layer]Type {
-	access := getLock(n)
+	access := getLayersLock(n)
 	access.RLock()
 	defer access.RUnlock()
 
-	textures := getTextures(n)
-	c := make(map[*Layer]Type, len(textures))
-	for l, t := range textures {
-		c[l] = t
+	layers := getLayers(n)
+	m := make(map[*Layer]Type, len(layers))
+	for _, layer := range layers {
+		tex, ok := Get(n, layer)
+		if ok {
+			m[layer] = tex
+		}
 	}
-	return c
+	return m
+}
+
+// ActiveTextures returns a map of texture layer's to their respective active
+// textures on the given node.
+func ActiveTextures(n *scene.Node) map[*Layer]Type {
+	access := getLayersLock(n)
+	access.RLock()
+	defer access.RUnlock()
+
+	layers := getActiveLayers(n)
+	m := make(map[*Layer]Type, len(layers))
+	for _, layer := range layers {
+		tex, ok := Active(n, layer)
+		if ok {
+			m[layer] = tex
+		}
+	}
+	return m
+}
+
+type Pair struct {
+	*Layer
+	Type
+}
+
+type sortedPairs []Pair
+
+func (s sortedPairs) Len() int      { return len(s) }
+func (s sortedPairs) Swap(i, j int) { s[i], s[j] = s[j], s[i] }
+func (s sortedPairs) Less(i, j int) bool {
+	return s[i].Layer.Sort() < s[j].Layer.Sort()
+}
+
+// Sorted returns a sorted slice of pairs (a texture layer and it's associated
+// active texture) for the given node.
+//
+// It is like the map returned by ActiveTextures(n) except sorted per each
+// layer's sort value.
+func Sorted(n *scene.Node) []Pair {
+	// Build the slice we will sort.
+	access := getLayersLock(n)
+	access.RLock()
+
+	layers := getActiveLayers(n)
+	pairs := make(sortedPairs, len(layers))
+	pairs = pairs[:0]
+	for _, layer := range layers {
+		tex, ok := Active(n, layer)
+		if ok {
+			pairs = append(pairs, Pair{layer, tex})
+		}
+	}
+
+	// Unlock now since sort may take some time.
+	access.RUnlock()
+
+	// Sort the pairs.
+	sort.Sort(pairs)
+	return pairs
 }
