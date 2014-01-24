@@ -20,6 +20,9 @@ var (
 //
 // The transparency mode must be valid (I.e. one of the predefined constants)
 // or else a panic will occur.
+//
+// If the alpha mode to be set is AlphaBlend you might also want to place the
+// node inside a back-to-front sorted bucket, such as bucket.Transparent.
 func Set(n *scene.Node, m ModeType) {
 	if !m.Valid() {
 		panic("Set(): Invalid transparency mode specified!")
