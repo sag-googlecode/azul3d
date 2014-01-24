@@ -4,6 +4,17 @@
 
 package shader
 
+import "azul3d.org/math"
+
+func ConvertMat4(m *math.Mat4) Mat4 {
+	return Mat4{
+		[4]float32{float32(m[0][0]), float32(m[0][1]), float32(m[0][2]), float32(m[0][3])},
+		[4]float32{float32(m[1][0]), float32(m[1][1]), float32(m[1][2]), float32(m[1][3])},
+		[4]float32{float32(m[2][0]), float32(m[2][1]), float32(m[2][2]), float32(m[2][3])},
+		[4]float32{float32(m[3][0]), float32(m[3][1]), float32(m[3][2]), float32(m[3][3])},
+	}
+}
+
 // Vec2 is a two-component 32-bit float vector shader input type.
 type Vec2 [2]float32
 
