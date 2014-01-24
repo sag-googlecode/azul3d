@@ -26,25 +26,24 @@ func Set(n *scene.Node, s *Shader) {
 	n.SetProp(PShader, s)
 }
 
-// Get returns the shader of this node, if it has one.
-//
-// If this node does not have a shader; ok will be false.
-func Get(n *scene.Node) (s *Shader, ok bool) {
+// Get returns the shader of this node, if it has one, otherwise this function
+// returns nil.
+func Get(n *scene.Node) *Shader {
 	i, ok := n.Prop(PShader)
 	if ok {
-		s = i.(*Shader)
+		return i.(*Shader)
 	}
-	return
+	return nil
 }
 
-// Active returns the active shader of this node and true, or returns nil and
-// false if there is no active shader.
-func Active(n *scene.Node) (s *Shader, ok bool) {
+// Active returns the active shader of this node, or returns nil if there is no
+// active shader.
+func Active(n *scene.Node) *Shader {
 	i, ok := n.ActiveProp(PShader)
 	if ok {
-		s = i.(*Shader)
+		return i.(*Shader)
 	}
-	return
+	return nil
 }
 
 // Clear clears the shader of this node such that it has no shader.
