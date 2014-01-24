@@ -45,6 +45,12 @@ func getRegions(n *scene.Node) map[*Region]bool {
 	return regions.(map[*Region]bool)
 }
 
+// ClearRegions removes all of the regions associated with the specified camera
+// node.
+func ClearRegions(n *scene.Node) {
+	n.ClearProp(PRegionMap)
+}
+
 // Is tells if the specified scene node is an camera node. An camera node is
 // any node which specifies an camera lens, as such, this is short hand for:
 //
