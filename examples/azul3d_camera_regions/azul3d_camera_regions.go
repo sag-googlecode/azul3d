@@ -192,29 +192,38 @@ func toggleCursorGrabbed(ev *event.Event) {
 //         > Blue
 //
 func program() {
-	// Add four camera regions, which will give us four views of the same scene
-	// on the window.
+	// The 'engine' package sets up a few camera regions for us already -- but
+	// we don't want to use those so we remove them now.
+	camera.ClearRegions(engine.Camera3d)
+	camera.ClearRegions(engine.Camera2d)
 
-	// For the first region, we *know* that the 'azul3d' package adds a default
-	// region to the camera. We'll just modify that one.
-	topLeft := camera.Regions(engine.Camera3d)[0]
-	topLeft.SetRegion(0, 0, 640/2, 480/2)
-	camera.AddRegion(engine.Camera3d, topLeft)
-
-	// For the other Camera3d regions, we'll create new ones.
+	// We will have four camera regions which displays the 3D scene.
+	topLeft := camera.NewRegion(0, 0, 640/2, 480/2)
 	topRight := camera.NewRegion(640/2, 0, 640/2, 480/2)
-	camera.AddRegion(engine.Camera3d, topRight)
-
 	bottomLeft := camera.NewRegion(0, 480/2, 640/2, 480/2)
-	camera.AddRegion(engine.Camera3d, bottomLeft)
-
 	bottomRight := camera.NewRegion(640/2, 480/2, 640/2, 480/2)
+
+	// Add the regions to the 3D camera.
+	camera.AddRegion(engine.Camera3d, topLeft)
+	camera.AddRegion(engine.Camera3d, topRight)
+	camera.AddRegion(engine.Camera3d, bottomLeft)
 	camera.AddRegion(engine.Camera3d, bottomRight)
 
-	// We don't need to touch the Camera2d's region, because by default it is
-	// set to draw without clearing the color, depth, or stencil buffers, and
-	// with a sort value of 100 (higher than the above regions default sort
-	// values of zero).
+	// We will have one single camera region which displays the 2D scene.
+	whole := camera.NewRegion(0, 0, 0, 0)
+
+	// We want to make sure that the Camera2d's region renders *after* the 3D
+	// ones above so that we have the effect of an overlay. To make the 'whole'
+	// region render last we can make the sort value larger that the others
+	// (zero by default).
+	whole.SetSort(100)
+
+	// It's important that the 'whole' region does not try to clear the color
+	// buffer, or else our 3D scene below it would not show up!
+	whole.SetClearColorActive(false)
+
+	// Add the region to the 2D camera.
+	camera.AddRegion(engine.Camera2d, whole)
 
 	// Set camera 12 units back (Y is depth) so that we see the cubes placed in
 	// the center of the scene
