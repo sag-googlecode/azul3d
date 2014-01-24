@@ -377,7 +377,7 @@ func Create(n *scene.Node, window *chippy.Window) error {
 
 		o.rendererCreateExecute = make(chan func())
 		o.rendererCreateComplete = make(chan bool)
-		o.preparedFrames = make(chan func(), 0)
+		o.preparedFrames = make(chan func(), 3)
 		o.wantChangeBufferSize = make(chan uint)
 		o.playing = true
 
@@ -454,7 +454,7 @@ func (o *obj) setup() error {
 			return
 		}
 
-		render, err = gl.NewRenderer(dcMakeCurrent, lcMakeCurrent, config)
+		render, err = gl.NewRenderer(dcMakeCurrent, lcMakeCurrent)
 		if err == nil {
 			width, height := o.Window.Size()
 			render.Resize(width, height)
