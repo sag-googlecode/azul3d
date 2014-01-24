@@ -46,3 +46,8 @@ func (a *BoundingBox) Equals(b *BoundingBox) bool {
 	}
 	return a.Min.Equals(b.Min) && a.Max.Equals(b.Max)
 }
+
+// Center returns a point representing the center of this bounding box.
+func (a *BoundingBox) Center() *math.Vec3 {
+	return a.Min.Lerp(a.Max, 0.5)
+}
