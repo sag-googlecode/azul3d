@@ -5,11 +5,11 @@
 package gl
 
 import (
-	"azul3d.org/chippy"
 	"azul3d.org/native/gl"
 	"azul3d.org/scene"
 	"azul3d.org/scene/camera"
 	"azul3d.org/scene/color"
+	"azul3d.org/scene/geom"
 	"azul3d.org/scene/shader"
 	"azul3d.org/scene/transparency"
 	"strconv"
@@ -33,12 +33,12 @@ type GLShader struct {
 }
 
 type Renderer struct {
-	dcMakeCurrent, lcMakeCurrent func(current bool)
-	lcAccess                     sync.Mutex
-	gl, lcgl                     *opengl.Context
-	width, height                int
-	config                       *chippy.GLConfig
-	glArbMultisample             bool
+	dcMakeCurrent, lcMakeCurrent         func(current bool)
+	lcAccess                             sync.Mutex
+	gl, lcgl                             *opengl.Context
+	width, height                        int
+	samples, sampleBuffers               int32
+	glArbMultisample, haveMSTransparency bool
 
 	texturesToFreeAccess     sync.RWMutex
 	texturesToFree           []uint32
@@ -47,7 +47,10 @@ type Renderer struct {
 	scissorStack       [][]uint
 	meshesToFreeAccess sync.RWMutex
 	meshesToFree       []*GLBufferedMesh
-	lastSortedGeoms    sortedGeoms
+
+	regionBuffers        chan sortedRegions
+	nodeBuffers          chan *sortedNodes
+	inputTexturesBuffers chan []int32
 
 	lastRegion                                                          *camera.Region
 	lastColorClear                                                      color.Color
@@ -62,31 +65,26 @@ type Renderer struct {
 	gpuName, gpuVendorName string
 }
 
-func (r *Renderer) useRegion(region *camera.Region) {
-	if r.lastRegion != nil && region.Equals(r.lastRegion) {
-		return
-	}
-	r.lastRegion = region
-
-	x, y, width, height := region.Region()
+func (r *Renderer) clearRegion(rr renderRegion) {
+	x, y, width, height := rr.Region.Region()
 	r.viewport(x, y, int(width), int(height))
 
 	var clearFlags int32
-	if region.ClearColorActive() {
+	if rr.Region.ClearColorActive() {
 		clearFlags = clearFlags | opengl.COLOR_BUFFER_BIT
 
 		// Set clear color to color of the (root) display.Node
-		r.clearColor(region.ClearColor())
+		r.clearColor(rr.Region.ClearColor())
 	}
 
-	if region.ClearDepthActive() {
+	if rr.Region.ClearDepthActive() {
 		clearFlags = clearFlags | opengl.DEPTH_BUFFER_BIT
-		r.clearDepth(region.ClearDepth())
+		r.clearDepth(rr.Region.ClearDepth())
 	}
 
-	if region.ClearStencilActive() {
+	if rr.Region.ClearStencilActive() {
 		clearFlags = clearFlags | opengl.STENCIL_BUFFER_BIT
-		r.clearStencil(region.ClearStencil())
+		r.clearStencil(rr.Region.ClearStencil())
 	}
 
 	if clearFlags != 0 {
@@ -97,224 +95,223 @@ func (r *Renderer) useRegion(region *camera.Region) {
 	}
 }
 
-func (r *Renderer) drawGeom(current *sortedGeom) {
-	g := current.geom
+func (r *Renderer) useRegion(rr renderRegion) {
+	x, y, width, height := rr.Region.Region()
+	r.viewport(x, y, int(width), int(height))
+}
 
-	if g.IsHidden() {
-		return
-	}
+func (r *Renderer) useNode(rn renderNode) {
+	// Load the shader.
+	r.loadShader(rn.shader, true)
 
-	// Load the mesh into OpenGL
-	r.loadMesh(g, true)
-
-	// Load the shader into OpenGL
-	r.loadShader(current.shader, true)
-
-	gls := current.shader.NativeIdentity().(*GLShader)
+	// Verify that the shader compiled.
+	gls := rn.shader.NativeIdentity().(*GLShader)
 	if gls.Program == 0 {
 		return
 	}
+
+	// Use the shader.
 	r.gl.UseProgram(gls.Program)
 
-	// Add texture shader inputs, and drop textures that are not loaded
-	inputTextures := make([]int32, len(current.textures))
+	// Drop textures from the renderNode that are not currently loaded.
 	count := int32(0)
-	for layer, tex := range current.textures {
-		// If the texture is not loaded yet, then we simply never render with
-		// it.
-		//
-		// Additionally, we start loading it if auto loading is enabled for it.
-		i := tex.NativeIdentity()
-		if i == nil {
-			if tex.AutoLoad() {
-				// Maybe we can force the texture to load right now
-				r.loadTexture(tex, true)
+	for pairIndex, texPair := range rn.textures {
+		if texPair.Type.NativeIdentity() == nil {
+			// The texture is not loaded yet.
+			if texPair.Type.AutoLoad() {
+				// They want us to wait before rendering untill the texture is
+				// fully loaded, do so now.
+				r.loadTexture(texPair.Type, true)
 			}
 
-			// It's possible the texture could not load (no source, for instance)
-			if tex.NativeIdentity() == nil {
-				// Not loaded yet; remove from map.
-				delete(current.textures, layer)
+			// It's also possible that even if they wanted the texture to load
+			// before rendering that it couldn't do so for some reason. (if no
+			// source image was specified, for instance).
+			if texPair.Type.NativeIdentity() == nil {
+				// We couldn't load the texture, drop it from the textures used
+				// for rendering.
+				rn.textures = append(rn.textures[:pairIndex], rn.textures[pairIndex+1:]...)
 				continue
 			}
 		}
 
-		// Add texture input
-		inputTextures[count] = count
+		// We have a loaded texture for use with rendering.
+		rn.inputTextures = append(rn.inputTextures, count)
 		count++
 	}
 
-	shader.SetInput(current.node, "Textures", inputTextures)
+	// Add textures input.
+	shader.SetInput(rn.node, "Textures", rn.inputTextures)
 
-	switch current.transparency {
+	// Set transparency state.
+	switch rn.transparency {
 	case transparency.Multisample:
-		if r.glArbMultisample && r.config.Samples > 0 {
+		if r.haveMSTransparency {
 			r.gl.Enable(opengl.SAMPLE_ALPHA_TO_COVERAGE)
-			defer r.gl.Disable(opengl.SAMPLE_ALPHA_TO_COVERAGE)
-			shader.SetInput(current.node, "BinaryTransparency", false)
-		} else {
-			shader.SetInput(current.node, "BinaryTransparency", true)
 		}
 
 	case transparency.AlphaBlend:
 		r.gl.Enable(opengl.BLEND)
-		defer r.gl.Disable(opengl.BLEND)
 		r.gl.BlendFunc(opengl.SRC_ALPHA, opengl.ONE_MINUS_SRC_ALPHA)
-		shader.SetInput(current.node, "BinaryTransparency", false)
-
-	case transparency.Binary:
-		shader.SetInput(current.node, "BinaryTransparency", true)
-
-	default:
-		shader.SetInput(current.node, "BinaryTransparency", false)
 	}
 
-	r.updateShaderInputs(current.node, current.shader, gls)
+	// Update the shader program's inputs.
+	r.updateShaderInputs(rn.node, rn.shader, gls)
 
-	bm := g.NativeIdentity().(*GLBufferedMesh)
+	// Bind textures.
+	for i, texPair := range rn.textures {
+		ident := texPair.Type.NativeIdentity().(uint32)
+		r.gl.ActiveTexture(opengl.TEXTURE0 + int32(i))
+		r.gl.BindTexture(opengl.TEXTURE_2D, ident)
+	}
+}
 
-	g.RLock()
-	defer g.RUnlock()
+func (r *Renderer) finishNode(rn renderNode) {
+	// Unbind textures (Note: we use rn.inputTextures because it is the only
+	// texture slice of the proper size).
+	for i := 0; i < len(rn.inputTextures); i++ {
+		r.gl.ActiveTexture(opengl.TEXTURE0 + int32(i))
+		r.gl.BindTexture(opengl.TEXTURE_2D, 0)
+	}
 
-	if len(g.Vertices) > 0 {
-		// VAA Index | Description
-		//         0 - Vertices
-		//         1 - Normals
-		//         2 - Tangents
-		//         3 - Bitangent
-		//         4 - Colors
-		//         5 - Bone Weights
-		//         6 - Texture Coord 0
-		//         7 - Texture Coord 1
-		//       ... - Texture Coord ...
-		//     23535 - Texture Coord 23535
-		defer r.gl.BindBuffer(opengl.ARRAY_BUFFER, 0)
-
-		getLocation := func(name string) (idx uint32, ok bool) {
-			b := []byte(name)
-			b = append(b, 0)
-			i := r.gl.GetAttribLocation(gls.Program, &b[0])
-			r.gl.Execute()
-			if i >= 0 {
-				return uint32(i), true
-			}
-			return 0, false
+	// Undo transparency state.
+	switch rn.transparency {
+	case transparency.Multisample:
+		if r.haveMSTransparency {
+			r.gl.Disable(opengl.SAMPLE_ALPHA_TO_COVERAGE)
 		}
 
-		// Send vertices VBO
-		idx, ok := getLocation("Vertex")
+	case transparency.AlphaBlend:
+		r.gl.Disable(opengl.BLEND)
+	}
+}
+
+func (r *Renderer) drawMesh(rn renderNode, m *geom.Mesh) {
+	// Verify that the shader compiled.
+	gls := rn.shader.NativeIdentity().(*GLShader)
+	if gls.Program == 0 {
+		return
+	}
+
+	// Load the mesh into OpenGL
+	r.loadMesh(m, true)
+
+	bm := m.NativeIdentity().(*GLBufferedMesh)
+
+	m.RLock()
+	defer m.RUnlock()
+
+	// VAA Index | Description
+	//         0 - Vertices
+	//         1 - Normals
+	//         2 - Tangents
+	//         3 - Bitangent
+	//         4 - Colors
+	//         5 - Bone Weights
+	//         6 - Texture Coord 0
+	//         7 - Texture Coord 1
+	//       ... - Texture Coord ...
+	//     23535 - Texture Coord 23535
+	defer r.gl.BindBuffer(opengl.ARRAY_BUFFER, 0)
+
+	getLocation := func(name string) (idx uint32, ok bool) {
+		b := []byte(name)
+		b = append(b, 0)
+		i := r.gl.GetAttribLocation(gls.Program, &b[0])
+		r.gl.Execute()
+		if i >= 0 {
+			return uint32(i), true
+		}
+		return 0, false
+	}
+
+	// Send vertices VBO
+	idx, ok := getLocation("Vertex")
+	if ok {
+		r.gl.BindBuffer(opengl.ARRAY_BUFFER, bm.Vertices)
+		r.gl.EnableVertexAttribArray(idx)
+		defer r.gl.DisableVertexAttribArray(idx)
+		r.gl.VertexAttribPointer(idx, 3, opengl.FLOAT, opengl.GLBool(false), 0, nil)
+	}
+
+	if len(m.Normals) > 0 {
+		// Send normal VBO
+		idx, ok = getLocation("Normal")
 		if ok {
-			r.gl.BindBuffer(opengl.ARRAY_BUFFER, bm.Vertices)
+			r.gl.BindBuffer(opengl.ARRAY_BUFFER, bm.Normals)
 			r.gl.EnableVertexAttribArray(idx)
 			defer r.gl.DisableVertexAttribArray(idx)
 			r.gl.VertexAttribPointer(idx, 3, opengl.FLOAT, opengl.GLBool(false), 0, nil)
 		}
+	}
 
-		if len(g.Normals) > 0 {
-			// Send normal VBO
-			idx, ok = getLocation("Normal")
-			if ok {
-				r.gl.BindBuffer(opengl.ARRAY_BUFFER, bm.Normals)
-				r.gl.EnableVertexAttribArray(idx)
-				defer r.gl.DisableVertexAttribArray(idx)
-				r.gl.VertexAttribPointer(idx, 3, opengl.FLOAT, opengl.GLBool(false), 0, nil)
-			}
+	if len(m.Tangents) > 0 {
+		// Send tangent VBO
+		idx, ok = getLocation("Tangent")
+		if ok {
+			r.gl.BindBuffer(opengl.ARRAY_BUFFER, bm.Tangents)
+			r.gl.EnableVertexAttribArray(idx)
+			defer r.gl.DisableVertexAttribArray(idx)
+			r.gl.VertexAttribPointer(idx, 3, opengl.FLOAT, opengl.GLBool(false), 0, nil)
 		}
+	}
 
-		if len(g.Tangents) > 0 {
-			// Send tangent VBO
-			idx, ok = getLocation("Tangent")
-			if ok {
-				r.gl.BindBuffer(opengl.ARRAY_BUFFER, bm.Tangents)
-				r.gl.EnableVertexAttribArray(idx)
-				defer r.gl.DisableVertexAttribArray(idx)
-				r.gl.VertexAttribPointer(idx, 3, opengl.FLOAT, opengl.GLBool(false), 0, nil)
-			}
+	if len(m.Bitangents) > 0 {
+		// Send bitangent VBO
+		idx, ok = getLocation("Bitangent")
+		if ok {
+			r.gl.BindBuffer(opengl.ARRAY_BUFFER, bm.Bitangents)
+			r.gl.EnableVertexAttribArray(idx)
+			defer r.gl.DisableVertexAttribArray(idx)
+			r.gl.VertexAttribPointer(idx, 3, opengl.FLOAT, opengl.GLBool(false), 0, nil)
 		}
+	}
 
-		if len(g.Bitangents) > 0 {
-			// Send bitangent VBO
-			idx, ok = getLocation("Bitangent")
-			if ok {
-				r.gl.BindBuffer(opengl.ARRAY_BUFFER, bm.Bitangents)
-				r.gl.EnableVertexAttribArray(idx)
-				defer r.gl.DisableVertexAttribArray(idx)
-				r.gl.VertexAttribPointer(idx, 3, opengl.FLOAT, opengl.GLBool(false), 0, nil)
-			}
+	if len(m.Colors) > 0 {
+		// Send color VBO
+		idx, ok = getLocation("Color")
+		if ok {
+			r.gl.BindBuffer(opengl.ARRAY_BUFFER, bm.Colors)
+			r.gl.EnableVertexAttribArray(idx)
+			defer r.gl.DisableVertexAttribArray(idx)
+			r.gl.VertexAttribPointer(idx, 4, opengl.FLOAT, opengl.GLBool(false), 0, nil)
 		}
+	}
 
-		if len(g.Colors) > 0 {
-			// Send color VBO
-			idx, ok = getLocation("Color")
-			if ok {
-				r.gl.BindBuffer(opengl.ARRAY_BUFFER, bm.Colors)
-				r.gl.EnableVertexAttribArray(idx)
-				defer r.gl.DisableVertexAttribArray(idx)
-				r.gl.VertexAttribPointer(idx, 4, opengl.FLOAT, opengl.GLBool(false), 0, nil)
-			}
+	if len(m.BoneWeights) > 0 {
+		// Send BoneWeight VBO
+		idx, ok = getLocation("BoneWeight")
+		if ok {
+			r.gl.BindBuffer(opengl.ARRAY_BUFFER, bm.BoneWeights)
+			r.gl.EnableVertexAttribArray(idx)
+			defer r.gl.DisableVertexAttribArray(idx)
+			r.gl.VertexAttribPointer(idx, 3, opengl.FLOAT, opengl.GLBool(false), 0, nil)
 		}
+	}
 
-		if len(g.BoneWeights) > 0 {
-			// Send BoneWeight VBO
-			idx, ok = getLocation("BoneWeight")
-			if ok {
-				r.gl.BindBuffer(opengl.ARRAY_BUFFER, bm.BoneWeights)
-				r.gl.EnableVertexAttribArray(idx)
-				defer r.gl.DisableVertexAttribArray(idx)
-				r.gl.VertexAttribPointer(idx, 3, opengl.FLOAT, opengl.GLBool(false), 0, nil)
-			}
+	for index, _ := range m.TextureCoords {
+		// Send TextureCoord VBO's
+		stringIndex := strconv.Itoa(index)
+		idx, ok = getLocation("TextureCoord" + stringIndex)
+		if ok {
+			r.gl.BindBuffer(opengl.ARRAY_BUFFER, bm.TextureCoords[index])
+			r.gl.EnableVertexAttribArray(idx)
+			defer r.gl.DisableVertexAttribArray(idx)
+			r.gl.VertexAttribPointer(idx, 4, opengl.FLOAT, opengl.GLBool(false), 0, nil)
 		}
+	}
 
-		for index, _ := range g.TextureCoords {
-			// Send TextureCoord VBO's
-			stringIndex := strconv.Itoa(index)
-			idx, ok = getLocation("TextureCoord" + stringIndex)
-			if ok {
-				r.gl.BindBuffer(opengl.ARRAY_BUFFER, bm.TextureCoords[index])
-				r.gl.EnableVertexAttribArray(idx)
-				defer r.gl.DisableVertexAttribArray(idx)
-				r.gl.VertexAttribPointer(idx, 4, opengl.FLOAT, opengl.GLBool(false), 0, nil)
-			}
-		}
-
-		count := 0
-		for _, tex := range current.textures {
-			ident := tex.NativeIdentity().(uint32)
-			r.gl.ActiveTexture(opengl.TEXTURE0 + int32(count))
-			r.gl.BindTexture(opengl.TEXTURE_2D, ident)
-			count++
-		}
-
-		if len(g.Indices) > 0 {
-			r.gl.BindBuffer(opengl.ELEMENT_ARRAY_BUFFER, bm.Indices)
-			r.gl.DrawElements(opengl.TRIANGLES, uint32(len(g.Indices)), opengl.UNSIGNED_INT, nil)
-		} else {
-			r.gl.DrawArrays(opengl.TRIANGLES, 0, uint32(len(g.Vertices)))
-		}
-
-		for count := 0; count < len(current.textures); count++ {
-			r.gl.ActiveTexture(opengl.TEXTURE0 + int32(count))
-			r.gl.BindTexture(opengl.TEXTURE_2D, 0)
-		}
+	if len(m.Indices) > 0 {
+		r.gl.BindBuffer(opengl.ELEMENT_ARRAY_BUFFER, bm.Indices)
+		r.gl.DrawElements(opengl.TRIANGLES, uint32(len(m.Indices)), opengl.UNSIGNED_INT, nil)
+	} else {
+		r.gl.DrawArrays(opengl.TRIANGLES, 0, uint32(len(m.Vertices)))
 	}
 }
 
 func (r *Renderer) Render(rootNode *scene.Node) func() {
-	// Locate cameras in the scene who are active, have an scene specified, and have at least one
-	// camera region.
-	var cameras []*scene.Node
-
-	rootNode.Traverse(func(i int, n *scene.Node) bool {
-		if (!n.Hidden() || n.ShownThrough()) && camera.Is(n) {
-			cameras = append(cameras, n)
-		}
-
-		// Please continue traversal
-		return true
-	})
-
-	// Sort all visible geom nodes by their active sorters and other properties.
-	geoms := r.sortGeoms(rootNode, cameras)
+	// Collect and sort every camera's scene, etc.
+	regionBuf := r.collect(rootNode)
 
 	// Enter read lock
 	r.texturesToFreeAccess.RLock()
@@ -360,6 +357,8 @@ func (r *Renderer) Render(rootNode *scene.Node) func() {
 
 	// Build an render function to return
 	return func() {
+		defer r.releaseRegionBuf(regionBuf)
+
 		if len(texturesToFree) > 0 {
 			r.gl.DeleteTextures(uint32(len(texturesToFree)), &texturesToFree[0])
 			r.gl.Execute()
@@ -407,14 +406,25 @@ func (r *Renderer) Render(rootNode *scene.Node) func() {
 		r.stateClearClearStencil()
 		r.stateClearViewport()
 
-		for _, g := range geoms {
-			r.useRegion(g.region)
+		// First individually clear each region. They might overlap so we must
+		// render each region after clearing them all.
+		for _, rRegion := range regionBuf {
+			r.clearRegion(rRegion)
+		}
 
-			if g.node != nil {
-				r.drawGeom(g)
+		// Render each region's slice of nodes.
+		for _, rRegion := range regionBuf {
+			r.useRegion(rRegion)
+			for _, rNode := range rRegion.nodes.slice {
+				r.useNode(rNode)
+				for _, m := range rNode.meshes {
+					r.drawMesh(rNode, m)
+				}
+				r.finishNode(rNode)
 			}
 		}
 
+		// Flush and execute opengl commands.
 		r.gl.Flush()
 		r.gl.Execute()
 	}
@@ -423,18 +433,17 @@ func (r *Renderer) Render(rootNode *scene.Node) func() {
 func (r *Renderer) Resize(width, height int) {
 	r.width = width
 	r.height = height
-
-	// Reset viewport now
-	r.viewport(0, 0, width, height)
-	r.gl.Execute()
 }
 
-func NewRenderer(dcMakeCurrent, lcMakeCurrent func(current bool), config *chippy.GLConfig) (*Renderer, error) {
+func NewRenderer(dcMakeCurrent, lcMakeCurrent func(current bool)) (*Renderer, error) {
 	r := new(Renderer)
+
+	r.regionBuffers = make(chan sortedRegions, 16)
+	r.nodeBuffers = make(chan *sortedNodes, 128)
+	r.inputTexturesBuffers = make(chan []int32, 256)
 
 	r.dcMakeCurrent = dcMakeCurrent
 	r.lcMakeCurrent = lcMakeCurrent
-	r.config = config
 
 	r.dcMakeCurrent(true)
 
@@ -446,8 +455,14 @@ func NewRenderer(dcMakeCurrent, lcMakeCurrent func(current bool), config *chippy
 
 	r.glArbMultisample = r.gl.Extension("GL_ARB_multisample")
 	if r.glArbMultisample {
+		r.gl.GetIntegerv(opengl.SAMPLES, &r.samples)
+		r.gl.GetIntegerv(opengl.SAMPLE_BUFFERS, &r.sampleBuffers)
+		r.gl.Execute()
+
 		r.gl.Enable(opengl.MULTISAMPLE)
 	}
+
+	r.haveMSTransparency = r.glArbMultisample && r.samples > 0 && r.sampleBuffers > 0
 
 	r.gl.Enable(opengl.TEXTURE_2D)
 	r.gl.Enable(opengl.SCISSOR_TEST)
