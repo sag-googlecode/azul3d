@@ -9,11 +9,6 @@ import (
 	"sync"
 )
 
-var (
-	idCounter       uint
-	idCounterAccess sync.Mutex
-)
-
 // Node represents a single node within a 3D scene graph. A node may have a
 // parent and/or several children nodes related to it.
 //
@@ -25,7 +20,6 @@ var (
 type Node struct {
 	access sync.RWMutex
 
-	id              uint
 	name            string
 	parent          *Node
 	parents         []*Node
@@ -70,7 +64,6 @@ func (n *Node) Copy() *Node {
 	}
 
 	copy := &Node{
-		id:        n.id,
 		name:      n.name,
 		children:  children,
 		tags:      tags,
@@ -190,13 +183,7 @@ func (n *Node) Destroy() {
 // name is one which represents the node itself, e.g. "Beer" would be a good
 // node name for a node which will have a beer model attached to it.
 func New(name string) *Node {
-	idCounterAccess.Lock()
-	id := idCounter
-	idCounter++
-	idCounterAccess.Unlock()
-
 	return &Node{
-		id:        id,
 		name:      name,
 		transform: new(Transform),
 	}
