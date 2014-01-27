@@ -60,10 +60,10 @@ type obj struct {
 	maxBufferedFrames uint
 	playing           bool
 
-	rendererCreateExecute  chan func()
-	rendererCreateComplete chan bool
-	preparedFrames         chan func()
-	wantChangeBufferSize   chan uint
+	rendererCreateExecute                        chan func()
+	rendererCreateComplete, buildFramesLoopReady chan bool
+	preparedFrames                               chan func()
+	wantChangeBufferSize                         chan uint
 
 	vsyncChanged bool
 	vsync        chippy.VSyncMode
@@ -141,7 +141,6 @@ func (n *obj) renderLoop() {
 		case frame := <-n.preparedFrames:
 			// An new frame has been prepared for rendering, simply execute it.
 			frame()
-			runtime.Gosched()
 
 		case e := <-paused:
 			which := e.Data.(*scene.Node)
@@ -172,6 +171,8 @@ func (n *obj) buildFramesLoop() {
 
 	paused, stop := event.Notify("renderer-paused")
 	defer stop()
+
+	n.buildFramesLoopReady <- true
 
 	for {
 		select {
@@ -377,6 +378,7 @@ func Create(n *scene.Node, window *chippy.Window) error {
 
 		o.rendererCreateExecute = make(chan func())
 		o.rendererCreateComplete = make(chan bool)
+		o.buildFramesLoopReady = make(chan bool)
 		o.preparedFrames = make(chan func(), 3)
 		o.wantChangeBufferSize = make(chan uint)
 		o.playing = true
@@ -484,6 +486,7 @@ func (o *obj) setup() error {
 	}
 
 	go o.buildFramesLoop()
+	<-o.buildFramesLoopReady
 
 	return nil
 }
