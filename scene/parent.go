@@ -63,22 +63,11 @@ func (n *Node) Parents() []*Node {
 	// Exit read lock
 	n.access.RUnlock()
 
-	// We need to verify that no circular references exit while building this
-	// slice of parents.
+	// Build a slice of parent nodes.
 	var parents []*Node
-
-	// We keep track of each parent we visit. If we visit an parent twice, then
-	// it's an circular reference and we can safely panic.
-	visited := make(map[*Node]bool)
 
 	var locateParents func(of *Node)
 	locateParents = func(of *Node) {
-		_, visitedAlready := visited[of]
-		if visitedAlready {
-			panic(CircularErr)
-		}
-		visited[of] = true
-
 		parent := of.Parent()
 
 		if parent != nil {
