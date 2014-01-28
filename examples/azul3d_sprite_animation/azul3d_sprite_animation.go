@@ -7,6 +7,7 @@ import (
 	"azul3d.org/event"
 	"azul3d.org/math"
 	"azul3d.org/scene"
+	"azul3d.org/scene/bucket"
 	"azul3d.org/scene/camera"
 	"azul3d.org/scene/renderer"
 	"azul3d.org/scene/sprite"
@@ -116,8 +117,7 @@ func program() {
 	halfWidth := width / 2
 	halfHeight := height / 2
 	player.SetPos(halfWidth.Rounded(), player.PosVec3().Y, -halfHeight.Rounded())
-	player.SetSort(1000)
-	player.SetSorter(scene.Unsorted)
+	bucket.Set(player, bucket.Transparent)
 
 	t, err := renderer.LoadTextureFile(engine.Renderer, "src/azul3d.org/assets/textures/player.png")
 	if err != nil {
