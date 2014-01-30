@@ -198,10 +198,10 @@ func program() {
 	camera.ClearRegions(engine.Camera2d)
 
 	// We will have four camera regions which displays the 3D scene.
-	topLeft := camera.NewRegion(0, 0, 640/2, 480/2)
-	topRight := camera.NewRegion(640/2, 0, 640/2, 480/2)
-	bottomLeft := camera.NewRegion(0, 480/2, 640/2, 480/2)
-	bottomRight := camera.NewRegion(640/2, 480/2, 640/2, 480/2)
+	topLeft := camera.NewRegion(0, 0, 0.5, 0.5)
+	topRight := camera.NewRegion(0.5, 0, 0.5, 0.5)
+	bottomLeft := camera.NewRegion(0, 0.5, 0.5, 0.5)
+	bottomRight := camera.NewRegion(0.5, 0.5, 0.5, 0.5)
 
 	// Add the regions to the 3D camera.
 	camera.AddRegion(engine.Camera3d, topLeft)
@@ -210,7 +210,7 @@ func program() {
 	camera.AddRegion(engine.Camera3d, bottomRight)
 
 	// We will have one single camera region which displays the 2D scene.
-	whole := camera.NewRegion(0, 0, 0, 0)
+	whole := camera.NewRegion(0, 0, 1, 1)
 
 	// We want to make sure that the Camera2d's region renders *after* the 3D
 	// ones above so that we have the effect of an overlay. To make the 'whole'
