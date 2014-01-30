@@ -139,54 +139,6 @@ func Lens(n *scene.Node) *LensProjection {
 	return l.(*LensProjection)
 }
 
-func makeCopy(n *scene.Node, deep bool) {
-	// Copy lens
-	l := Lens(n)
-	if l != nil {
-		n.SetProp(PLensProjection, l)
-	}
-
-	// Copy scene
-	s := Scene(n)
-	if s != nil {
-		if deep {
-			n.SetProp(PScene, s.Copy())
-		} else {
-			n.SetProp(PScene, s)
-		}
-	}
-
-	access := getLock(n)
-	access.Lock()
-	defer access.Unlock()
-
-	// Copy regions
-	regionsCopy := make(map[*Region]bool)
-	for region, _ := range getRegions(n) {
-		regionsCopy[region.Copy()] = true
-	}
-	n.SetProp(PRegionMap, regionsCopy)
-
-	return
-}
-
-// Copy copies in-place the camera prop associated with this node.
-//
-// If an copy of a node is made, the underlying camera object is still
-// identical. You must then use:
-//
-//  camera.Copy(copiedNode)
-//
-func Copy(n *scene.Node) {
-	makeCopy(n, false)
-}
-
-// DeepCopy is just like Copy(), except it also copies it's underlying scene
-// node, this is therefor expensive.
-func DeepCopy(n *scene.Node) {
-	makeCopy(n, true)
-}
-
 // PointToFilm converts a single point in the the specified node's coordinate
 // space, to the specified camera 'n' node's film space.
 //
