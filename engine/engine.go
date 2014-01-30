@@ -93,9 +93,9 @@ func setup() {
 	// The camera must have a region (a square area describing where the camera
 	// will render to on the window).
 	//
-	// In our case, we will use the region [0, 0, 0, 0] which holds a special
-	// meaning for 'the entire window'.
-	underlay := camera.NewRegion(0, 0, 0, 0)
+	// In our case, we will use the region [0, 0, 1, 1] which covers the entire
+	// window.
+	underlay := camera.NewRegion(0, 0, 1, 1)
 	camera.AddRegion(Camera3d, underlay)
 
 	// Our 2D camera, which will display the 2D scene (UI elements.. etc).
@@ -105,7 +105,7 @@ func setup() {
 	// For the 2D camera, it is 'overlay'd atop the 3D camera's region, so we
 	// want to make sure that this region does not clear the color, depth, or
 	// stencil buffers below it (the already-rendered 3D scene).
-	overlay := camera.NewRegion(0, 0, 0, 0)
+	overlay := camera.NewRegion(0, 0, 1, 1)
 	overlay.SetClearColorActive(false)
 	overlay.SetClearDepthActive(false)
 	overlay.SetClearStencilActive(false)
