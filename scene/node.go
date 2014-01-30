@@ -38,38 +38,6 @@ func (n *Node) String() string {
 	return fmt.Sprintf("Node(%q, Pos=[%v, %v, %v], Rot=[%v, %v, %v], Scale=[%v, %v, %v])", n.Name(), x, y, z, rx, ry, rz, sx, sy, sz)
 }
 
-// Copy returns an exact copy of this node.
-func (n *Node) Copy() *Node {
-	n.access.RLock()
-	defer n.access.RUnlock()
-
-	children := make([]*Node, len(n.children))
-	copy(children, n.children)
-
-	var props map[interface{}]interface{}
-	if n.props != nil {
-		props = make(map[interface{}]interface{}, len(n.props))
-		for prop, value := range n.props {
-			props[prop] = value
-		}
-	}
-
-	copy := &Node{
-		name:      n.name,
-		children:  children,
-		props:     props,
-		transform: n.transform.Copy(),
-	}
-
-	// In an Copy() we don't preserve parents, but we do for all our children (
-	// and distant ones, too).
-	for _, child := range children {
-		child.SetParent(copy)
-	}
-
-	return copy
-}
-
 func (n *Node) doDetatch() {
 	n.doRemoveChildren()
 
