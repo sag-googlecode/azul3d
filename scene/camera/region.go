@@ -17,7 +17,7 @@ import (
 type Region struct {
 	access sync.RWMutex
 
-	x, y, width, height                  uint
+	x, y, width, height                  float64
 	sort                                 int
 	clearColor, clearDepth, clearStencil bool
 	color                                color.Color
@@ -117,15 +117,15 @@ func (r *Region) Sort() int {
 }
 
 // SetRegion specifies the X and Y position, as well as width and height (all
-// in pixels) of this camera region.
+// in normalized screen space) of this camera region.
 //
 // X and Y specify the starting position of the region (where positive X and Y
 // extend to the right and downward) and the width and height specify how far
 // to the right and down the region extends to.
 //
-// The special region of [x=0, y=0, width=0, height=0] implies that the region
-// should cover the entire render area.
-func (r *Region) SetRegion(x, y, width, height uint) {
+// The region [0.0, 0.0, 1.0, 1.0] would represent the entire render area for
+// instance.
+func (r *Region) SetRegion(x, y, width, height float64) {
 	r.access.Lock()
 	defer r.access.Unlock()
 
@@ -136,15 +136,15 @@ func (r *Region) SetRegion(x, y, width, height uint) {
 }
 
 // Region returns the X and Y position, as well as width and height (all in
-// pixels) of this camera region.
+// normalized screen space) of this camera region.
 //
 // X and Y specify the starting position of the region (where positive X and Y
 // extend to the right and downward) and the width and height specify how far
 // to the right and down the region extends to.
 //
-// The special region of [x=0, y=0, width=0, height=0] implies that the region
-// should cover the entire render area.
-func (r *Region) Region() (x, y, width, height uint) {
+// The region [0.0, 0.0, 1.0, 1.0] would represent the entire render area for
+// instance.
+func (r *Region) Region() (x, y, width, height float64) {
 	r.access.RLock()
 	defer r.access.RUnlock()
 
@@ -303,7 +303,7 @@ func (r *Region) AnyClearActive() bool {
 // The depth clear value of the region is set to one.
 //
 // Actively clearing the color, depth, and stencil buffers is set to true.
-func NewRegion(x, y, width, height uint) *Region {
+func NewRegion(x, y, width, height float64) *Region {
 	r := &Region{
 		x:            x,
 		y:            y,
