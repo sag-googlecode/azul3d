@@ -36,7 +36,7 @@ type Renderer struct {
 	dcMakeCurrent, lcMakeCurrent         func(current bool)
 	lcAccess                             sync.Mutex
 	gl, lcgl                             *opengl.Context
-	width, height                        int
+	width, height                        uint
 	samples, sampleBuffers               int32
 	glArbMultisample, haveMSTransparency bool
 
@@ -44,7 +44,7 @@ type Renderer struct {
 	texturesToFree           []uint32
 	compressedTextureFormats []int32
 
-	scissorStack       [][]uint
+	scissorStack       [][]float64
 	meshesToFreeAccess sync.RWMutex
 	meshesToFree       []*GLBufferedMesh
 
@@ -52,12 +52,14 @@ type Renderer struct {
 	nodeBuffers          chan *sortedNodes
 	inputTexturesBuffers chan []int32
 
-	lastRegion                                                          *camera.Region
-	lastColorClear                                                      color.Color
-	lastDepthClear                                                      float64
-	lastStencilClear                                                    uint
-	lastScissorX, lastScissorY, lastScissorWidth, lastScissorHeight     uint
-	lastViewportX, lastViewportY, lastViewportWidth, lastViewportHeight uint
+	lastRegion                            *camera.Region
+	lastColorClear                        color.Color
+	lastDepthClear                        float64
+	lastStencilClear                      uint
+	lastScissorX, lastScissorY            int32
+	lastScissorWidth, lastScissorHeight   uint32
+	lastViewportX, lastViewportY          int32
+	lastViewportWidth, lastViewportHeight uint32
 
 	maxTextureSize, glslMaxVaryingFloats, glslMaxVertexShaderInputs,
 	glslMaxFragmentShaderInputs int
@@ -67,7 +69,7 @@ type Renderer struct {
 
 func (r *Renderer) clearRegion(rr renderRegion) {
 	x, y, width, height := rr.Region.Region()
-	r.viewport(x, y, int(width), int(height))
+	r.viewport(x, y, width, height)
 
 	var clearFlags int32
 	if rr.Region.ClearColorActive() {
@@ -97,7 +99,7 @@ func (r *Renderer) clearRegion(rr renderRegion) {
 
 func (r *Renderer) useRegion(rr renderRegion) {
 	x, y, width, height := rr.Region.Region()
-	r.viewport(x, y, int(width), int(height))
+	r.viewport(x, y, width, height)
 }
 
 func (r *Renderer) useNode(rn renderNode) {
@@ -431,8 +433,8 @@ func (r *Renderer) Render(rootNode *scene.Node) func() {
 }
 
 func (r *Renderer) Resize(width, height int) {
-	r.width = width
-	r.height = height
+	r.width = uint(width)
+	r.height = uint(height)
 }
 
 func NewRenderer(dcMakeCurrent, lcMakeCurrent func(current bool)) (*Renderer, error) {

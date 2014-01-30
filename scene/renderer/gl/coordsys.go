@@ -13,11 +13,12 @@ var (
 	coordSysConversion = math.CoordSysZUpRight.ConvertMat4(math.CoordSysYUpRight)
 )
 
-func regionToGL(totalWidth, totalHeight, x, y, width, height uint) (glX, glY int32, glWidth, glHeight uint32) {
-	if x == 0 && y == 0 && width == 0 && height == 0 {
-		// A region of all zeros means the entire area
-		return 0, 0, uint32(totalWidth), uint32(totalHeight)
-	}
+func regionToGL(totalWidth, totalHeight uint, nx, ny, nWidth, nHeight float64) (glX, glY int32, glWidth, glHeight uint32) {
+	// Convert normalized coordinates to pixel ones.
+	x := uint((nx * float64(totalWidth)) + 0.5)
+	y := uint((ny * float64(totalHeight)) + 0.5)
+	width := uint((nWidth * float64(totalWidth)) + 0.5)
+	height := uint((nHeight * float64(totalHeight)) + 0.5)
 
 	// Flip Y axis and leave X axis untouched
 	glX = int32(x)
