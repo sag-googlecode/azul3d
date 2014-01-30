@@ -174,7 +174,7 @@ func (t *textObject) update() {
 	})
 
 	if t.textNode != nil {
-		t.textNode.Destroy()
+		t.textNode.Detatch()
 	}
 	t.textNode = updatedText
 	t.textNode.SetParent(t.node)
@@ -238,12 +238,4 @@ func Get(n *scene.Node) string {
 		return ""
 	}
 	return o.get()
-}
-
-func Destroy(n *scene.Node) {
-	o := getObj(n)
-	if o == nil {
-		return
-	}
-	o.node.Destroy()
 }

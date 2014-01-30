@@ -129,7 +129,7 @@ func onCursorPosition(ev *event.Event) {
 func resetTransforms(ev *event.Event) {
 	log.Println("Reset")
 
-	blue.Destroy()
+	blue.Detatch()
 	blue = createCube("blue-cube", color.New(0, 0, 1, 1))
 	blue.SetParent(engine.Scene2d)
 

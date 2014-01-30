@@ -182,7 +182,7 @@ func program() {
 		// Listen for F key to try and free texture
 		"F": func(ev *event.Event) {
 			log.Println("Sprite destroyed now (and GC ran)!")
-			player.Destroy()
+			player.Detatch()
 			runtime.GC()
 		},
 

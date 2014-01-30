@@ -178,7 +178,7 @@ func Load(m *tmx.Map, c *Config, tsImages map[string]*image.RGBA) *scene.Node {
 		for tex, tsImageNode := range texturedNodes {
 			_, collected := geom.Collect(tsImageNode)
 			collected.SetParent(baseNode)
-			tsImageNode.Destroy()
+			tsImageNode.Detatch()
 			//collected := tsImageNode
 
 			// Add the tileset texture to the collected set of tile meshes

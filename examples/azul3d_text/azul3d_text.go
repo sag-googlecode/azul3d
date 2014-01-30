@@ -126,7 +126,7 @@ func program() {
 		// Listen for F key to try and free texture
 		"F": func(ev *event.Event) {
 			log.Println("text destroyed now (and GC ran)!")
-			textNode.Destroy()
+			textNode.Detatch()
 			runtime.GC()
 		},
 
