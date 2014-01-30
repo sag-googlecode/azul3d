@@ -24,7 +24,6 @@ type Node struct {
 	parent          *Node
 	parents         []*Node
 	children        []*Node
-	tags            map[interface{}]interface{}
 	props           map[interface{}]interface{}
 	activePropCache map[interface{}]mapLookupPair
 	forcedProps     map[interface{}]bool
@@ -47,26 +46,17 @@ func (n *Node) Copy() *Node {
 	children := make([]*Node, len(n.children))
 	copy(children, n.children)
 
-	var tags map[interface{}]interface{}
-	if n.tags != nil {
-		tags = make(map[interface{}]interface{}, len(n.tags))
-		for tag, value := range n.tags {
-			tags[tag] = value
-		}
-	}
-
 	var props map[interface{}]interface{}
 	if n.props != nil {
 		props = make(map[interface{}]interface{}, len(n.props))
-		for tag, value := range n.props {
-			props[tag] = value
+		for prop, value := range n.props {
+			props[prop] = value
 		}
 	}
 
 	copy := &Node{
 		name:      n.name,
 		children:  children,
-		tags:      tags,
 		props:     props,
 		transform: n.transform.Copy(),
 	}
@@ -163,9 +153,6 @@ func (n *Node) Destroy() {
 
 	// Detatch this node (making it have no parent and no children).
 	n.doDetatch()
-
-	// Clear tags
-	n.tags = nil
 
 	// Clear props
 	n.props = nil

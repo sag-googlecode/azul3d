@@ -162,7 +162,7 @@ func (n *Node) Props() map[interface{}]interface{} {
 	defer n.access.RUnlock()
 
 	c := make(map[interface{}]interface{})
-	for prop, value := range n.tags {
+	for prop, value := range n.props {
 		c[prop] = value
 	}
 	return c
