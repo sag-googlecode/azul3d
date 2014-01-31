@@ -912,21 +912,21 @@ func (w *NativeWindow) handleEvent(ref *x11.GenericEvent, e interface{}) {
 		})
 
 	case *x11.MotionNotifyEvent:
-		x := int(ev.EventX) + 1
+		x := int(ev.EventX)
 		y := int(ev.EventY)
 		if w.r.CursorGrabbed() {
 			// Find relative movement
 			wWidth, wHeight := w.r.Size()
 			halfWidth := wWidth / 2
 			halfHeight := wHeight / 2
-			diffX := x - halfWidth
-			diffY := y - halfHeight
-			if diffX != 0 || diffY != 0 {
+			diffX := float64(x - halfWidth)
+			diffY := float64(y - halfHeight)
+			if math.Abs(diffX) > 1 || math.Abs(diffY) > 1 {
 				if w.canSendRelativeMove() {
 					w.r.send(&CursorPositionEvent{
 						T: time.Now(),
-						X: float64(diffX),
-						Y: float64(diffY),
+						X: diffX,
+						Y: diffY,
 					})
 				}
 				w.setCanSendRelativeMove(true)
