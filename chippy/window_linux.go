@@ -789,9 +789,6 @@ func (w *NativeWindow) setCanSendRelativeMove(v bool) {
 }
 
 func (w *NativeWindow) handleEvent(ref *x11.GenericEvent, e interface{}) {
-	// Note: each handleEvent is in it's own goroutine and it is therefor safe
-	// to block for long periods of time if required.
-
 	//logger().Println(reflect.TypeOf(e))
 	//logger().Printf("%+v\n", e)
 	switch ev := e.(type) {
@@ -915,7 +912,7 @@ func (w *NativeWindow) handleEvent(ref *x11.GenericEvent, e interface{}) {
 		})
 
 	case *x11.MotionNotifyEvent:
-		x := int(ev.EventX)
+		x := int(ev.EventX) + 1
 		y := int(ev.EventY)
 		if w.r.CursorGrabbed() {
 			// Find relative movement
@@ -950,9 +947,11 @@ func (w *NativeWindow) handleEvent(ref *x11.GenericEvent, e interface{}) {
 	case *x11.EnterNotifyEvent:
 		w.r.trySetCursorWithin(true)
 		if w.r.CursorGrabbed() {
-			w.access.Lock()
-			defer w.access.Unlock()
-			w.doSetCursorGrabbed(w.r.CursorGrabbed(), false)
+			go func() {
+				w.access.Lock()
+				defer w.access.Unlock()
+				w.doSetCursorGrabbed(w.r.CursorGrabbed(), false)
+			}()
 		}
 
 	case *x11.LeaveNotifyEvent:
@@ -961,17 +960,21 @@ func (w *NativeWindow) handleEvent(ref *x11.GenericEvent, e interface{}) {
 	case *x11.FocusInEvent:
 		w.r.trySetFocused(true)
 		if !w.r.CursorGrabbed() {
-			w.access.Lock()
-			defer w.access.Unlock()
-			w.doSetCursorGrabbed(w.r.CursorGrabbed(), false)
+			go func() {
+				w.access.Lock()
+				defer w.access.Unlock()
+				w.doSetCursorGrabbed(w.r.CursorGrabbed(), false)
+			}()
 		}
 
 	case *x11.FocusOutEvent:
 		w.r.trySetFocused(false)
 		if !w.r.CursorGrabbed() {
-			w.access.Lock()
-			defer w.access.Unlock()
-			w.doSetCursorGrabbed(w.r.CursorGrabbed(), false)
+			go func() {
+				w.access.Lock()
+				defer w.access.Unlock()
+				w.doSetCursorGrabbed(w.r.CursorGrabbed(), false)
+			}()
 		}
 
 	case *x11.ClientMessageEvent:
@@ -983,26 +986,28 @@ func (w *NativeWindow) handleEvent(ref *x11.GenericEvent, e interface{}) {
 		}
 
 	case *x11.PropertyNotifyEvent:
-		if ev.Atom == aNetFrameExtents {
-			w.fetchExtents()
-			select {
-			case w.waitForFrameExtents <- true:
-				break
-			case <-time.After(5 * time.Second):
-				break
-			}
+		go func() {
+			if ev.Atom == aNetFrameExtents {
+				w.fetchExtents()
+				select {
+				case w.waitForFrameExtents <- true:
+					break
+				case <-time.After(5 * time.Second):
+					break
+				}
 
-		} else if ev.Atom == aMotifWmHints {
-			select {
-			case w.waitForMotifHints <- true:
-				break
-			case <-time.After(5 * time.Second):
-				break
-			}
+			} else if ev.Atom == aMotifWmHints {
+				select {
+				case w.waitForMotifHints <- true:
+					break
+				case <-time.After(5 * time.Second):
+					break
+				}
 
-		} /* else {
-			logger().Println("PropertyNotifyEvent", ev)
-		}*/
+			} /* else {
+				logger().Println("PropertyNotifyEvent", ev)
+			}*/
+		}()
 
 	case *x11.ConfigureNotifyEvent:
 		if ev.Width != 0 && ev.Height != 0 {
@@ -1018,28 +1023,34 @@ func (w *NativeWindow) handleEvent(ref *x11.GenericEvent, e interface{}) {
 		}
 
 	case *x11.ExposeEvent:
-		select {
-		case w.waitForMap <- true:
-			break
-		case <-time.After(5 * time.Second):
-			break
-		}
+		go func() {
+			select {
+			case w.waitForMap <- true:
+				break
+			case <-time.After(5 * time.Second):
+				break
+			}
+		}()
 
 	case *x11.MapNotifyEvent:
-		select {
-		case w.waitForMap <- true:
-			break
-		case <-time.After(5 * time.Second):
-			break
-		}
+		go func() {
+			select {
+			case w.waitForMap <- true:
+				break
+			case <-time.After(5 * time.Second):
+				break
+			}
+		}()
 
 	case *x11.UnmapNotifyEvent:
-		select {
-		case w.waitForUnmap <- true:
-			break
-		case <-time.After(5 * time.Second):
-			break
-		}
+		go func() {
+			select {
+			case w.waitForUnmap <- true:
+				break
+			case <-time.After(5 * time.Second):
+				break
+			}
+		}()
 
 	case *x11.ReparentNotifyEvent:
 		break
