@@ -10,6 +10,10 @@ import (
 )
 
 // Transform represents a three-dimensional transformation.
+//
+// A transform may be made up of components such as position,
+// rotation/quaternion, scale, shear or may be an arbitrary transformation
+// matrix.
 type Transform struct {
 	access sync.RWMutex
 
@@ -43,27 +47,8 @@ func (t *Transform) HasComponents() bool {
 // that describes the two transformations combined.
 func (t *Transform) Compose(other *Transform) *Transform {
 	composed := new(Transform)
-
-	if true { //t.ArbitraryMat4() != nil || other.ArbitraryMat4() != nil {
-		// Combine using matrices
-		newMat := other.Mat4().Mul(t.Mat4())
-		composed.SetMat4(newMat)
-
-	} else {
-		// Compose using components
-		pos := t.Pos()
-		quat := t.Quat()
-		scale := t.Scale()
-
-		pos = pos.Add(quat.TransformVec3(other.Pos()).Mul(scale))
-		quat = other.Quat().Mul(quat)
-		newScale := other.Scale().Mul(scale)
-
-		composed.SetPos(pos)
-		composed.SetQuat(quat)
-		composed.SetScale(newScale)
-	}
-
+	c := other.Mat4().Mul(t.Mat4())
+	composed.SetMat4(c)
 	return composed
 }
 
@@ -124,6 +109,9 @@ func (t *Transform) build() {
 
 // SetArbitraryMat4 specifies an arbitrary transformation matrix to represent
 // this transformation.
+//
+// Once an arbitrary transformation matrix is set, this transform's components
+// (such as position, rotation/quaternion, shear, etc) are not used.
 func (t *Transform) SetArbitraryMat4(m *math.Mat4) {
 	t.access.Lock()
 	defer t.access.Unlock()
@@ -139,6 +127,8 @@ func (t *Transform) SetArbitraryMat4(m *math.Mat4) {
 
 // ArbitraryMat4 returns the arbitrary transformation matrix of this
 // transformation,
+//
+// Nil is returned if there is no arbitrary transformation matrix set.
 func (t *Transform) ArbitraryMat4() *math.Mat4 {
 	t.access.RLock()
 	defer t.access.RUnlock()
@@ -151,6 +141,12 @@ func (t *Transform) ArbitraryMat4() *math.Mat4 {
 
 // SetMat4 specifies the position, scale, shear, and rotation components of
 // this transformation to the ones decomposed from the specified matrix.
+//
+// This attempts to decompose the matrix into position, scale, shear, and
+// rotation values which are then set on this transform. If the transformation
+// matrix would not decompose nicely in this way, you may want to set an
+// arbitrary transformation matrix instead using SetArbitraryMat4() which does
+// not attempt to decompose the matrix.
 func (t *Transform) SetMat4(m *math.Mat4) {
 	t.access.Lock()
 	defer t.access.Unlock()
@@ -163,6 +159,11 @@ func (t *Transform) SetMat4(m *math.Mat4) {
 }
 
 // Mat4 returns the matrix which perfectly defines this transformation.
+//
+// This is the final transformation matrix. Weather this transform is
+// represented by an arbitrary transformation matrix or by components (i.e.
+// position, rotation/quaternion, scale, shear, etc) a matrix is always
+// returned.
 func (t *Transform) Mat4() *math.Mat4 {
 	t.access.Lock()
 	defer t.access.Unlock()
@@ -299,7 +300,10 @@ func (t *Transform) Shear() *math.Vec3 {
 }
 
 // Reset resets all the components of this transformation such that it is in
-// it's original (e.g. Identity matrix) state.
+// it's original (i.e. identity matrix) state.
+//
+// Invoking this also removes an arbitrary transformation matrix from this
+// transform, if it has one.
 func (t *Transform) Reset() {
 	t.access.RLock()
 	defer t.access.RUnlock()
