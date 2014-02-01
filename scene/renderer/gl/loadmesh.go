@@ -11,6 +11,33 @@ import (
 	"unsafe"
 )
 
+func (r *Renderer) createVBO(ctx *opengl.Context) (vboId uint32) {
+	// Generate new VBO.
+	ctx.GenBuffers(1, &vboId)
+	ctx.Execute()
+	return
+}
+
+func (r *Renderer) updateVBO(ctx *opengl.Context, usageHint int32, dataSize uintptr, dataLength int, data unsafe.Pointer, vboId uint32) {
+	// Bind the VBO now.
+	ctx.BindBuffer(opengl.ARRAY_BUFFER, vboId)
+
+	// Fill the VBO with the data.
+	ctx.BufferData(
+		opengl.ARRAY_BUFFER,
+		dataSize*uintptr(dataLength),
+		data,
+		usageHint,
+	)
+	ctx.Execute()
+}
+
+func (r *Renderer) deleteVBO(ctx *opengl.Context, vboId uint32) {
+	// Delete the VBO.
+	ctx.DeleteBuffers(1, &vboId)
+	ctx.Execute()
+}
+
 func (r *Renderer) doUpdateMesh(ctx *opengl.Context, g *geom.Mesh, now bool) {
 	bm := g.NativeIdentity().(*GLBufferedMesh)
 
@@ -58,22 +85,18 @@ func (r *Renderer) doUpdateMesh(ctx *opengl.Context, g *geom.Mesh, now bool) {
 		// Update Indices VBO
 		if indicesChanged {
 			if g.Indices == nil || len(g.Indices) == 0 {
-				// Remove Indices VBO
-				ctx.DeleteBuffers(1, &bm.Indices)
-				ctx.Execute()
+				// Delete indices VBO.
+				r.deleteVBO(ctx, bm.Indices)
 				bm.Indices = 0
 			} else {
-				// Update Indices VBO
-				ctx.BindBuffer(opengl.ARRAY_BUFFER, bm.Indices)
-
-				sz := int(unsafe.Sizeof(g.Indices[0]))
-				ctx.BufferData(
-					opengl.ARRAY_BUFFER,
-					uintptr(sz*len(g.Indices)),
+				// Update indices VBO.
+				r.updateVBO(
+					ctx, usageHint,
+					unsafe.Sizeof(g.Indices[0]),
+					len(g.Indices),
 					unsafe.Pointer(&g.Indices[0]),
-					usageHint,
+					bm.Indices,
 				)
-				ctx.Execute()
 			}
 			g.IndicesChanged = false
 		}
@@ -81,22 +104,18 @@ func (r *Renderer) doUpdateMesh(ctx *opengl.Context, g *geom.Mesh, now bool) {
 		// Update Vertices VBO
 		if verticesChanged {
 			if g.Vertices == nil || len(g.Vertices) == 0 {
-				// Remove Vertices VBO
-				ctx.DeleteBuffers(1, &bm.Vertices)
-				ctx.Execute()
+				// Delete vertices VBO.
+				r.deleteVBO(ctx, bm.Vertices)
 				bm.Vertices = 0
 			} else {
-				// Update Vertices VBO
-				ctx.BindBuffer(opengl.ARRAY_BUFFER, bm.Vertices)
-
-				sz := int(unsafe.Sizeof(g.Vertices[0]))
-				ctx.BufferData(
-					opengl.ARRAY_BUFFER,
-					uintptr(sz*len(g.Vertices)),
+				// Update vertices VBO.
+				r.updateVBO(
+					ctx, usageHint,
+					unsafe.Sizeof(g.Vertices[0]),
+					len(g.Vertices),
 					unsafe.Pointer(&g.Vertices[0]),
-					usageHint,
+					bm.Vertices,
 				)
-				ctx.Execute()
 			}
 			g.VerticesChanged = false
 		}
@@ -104,22 +123,18 @@ func (r *Renderer) doUpdateMesh(ctx *opengl.Context, g *geom.Mesh, now bool) {
 		// Update Normals VBO
 		if normalsChanged {
 			if g.Normals == nil || len(g.Normals) == 0 {
-				// Remove Normals VBO
-				ctx.DeleteBuffers(1, &bm.Normals)
-				ctx.Execute()
+				// Delete normals VBO.
+				r.deleteVBO(ctx, bm.Normals)
 				bm.Normals = 0
 			} else {
-				// Update Normals VBO
-				ctx.BindBuffer(opengl.ARRAY_BUFFER, bm.Normals)
-
-				sz := int(unsafe.Sizeof(g.Normals[0]))
-				ctx.BufferData(
-					opengl.ARRAY_BUFFER,
-					uintptr(sz*len(g.Normals)),
+				// Update normals VBO.
+				r.updateVBO(
+					ctx, usageHint,
+					unsafe.Sizeof(g.Normals[0]),
+					len(g.Normals),
 					unsafe.Pointer(&g.Normals[0]),
-					usageHint,
+					bm.Normals,
 				)
-				ctx.Execute()
 			}
 			g.NormalsChanged = false
 		}
@@ -127,22 +142,18 @@ func (r *Renderer) doUpdateMesh(ctx *opengl.Context, g *geom.Mesh, now bool) {
 		// Update Tangents VBO
 		if tangentsChanged {
 			if g.Tangents == nil || len(g.Tangents) == 0 {
-				// Remove Tangents VBO
-				ctx.DeleteBuffers(1, &bm.Tangents)
-				ctx.Execute()
+				// Delete tangents VBO.
+				r.deleteVBO(ctx, bm.Tangents)
 				bm.Tangents = 0
 			} else {
-				// Update Tangents VBO
-				ctx.BindBuffer(opengl.ARRAY_BUFFER, bm.Tangents)
-
-				sz := int(unsafe.Sizeof(g.Tangents[0]))
-				ctx.BufferData(
-					opengl.ARRAY_BUFFER,
-					uintptr(sz*len(g.Tangents)),
+				// Update tangents VBO.
+				r.updateVBO(
+					ctx, usageHint,
+					unsafe.Sizeof(g.Tangents[0]),
+					len(g.Tangents),
 					unsafe.Pointer(&g.Tangents[0]),
-					usageHint,
+					bm.Tangents,
 				)
-				ctx.Execute()
 			}
 			g.TangentsChanged = false
 		}
@@ -150,22 +161,18 @@ func (r *Renderer) doUpdateMesh(ctx *opengl.Context, g *geom.Mesh, now bool) {
 		// Update Bitangents VBO
 		if bitangentsChanged {
 			if g.Bitangents == nil || len(g.Bitangents) == 0 {
-				// Remove Bitangents VBO
-				ctx.DeleteBuffers(1, &bm.Bitangents)
-				ctx.Execute()
+				// Delete bitangents VBO.
+				r.deleteVBO(ctx, bm.Bitangents)
 				bm.Bitangents = 0
 			} else {
-				// Update Bitangents VBO
-				ctx.BindBuffer(opengl.ARRAY_BUFFER, bm.Bitangents)
-
-				sz := int(unsafe.Sizeof(g.Bitangents[0]))
-				ctx.BufferData(
-					opengl.ARRAY_BUFFER,
-					uintptr(sz*len(g.Bitangents)),
+				// Update bitangents VBO.
+				r.updateVBO(
+					ctx, usageHint,
+					unsafe.Sizeof(g.Bitangents[0]),
+					len(g.Bitangents),
 					unsafe.Pointer(&g.Bitangents[0]),
-					usageHint,
+					bm.Bitangents,
 				)
-				ctx.Execute()
 			}
 			g.BitangentsChanged = false
 		}
@@ -173,22 +180,18 @@ func (r *Renderer) doUpdateMesh(ctx *opengl.Context, g *geom.Mesh, now bool) {
 		// Update Colors VBO
 		if colorsChanged {
 			if g.Colors == nil || len(g.Colors) == 0 {
-				// Remove Colors VBO
-				ctx.DeleteBuffers(1, &bm.Colors)
-				ctx.Execute()
+				// Delete colors VBO.
+				r.deleteVBO(ctx, bm.Colors)
 				bm.Colors = 0
 			} else {
-				// Update Colors VBO
-				ctx.BindBuffer(opengl.ARRAY_BUFFER, bm.Colors)
-
-				sz := int(unsafe.Sizeof(g.Colors[0]))
-				ctx.BufferData(
-					opengl.ARRAY_BUFFER,
-					uintptr(sz*len(g.Colors)),
+				// Update colors VBO.
+				r.updateVBO(
+					ctx, usageHint,
+					unsafe.Sizeof(g.Colors[0]),
+					len(g.Colors),
 					unsafe.Pointer(&g.Colors[0]),
-					usageHint,
+					bm.Colors,
 				)
-				ctx.Execute()
 			}
 			g.ColorsChanged = false
 		}
@@ -196,22 +199,18 @@ func (r *Renderer) doUpdateMesh(ctx *opengl.Context, g *geom.Mesh, now bool) {
 		// Update BoneWeights VBO
 		if boneWeightsChanged {
 			if g.BoneWeights == nil || len(g.BoneWeights) == 0 {
-				// Remove BoneWeights VBO
-				ctx.DeleteBuffers(1, &bm.BoneWeights)
-				ctx.Execute()
+				// Delete bone weights VBO.
+				r.deleteVBO(ctx, bm.BoneWeights)
 				bm.BoneWeights = 0
 			} else {
-				// Update BoneWeights VBO
-				ctx.BindBuffer(opengl.ARRAY_BUFFER, bm.BoneWeights)
-
-				sz := int(unsafe.Sizeof(g.BoneWeights[0]))
-				ctx.BufferData(
-					opengl.ARRAY_BUFFER,
-					uintptr(sz*len(g.BoneWeights)),
+				// Update bone weights VBO.
+				r.updateVBO(
+					ctx, usageHint,
+					unsafe.Sizeof(g.BoneWeights[0]),
+					len(g.BoneWeights),
 					unsafe.Pointer(&g.BoneWeights[0]),
-					usageHint,
+					bm.BoneWeights,
 				)
-				ctx.Execute()
 			}
 			g.BoneWeightsChanged = false
 		}
@@ -219,27 +218,25 @@ func (r *Renderer) doUpdateMesh(ctx *opengl.Context, g *geom.Mesh, now bool) {
 		// Update TextureCoords VBO's
 		for index, texCoords := range g.TextureCoords {
 			changed, ok := g.TextureCoordsChanged[index]
-			if ok && changed {
-				if texCoords == nil || len(texCoords) == 0 {
-					// Remove TextureCoord VBO
-					ctx.DeleteBuffers(1, &bm.TextureCoords[index])
-					ctx.Execute()
-					bm.TextureCoords[index] = 0
-				} else {
-					// Update TextureCoord VBO
-					ctx.BindBuffer(opengl.ARRAY_BUFFER, bm.TextureCoords[index])
-
-					sz := int(unsafe.Sizeof(texCoords[0]))
-					ctx.BufferData(
-						opengl.ARRAY_BUFFER,
-						uintptr(sz*len(texCoords)),
-						unsafe.Pointer(&texCoords[0]),
-						usageHint,
-					)
-					ctx.Execute()
-				}
-				delete(g.TextureCoordsChanged, index)
+			if !ok || !changed {
+				continue
 			}
+
+			if texCoords == nil || len(texCoords) == 0 {
+				// Delete texture coord VBO.
+				r.deleteVBO(ctx, bm.TextureCoords[index])
+				bm.TextureCoords[index] = 0
+			} else {
+				// Update texture coord VBO.
+				r.updateVBO(
+					ctx, usageHint,
+					unsafe.Sizeof(texCoords[0]),
+					len(texCoords),
+					unsafe.Pointer(&texCoords[0]),
+					bm.TextureCoords[index],
+				)
+			}
+			delete(g.TextureCoordsChanged, index)
 		}
 
 		// Bind buffer 0 -- make no-buffer active
@@ -249,25 +246,6 @@ func (r *Renderer) doUpdateMesh(ctx *opengl.Context, g *geom.Mesh, now bool) {
 		ctx.Finish()
 		ctx.Execute()
 	}
-}
-
-func (r *Renderer) doCreateVBO(ctx *opengl.Context, usageHint int32, dataSize uintptr, dataLength int, data unsafe.Pointer) (vboId uint32) {
-	// Generate new VBO.
-	ctx.GenBuffers(1, &vboId)
-	ctx.Execute()
-
-	// Bind the VBO now.
-	ctx.BindBuffer(opengl.ARRAY_BUFFER, vboId)
-
-	// Fill the VBO with the data.
-	ctx.BufferData(
-		opengl.ARRAY_BUFFER,
-		dataSize*uintptr(dataLength),
-		data,
-		usageHint,
-	)
-	ctx.Execute()
-	return
 }
 
 func (r *Renderer) doLoadMesh(ctx *opengl.Context, g *geom.Mesh, now bool) {
@@ -305,81 +283,98 @@ func (r *Renderer) doLoadMesh(ctx *opengl.Context, g *geom.Mesh, now bool) {
 
 	if len(g.Vertices) > 0 {
 		// Create vertices VBO.
-		bm.Vertices = r.doCreateVBO(
+		bm.Vertices = r.createVBO(ctx)
+		r.updateVBO(
 			ctx, usageHint,
 			unsafe.Sizeof(g.Vertices[0]),
 			len(g.Vertices),
 			unsafe.Pointer(&g.Vertices[0]),
+			bm.Vertices,
 		)
 
 		if len(g.Indices) > 0 {
 			// Create indices VBO.
-			bm.Indices = r.doCreateVBO(
+			bm.Indices = r.createVBO(ctx)
+			r.updateVBO(
 				ctx, usageHint,
 				unsafe.Sizeof(g.Indices[0]),
 				len(g.Indices),
 				unsafe.Pointer(&g.Indices[0]),
+				bm.Indices,
 			)
 		}
 
 		if len(g.Normals) > 0 {
 			// Create normals VBO.
-			bm.Normals = r.doCreateVBO(
+			bm.Normals = r.createVBO(ctx)
+			r.updateVBO(
 				ctx, usageHint,
 				unsafe.Sizeof(g.Normals[0]),
 				len(g.Normals),
 				unsafe.Pointer(&g.Normals[0]),
+				bm.Normals,
 			)
 		}
 
 		if len(g.Tangents) > 0 {
 			// Create tangents VBO.
-			bm.Tangents = r.doCreateVBO(
+			bm.Tangents = r.createVBO(ctx)
+			r.updateVBO(
 				ctx, usageHint,
 				unsafe.Sizeof(g.Tangents[0]),
 				len(g.Tangents),
 				unsafe.Pointer(&g.Tangents[0]),
+				bm.Tangents,
 			)
 		}
 
 		if len(g.Bitangents) > 0 {
 			// Create bitangents VBO.
-			bm.Bitangents = r.doCreateVBO(
+			bm.Bitangents = r.createVBO(ctx)
+			r.updateVBO(
 				ctx, usageHint,
 				unsafe.Sizeof(g.Bitangents[0]),
 				len(g.Bitangents),
 				unsafe.Pointer(&g.Bitangents[0]),
+				bm.Bitangents,
 			)
 		}
 
 		if len(g.Colors) > 0 {
 			// Create colors VBO.
-			bm.Colors = r.doCreateVBO(
+			bm.Colors = r.createVBO(ctx)
+			r.updateVBO(
 				ctx, usageHint,
 				unsafe.Sizeof(g.Colors[0]),
 				len(g.Colors),
 				unsafe.Pointer(&g.Colors[0]),
+				bm.Colors,
 			)
 		}
 
 		if len(g.BoneWeights) > 0 {
 			// Create bone weights VBO.
-			bm.BoneWeights = r.doCreateVBO(
+			bm.BoneWeights = r.createVBO(ctx)
+			r.updateVBO(
 				ctx, usageHint,
 				unsafe.Sizeof(g.BoneWeights[0]),
 				len(g.BoneWeights),
 				unsafe.Pointer(&g.BoneWeights[0]),
+				bm.BoneWeights,
 			)
 		}
 
 		bm.TextureCoords = make([]uint32, len(g.TextureCoords))
 		for index, texCoords := range g.TextureCoords {
 			// Create texture coordinates VBO.
-			bm.TextureCoords[index] = r.doCreateVBO(
+			vboId := r.createVBO(ctx)
+			bm.TextureCoords[index] = vboId
+			r.updateVBO(
 				ctx, usageHint,
 				unsafe.Sizeof(texCoords[0]),
 				len(texCoords),
 				unsafe.Pointer(&texCoords[0]),
+				vboId,
 			)
 		}
 
