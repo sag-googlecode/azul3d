@@ -38,11 +38,18 @@ func (r *Renderer) deleteVBO(ctx *opengl.Context, vboId uint32) {
 	ctx.Execute()
 }
 
-func (r *Renderer) doUpdateMesh(ctx *opengl.Context, g *geom.Mesh, now bool) {
-	bm := g.NativeIdentity().(*GLBufferedMesh)
+func (r *Renderer) doLoadMesh(ctx *opengl.Context, g *geom.Mesh, now bool) {
+	loaded := g.IsLoaded()
+
+	// Find the buffered mesh.
+	var bm *GLBufferedMesh
+	if !loaded {
+		bm = new(GLBufferedMesh)
+	} else {
+		bm = g.NativeIdentity().(*GLBufferedMesh)
+	}
 
 	g.Lock()
-	defer g.Unlock()
 
 	indicesChanged := g.IndicesChanged
 	verticesChanged := g.VerticesChanged
@@ -53,8 +60,7 @@ func (r *Renderer) doUpdateMesh(ctx *opengl.Context, g *geom.Mesh, now bool) {
 	boneWeightsChanged := g.BoneWeightsChanged
 	anyTextureCoordsChanged := len(g.TextureCoordsChanged) > 0
 
-	// Check to avoid a (possibly expensive) context switch.
-	if indicesChanged || verticesChanged || normalsChanged || tangentsChanged || bitangentsChanged || colorsChanged || boneWeightsChanged || anyTextureCoordsChanged {
+	if indicesChanged || verticesChanged || normalsChanged || tangentsChanged || bitangentsChanged || colorsChanged || boneWeightsChanged || anyTextureCoordsChanged || !loaded {
 
 		if now {
 			// Release our display context
@@ -83,12 +89,16 @@ func (r *Renderer) doUpdateMesh(ctx *opengl.Context, g *geom.Mesh, now bool) {
 		}
 
 		// Update Indices VBO
-		if indicesChanged {
+		if !loaded || indicesChanged {
 			if len(g.Indices) == 0 {
 				// Delete indices VBO.
 				r.deleteVBO(ctx, bm.Indices)
 				bm.Indices = 0
 			} else {
+				if bm.Indices == 0 {
+					// Create indices VBO.
+					bm.Indices = r.createVBO(ctx)
+				}
 				// Update indices VBO.
 				r.updateVBO(
 					ctx, usageHint,
@@ -102,12 +112,16 @@ func (r *Renderer) doUpdateMesh(ctx *opengl.Context, g *geom.Mesh, now bool) {
 		}
 
 		// Update Vertices VBO
-		if verticesChanged {
+		if !loaded || verticesChanged {
 			if len(g.Vertices) == 0 {
 				// Delete vertices VBO.
 				r.deleteVBO(ctx, bm.Vertices)
 				bm.Vertices = 0
 			} else {
+				if bm.Vertices == 0 {
+					// Create vertices VBO.
+					bm.Vertices = r.createVBO(ctx)
+				}
 				// Update vertices VBO.
 				r.updateVBO(
 					ctx, usageHint,
@@ -121,12 +135,16 @@ func (r *Renderer) doUpdateMesh(ctx *opengl.Context, g *geom.Mesh, now bool) {
 		}
 
 		// Update Normals VBO
-		if normalsChanged {
+		if !loaded || normalsChanged {
 			if len(g.Normals) == 0 {
 				// Delete normals VBO.
 				r.deleteVBO(ctx, bm.Normals)
 				bm.Normals = 0
 			} else {
+				if bm.Normals == 0 {
+					// Create normals VBO.
+					bm.Normals = r.createVBO(ctx)
+				}
 				// Update normals VBO.
 				r.updateVBO(
 					ctx, usageHint,
@@ -140,12 +158,16 @@ func (r *Renderer) doUpdateMesh(ctx *opengl.Context, g *geom.Mesh, now bool) {
 		}
 
 		// Update Tangents VBO
-		if tangentsChanged {
+		if !loaded || tangentsChanged {
 			if len(g.Tangents) == 0 {
 				// Delete tangents VBO.
 				r.deleteVBO(ctx, bm.Tangents)
 				bm.Tangents = 0
 			} else {
+				if bm.Tangents == 0 {
+					// Create tangents VBO.
+					bm.Tangents = r.createVBO(ctx)
+				}
 				// Update tangents VBO.
 				r.updateVBO(
 					ctx, usageHint,
@@ -159,12 +181,16 @@ func (r *Renderer) doUpdateMesh(ctx *opengl.Context, g *geom.Mesh, now bool) {
 		}
 
 		// Update Bitangents VBO
-		if bitangentsChanged {
+		if !loaded || bitangentsChanged {
 			if len(g.Bitangents) == 0 {
 				// Delete bitangents VBO.
 				r.deleteVBO(ctx, bm.Bitangents)
 				bm.Bitangents = 0
 			} else {
+				if bm.Bitangents == 0 {
+					// Create bitangents VBO.
+					bm.Bitangents = r.createVBO(ctx)
+				}
 				// Update bitangents VBO.
 				r.updateVBO(
 					ctx, usageHint,
@@ -178,12 +204,16 @@ func (r *Renderer) doUpdateMesh(ctx *opengl.Context, g *geom.Mesh, now bool) {
 		}
 
 		// Update Colors VBO
-		if colorsChanged {
+		if !loaded || colorsChanged {
 			if len(g.Colors) == 0 {
 				// Delete colors VBO.
 				r.deleteVBO(ctx, bm.Colors)
 				bm.Colors = 0
 			} else {
+				if bm.Colors == 0 {
+					// Create colors VBO.
+					bm.Colors = r.createVBO(ctx)
+				}
 				// Update colors VBO.
 				r.updateVBO(
 					ctx, usageHint,
@@ -197,12 +227,16 @@ func (r *Renderer) doUpdateMesh(ctx *opengl.Context, g *geom.Mesh, now bool) {
 		}
 
 		// Update BoneWeights VBO
-		if boneWeightsChanged {
+		if !loaded || boneWeightsChanged {
 			if len(g.BoneWeights) == 0 {
 				// Delete bone weights VBO.
 				r.deleteVBO(ctx, bm.BoneWeights)
 				bm.BoneWeights = 0
 			} else {
+				if bm.BoneWeights == 0 {
+					// Create bone weights VBO.
+					bm.BoneWeights = r.createVBO(ctx)
+				}
 				// Update bone weights VBO.
 				r.updateVBO(
 					ctx, usageHint,
@@ -218,22 +252,31 @@ func (r *Renderer) doUpdateMesh(ctx *opengl.Context, g *geom.Mesh, now bool) {
 		// Update TextureCoords VBO's
 		for index, texCoords := range g.TextureCoords {
 			changed, ok := g.TextureCoordsChanged[index]
-			if !ok || !changed {
+			if loaded && (!ok || !changed) {
 				continue
 			}
 
-			if len(texCoords) == 0 {
+			var vboId uint32
+			if len(bm.TextureCoords) > index {
+				vboId = bm.TextureCoords[index]
+			}
+			if len(texCoords) == 0 && vboId != 0 {
 				// Delete texture coord VBO.
-				r.deleteVBO(ctx, bm.TextureCoords[index])
+				r.deleteVBO(ctx, vboId)
 				bm.TextureCoords[index] = 0
 			} else {
+				if vboId == 0 {
+					// Create texture coord VBO.
+					vboId = r.createVBO(ctx)
+					bm.TextureCoords = append(bm.TextureCoords, vboId)
+				}
 				// Update texture coord VBO.
 				r.updateVBO(
 					ctx, usageHint,
 					unsafe.Sizeof(texCoords[0]),
 					len(texCoords),
 					unsafe.Pointer(&texCoords[0]),
-					bm.TextureCoords[index],
+					vboId,
 				)
 			}
 			delete(g.TextureCoordsChanged, index)
@@ -246,178 +289,32 @@ func (r *Renderer) doUpdateMesh(ctx *opengl.Context, g *geom.Mesh, now bool) {
 		ctx.Finish()
 		ctx.Execute()
 	}
-}
 
-func (r *Renderer) doLoadMesh(ctx *opengl.Context, g *geom.Mesh, now bool) {
-	if now {
-		// Release our display context
-		r.dcMakeCurrent(false)
+	g.Unlock()
 
-		// Later on we will use it
-		defer r.dcMakeCurrent(true)
-	} else {
-		runtime.LockOSThread()
-		defer runtime.UnlockOSThread()
+	if !loaded {
+		// Store the native identity
+		g.SetNativeIdentity(bm)
+
+		// Attach finalizer
+		runtime.SetFinalizer(g, func(g *geom.Mesh) {
+			r.meshesToFreeAccess.Lock()
+			defer r.meshesToFreeAccess.Unlock()
+
+			bm := g.NativeIdentity().(*GLBufferedMesh)
+			r.meshesToFree = append(r.meshesToFree, bm)
+		})
+
+		// Notify of completion
+		g.MarkLoaded()
 	}
-
-	// Lock the loading context to thread
-	r.lcAccess.Lock()
-	defer r.lcAccess.Unlock()
-
-	// Make the loading context active for this OS thread.
-	r.lcMakeCurrent(true)
-
-	// Later on release the loading context.
-	defer r.lcMakeCurrent(false)
-
-	usageHint := opengl.STATIC_DRAW
-	if g.Hint == geom.Dynamic {
-		usageHint = opengl.DYNAMIC_DRAW
-	}
-
-	// Lock the mesh
-	g.RLock()
-
-	// Create the object
-	bm := new(GLBufferedMesh)
-
-	if len(g.Vertices) > 0 {
-		// Create vertices VBO.
-		bm.Vertices = r.createVBO(ctx)
-		r.updateVBO(
-			ctx, usageHint,
-			unsafe.Sizeof(g.Vertices[0]),
-			len(g.Vertices),
-			unsafe.Pointer(&g.Vertices[0]),
-			bm.Vertices,
-		)
-
-		if len(g.Indices) > 0 {
-			// Create indices VBO.
-			bm.Indices = r.createVBO(ctx)
-			r.updateVBO(
-				ctx, usageHint,
-				unsafe.Sizeof(g.Indices[0]),
-				len(g.Indices),
-				unsafe.Pointer(&g.Indices[0]),
-				bm.Indices,
-			)
-		}
-
-		if len(g.Normals) > 0 {
-			// Create normals VBO.
-			bm.Normals = r.createVBO(ctx)
-			r.updateVBO(
-				ctx, usageHint,
-				unsafe.Sizeof(g.Normals[0]),
-				len(g.Normals),
-				unsafe.Pointer(&g.Normals[0]),
-				bm.Normals,
-			)
-		}
-
-		if len(g.Tangents) > 0 {
-			// Create tangents VBO.
-			bm.Tangents = r.createVBO(ctx)
-			r.updateVBO(
-				ctx, usageHint,
-				unsafe.Sizeof(g.Tangents[0]),
-				len(g.Tangents),
-				unsafe.Pointer(&g.Tangents[0]),
-				bm.Tangents,
-			)
-		}
-
-		if len(g.Bitangents) > 0 {
-			// Create bitangents VBO.
-			bm.Bitangents = r.createVBO(ctx)
-			r.updateVBO(
-				ctx, usageHint,
-				unsafe.Sizeof(g.Bitangents[0]),
-				len(g.Bitangents),
-				unsafe.Pointer(&g.Bitangents[0]),
-				bm.Bitangents,
-			)
-		}
-
-		if len(g.Colors) > 0 {
-			// Create colors VBO.
-			bm.Colors = r.createVBO(ctx)
-			r.updateVBO(
-				ctx, usageHint,
-				unsafe.Sizeof(g.Colors[0]),
-				len(g.Colors),
-				unsafe.Pointer(&g.Colors[0]),
-				bm.Colors,
-			)
-		}
-
-		if len(g.BoneWeights) > 0 {
-			// Create bone weights VBO.
-			bm.BoneWeights = r.createVBO(ctx)
-			r.updateVBO(
-				ctx, usageHint,
-				unsafe.Sizeof(g.BoneWeights[0]),
-				len(g.BoneWeights),
-				unsafe.Pointer(&g.BoneWeights[0]),
-				bm.BoneWeights,
-			)
-		}
-
-		bm.TextureCoords = make([]uint32, len(g.TextureCoords))
-		for index, texCoords := range g.TextureCoords {
-			// Create texture coordinates VBO.
-			vboId := r.createVBO(ctx)
-			bm.TextureCoords[index] = vboId
-			r.updateVBO(
-				ctx, usageHint,
-				unsafe.Sizeof(texCoords[0]),
-				len(texCoords),
-				unsafe.Pointer(&texCoords[0]),
-				vboId,
-			)
-		}
-
-		// Bind buffer 0 -- make no-buffer active
-		ctx.BindBuffer(opengl.ARRAY_BUFFER, 0)
-	}
-
-	// Unlock the mesh
-	g.RUnlock()
-
-	// Store the native identity
-	g.SetNativeIdentity(bm)
-
-	// Attach finalizer
-	runtime.SetFinalizer(g, func(g *geom.Mesh) {
-		r.meshesToFreeAccess.Lock()
-		defer r.meshesToFreeAccess.Unlock()
-
-		bm := g.NativeIdentity().(*GLBufferedMesh)
-		r.meshesToFree = append(r.meshesToFree, bm)
-	})
-
-	// Wait for geom to be uploaded
-	ctx.Finish()
-	ctx.Execute()
-
-	// Notify of completion
-	g.MarkLoaded()
 }
 
 func (r *Renderer) loadMesh(g *geom.Mesh, now bool) {
-	if g.IsLoaded() {
-		if now {
-			r.doUpdateMesh(r.gl, g, now)
-		} else {
-			go r.doUpdateMesh(r.lcgl, g, now)
-		}
+	if now {
+		r.doLoadMesh(r.gl, g, now)
 	} else {
-		if now {
-			r.doLoadMesh(r.gl, g, now)
-		} else {
-			go r.doLoadMesh(r.lcgl, g, now)
-		}
+		go r.doLoadMesh(r.lcgl, g, now)
 	}
 }
 
