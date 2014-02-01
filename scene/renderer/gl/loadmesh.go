@@ -251,6 +251,25 @@ func (r *Renderer) doUpdateMesh(ctx *opengl.Context, g *geom.Mesh, now bool) {
 	}
 }
 
+func (r *Renderer) doCreateVBO(ctx *opengl.Context, usageHint int32, dataSize uintptr, dataLength int, data unsafe.Pointer) (vboId uint32) {
+	// Generate new VBO.
+	ctx.GenBuffers(1, &vboId)
+	ctx.Execute()
+
+	// Bind the VBO now.
+	ctx.BindBuffer(opengl.ARRAY_BUFFER, vboId)
+
+	// Fill the VBO with the data.
+	ctx.BufferData(
+		opengl.ARRAY_BUFFER,
+		dataSize*uintptr(dataLength),
+		data,
+		usageHint,
+	)
+	ctx.Execute()
+	return
+}
+
 func (r *Renderer) doLoadMesh(ctx *opengl.Context, g *geom.Mesh, now bool) {
 	if now {
 		// Release our display context
@@ -285,131 +304,83 @@ func (r *Renderer) doLoadMesh(ctx *opengl.Context, g *geom.Mesh, now bool) {
 	bm := new(GLBufferedMesh)
 
 	if len(g.Vertices) > 0 {
-		// Create vertices buffer
-		ctx.GenBuffers(1, &bm.Vertices)
-		ctx.Execute()
-		ctx.BindBuffer(opengl.ARRAY_BUFFER, bm.Vertices)
-
-		sz := int(unsafe.Sizeof(g.Vertices[0]))
-		ctx.BufferData(
-			opengl.ARRAY_BUFFER,
-			uintptr(sz*len(g.Vertices)),
+		// Create vertices VBO.
+		bm.Vertices = r.doCreateVBO(
+			ctx, usageHint,
+			unsafe.Sizeof(g.Vertices[0]),
+			len(g.Vertices),
 			unsafe.Pointer(&g.Vertices[0]),
-			usageHint,
 		)
-		ctx.Execute()
 
 		if len(g.Indices) > 0 {
-			// Create indices buffer
-			ctx.GenBuffers(1, &bm.Indices)
-			ctx.Execute()
-			ctx.BindBuffer(opengl.ARRAY_BUFFER, bm.Indices)
-
-			sz := int(unsafe.Sizeof(g.Indices[0]))
-			ctx.BufferData(
-				opengl.ARRAY_BUFFER,
-				uintptr(sz*len(g.Indices)),
+			// Create indices VBO.
+			bm.Indices = r.doCreateVBO(
+				ctx, usageHint,
+				unsafe.Sizeof(g.Indices[0]),
+				len(g.Indices),
 				unsafe.Pointer(&g.Indices[0]),
-				usageHint,
 			)
-			ctx.Execute()
 		}
 
 		if len(g.Normals) > 0 {
-			// Create normals buffer
-			ctx.GenBuffers(1, &bm.Normals)
-			ctx.Execute()
-			ctx.BindBuffer(opengl.ARRAY_BUFFER, bm.Normals)
-
-			sz := int(unsafe.Sizeof(g.Normals[0]))
-			ctx.BufferData(
-				opengl.ARRAY_BUFFER,
-				uintptr(sz*len(g.Normals)),
+			// Create normals VBO.
+			bm.Normals = r.doCreateVBO(
+				ctx, usageHint,
+				unsafe.Sizeof(g.Normals[0]),
+				len(g.Normals),
 				unsafe.Pointer(&g.Normals[0]),
-				usageHint,
 			)
-			ctx.Execute()
 		}
 
 		if len(g.Tangents) > 0 {
-			// Create tangents buffer
-			ctx.GenBuffers(1, &bm.Tangents)
-			ctx.Execute()
-			ctx.BindBuffer(opengl.ARRAY_BUFFER, bm.Tangents)
-
-			sz := int(unsafe.Sizeof(g.Tangents[0]))
-			ctx.BufferData(
-				opengl.ARRAY_BUFFER,
-				uintptr(sz*len(g.Tangents)),
+			// Create tangents VBO.
+			bm.Tangents = r.doCreateVBO(
+				ctx, usageHint,
+				unsafe.Sizeof(g.Tangents[0]),
+				len(g.Tangents),
 				unsafe.Pointer(&g.Tangents[0]),
-				usageHint,
 			)
-			ctx.Execute()
 		}
 
 		if len(g.Bitangents) > 0 {
-			// Create bitangent buffer
-			ctx.GenBuffers(1, &bm.Bitangents)
-			ctx.Execute()
-			ctx.BindBuffer(opengl.ARRAY_BUFFER, bm.Bitangents)
-
-			sz := int(unsafe.Sizeof(g.Bitangents[0]))
-			ctx.BufferData(
-				opengl.ARRAY_BUFFER,
-				uintptr(sz*len(g.Bitangents)),
+			// Create bitangents VBO.
+			bm.Bitangents = r.doCreateVBO(
+				ctx, usageHint,
+				unsafe.Sizeof(g.Bitangents[0]),
+				len(g.Bitangents),
 				unsafe.Pointer(&g.Bitangents[0]),
-				usageHint,
 			)
-			ctx.Execute()
 		}
 
 		if len(g.Colors) > 0 {
-			// Create colors buffer
-			ctx.GenBuffers(1, &bm.Colors)
-			ctx.Execute()
-			ctx.BindBuffer(opengl.ARRAY_BUFFER, bm.Colors)
-
-			sz := int(unsafe.Sizeof(g.Colors[0]))
-			ctx.BufferData(
-				opengl.ARRAY_BUFFER,
-				uintptr(sz*len(g.Colors)),
+			// Create colors VBO.
+			bm.Colors = r.doCreateVBO(
+				ctx, usageHint,
+				unsafe.Sizeof(g.Colors[0]),
+				len(g.Colors),
 				unsafe.Pointer(&g.Colors[0]),
-				usageHint,
 			)
-			ctx.Execute()
 		}
 
 		if len(g.BoneWeights) > 0 {
-			// Create bone weights buffer
-			ctx.GenBuffers(1, &bm.BoneWeights)
-			ctx.Execute()
-			ctx.BindBuffer(opengl.ARRAY_BUFFER, bm.BoneWeights)
-
-			sz := int(unsafe.Sizeof(g.BoneWeights[0]))
-			ctx.BufferData(
-				opengl.ARRAY_BUFFER,
-				uintptr(sz*len(g.BoneWeights)),
+			// Create bone weights VBO.
+			bm.BoneWeights = r.doCreateVBO(
+				ctx, usageHint,
+				unsafe.Sizeof(g.BoneWeights[0]),
+				len(g.BoneWeights),
 				unsafe.Pointer(&g.BoneWeights[0]),
-				usageHint,
 			)
-			ctx.Execute()
 		}
 
 		bm.TextureCoords = make([]uint32, len(g.TextureCoords))
 		for index, texCoords := range g.TextureCoords {
-			// Create texture coordinates buffer
-			ctx.GenBuffers(1, &bm.TextureCoords[index])
-			ctx.Execute()
-			ctx.BindBuffer(opengl.ARRAY_BUFFER, bm.TextureCoords[index])
-
-			sz := int(unsafe.Sizeof(texCoords[0]))
-			ctx.BufferData(
-				opengl.ARRAY_BUFFER,
-				uintptr(sz*len(texCoords)),
+			// Create texture coordinates VBO.
+			bm.TextureCoords[index] = r.doCreateVBO(
+				ctx, usageHint,
+				unsafe.Sizeof(texCoords[0]),
+				len(texCoords),
 				unsafe.Pointer(&texCoords[0]),
-				usageHint,
 			)
-			ctx.Execute()
 		}
 
 		// Bind buffer 0 -- make no-buffer active
