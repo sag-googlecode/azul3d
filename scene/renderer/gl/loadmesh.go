@@ -84,7 +84,7 @@ func (r *Renderer) doUpdateMesh(ctx *opengl.Context, g *geom.Mesh, now bool) {
 
 		// Update Indices VBO
 		if indicesChanged {
-			if g.Indices == nil || len(g.Indices) == 0 {
+			if len(g.Indices) == 0 {
 				// Delete indices VBO.
 				r.deleteVBO(ctx, bm.Indices)
 				bm.Indices = 0
@@ -103,7 +103,7 @@ func (r *Renderer) doUpdateMesh(ctx *opengl.Context, g *geom.Mesh, now bool) {
 
 		// Update Vertices VBO
 		if verticesChanged {
-			if g.Vertices == nil || len(g.Vertices) == 0 {
+			if len(g.Vertices) == 0 {
 				// Delete vertices VBO.
 				r.deleteVBO(ctx, bm.Vertices)
 				bm.Vertices = 0
@@ -122,7 +122,7 @@ func (r *Renderer) doUpdateMesh(ctx *opengl.Context, g *geom.Mesh, now bool) {
 
 		// Update Normals VBO
 		if normalsChanged {
-			if g.Normals == nil || len(g.Normals) == 0 {
+			if len(g.Normals) == 0 {
 				// Delete normals VBO.
 				r.deleteVBO(ctx, bm.Normals)
 				bm.Normals = 0
@@ -141,7 +141,7 @@ func (r *Renderer) doUpdateMesh(ctx *opengl.Context, g *geom.Mesh, now bool) {
 
 		// Update Tangents VBO
 		if tangentsChanged {
-			if g.Tangents == nil || len(g.Tangents) == 0 {
+			if len(g.Tangents) == 0 {
 				// Delete tangents VBO.
 				r.deleteVBO(ctx, bm.Tangents)
 				bm.Tangents = 0
@@ -160,7 +160,7 @@ func (r *Renderer) doUpdateMesh(ctx *opengl.Context, g *geom.Mesh, now bool) {
 
 		// Update Bitangents VBO
 		if bitangentsChanged {
-			if g.Bitangents == nil || len(g.Bitangents) == 0 {
+			if len(g.Bitangents) == 0 {
 				// Delete bitangents VBO.
 				r.deleteVBO(ctx, bm.Bitangents)
 				bm.Bitangents = 0
@@ -179,7 +179,7 @@ func (r *Renderer) doUpdateMesh(ctx *opengl.Context, g *geom.Mesh, now bool) {
 
 		// Update Colors VBO
 		if colorsChanged {
-			if g.Colors == nil || len(g.Colors) == 0 {
+			if len(g.Colors) == 0 {
 				// Delete colors VBO.
 				r.deleteVBO(ctx, bm.Colors)
 				bm.Colors = 0
@@ -198,7 +198,7 @@ func (r *Renderer) doUpdateMesh(ctx *opengl.Context, g *geom.Mesh, now bool) {
 
 		// Update BoneWeights VBO
 		if boneWeightsChanged {
-			if g.BoneWeights == nil || len(g.BoneWeights) == 0 {
+			if len(g.BoneWeights) == 0 {
 				// Delete bone weights VBO.
 				r.deleteVBO(ctx, bm.BoneWeights)
 				bm.BoneWeights = 0
@@ -222,7 +222,7 @@ func (r *Renderer) doUpdateMesh(ctx *opengl.Context, g *geom.Mesh, now bool) {
 				continue
 			}
 
-			if texCoords == nil || len(texCoords) == 0 {
+			if len(texCoords) == 0 {
 				// Delete texture coord VBO.
 				r.deleteVBO(ctx, bm.TextureCoords[index])
 				bm.TextureCoords[index] = 0
