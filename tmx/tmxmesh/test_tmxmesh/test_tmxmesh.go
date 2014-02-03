@@ -19,7 +19,7 @@ import (
 
 // Event handler to manipulate the camera when cursor is moved
 func onCursorPosition(ev *event.Event) {
-	pos := ev.Data.(*chippy.CursorPositionEvent)
+	pos := ev.Data.(chippy.CursorPositionEvent)
 
 	// If the cursor is not grabbed, we do not transform the camera.
 	if !engine.Window.CursorGrabbed() {
