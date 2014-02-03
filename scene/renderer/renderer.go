@@ -383,11 +383,11 @@ func Create(n *scene.Node, window *chippy.Window) error {
 		o.wantChangeBufferSize = make(chan uint)
 		o.playing = true
 
-		go o.eventLoop()
-		go o.renderLoop()
-
 		o.node = n
 		n.SetProp(PRendererObject, o)
+
+		go o.eventLoop()
+		go o.renderLoop()
 	}
 
 	return o.setup()
