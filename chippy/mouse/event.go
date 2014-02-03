@@ -17,11 +17,11 @@ type Event struct {
 }
 
 // Implements the chippy.Event interface.
-func (e *Event) Time() time.Time {
+func (e Event) Time() time.Time {
 	return e.T
 }
 
 // String returns an string representation of this event.
-func (e *Event) String() string {
+func (e Event) String() string {
 	return fmt.Sprintf("mouse.Event(Button=%s, State=%s, Time=%v)", e.Button.String(), e.State.String(), e.T)
 }
