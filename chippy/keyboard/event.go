@@ -27,12 +27,12 @@ type StateEvent struct {
 }
 
 // Implements the chippy.Event interface.
-func (e *StateEvent) Time() time.Time {
+func (e StateEvent) Time() time.Time {
 	return e.T
 }
 
 // String returns an string representation of this event.
-func (e *StateEvent) String() string {
+func (e StateEvent) String() string {
 	return fmt.Sprintf("keyboard.StateEvent(Key=%v, OS=%v, State=%v, Time=%v)", e.Key.String(), e.OS, e.State.String(), e.T)
 }
 
@@ -44,11 +44,11 @@ type TypedEvent struct {
 }
 
 // Implements the chippy.Event interface.
-func (e *TypedEvent) Time() time.Time {
+func (e TypedEvent) Time() time.Time {
 	return e.T
 }
 
 // String returns an string representation of this event.
-func (e *TypedEvent) String() string {
+func (e TypedEvent) String() string {
 	return fmt.Sprintf("keyboard.TypedEvent(Rune=%U %q, Time=%v)", e.Rune, string(e.Rune), e.T)
 }
