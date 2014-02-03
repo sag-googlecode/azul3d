@@ -195,7 +195,7 @@ func (n *obj) buildFramesLoop() {
 			for i := 0; i < buffered; i++ {
 				e = <-resized
 			}
-			ev := e.Data.(*chippy.ResizedEvent)
+			ev := e.Data.(chippy.ResizedEvent)
 
 			n.renderFrame(func() {
 				n.renderer.Resize(ev.Width, ev.Height)
@@ -287,42 +287,42 @@ func (n *obj) eventLoop() {
 	for {
 		e := <-events
 		switch ev := e.(type) {
-		case *chippy.CloseEvent:
+		case chippy.CloseEvent:
 			go event.Send("window-close", ev)
 
-		case *chippy.CursorPositionEvent:
+		case chippy.CursorPositionEvent:
 			go event.Send("cursor-position", ev)
 
-		case *chippy.CursorWithinEvent:
+		case chippy.CursorWithinEvent:
 			go event.Send("cursor-within", ev)
 
-		case *chippy.FocusedEvent:
+		case chippy.FocusedEvent:
 			go event.Send("window-focused", ev)
 
-		case *chippy.MaximizedEvent:
+		case chippy.MaximizedEvent:
 			go event.Send("window-maximized", ev)
 
-		case *chippy.MinimizedEvent:
+		case chippy.MinimizedEvent:
 			go event.Send("window-minimized", ev)
 
-		case *chippy.PaintEvent:
+		case chippy.PaintEvent:
 			go event.Send("window-paint", ev)
 
-		case *chippy.PositionEvent:
+		case chippy.PositionEvent:
 			go event.Send("window-position", ev)
 
-		case *chippy.ResizedEvent:
+		case chippy.ResizedEvent:
 			go event.Send("window-resized", ev)
 
-		case *chippy.ScreenChangedEvent:
+		case chippy.ScreenChangedEvent:
 			go event.Send("window-screen-changed", ev)
 
-		case *mouse.Event:
+		case mouse.Event:
 			eventName := fmt.Sprintf("mouse-%s-%s", ev.Button, ev.State)
 			go event.Send(eventName, ev)
 			go event.Send("mouse-state", ev)
 
-		case *keyboard.StateEvent:
+		case keyboard.StateEvent:
 			if ev.State == keyboard.Down {
 				go event.Send(ev.Key.String(), ev)
 			} else {
@@ -331,10 +331,10 @@ func (n *obj) eventLoop() {
 			}
 			go event.Send("keyboard-state", ev)
 
-		case *keyboard.TypedEvent:
+		case keyboard.TypedEvent:
 			go event.Send("keyboard-typed", ev)
 
-		case *chippy.DestroyedEvent:
+		case chippy.DestroyedEvent:
 			go event.Send("window-destroyed", ev)
 			return
 		}
