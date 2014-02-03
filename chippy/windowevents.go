@@ -12,12 +12,12 @@ type DestroyedEvent struct {
 }
 
 // String returns an string representation of this event.
-func (ev *DestroyedEvent) String() string {
+func (ev DestroyedEvent) String() string {
 	return fmt.Sprintf("DestroyedEvent(Time=%v)", ev.T)
 }
 
 // Time implements the generic event interface.
-func (ev *DestroyedEvent) Time() time.Time {
+func (ev DestroyedEvent) Time() time.Time {
 	return ev.T
 }
 
@@ -31,12 +31,12 @@ type PaintEvent struct {
 }
 
 // String returns an string representation of this event.
-func (ev *PaintEvent) String() string {
+func (ev PaintEvent) String() string {
 	return fmt.Sprintf("PaintEvent(Rectangle=%v, Time=%v)", ev.Rectangle, ev.T)
 }
 
 // Time implements the generic event interface.
-func (ev *PaintEvent) Time() time.Time {
+func (ev PaintEvent) Time() time.Time {
 	return ev.T
 }
 
@@ -47,12 +47,12 @@ type CloseEvent struct {
 }
 
 // String returns an string representation of this event.
-func (ev *CloseEvent) String() string {
+func (ev CloseEvent) String() string {
 	return fmt.Sprintf("CloseEvent(Time=%v)", ev.T)
 }
 
 // Time implements the generic event interface.
-func (ev *CloseEvent) Time() time.Time {
+func (ev CloseEvent) Time() time.Time {
 	return ev.T
 }
 
@@ -66,12 +66,12 @@ type CursorPositionEvent struct {
 }
 
 // String returns an string representation of this event.
-func (ev *CursorPositionEvent) String() string {
+func (ev CursorPositionEvent) String() string {
 	return fmt.Sprintf("CursorPositionEvent(X=%v, Y=%v, Time=%v)", ev.X, ev.Y, ev.T)
 }
 
 // Time implements the generic event interface.
-func (ev *CursorPositionEvent) Time() time.Time {
+func (ev CursorPositionEvent) Time() time.Time {
 	return ev.T
 }
 
@@ -85,12 +85,12 @@ type CursorWithinEvent struct {
 }
 
 // String returns an string representation of this event.
-func (ev *CursorWithinEvent) String() string {
+func (ev CursorWithinEvent) String() string {
 	return fmt.Sprintf("CursorWithinEvent(Within=%v, Time=%v)", ev.Within, ev.T)
 }
 
 // Time implements the generic event interface.
-func (ev *CursorWithinEvent) Time() time.Time {
+func (ev CursorWithinEvent) Time() time.Time {
 	return ev.T
 }
 
@@ -104,12 +104,12 @@ type MaximizedEvent struct {
 }
 
 // String returns an string representation of this event.
-func (ev *MaximizedEvent) String() string {
+func (ev MaximizedEvent) String() string {
 	return fmt.Sprintf("MaximizedEvent(Maximized=%v, Time=%v)", ev.Maximized, ev.T)
 }
 
 // Time implements the generic event interface.
-func (ev *MaximizedEvent) Time() time.Time {
+func (ev MaximizedEvent) Time() time.Time {
 	return ev.T
 }
 
@@ -123,12 +123,12 @@ type MinimizedEvent struct {
 }
 
 // String returns an string representation of this event.
-func (ev *MinimizedEvent) String() string {
+func (ev MinimizedEvent) String() string {
 	return fmt.Sprintf("MinimizedEvent(Minimized=%v, Time=%v)", ev.Minimized, ev.T)
 }
 
 // Time implements the generic event interface.
-func (ev *MinimizedEvent) Time() time.Time {
+func (ev MinimizedEvent) Time() time.Time {
 	return ev.T
 }
 
@@ -141,12 +141,12 @@ type FocusedEvent struct {
 }
 
 // String returns an string representation of this event.
-func (ev *FocusedEvent) String() string {
+func (ev FocusedEvent) String() string {
 	return fmt.Sprintf("FocusedEvent(Focused=%v, Time=%v)", ev.Focused, ev.T)
 }
 
 // Time implements the generic event interface.
-func (ev *FocusedEvent) Time() time.Time {
+func (ev FocusedEvent) Time() time.Time {
 	return ev.T
 }
 
@@ -159,12 +159,12 @@ type PositionEvent struct {
 }
 
 // String returns an string representation of this event.
-func (ev *PositionEvent) String() string {
+func (ev PositionEvent) String() string {
 	return fmt.Sprintf("PositionEvent(X=%v, Y=%v, Time=%v)", ev.X, ev.Y, ev.T)
 }
 
 // Time implements the generic event interface.
-func (ev *PositionEvent) Time() time.Time {
+func (ev PositionEvent) Time() time.Time {
 	return ev.T
 }
 
@@ -178,12 +178,12 @@ type ResizedEvent struct {
 }
 
 // String returns an string representation of this event.
-func (ev *ResizedEvent) String() string {
+func (ev ResizedEvent) String() string {
 	return fmt.Sprintf("ResizedEvent(Width=%v, Height=%v, Time=%v)", ev.Width, ev.Height, ev.T)
 }
 
 // Time implements the generic event interface.
-func (ev *ResizedEvent) Time() time.Time {
+func (ev ResizedEvent) Time() time.Time {
 	return ev.T
 }
 
@@ -197,11 +197,11 @@ type ScreenChangedEvent struct {
 }
 
 // String returns an string representation of this event.
-func (ev *ScreenChangedEvent) String() string {
+func (ev ScreenChangedEvent) String() string {
 	return fmt.Sprintf("ScreenChangedEvent(Screen=%v, Time=%v)", ev.Screen, ev.T)
 }
 
 // Time implements the generic event interface.
-func (ev *ScreenChangedEvent) Time() time.Time {
+func (ev ScreenChangedEvent) Time() time.Time {
 	return ev.T
 }

@@ -1423,7 +1423,7 @@ func mainWindowProc(hwnd win32.HWND, msg win32.UINT, wParam win32.WPARAM, lParam
 				y1 := int(rect.Bottom())
 
 				if x0 <= x1 && y0 <= y1 {
-					w.r.send(&PaintEvent{
+					w.r.send(PaintEvent{
 						T:         time.Now(),
 						Rectangle: image.Rect(x0, y0, x1, y1),
 					})
@@ -1632,7 +1632,7 @@ func mainWindowProc(hwnd win32.HWND, msg win32.UINT, wParam win32.WPARAM, lParam
 			}
 
 		case msg == win32.WM_CHAR:
-			w.r.send(&keyboard.TypedEvent{
+			w.r.send(keyboard.TypedEvent{
 				T:    time.Now(),
 				Rune: rune(wParam),
 			})
@@ -1650,7 +1650,7 @@ func mainWindowProc(hwnd win32.HWND, msg win32.UINT, wParam win32.WPARAM, lParam
 				if altDown {
 					if msg == win32.WM_SYSKEYDOWN {
 						// Trick: Consider this to be WM_CLOSE
-						w.r.send(&CloseEvent{
+						w.r.send(CloseEvent{
 							T: time.Now(),
 						})
 					}
@@ -1791,7 +1791,7 @@ func mainWindowProc(hwnd win32.HWND, msg win32.UINT, wParam win32.WPARAM, lParam
 						diffX := cursorX - halfWidth
 						diffY := cursorY - halfHeight
 						if diffX != 0 || diffY != 0 {
-							w.r.send(&CursorPositionEvent{
+							w.r.send(CursorPositionEvent{
 								T: time.Now(),
 								X: float64(diffX),
 								Y: float64(diffY),
@@ -1815,7 +1815,7 @@ func mainWindowProc(hwnd win32.HWND, msg win32.UINT, wParam win32.WPARAM, lParam
 					diffX := raw.Mouse().LastX()
 					diffY := raw.Mouse().LastY()
 					if diffX != 0 || diffY != 0 {
-						w.r.send(&CursorPositionEvent{
+						w.r.send(CursorPositionEvent{
 							T: time.Now(),
 							X: float64(diffX),
 							Y: float64(diffY),
@@ -1827,7 +1827,7 @@ func mainWindowProc(hwnd win32.HWND, msg win32.UINT, wParam win32.WPARAM, lParam
 
 		// Mouse Buttons
 		case msg == win32.WM_LBUTTONDOWN:
-			w.r.send(&mouse.Event{
+			w.r.send(mouse.Event{
 				T:      time.Now(),
 				Button: mouse.Left,
 				State:  mouse.Down,
@@ -1835,7 +1835,7 @@ func mainWindowProc(hwnd win32.HWND, msg win32.UINT, wParam win32.WPARAM, lParam
 			return 0
 
 		case msg == win32.WM_LBUTTONUP:
-			w.r.send(&mouse.Event{
+			w.r.send(mouse.Event{
 				T:      time.Now(),
 				Button: mouse.Left,
 				State:  mouse.Up,
@@ -1843,7 +1843,7 @@ func mainWindowProc(hwnd win32.HWND, msg win32.UINT, wParam win32.WPARAM, lParam
 			return 0
 
 		case msg == win32.WM_RBUTTONDOWN:
-			w.r.send(&mouse.Event{
+			w.r.send(mouse.Event{
 				T:      time.Now(),
 				Button: mouse.Right,
 				State:  mouse.Down,
@@ -1851,7 +1851,7 @@ func mainWindowProc(hwnd win32.HWND, msg win32.UINT, wParam win32.WPARAM, lParam
 			return 0
 
 		case msg == win32.WM_RBUTTONUP:
-			w.r.send(&mouse.Event{
+			w.r.send(mouse.Event{
 				T:      time.Now(),
 				Button: mouse.Right,
 				State:  mouse.Up,
@@ -1859,7 +1859,7 @@ func mainWindowProc(hwnd win32.HWND, msg win32.UINT, wParam win32.WPARAM, lParam
 			return 0
 
 		case msg == win32.WM_MBUTTONDOWN:
-			w.r.send(&mouse.Event{
+			w.r.send(mouse.Event{
 				T:      time.Now(),
 				Button: mouse.Wheel,
 				State:  mouse.Down,
@@ -1867,7 +1867,7 @@ func mainWindowProc(hwnd win32.HWND, msg win32.UINT, wParam win32.WPARAM, lParam
 			return 0
 
 		case msg == win32.WM_MBUTTONUP:
-			w.r.send(&mouse.Event{
+			w.r.send(mouse.Event{
 				T:      time.Now(),
 				Button: mouse.Wheel,
 				State:  mouse.Up,
@@ -1885,7 +1885,7 @@ func mainWindowProc(hwnd win32.HWND, msg win32.UINT, wParam win32.WPARAM, lParam
 				button = mouse.Five
 			}
 
-			w.r.send(&mouse.Event{
+			w.r.send(mouse.Event{
 				T:      time.Now(),
 				Button: button,
 				State:  mouse.Down,
@@ -1903,7 +1903,7 @@ func mainWindowProc(hwnd win32.HWND, msg win32.UINT, wParam win32.WPARAM, lParam
 				button = mouse.Five
 			}
 
-			w.r.send(&mouse.Event{
+			w.r.send(mouse.Event{
 				T:      time.Now(),
 				Button: button,
 				State:  mouse.Up,
@@ -1916,7 +1916,7 @@ func mainWindowProc(hwnd win32.HWND, msg win32.UINT, wParam win32.WPARAM, lParam
 
 			if delta > 0 {
 				for i := 0; i < ticks; i++ {
-					w.r.send(&mouse.Event{
+					w.r.send(mouse.Event{
 						T:      time.Now(),
 						Button: mouse.Wheel,
 						State:  mouse.ScrollForward,
@@ -1924,7 +1924,7 @@ func mainWindowProc(hwnd win32.HWND, msg win32.UINT, wParam win32.WPARAM, lParam
 				}
 			} else {
 				for i := 0; i < ticks; i++ {
-					w.r.send(&mouse.Event{
+					w.r.send(mouse.Event{
 						T:      time.Now(),
 						Button: mouse.Wheel,
 						State:  mouse.ScrollBack,
@@ -1934,7 +1934,7 @@ func mainWindowProc(hwnd win32.HWND, msg win32.UINT, wParam win32.WPARAM, lParam
 			return 0
 
 		case msg == win32.WM_CLOSE:
-			w.r.send(&CloseEvent{
+			w.r.send(CloseEvent{
 				T: time.Now(),
 			})
 			return 0

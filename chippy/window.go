@@ -118,7 +118,7 @@ func (w *Window) Destroy() {
 	w.destroyed = true
 	w.access.Unlock()
 
-	w.send(&DestroyedEvent{
+	w.send(DestroyedEvent{
 		T: time.Now(),
 	})
 	w.NativeWindow.destroy()
@@ -322,7 +322,7 @@ func (w *Window) trySetSize(width, height int) bool {
 		w.height = height
 		w.access.Unlock()
 
-		w.send(&ResizedEvent{
+		w.send(ResizedEvent{
 			T:      time.Now(),
 			Width:  width,
 			Height: height,
@@ -575,7 +575,7 @@ func (w *Window) trySetMinimized(minimized bool) bool {
 		w.minimized = minimized
 		w.access.Unlock()
 
-		w.send(&MinimizedEvent{
+		w.send(MinimizedEvent{
 			T:         time.Now(),
 			Minimized: minimized,
 		})
@@ -616,7 +616,7 @@ func (w *Window) trySetMaximized(maximized bool) bool {
 		w.maximized = maximized
 		w.access.Unlock()
 
-		w.send(&MaximizedEvent{
+		w.send(MaximizedEvent{
 			T:         time.Now(),
 			Maximized: maximized,
 		})
@@ -659,7 +659,7 @@ func (w *Window) trySetCursorPosition(x, y int) bool {
 		w.access.Unlock()
 
 		if !w.CursorGrabbed() {
-			w.send(&CursorPositionEvent{
+			w.send(CursorPositionEvent{
 				T: time.Now(),
 				X: float64(x),
 				Y: float64(y),
@@ -769,7 +769,7 @@ func (w *Window) trySetPosition(x, y int) bool {
 		w.y = y
 		w.access.Unlock()
 
-		w.send(&PositionEvent{
+		w.send(PositionEvent{
 			T: time.Now(),
 			X: x,
 			Y: y,
@@ -846,7 +846,7 @@ func (w *Window) trySetScreen(screen *Screen) bool {
 		w.screen = screen
 		w.access.Unlock()
 
-		w.send(&ScreenChangedEvent{
+		w.send(ScreenChangedEvent{
 			T:      time.Now(),
 			Screen: screen,
 		})
@@ -1023,7 +1023,7 @@ func (w *Window) trySetCursorWithin(within bool) bool {
 		w.cursorWithin = within
 		w.access.Unlock()
 
-		w.send(&CursorWithinEvent{
+		w.send(CursorWithinEvent{
 			T:      time.Now(),
 			Within: within,
 		})
@@ -1092,7 +1092,7 @@ func (w *Window) trySetFocused(focused bool) bool {
 		w.focused = focused
 		w.access.Unlock()
 
-		w.send(&FocusedEvent{
+		w.send(FocusedEvent{
 			T:       time.Now(),
 			Focused: focused,
 		})
@@ -1176,7 +1176,7 @@ func (w *Window) tryAddKeyboardStateEvent(k keyboard.Key, os keyboard.OS, s keyb
 
 	w.Keyboard.SetState(k, s)
 	w.Keyboard.SetOSState(os, s)
-	w.send(&keyboard.StateEvent{
+	w.send(keyboard.StateEvent{
 		T:     time.Now(),
 		Key:   k,
 		OS:    os,
@@ -1193,7 +1193,7 @@ func (w *Window) releaseDownedButtons() {
 			w.Keyboard.SetState(key, state)
 
 			// Send event
-			w.send(&keyboard.StateEvent{
+			w.send(keyboard.StateEvent{
 				T:     time.Now(),
 				Key:   key,
 				State: state,
@@ -1209,7 +1209,7 @@ func (w *Window) releaseDownedButtons() {
 			w.Keyboard.SetOSState(os, state)
 
 			// Send event
-			w.send(&keyboard.StateEvent{
+			w.send(keyboard.StateEvent{
 				T:     time.Now(),
 				OS:    os,
 				State: state,
@@ -1227,7 +1227,7 @@ func (w *Window) releaseDownedButtons() {
 			w.Mouse.SetState(button, state)
 
 			// Add mouse event
-			w.send(&mouse.Event{
+			w.send(mouse.Event{
 				T:      time.Now(),
 				Button: button,
 				State:  state,

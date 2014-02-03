@@ -828,7 +828,7 @@ func (w *NativeWindow) handleEvent(ref *x11.GenericEvent, e interface{}) {
 		}
 
 		if r != utf8.RuneError && r != 0 {
-			w.r.send(&keyboard.TypedEvent{
+			w.r.send(keyboard.TypedEvent{
 				T:    time.Now(),
 				Rune: r,
 			})
@@ -876,7 +876,7 @@ func (w *NativeWindow) handleEvent(ref *x11.GenericEvent, e interface{}) {
 			logger().Printf("Unknown button press event; Detail=%v\n", ev.Detail)
 			return
 		}
-		w.r.send(&mouse.Event{
+		w.r.send(mouse.Event{
 			T:      time.Now(),
 			Button: button,
 			State:  state,
@@ -905,7 +905,7 @@ func (w *NativeWindow) handleEvent(ref *x11.GenericEvent, e interface{}) {
 			logger().Printf("Unknown button release event; Detail=%v\n", ev.Detail)
 			return
 		}
-		w.r.send(&mouse.Event{
+		w.r.send(mouse.Event{
 			T:      time.Now(),
 			Button: button,
 			State:  state,
@@ -923,7 +923,7 @@ func (w *NativeWindow) handleEvent(ref *x11.GenericEvent, e interface{}) {
 			diffY := float64(y - halfHeight)
 			if math.Abs(diffX) > 1 || math.Abs(diffY) > 1 {
 				if w.canSendRelativeMove() {
-					w.r.send(&CursorPositionEvent{
+					w.r.send(CursorPositionEvent{
 						T: time.Now(),
 						X: diffX,
 						Y: diffY,
@@ -980,7 +980,7 @@ func (w *NativeWindow) handleEvent(ref *x11.GenericEvent, e interface{}) {
 	case *x11.ClientMessageEvent:
 		atom := *(*x11.Atom)(unsafe.Pointer(&ev.Data[0]))
 		if atom == aWmDeleteWindow {
-			w.r.send(&CloseEvent{
+			w.r.send(CloseEvent{
 				T: time.Now(),
 			})
 		}
