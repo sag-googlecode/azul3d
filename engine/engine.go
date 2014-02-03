@@ -130,12 +130,12 @@ func setup() {
 	var stop func()
 	stop = event.Define(event.Handlers{
 		"window-resized": func(e *event.Event) {
-			ev := e.Data.(*chippy.ResizedEvent)
+			ev := e.Data.(chippy.ResizedEvent)
 			handleResized(ev.Width, ev.Height)
 		},
 
 		"window-minimized": func(e *event.Event) {
-			ev := e.Data.(*chippy.MinimizedEvent)
+			ev := e.Data.(chippy.MinimizedEvent)
 			if ev.Minimized {
 				renderer.Pause(Renderer)
 			} else {
