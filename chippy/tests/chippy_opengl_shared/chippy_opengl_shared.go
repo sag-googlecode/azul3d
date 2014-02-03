@@ -231,10 +231,10 @@ func program() {
 		for i := 0; i < len(events); i++ {
 			e := <-events
 			switch ev := e.(type) {
-			case *chippy.ResizedEvent:
+			case chippy.ResizedEvent:
 				resizeScene(ev.Width, ev.Height)
 
-			case *keyboard.StateEvent:
+			case keyboard.StateEvent:
 				if ev.State == keyboard.Down {
 					switch ev.Key {
 					case keyboard.V:
@@ -247,7 +247,7 @@ func program() {
 					}
 				}
 
-			case *chippy.CloseEvent:
+			case chippy.CloseEvent:
 				chippy.Exit()
 				return
 			}

@@ -63,7 +63,7 @@ func program() {
 		ev := <-events
 		log.Println(ev)
 
-		typedEvent, ok := ev.(*keyboard.TypedEvent)
+		typedEvent, ok := ev.(keyboard.TypedEvent)
 		if ok {
 			if typedEvent.Rune == 'd' {
 				window.SetDecorated(!window.Decorated())

@@ -114,7 +114,7 @@ func program() {
 			for n := len(events); n > 0; n-- {
 				e := <-events
 				switch e.(type) {
-				case *chippy.CloseEvent:
+				case chippy.CloseEvent:
 					chippy.Exit()
 					goto stats
 				}
@@ -132,11 +132,11 @@ loop: for !gotPaintEvent {
 
 			case e := <-events:
 				switch e.(type) {
-				case *chippy.PaintEvent:
+				case chippy.PaintEvent:
 					log.Println(e)
 					gotPaintEvent = true
 
-				case *chippy.CloseEvent:
+				case chippy.CloseEvent:
 					chippy.Exit()
 					goto stats
 

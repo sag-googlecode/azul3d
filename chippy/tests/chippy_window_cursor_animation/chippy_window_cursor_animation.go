@@ -82,7 +82,7 @@ func program() {
 	for {
 		e := <-events
 		switch e.(type) {
-		case *chippy.CloseEvent:
+		case chippy.CloseEvent:
 			return
 
 		default:

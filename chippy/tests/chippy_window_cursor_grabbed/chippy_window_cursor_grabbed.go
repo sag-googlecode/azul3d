@@ -46,10 +46,10 @@ func program() {
 		e := <-events
 
 		switch e.(type) {
-		case *chippy.CursorPositionEvent:
+		case chippy.CursorPositionEvent:
 			log.Printf("Grabbed? %v | %v", window.CursorGrabbed(), e)
 
-		case *chippy.CloseEvent:
+		case chippy.CloseEvent:
 			return
 
 		default:
