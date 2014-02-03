@@ -79,7 +79,7 @@ func onCursorPosition(ev *event.Event) {
 	globalLock.RLock()
 	defer globalLock.RUnlock()
 
-	pos := ev.Data.(*chippy.CursorPositionEvent)
+	pos := ev.Data.(chippy.CursorPositionEvent)
 
 	// If the cursor is not grabbed, we do not transform cubes.
 	if !engine.Window.CursorGrabbed() {

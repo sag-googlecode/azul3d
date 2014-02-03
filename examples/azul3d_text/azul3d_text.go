@@ -20,7 +20,7 @@ var (
 
 // Event handler to manipulate cubes when cursor is moved
 func onCursorPosition(ev *event.Event) {
-	pos := ev.Data.(*chippy.CursorPositionEvent)
+	pos := ev.Data.(chippy.CursorPositionEvent)
 
 	// If the cursor is not grabbed, we do not transform cubes.
 	if !engine.Window.CursorGrabbed() {
@@ -108,7 +108,7 @@ func program() {
 	var stop func()
 	stop = event.Define(event.Handlers{
 		"keyboard-typed": func(ev *event.Event) {
-			typedEvent := ev.Data.(*keyboard.TypedEvent)
+			typedEvent := ev.Data.(keyboard.TypedEvent)
 			current := text.Get(textNode)
 			text.Set(textNode, current+string(typedEvent.Rune))
 		},

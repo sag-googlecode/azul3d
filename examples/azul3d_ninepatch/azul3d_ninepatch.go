@@ -22,7 +22,7 @@ var (
 
 // Event handler to manipulate cubes when cursor is moved
 func onCursorPosition(ev *event.Event) {
-	pos := ev.Data.(*chippy.CursorPositionEvent)
+	pos := ev.Data.(chippy.CursorPositionEvent)
 
 	// If the cursor is not grabbed, we do not transform cubes.
 	if !engine.Window.CursorGrabbed() {
