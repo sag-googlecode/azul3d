@@ -93,7 +93,7 @@ func verify(t *testing.T, name string) {
 						t.Fatal("FindTileset failed to find correct tileset.")
 					}
 
-					_ = m.TilesetRect(tileset, gid)
+					_ = m.TilesetRect(tileset, tileset.Image.Width, tileset.Image.Height, true, gid)
 				}
 			}
 		}
