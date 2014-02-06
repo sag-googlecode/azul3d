@@ -317,9 +317,13 @@ func eventLoop() {
 				logger().Printf("%+v\n", ev)
 
 			default:
-				if !xDisplay.HandleGLXSecretEvent(e) {
-					logger().Printf("Unhandled X event: %+v\n", e.EGenericEvent)
-				}
+				// GLX secret events it seems must be sent only on a single
+				// thread or else heap corruption may occur.
+				dispatch(func() {
+					if !xDisplay.HandleGLXSecretEvent(e) {
+						logger().Printf("Unhandled X event: %+v\n", e.EGenericEvent)
+					}
+				})
 			}
 		}
 	}
