@@ -2,9 +2,7 @@
 // This source code is subject to the terms and
 // conditions defined in the "License.txt" file.
 
-// Package al implements Go bindings to OpenAL
-//
-// This package implements Go bindings to OpenAL.
+// Package al implements Go bindings to OpenAL.
 //
 // To avoid the requirement of users having to download OpenAL (or for
 // developers to have to distribute dynamic libraries with their applications),
