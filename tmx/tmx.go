@@ -2,7 +2,7 @@
 // This source code is subject to the terms and
 // conditions defined in the "License.txt" file.
 
-// Package tmx implements a Tiled Map XML file loader
+// Package tmx implements a Tiled Map XML file loader.
 //
 // The Tiled Map XML file specification can be found at:
 //
