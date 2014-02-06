@@ -2,9 +2,10 @@
 // This source code is subject to the terms and
 // conditions defined in the "License.txt" file.
 
-// Package tmxmesh implements routines for rendering tmx maps, it loads a 2D
-// tmx map into a scene node with all required meshes and textures applied so
-// it would render correctly.
+// Package tmxmesh implements routines for rendering tmx maps.
+//
+// It loads a 2D tmx map into a scene node with all required meshes and
+// textures applied so it would render correctly.
 //
 // At present the package only supports orthogonal tile map rendering, and has
 // some issues with proper ordering of perspective (I.e. non-uniformly sized)
