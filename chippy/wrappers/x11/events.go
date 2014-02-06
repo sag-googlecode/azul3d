@@ -3,7 +3,6 @@
 // conditions defined in the "License.txt" file.
 // +build linux
 
-// Do not use - Wrappers around very specific x11 APIs.
 package x11
 
 /*
