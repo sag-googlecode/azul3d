@@ -1,67 +1,48 @@
-// Copyright 2012 Lightpoke. All rights reserved.
-// This source code is subject to the terms and
-// conditions defined in the "License.txt" file.
+// Copyright 2012 The Azul3D Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style
+// license that can be found in the LICENSE file.
 
-// Package math implements general 3D linear math data types and operations.
-//
-// Many algorithms found inside this package are based off ones found in Panda3D's linmath library,
-// whose code is licensed under an Modified BSD License described in the License.txt file.
 package math
 
-var realTolerence Real = RealNearZero
+import "math"
 
-// SetTolerence sets the default tolerence for Real equality in Equals() operations.
-func SetTolerence(tolerence Real) {
-	realTolerence = tolerence
-}
+// The default epsilon value used for floating point comparisons.
+const EPSILON = 1.0E-8
 
-// Tolerence returns the default tolerence for Real equality in Equals() operations.
-func Tolerence() Real {
-	return realTolerence
-}
-
-// Clamp returns an real clamped to the range of min.. to max.
-func (a Real) Clamp(min, max Real) Real {
-	return Max(Min(a, max), min)
-}
-
-// Equals tells if a is equal to b within the default tolerence for Real equality.
-func (a Real) Equals(b Real) bool {
-	if Abs(a-b) < realTolerence {
+// AlmostEqual tells if the two floating point values a and b are considered
+// equal within the specified epsilon value.
+func AlmostEqual(a, b, epsilon float64) bool {
+	if math.Abs(a-b) < epsilon {
 		return true
 	}
 	return false
 }
 
-// EqualsTolerence tells if a is equal to b within the specified tolerence for Real equality.
-func (a Real) EqualsTolerence(b, tolerence Real) bool {
-	if Abs(a-b) < tolerence {
-		return true
+// Equal tells if the two floating point values a and b are considered equal
+// within the default EPSILON value.
+func Equal(a, b float64) bool {
+	return AlmostEqual(a, b, EPSILON)
+}
+
+// Clamp returns the value v clamped to the range of [min, max].
+func Clamp(v, min, max float64) float64 {
+	return math.Max(math.Min(v, max), min)
+}
+
+// Radians converts from degrees to radians.
+func Radians(degrees float64) (radians float64) {
+	return math.Pi * degrees / 180.0
+}
+
+// Degrees converts from radians to degrees.
+func Degrees(radians float64) (degrees float64) {
+	return radians * (180.0 / math.Pi)
+}
+
+// Rounded returns the value rounded to the nearest whole number.
+func Rounded(v float64) float64 {
+	if v < 0 {
+		return math.Ceil(v - 0.5)
 	}
-	return false
-}
-
-// EqualsCompeq tells if a is equal to b within the specified tolerence for Real equality,
-// unlike EqualsTolerence the transitive principle is guaranteed:
-//
-// a.EqualsCompeq(b, t) && b.EqualsCompeq(c, t) implies a.EqualsCompeq(c, t).
-func (a Real) EqualsCompeq(b, tolerence Real) bool {
-	return Floor(a/tolerence+0.5) == Floor(b/tolerence+0.5)
-}
-
-// Converts from Degrees to Radians
-func (degrees Real) Radians() Real {
-	return Pi * degrees / 180.0
-}
-
-// Converts from Radians to Degrees
-func (radians Real) Degrees() Real {
-	return radians * (180.0 / Pi)
-}
-
-func (r Real) Rounded() Real {
-	if r < 0 {
-		return Ceil(r - 0.5)
-	}
-	return Floor(r + 0.5)
+	return math.Floor(v + 0.5)
 }

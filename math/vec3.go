@@ -1,467 +1,313 @@
-// Copyright 2012 Lightpoke. All rights reserved.
-// This source code is subject to the terms and
-// conditions defined in the "License.txt" file.
+// Copyright 2012 The Azul3D Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style
+// license that can be found in the LICENSE file.
 
 package math
 
 import (
 	"fmt"
+	"math"
 )
 
-// Vec3 represents an vector of three components, X, Y, and Z.
+// Vec3 represents a 3D vector or point.
 type Vec3 struct {
-	X, Y, Z Real
-}
-
-// Copy returns an new 1:1 copy of this Vec3
-func (a *Vec3) Copy() *Vec3 {
-	return &Vec3{a.X, a.Y, a.Z}
+	X, Y, Z float64
 }
 
 // String returns an string representation of this vector.
-func (a *Vec3) String() string {
+func (a Vec3) String() string {
 	return fmt.Sprintf("Vec3(X=%v, Y=%v, Z=%v)", a.X, a.Y, a.Z)
 }
 
-// Assign assigns the X, Y, and Z values in this vector to the specified values.
-func (a *Vec3) Assign(x, y, z Real) {
-	a.X = x
-	a.Y = y
-	a.Z = z
+// AlmostEquals tells if a == b using the specified epsilon value.
+func (a Vec3) AlmostEquals(b Vec3, epsilon float64) bool {
+	return AlmostEqual(a.X, b.X, epsilon) && AlmostEqual(a.Y, b.Y, epsilon) && AlmostEqual(a.Z, b.Z, epsilon)
 }
 
-// Fill sets the X, Y and Z components of this *Vec3 to the Real, n, parameter.
-func (a *Vec3) Fill(n Real) {
-	a.X = n
-	a.Y = n
-	a.Z = n
+// Equals tells if a == b using the default EPSILON value.
+func (a Vec3) Equals(b Vec3) bool {
+	return a.AlmostEquals(b, EPSILON)
 }
 
-// Equals tells if this vector is equal to the other vector, by determining if it is within the
-// default tolerence for Real equality.
-//
-// Equality against nil is always false.
-func (a *Vec3) Equals(b *Vec3) bool {
-	if b == nil {
-		return false
-	}
-	return a.X.Equals(b.X) && a.Y.Equals(b.Y) && a.Z.Equals(b.Z)
+// Add performs a componentwise addition of the two vectors, returning a + b.
+func (a Vec3) Add(b Vec3) Vec3 {
+	return Vec3{a.X + b.X, a.Y + b.Y, a.Z + b.Z}
 }
 
-// EqualsTolerence tells if this vector is equal to the other vector, by determining if it is
-// within the specified tolerence for Real equality.
-//
-// Equality against nil is always false.
-func (a *Vec3) EqualsTolerence(b *Vec3, tolerence Real) bool {
-	if b == nil {
-		return false
-	}
-	return a.X.EqualsTolerence(b.X, tolerence) && a.Y.EqualsTolerence(b.Y, tolerence) && a.Z.EqualsTolerence(b.Z, tolerence)
+// AddScalar performs a componentwise scalar addition of a + b.
+func (a Vec3) AddScalar(b float64) Vec3 {
+	return Vec3{a.X + b, a.Y + b, a.Z + b}
 }
 
-// Negate negates all components of this vector in place.
-func (a *Vec3) Negate() {
-	a.X = -a.X
-	a.Y = -a.Y
-	a.Z = -a.Z
+// Sub performs a componentwise subtraction of the two vectors, returning
+// a - b.
+func (a Vec3) Sub(b Vec3) Vec3 {
+	return Vec3{a.X - b.X, a.Y - b.Y, a.Z - b.Z}
 }
 
-// Add returns the result of a + b
-func (a *Vec3) Add(b *Vec3) *Vec3 {
-	return &Vec3{
-		a.X + b.X,
-		a.Y + b.Y,
-		a.Z + b.Z,
-	}
+// SubScalar performs a componentwise scalar subtraction of a - b.
+func (a Vec3) SubScalar(b float64) Vec3 {
+	return Vec3{a.X - b, a.Y - b, a.Z - b}
 }
 
-// AddScalar returns the result of a + b
-func (a *Vec3) AddScalar(b Real) *Vec3 {
-	return &Vec3{
-		a.X + b,
-		a.Y + b,
-		a.Z + b,
-	}
+// Mul performs a componentwise multiplication of the two vectors, returning
+// a * b.
+func (a Vec3) Mul(b Vec3) Vec3 {
+	return Vec3{a.X * b.X, a.Y * b.Y, a.Z * b.Z}
 }
 
-// Sub returns the result of a - b
-func (a *Vec3) Sub(b *Vec3) *Vec3 {
-	return &Vec3{
-		a.X - b.X,
-		a.Y - b.Y,
-		a.Z - b.Z,
+// MulScalar performs a componentwise scalar multiplication of a * b.
+func (a Vec3) MulScalar(b float64) Vec3 {
+	return Vec3{a.X * b, a.Y * b, a.Z * b}
+}
+
+// Div performs a componentwise division of the two vectors, returning a * b.
+func (a Vec3) Div(b Vec3) Vec3 {
+	return Vec3{a.X / b.X, a.Y / b.Y, a.Z / b.Z}
+}
+
+// DivScalar performs a componentwise scalar division of a * b.
+func (a Vec3) DivScalar(b float64) Vec3 {
+	return Vec3{a.X / b, a.Y / b, a.Z / b}
+}
+
+// IsNaN tells if any components of this vector are not an number.
+func (a Vec3) IsNaN() bool {
+	return math.IsNaN(a.X) || math.IsNaN(a.Y) || math.IsNaN(a.Z)
+}
+
+// Clamp clamps each value in the vector to the range of [min, max] and returns
+// it.
+func (a Vec3) Clamp(min, max float64) Vec3 {
+	return Vec3{
+		Clamp(a.X, min, max),
+		Clamp(a.Y, min, max),
+		Clamp(a.Z, min, max),
 	}
 }
 
-// SubScalar returns the result of a - b
-func (a *Vec3) SubScalar(b Real) *Vec3 {
-	return &Vec3{
-		a.X - b,
-		a.Y - b,
-		a.Z - b,
+// Radians converts each value in the vector from degrees to radians and
+// returns it.
+func (a Vec3) Radians() Vec3 {
+	return Vec3{
+		Radians(a.X),
+		Radians(a.Y),
+		Radians(a.Z),
 	}
 }
 
-// Mul returns the result of a * b
-func (a *Vec3) Mul(b *Vec3) *Vec3 {
-	return &Vec3{
-		a.X * b.X,
-		a.Y * b.Y,
-		a.Z * b.Z,
+// Degrees converts each value in the vector from radians to degrees and
+// returns it.
+func (a Vec3) Degrees() Vec3 {
+	return Vec3{
+		Degrees(a.X),
+		Degrees(a.Y),
+		Degrees(a.Z),
 	}
 }
 
-// MulScalar returns the result of a * b
-func (a *Vec3) MulScalar(b Real) *Vec3 {
-	return &Vec3{
-		a.X * b,
-		a.Y * b,
-		a.Z * b,
+// Rounded rounds each value in the vector to the nearest whole number and
+// returns it.
+func (a Vec3) Rounded() Vec3 {
+	return Vec3{
+		Rounded(a.X),
+		Rounded(a.Y),
+		Rounded(a.Z),
 	}
 }
 
-// Div returns the result of a / b
-func (a *Vec3) Div(b *Vec3) *Vec3 {
-	return &Vec3{
-		a.X / b.X,
-		a.Y / b.Y,
-		a.Z / b.Z,
-	}
-}
-
-// DivScalar returns the result of a / b
-func (a *Vec3) DivScalar(b Real) *Vec3 {
-	return &Vec3{
-		a.X / b,
-		a.Y / b,
-		a.Z / b,
-	}
-}
-
-// Dot returns the dot product of the two vectors a and b, respectively.
-func (a *Vec3) Dot(b *Vec3) Real {
+// Dot returns the dot product of a and b.
+func (a Vec3) Dot(b Vec3) float64 {
 	return a.X*b.X + a.Y*b.Y + a.Z*b.Z
 }
 
-// LengthSquared returns the squared length of this vector.
-func (a *Vec3) LengthSquared() Real {
-	return a.Dot(a)
+// Inverse returns the inverse (negated) vector -a.
+func (a Vec3) Inverse() Vec3 {
+	return Vec3{-a.X, -a.Y, -a.Z}
 }
 
-// Length returns the length of this vector.
-func (a *Vec3) Length() Real {
-	return Sqrt(a.LengthSquared())
+// LengthSq returns the magnitude squared of this vector, useful for comparing
+// distances.
+func (a Vec3) LengthSq() float64 {
+	return a.X*a.X + a.Y*a.Y + a.Z*a.Z
 }
 
-// Normalize normalizes this vector, returns true if it was normalized or false if it was an zero
-// length vector.
-func (a *Vec3) Normalize() bool {
-	lengthSquared := a.LengthSquared()
+// Length returns the magnitude of this vector. To avoid a sqrt call when
+// strictly comparing distances, LengthSq can be used instead.
+func (a Vec3) Length() float64 {
+	return math.Sqrt(a.X*a.X + a.Y*a.Y + a.Z*a.Z)
+}
 
-	if lengthSquared.Equals(0) {
-		a.X = 0
-		a.Y = 0
-		a.Z = 0
-		return false
-
-	} else if lengthSquared.EqualsTolerence(1.0, RealNearZero*RealNearZero) {
-		length := Sqrt(lengthSquared)
-		*a = *a.DivScalar(length)
-		return true
+// Normalized returns the normalized (i.e. length/magnitude == 1) vector of a.
+// If the vector's length is zero (and division by zero would occur) then
+// [Vec3Zero, false] is returned.
+func (a Vec3) Normalized() (v Vec3, ok bool) {
+	length := math.Sqrt(a.X*a.X + a.Y*a.Y + a.Z*a.Z)
+	if Equal(length, 0) {
+		return Vec3Zero, false
 	}
-
-	return true
+	return Vec3{
+		a.X / length,
+		a.Y / length,
+		a.Z / length,
+	}, true
 }
 
-// Project returns an new vector representing the projection of this vector onto the other one. The
-// resulting vector will be a scalar multiple of onto.
-func (a *Vec3) Project(b *Vec3) *Vec3 {
-	return b.MulScalar(a.Dot(b) / b.LengthSquared())
+// Proj returns a vector representing the projection of vector a onto b.
+func (a Vec3) Proj(b Vec3) Vec3 {
+	return b.MulScalar(a.Dot(b) / b.LengthSq())
 }
 
-// Min returns an new vector representing the smaller components of the two vectors.
-func (a *Vec3) Min(b *Vec3) *Vec3 {
-	cpy := *a
-
+// Min returns a vector representing the smallest components of both the
+// vectors.
+func (a Vec3) Min(b Vec3) Vec3 {
+	var r Vec3
 	if a.X < b.X {
-		cpy.X = a.X
+		r.X = a.X
 	} else {
-		cpy.X = b.X
+		r.X = b.X
 	}
-
 	if a.Y < b.Y {
-		cpy.Y = a.Y
+		r.Y = a.Y
 	} else {
-		cpy.Y = b.Y
+		r.Y = b.Y
 	}
-
 	if a.Z < b.Z {
-		cpy.Z = a.Z
+		r.Z = a.Z
 	} else {
-		cpy.Z = b.Z
+		r.Z = b.Z
 	}
-
-	return &cpy
+	return r
 }
 
-// Max returns an new vector representing the larger components of the two vectors.
-func (a *Vec3) Max(b *Vec3) *Vec3 {
-	cpy := *a
-
+// Max returns a vector representing the largest components of both the
+// vectors.
+func (a Vec3) Max(b Vec3) Vec3 {
+	var r Vec3
 	if a.X > b.X {
-		cpy.X = a.X
+		r.X = a.X
 	} else {
-		cpy.X = b.X
+		r.X = b.X
 	}
-
 	if a.Y > b.Y {
-		cpy.Y = a.Y
+		r.Y = a.Y
 	} else {
-		cpy.Y = b.Y
+		r.Y = b.Y
 	}
-
 	if a.Z > b.Z {
-		cpy.Z = a.Z
+		r.Z = a.Z
 	} else {
-		cpy.Z = b.Z
+		r.Z = b.Z
 	}
-
-	return &cpy
+	return r
 }
 
-// CompareTolerence sorts the two vectors lexicographically, componentwise.
-//
-// Returns -1 if this vector sorts before the other one, and returns +1 if it sorts after.
-//
-// Returns exactly zero if they are equal within the specified tolerence for Real equality.
-func (a *Vec3) CompareTolerence(b *Vec3, tolerence Real) int {
-	if a.X.EqualsCompeq(b.X, tolerence) {
-		if a.X < b.X {
-			return -1
-		}
-		return 1
-	}
-
-	if a.Y.EqualsCompeq(b.Y, tolerence) {
-		if a.Y < b.Y {
-			return -1
-		}
-		return 1
-	}
-
-	if a.Z.EqualsCompeq(b.Z, tolerence) {
-		if a.Z < b.Z {
-			return -1
-		}
-		return 1
-	}
-
-	return 0
-}
-
-// Compare is just like CompareTolerence except it uses the default tolerence.
-func (a *Vec3) Compare(b *Vec3) int {
-	return a.CompareTolerence(b, RealNearZero)
-}
-
-// LessThan returns a < b
-//
-// Also see the Compare() and CompareTolerence() functions.
-func (a *Vec3) LessThan(b *Vec3) bool {
-	return a.Compare(b) < 0
-}
-
-// Lerp returns an new vector representing an linear interpolation between the a and b vectors.
-//
-// The parameter t is interpolation amount (0.0 - 1.0) between the two vectors.
-//
-// Short hand for:
-//  a.Mul(b.MulScalar(t))
-//
-func (a *Vec3) Lerp(b *Vec3, t Real) *Vec3 {
+// Lerp returns a vector representing the linear interpolation between the
+// vectors a and b. The t parameter is the amount to interpolate (0.0 - 1.0)
+// between the vectors.
+func (a Vec3) Lerp(b Vec3, t float64) Vec3 {
 	return a.Mul(b.MulScalar(t))
 }
 
-// IsNan tells if any components of this vector are not an number.
-func (a *Vec3) IsNan() bool {
-	return IsNaN(a.X) || IsNaN(a.Y) || IsNaN(a.Z)
-}
-
 // Cross returns the cross product of the two vectors.
-func (a *Vec3) Cross(b *Vec3) *Vec3 {
-	return &Vec3{
+func (a Vec3) Cross(b Vec3) Vec3 {
+	return Vec3{
 		a.Y*b.Z - b.Y*a.Z,
 		b.X*a.Z - a.X*b.Z,
 		a.X*b.Y - b.X*a.Y,
 	}
 }
 
-func standardizedRotation(angleDegrees Real) Real {
-	if angleDegrees < 0 {
-		angleDegrees = 360 - Mod(angleDegrees*-1.0, 360)
-	} else {
-		angleDegrees = Mod(angleDegrees, 360)
-	}
-
-	// We now have value in range of 0.0 to 359.99999
-
-	if angleDegrees < 180 {
-		return angleDegrees
-	}
-	return angleDegrees - 360.0
-}
-
-// StandardizedHpr() tries to un-spin the hpr to a standard form. This function assumes that 0 and
-// 360 are the same, as is 720 and -360. Also 180 and -180 are the same. Another example is -90 and
-// 270.
-//
-// Each element will be in the range -180 to 179.99999. The use of this function should be strictly
-// used for human readable output, not for comparison.
-//
-// See also Quat.SameDirection()
-func (a *Vec3) StandardizedHpr() *Vec3 {
-	return &Vec3{
-		standardizedRotation(a.X),
-		standardizedRotation(a.Y),
-		standardizedRotation(a.Z),
-	}
-}
-
-// Angle returns the unsigned angle between vectors a and b, expressed in radians.
-//
-// Both vectors are expected to be normalized already before calling this function.
-func (a *Vec3) Angle(b *Vec3) Real {
-	var n Real
+// Angle returns the unsigned angle between the vectors a and b, in radians.
+func (a Vec3) Angle(b Vec3) float64 {
+	a, _ = a.Normalized()
+	b, _ = b.Normalized()
+	var n float64
 	if a.Dot(b) < 0 {
 		n = a.Add(b).Length() / 2
-		return Pi - 2.0*Asin(Min(n, 1))
+		return math.Pi - 2.0*math.Asin(math.Min(n, 1))
 	}
 	n = a.Sub(b).Length() / 2
-	return 2.0 * Asin(Min(n, 1))
+	return 2.0 * math.Asin(math.Min(n, 1))
 }
 
-// SignedAngle returns the signed angle between vectors a and b, expressed in radians.
-//
-// The angle is positive if the rotation from a to b is clockwise when looking in the direction of
-// the ref vector.
-//
-// Both vectors are expected to be normalized already (but not the ref vector) before calling this
-// function.
-func (a *Vec3) SignedAngle(b, ref *Vec3) Real {
+// SignedAngle returns the signed angle between the vectors a and b, in
+// radians.
+// The returned angle is positive if the rotation from a to b is clockwise when
+// looking in the direction of the reference vector.
+func (a Vec3) SignedAngle(b, reference Vec3) float64 {
+	a, _ = a.Normalized()
+	b, _ = b.Normalized()
 	angle := a.Angle(b)
-	if a.Cross(b).Dot(ref) < 0.0 {
+	if a.Cross(b).Dot(reference) < 0.0 {
 		angle = -angle
 	}
 	return angle
 }
 
-// TransformMat3 transforms this point vector by the matrix (vector * matrix), and returns the new
-// vector result.
-//
+// TransformMat3 transforms this point vector by the matrix (vector * matrix),
+// and returns the result.
 // Can operate on orthonormal transformation matrices.
-func (v *Vec3) TransformMat3(m *Mat3) *Vec3 {
-	return Vector3(
-		v.X*m[0][0]+v.Y*m[1][0]+v.Z*m[2][0],
-		v.X*m[0][1]+v.Y*m[1][1]+v.Z*m[2][1],
-		v.X*m[0][2]+v.Y*m[1][2]+v.Z*m[2][2],
-	)
+func (a Vec3) TransformMat3(b Mat3) Vec3 {
+	return Vec3{
+		a.X*b[0][0] + a.Y*b[1][0] + a.Z*b[2][0],
+		a.X*b[0][1] + a.Y*b[1][1] + a.Z*b[2][1],
+		a.X*b[0][2] + a.Y*b[1][2] + a.Z*b[2][2],
+	}
 }
 
-// TransformGeneralMat3 transforms this vector by the matrix (vector * matrix) without translation
-// component, and returns the new vector result, as an fully general operation.
-func (v *Vec3) TransformGeneralMat3(m *Mat3) *Vec3 {
-	i := new(Mat3)
-	i.StoreInvert(m)
-	return v.TransformMat3(i)
+// TransformGeneralMat3 transforms this vector by the matrix (vector * matrix)
+// without translation component, and returns the result, as a fully general
+// operation.
+func (a Vec3) TransformGeneralMat3(b Mat3) Vec3 {
+	i, _ := b.Inverse()
+	return a.TransformMat3(i)
 }
 
-// TransformMat4 transforms this point vector by the affine transformation matrix (vector * matrix)
-// and returns the new vector result.
-//
-// The m parameter must be an affine transformation matrix.
-func (v *Vec3) TransformMat4(m *Mat4) *Vec3 {
-	return Vector3(
-		v.X*m[0][0]+v.Y*m[1][0]+v.Z*m[2][0]+m[3][0],
-		v.X*m[0][1]+v.Y*m[1][1]+v.Z*m[2][1]+m[3][1],
-		v.X*m[0][2]+v.Y*m[1][2]+v.Z*m[2][2]+m[3][2],
-	)
+// TransformMat4 transforms this point vector by the affine transformation
+// matrix (vector * matrix) and returns the result.
+// The matrix parameter must be an affine transformation matrix.
+func (a Vec3) TransformMat4(b Mat4) Vec3 {
+	return Vec3{
+		a.X*b[0][0] + a.Y*b[1][0] + a.Z*b[2][0] + b[3][0],
+		a.X*b[0][1] + a.Y*b[1][1] + a.Z*b[2][1] + b[3][1],
+		a.X*b[0][2] + a.Y*b[1][2] + a.Z*b[2][2] + b[3][2],
+	}
 }
 
-// TransformVecMat4 transforms this vector (without translation component) by the orthonormal
-// matrix and returns the result.
-func (v *Vec3) TransformVecMat4(m *Mat4) *Vec3 {
-	return Vector3(
-		v.X*m[0][0]+v.Y*m[1][0]+v.Z*m[2][0],
-		v.X*m[0][1]+v.Y*m[1][1]+v.Z*m[2][1],
-		v.X*m[0][2]+v.Y*m[1][2]+v.Z*m[2][2],
-	)
+// TransformVecMat4 transforms this vector (without translation component) by
+// the orthonormal matrix and returns the result.
+func (a Vec3) TransformVecMat4(b Mat4) Vec3 {
+	return Vec3{
+		a.X*b[0][0] + a.Y*b[1][0] + a.Z*b[2][0],
+		a.X*b[0][1] + a.Y*b[1][1] + a.Z*b[2][1],
+		a.X*b[0][2] + a.Y*b[1][2] + a.Z*b[2][2],
+	}
 }
 
-// TransformGeneralMat4 transforms this vector by the matrix (vector * matrix) without translation
-// component, and returns the new vector result, as an fully general operation.
-func (v *Vec3) TransformGeneralMat4(m *Mat4) *Vec3 {
-	i := new(Mat3)
-	i.StoreInvertTransposeMat4(m)
-	return v.TransformMat3(i)
+// TransformGeneralMat4 transforms this vector by the matrix (vector * matrix)
+// without translation component, and returns the result, as a fully general
+// operation.
+func (a Vec3) TransformGeneralMat4(b Mat4) Vec3 {
+	i, _ := b.UpperMat3().InverseTransposed()
+	return a.TransformMat3(i)
 }
 
-// PureImaginaryQuat returns an new *Quat using the vectors X, Y, and Z components for the
-// quaternion's respective X, Y, and Z components (leaving W=0 in the quaternion).
-//
-// Short hand for:
-//
-//  Quaternion(0, v.X, v.Y, v.Z)
-func (v *Vec3) PureImaginaryQuat() *Quat {
-	return &Quat{0, v.X, v.Y, v.Z}
+// HprToXyz converts Hew, Pitch and Roll rotation to X, Y, and Z axis rotation.
+func (v Vec3) HprToXyz() Vec3 {
+	return Vec3{v.Y, v.Z, v.X}
 }
 
-// HprToXyz returns this:
-//
-//  return math.Vector3(v.Y, v.Z, v.X)
-//
-func (v *Vec3) HprToXyz() *Vec3 {
-	return &Vec3{v.Y, v.Z, v.X}
-}
-
-// XyzToHpr returns this:
-//
-//  return math.Vector3(v.Z, v.X, v.Y)
-//
-func (v *Vec3) XyzToHpr() *Vec3 {
-	return &Vec3{v.Z, v.X, v.Y}
-}
-
-// Radians returns an new vector representing each element of the vector v, in degrees, converted
-// to radians.
-func (v *Vec3) Radians() *Vec3 {
-	return &Vec3{v.X.Radians(), v.Y.Radians(), v.Z.Radians()}
-}
-
-// Degrees returns an new vector representing each element of the vector v, in radians, converted
-// to degrees.
-func (v *Vec3) Degrees() *Vec3 {
-	return &Vec3{v.X.Degrees(), v.Y.Degrees(), v.Z.Degrees()}
-}
-
-// Clamp clamps each component of this vector to the specified min and max
-// values.
-func (v *Vec3) Clamp(min, max Real) *Vec3 {
-	return Vector3(
-		v.X.Clamp(min, max),
-		v.Y.Clamp(min, max),
-		v.Z.Clamp(min, max),
-	)
-}
-
-// Vector3 returns an new *Vec3 with the specified values.
-func Vector3(x, y, z Real) *Vec3 {
-	return &Vec3{x, y, z}
+// XyzToHpr converts X, Y, and Z axis rotation to Hew, Pitch, and Roll
+// rotation.
+func (v Vec3) XyzToHpr() Vec3 {
+	return Vec3{v.Z, v.X, v.Y}
 }
 
 var (
-	Vec3Zero  = Vector3(0, 0, 0)
-	Vec3One   = Vector3(1, 1, 1)
-	Vec3UnitX = Vector3(1, 0, 0)
-	Vec3UnitY = Vector3(0, 1, 0)
-	Vec3UnitZ = Vector3(0, 0, 1)
+	Vec3One   = Vec3{1, 1, 1}
+	Vec3XUnit = Vec3{1, 0, 0}
+	Vec3YUnit = Vec3{0, 1, 0}
+	Vec3ZUnit = Vec3{0, 0, 1}
+	Vec3Zero  = Vec3{0, 0, 0}
 )

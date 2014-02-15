@@ -1,291 +1,227 @@
-// Copyright 2012 Lightpoke. All rights reserved.
-// This source code is subject to the terms and
-// conditions defined in the "License.txt" file.
+// Copyright 2012 The Azul3D Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style
+// license that can be found in the LICENSE file.
 
 package math
 
 import (
 	"fmt"
+	"math"
 )
 
-// Vec2 represents an vector of two components, X and Y.
+// Vec2 represents a 2D vector or point.
 type Vec2 struct {
-	X, Y Real
-}
-
-// Copy returns an new 1:1 copy of this Vec2
-func (a *Vec2) Copy() *Vec2 {
-	return &Vec2{a.X, a.Y}
+	X, Y float64
 }
 
 // String returns an string representation of this vector.
-func (a *Vec2) String() string {
+func (a Vec2) String() string {
 	return fmt.Sprintf("Vec2(X=%v, Y=%v)", a.X, a.Y)
 }
 
-// Assign assigns the X, and Y values in this vector to the specified values.
-func (a *Vec2) Assign(x, y Real) {
-	a.X = x
-	a.Y = y
+// AlmostEquals tells if a == b using the specified epsilon value.
+func (a Vec2) AlmostEquals(b Vec2, epsilon float64) bool {
+	return AlmostEqual(a.X, b.X, epsilon) && AlmostEqual(a.Y, b.Y, epsilon)
 }
 
-// Fill sets the X and Y components of this *Vec2 to the Real, n, parameter.
-func (a *Vec2) Fill(n Real) {
-	a.X = n
-	a.Y = n
+// Equals tells if a == b using the default EPSILON value.
+func (a Vec2) Equals(b Vec2) bool {
+	return a.AlmostEquals(b, EPSILON)
 }
 
-// Equals tells if this vector is equal to the other vector, by determining if it is within the
-// default tolerence for Real equality.
-//
-// Equality against nil is always false.
-func (a *Vec2) Equals(b *Vec2) bool {
-	if b == nil {
-		return false
-	}
-	return a.X.Equals(b.X) && a.Y.Equals(b.Y)
+// Add performs a componentwise addition of the two vectors, returning a + b.
+func (a Vec2) Add(b Vec2) Vec2 {
+	return Vec2{a.X + b.X, a.Y + b.Y}
 }
 
-// EqualsTolerence tells if this vector is equal to the other vector, by determining if it is
-// within the specified tolerence for Real equality.
-//
-// Equality against nil is always false.
-func (a *Vec2) EqualsTolerence(b *Vec2, tolerence Real) bool {
-	if b == nil {
-		return false
-	}
-	return a.X.EqualsTolerence(b.X, tolerence) && a.Y.EqualsTolerence(b.Y, tolerence)
+// AddScalar performs a componentwise scalar addition of a + b.
+func (a Vec2) AddScalar(b float64) Vec2 {
+	return Vec2{a.X + b, a.Y + b}
 }
 
-// Negate negates all components of this vector.
-func (a *Vec2) Negate() {
-	a.X = -a.X
-	a.Y = -a.Y
+// Sub performs a componentwise subtraction of the two vectors, returning
+// a - b.
+func (a Vec2) Sub(b Vec2) Vec2 {
+	return Vec2{a.X - b.X, a.Y - b.Y}
 }
 
-// Add returns the result of a + b
-func (a *Vec2) Add(b *Vec2) *Vec2 {
-	return &Vec2{
-		a.X + b.X,
-		a.Y + b.Y,
-	}
+// SubScalar performs a componentwise scalar subtraction of a - b.
+func (a Vec2) SubScalar(b float64) Vec2 {
+	return Vec2{a.X - b, a.Y - b}
 }
 
-// AddScalar returns the result of a + b
-func (a *Vec2) AddScalar(b Real) *Vec2 {
-	return &Vec2{
-		a.X + b,
-		a.Y + b,
-	}
+// Mul performs a componentwise multiplication of the two vectors, returning
+// a * b.
+func (a Vec2) Mul(b Vec2) Vec2 {
+	return Vec2{a.X * b.X, a.Y * b.Y}
 }
 
-// Sub returns the result of a - b
-func (a *Vec2) Sub(b *Vec2) *Vec2 {
-	return &Vec2{
-		a.X - b.X,
-		a.Y - b.Y,
-	}
+// MulScalar performs a componentwise scalar multiplication of a * b.
+func (a Vec2) MulScalar(b float64) Vec2 {
+	return Vec2{a.X * b, a.Y * b}
 }
 
-// SubScalar returns the result of a - b
-func (a *Vec2) SubScalar(b Real) *Vec2 {
-	return &Vec2{
-		a.X - b,
-		a.Y - b,
+// Div performs a componentwise division of the two vectors, returning a * b.
+func (a Vec2) Div(b Vec2) Vec2 {
+	return Vec2{a.X / b.X, a.Y / b.Y}
+}
+
+// DivScalar performs a componentwise scalar division of a * b.
+func (a Vec2) DivScalar(b float64) Vec2 {
+	return Vec2{a.X / b, a.Y / b}
+}
+
+// IsNaN tells if any components of this vector are not an number.
+func (a Vec2) IsNaN() bool {
+	return math.IsNaN(a.X) || math.IsNaN(a.Y)
+}
+
+// Clamp clamps each value in the vector to the range of [min, max] and returns
+// it.
+func (a Vec2) Clamp(min, max float64) Vec2 {
+	return Vec2{
+		Clamp(a.X, min, max),
+		Clamp(a.Y, min, max),
 	}
 }
 
-// Mul returns the result of a * b
-func (a *Vec2) Mul(b *Vec2) *Vec2 {
-	return &Vec2{
-		a.X * b.X,
-		a.Y * b.Y,
+// Radians converts each value in the vector from degrees to radians and
+// returns it.
+func (a Vec2) Radians() Vec2 {
+	return Vec2{
+		Radians(a.X),
+		Radians(a.Y),
 	}
 }
 
-// MulScalar returns the result of a * b
-func (a *Vec2) MulScalar(b Real) *Vec2 {
-	return &Vec2{
-		a.X * b,
-		a.Y * b,
+// Degrees converts each value in the vector from radians to degrees and
+// returns it.
+func (a Vec2) Degrees() Vec2 {
+	return Vec2{
+		Degrees(a.X),
+		Degrees(a.Y),
 	}
 }
 
-// Div returns the result of a / b
-func (a *Vec2) Div(b *Vec2) *Vec2 {
-	return &Vec2{
-		a.X / b.X,
-		a.Y / b.Y,
+// Rounded rounds each value in the vector to the nearest whole number and
+// returns it.
+func (a Vec2) Rounded() Vec2 {
+	return Vec2{
+		Rounded(a.X),
+		Rounded(a.Y),
 	}
 }
 
-// DivScalar returns the result of a / b
-func (a *Vec2) DivScalar(b Real) *Vec2 {
-	return &Vec2{
-		a.X / b,
-		a.Y / b,
-	}
-}
-
-// Dot returns the dot product of the two vectors a and b, respectively.
-func (a *Vec2) Dot(b *Vec2) Real {
+// Dot returns the dot product of a and b.
+func (a Vec2) Dot(b Vec2) float64 {
 	return a.X*b.X + a.Y*b.Y
 }
 
-// LengthSquared returns the squared length of this vector.
-func (a *Vec2) LengthSquared() Real {
-	return a.Dot(a)
+// Inverse returns the inverse (negated) vector -a.
+func (a Vec2) Inverse() Vec2 {
+	return Vec2{-a.X, -a.Y}
 }
 
-// Length returns the length of this vector.
-func (a *Vec2) Length() Real {
-	return Sqrt(a.LengthSquared())
+// LengthSq returns the magnitude squared of this vector, useful for comparing
+// distances.
+func (a Vec2) LengthSq() float64 {
+	return a.X*a.X + a.Y*a.Y
 }
 
-// Normalize normalizes this vector, returns true if it was normalized or false if it was an zero
-// length vector.
-func (a *Vec2) Normalize() bool {
-	lengthSquared := a.LengthSquared()
+// Length returns the magnitude of this vector. To avoid a sqrt call when
+// strictly comparing distances, LengthSq can be used instead.
+func (a Vec2) Length() float64 {
+	return math.Sqrt(a.X*a.X + a.Y*a.Y)
+}
 
-	if lengthSquared.Equals(0) {
-		a.X = 0
-		a.Y = 0
-		return false
-
-	} else if lengthSquared.EqualsTolerence(1.0, RealNearZero*RealNearZero) {
-		length := Sqrt(lengthSquared)
-		*a = *a.DivScalar(length)
-		return true
+// Normalized returns the normalized (i.e. length/magnitude == 1) vector of a.
+// If the vector's length is zero (and division by zero would occur) then
+// [Vec2Zero, false] is returned.
+func (a Vec2) Normalized() (v Vec2, ok bool) {
+	length := math.Sqrt(a.X*a.X + a.Y*a.Y)
+	if Equal(length, 0) {
+		return Vec2Zero, false
 	}
-
-	return true
+	return Vec2{
+		a.X / length,
+		a.Y / length,
+	}, true
 }
 
-// Project returns an new vector representing the projection of this vector onto the other one. The
-// resulting vector will be a scalar multiple of onto.
-func (a *Vec2) Project(b *Vec2) *Vec2 {
-	return b.MulScalar(a.Dot(b) / b.LengthSquared())
+// Proj returns a vector representing the projection of vector a onto b.
+func (a Vec2) Proj(b Vec2) Vec2 {
+	return b.MulScalar(a.Dot(b) / b.LengthSq())
 }
 
-// Min returns an new vector representing the smaller components of the two vectors.
-func (a *Vec2) Min(b *Vec2) *Vec2 {
-	cpy := *a
-
+// Min returns a vector representing the smallest components of both the
+// vectors.
+func (a Vec2) Min(b Vec2) Vec2 {
+	var r Vec2
 	if a.X < b.X {
-		cpy.X = a.X
+		r.X = a.X
 	} else {
-		cpy.X = b.X
+		r.X = b.X
 	}
-
 	if a.Y < b.Y {
-		cpy.Y = a.Y
+		r.Y = a.Y
 	} else {
-		cpy.Y = b.Y
+		r.Y = b.Y
 	}
-
-	return &cpy
+	return r
 }
 
-// Max returns an new vector representing the larger components of the two vectors.
-func (a *Vec2) Max(b *Vec2) *Vec2 {
-	cpy := *a
-
+// Max returns a vector representing the largest components of both the
+// vectors.
+func (a Vec2) Max(b Vec2) Vec2 {
+	var r Vec2
 	if a.X > b.X {
-		cpy.X = a.X
+		r.X = a.X
 	} else {
-		cpy.X = b.X
+		r.X = b.X
 	}
-
 	if a.Y > b.Y {
-		cpy.Y = a.Y
+		r.Y = a.Y
 	} else {
-		cpy.Y = b.Y
+		r.Y = b.Y
 	}
-
-	return &cpy
+	return r
 }
 
-// CompareTolerence sorts the two vectors lexicographically, componentwise.
-//
-// Returns -1 if this vector sorts before the other one, and returns +1 if it sorts after.
-//
-// Returns exactly zero if they are equal within the specified tolerence for Real equality.
-func (a *Vec2) CompareTolerence(b *Vec2, tolerence Real) int {
-	if a.X.EqualsCompeq(b.X, tolerence) {
-		if a.X < b.X {
-			return -1
-		}
-		return 1
-	}
-
-	if a.Y.EqualsCompeq(b.Y, tolerence) {
-		if a.Y < b.Y {
-			return -1
-		}
-		return 1
-	}
-
-	return 0
-}
-
-// Compare is just like CompareTolerence except it uses the default tolerence.
-func (a *Vec2) Compare(b *Vec2) int {
-	return a.CompareTolerence(b, RealNearZero)
-}
-
-// LessThan returns a < b
-//
-// Also see the Compare() and CompareTolerence() functions.
-func (a *Vec2) LessThan(b *Vec2) bool {
-	return a.Compare(b) < 0
-}
-
-// Lerp returns an new vector representing an linear interpolation between the a and b vectors.
-//
-// The parameter t is interpolation amount (0.0 - 1.0) between the two vectors.
-//
-// Short hand for:
-//  a.Mul(b.MulScalar(t))
-//
-func (a *Vec2) Lerp(b *Vec2, t Real) *Vec2 {
+// Lerp returns a vector representing the linear interpolation between the
+// vectors a and b. The t parameter is the amount to interpolate (0.0 - 1.0)
+// between the vectors.
+func (a Vec2) Lerp(b Vec2, t float64) Vec2 {
 	return a.Mul(b.MulScalar(t))
 }
 
-// IsNan tells if any components of this vector are not an number.
-func (a *Vec2) IsNan() bool {
-	return IsNaN(a.X) || IsNaN(a.Y)
+// Angle returns the angle in radians between the two vectors.
+func (a Vec2) Angle(b Vec2) float64 {
+	return math.Atan2(b.Y-a.Y, b.X-a.X)
 }
 
-// TransformVec2 transforms a 2-component point vector (without translation component) and returns
-// the new vector result.
-//
+// TransformVec2 transforms a 2-component point vector by the matrix (without
+// translation component) and returns the result.
 // This function assumes that the matrix is an affine transformation.
-func (v *Vec2) TransformVec2(m *Mat3) *Vec2 {
-	return Vector2(
-		v.X*m[0][0]+v.Y*m[1][0],
-		v.X*m[0][1]+v.Y*m[1][1],
-	)
+func (a Vec2) TransformVec2(b Mat3) Vec2 {
+	return Vec2{
+		a.X*b[0][0] + a.Y*b[1][0],
+		a.X*b[0][1] + a.Y*b[1][1],
+	}
 }
 
-// TransformPointVec2 transforms a 2-component point vector (with translation component) and
-// returns the new vector result.
-//
+// TransformPointVec2 transforms a 2-component point vector by the matrix (with
+// translation component) and returns the result.
 // This function assumes that the matrix is an affine transformation.
-func (v *Vec2) TransformPointVec2(m *Mat3) *Vec2 {
-	return Vector2(
-		v.X*m[0][0]+v.Y*m[1][0]+m[2][0],
-		v.X*m[0][1]+v.Y*m[1][1]+m[2][1],
-	)
-}
-
-// Vector2 returns an new *Vec2 with the specified values.
-func Vector2(x, y Real) *Vec2 {
-	return &Vec2{x, y}
+func (a Vec2) TransformPointVec2(b Mat3) Vec2 {
+	return Vec2{
+		a.X*b[0][0] + a.Y*b[1][0] + b[2][0],
+		a.X*b[0][1] + a.Y*b[1][1] + b[2][1],
+	}
 }
 
 var (
-	Vec2Zero  = Vector2(0, 0)
-	Vec2One   = Vector2(1, 1)
-	Vec2UnitX = Vector2(1, 0)
-	Vec2UnitY = Vector2(0, 1)
+	Vec2One   = Vec2{1, 1}
+	Vec2XUnit = Vec2{1, 0}
+	Vec2YUnit = Vec2{0, 1}
+	Vec2Zero  = Vec2{0, 0}
 )
