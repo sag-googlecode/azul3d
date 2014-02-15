@@ -159,7 +159,7 @@ func (r *Renderer) releaseInputTexturesBuf(buf []int32) {
 	}
 }
 
-func (r *Renderer) collectNodes(root, camNode *scene.Node, lensProjection, camInverse *math.Mat4) (nodeBuf *sortedNodes) {
+func (r *Renderer) collectNodes(root, camNode *scene.Node, lensProjection, camInverse math.Mat4) (nodeBuf *sortedNodes) {
 	// Find an existing node buffer for re-use if we have one.
 	nodeBuf = r.claimNodeBuf()
 
@@ -284,7 +284,7 @@ func (r *Renderer) collect(root *scene.Node) sortedRegions {
 		// Find lens projection
 		lensProjection := camera.Lens(n).Projection()
 		camWorldTransform := n.RelativeTransform(root)
-		camInverse, _ := camWorldTransform.Mat4().Invert()
+		camInverse, _ := camWorldTransform.Mat4().Inverse()
 
 		// Collect the nodes in the camera's scene and sort them.
 		nodesBuf := r.collectNodes(root, n, lensProjection, camInverse)

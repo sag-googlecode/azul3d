@@ -6,7 +6,6 @@ package text
 
 import (
 	"azul3d.org/event"
-	"azul3d.org/math"
 	"azul3d.org/scene"
 	"azul3d.org/scene/bucket"
 	"azul3d.org/scene/geom"
@@ -111,12 +110,12 @@ func (t *textObject) update() {
 	defer gaAccess.RUnlock()
 
 	var (
-		verts []geom.Vertex
-		tcs   []texture.Coord
+		verts  []geom.Vertex
+		tcs    []texture.Coord
+		origin float64
+		last   rune
 	)
-	origin := math.Real(0)
 
-	var last rune
 	for index, r := range t.text {
 		raster := gaRasterMap[r][DefaultOptions]
 		if raster == nil {
@@ -124,12 +123,12 @@ func (t *textObject) update() {
 		}
 
 		sz := raster.Image.Bounds().Size()
-		bearingX := math.Real(raster.HMetrics.BearingX)
-		bearingY := math.Real(raster.HMetrics.BearingY)
+		bearingX := raster.HMetrics.BearingX
+		bearingY := raster.HMetrics.BearingY
 
 		left := float32(origin + bearingX)
-		right := float32(origin + bearingX + math.Real(sz.X))
-		bottom := float32(-(math.Real(sz.Y) - bearingY))
+		right := float32(origin + bearingX + float64(sz.X))
+		bottom := float32(-(float64(sz.Y) - bearingY))
 		top := float32(bearingY)
 		//log.Println(bottom, top)
 
@@ -139,7 +138,7 @@ func (t *textObject) update() {
 			bottom += float32(y)
 		}
 
-		origin += math.Real(raster.HMetrics.Advance)
+		origin += raster.HMetrics.Advance
 
 		a := raster.Area
 		rg := gaTexture.Region(a.Min.X, a.Min.Y, a.Max.X, a.Max.Y)

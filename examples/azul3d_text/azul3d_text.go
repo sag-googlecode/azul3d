@@ -32,8 +32,8 @@ func onCursorPosition(ev *event.Event) {
 		// If left ctrl key is currently down, we apply scaling.
 		sx, sy, sz := textNode.Scale()
 
-		sx += math.Real(pos.X / 220)
-		sz += math.Real(-pos.Y / 220)
+		sx += float64(pos.X / 220)
+		sz += float64(-pos.Y / 220)
 
 		textNode.SetScale(sx, sy, sz)
 
@@ -41,8 +41,8 @@ func onCursorPosition(ev *event.Event) {
 		// If right ctrl key is currently down, we apply shearing.
 		shx, shy, shz := textNode.Shear()
 
-		shy += math.Real(pos.X / 220)
-		shz += math.Real(-pos.Y / 220)
+		shy += float64(pos.X / 220)
+		shz += float64(-pos.Y / 220)
 
 		textNode.SetShear(shx, shy, shz)
 
@@ -51,13 +51,13 @@ func onCursorPosition(ev *event.Event) {
 		pos.X /= 10
 		pos.Y /= 10
 
-		textNode.SetRelativeRot(textNode, math.Real(pos.Y), 0, math.Real(-pos.X))
+		textNode.SetRelativeRot(textNode, float64(pos.Y), 0, float64(-pos.X))
 
 	} else {
 		// Otherwise we apply relative movement.
-		x := math.Real(pos.X)
-		z := math.Real(-pos.Y)
-		textNode.SetRelativePos(textNode, x.Rounded(), 0, z.Rounded())
+		x := float64(pos.X)
+		z := float64(-pos.Y)
+		textNode.SetRelativePos(textNode, math.Rounded(x), 0, math.Rounded(z))
 	}
 }
 

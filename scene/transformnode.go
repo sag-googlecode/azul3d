@@ -96,7 +96,7 @@ func (n *Node) RelativeTransform(other *Node) *Transform {
 
 		if started {
 			logn("INV", oParent)
-			inv, _ := oParent.Transform().Mat4().Invert()
+			inv, _ := oParent.Transform().Mat4().Inverse()
 			m = m.Mul(inv)
 		} else {
 			logn("INV IGNORE", oParent)
@@ -109,7 +109,7 @@ func (n *Node) RelativeTransform(other *Node) *Transform {
 	}
 
 	logn("INV", other)
-	inv, _ := other.Transform().Mat4().Invert()
+	inv, _ := other.Transform().Mat4().Inverse()
 	m = m.Mul(inv)
 
 	// The matrix m is now in our node's local space, success! Simply build an

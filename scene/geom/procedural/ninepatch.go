@@ -41,7 +41,7 @@ type NineRegions struct {
 // If width and height are the only non-zero demensions specified in the
 // patches, then a card mesh is appended instead of a nine-patch mesh.
 func AppendNinepatch(m *geom.Mesh, p *NinePatches, r *NineRegions) {
-	if math.Real(p.Left).Equals(0) && math.Real(p.Right).Equals(0) && math.Real(p.Bottom).Equals(0) && math.Real(p.Top).Equals(0) {
+	if math.Equal(float64(p.Left), 0) && math.Equal(float64(p.Right), 0) && math.Equal(float64(p.Bottom), 0) && math.Equal(float64(p.Top), 0) {
 		w2 := p.Width / 2
 		h2 := p.Height / 2
 		AppendCard(m, -w2, w2, -h2, h2, r.Center)

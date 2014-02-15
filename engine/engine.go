@@ -15,7 +15,6 @@ import (
 	"azul3d.org/chippy"
 	"azul3d.org/clock"
 	"azul3d.org/event"
-	"azul3d.org/math"
 	"azul3d.org/scene"
 	"azul3d.org/scene/camera"
 	"azul3d.org/scene/renderer"
@@ -117,8 +116,8 @@ func setup() {
 	camera.AddRegion(Camera2d, overlay)
 
 	handleResized := func(w, h int) {
-		width := math.Real(w)
-		height := math.Real(h)
+		width := float64(w)
+		height := float64(h)
 
 		camera.SetLens(Camera3d, camera.PerspectiveLens(75, width/height, 0.001, 1000))
 		camera.SetLens(Camera2d, camera.OrthoLens(0, width, -height, 0, -1000000, 1000000))

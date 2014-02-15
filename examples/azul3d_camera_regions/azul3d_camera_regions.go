@@ -5,7 +5,6 @@ import (
 	"azul3d.org/chippy/keyboard"
 	"azul3d.org/engine"
 	"azul3d.org/event"
-	"azul3d.org/math"
 	"azul3d.org/scene"
 	"azul3d.org/scene/camera"
 	"azul3d.org/scene/color"
@@ -92,8 +91,8 @@ func onCursorPosition(ev *event.Event) {
 		// cube.
 		sx, sy, sz := currentCube.Scale()
 
-		sx += math.Real(pos.X / 220)
-		sz += math.Real(-pos.Y / 220)
+		sx += float64(pos.X / 220)
+		sz += float64(-pos.Y / 220)
 
 		currentCube.SetScale(sx, sy, sz)
 
@@ -102,8 +101,8 @@ func onCursorPosition(ev *event.Event) {
 		// cube.
 		shx, shy, shz := currentCube.Shear()
 
-		shy += math.Real(pos.X / 220)
-		shz += math.Real(-pos.Y / 220)
+		shy += float64(pos.X / 220)
+		shz += float64(-pos.Y / 220)
 
 		currentCube.SetShear(shx, shy, shz)
 
@@ -113,13 +112,13 @@ func onCursorPosition(ev *event.Event) {
 		pos.X /= 10
 		pos.Y /= 10
 
-		currentCube.SetRelativeRot(relativeCube, math.Real(pos.Y), 0, math.Real(-pos.X))
+		currentCube.SetRelativeRot(relativeCube, float64(pos.Y), 0, float64(-pos.X))
 
 	} else {
 		// Otherwise we apply relative movement to the current cube.
 		pos.X /= 100
 		pos.Y /= 100
-		currentCube.SetRelativePos(relativeCube, math.Real(pos.X), 0, math.Real(-pos.Y))
+		currentCube.SetRelativePos(relativeCube, float64(pos.X), 0, float64(-pos.Y))
 	}
 }
 

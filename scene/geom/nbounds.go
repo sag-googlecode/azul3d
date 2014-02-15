@@ -5,7 +5,6 @@
 package geom
 
 import (
-	"azul3d.org/math"
 	"azul3d.org/scene"
 )
 
@@ -19,8 +18,6 @@ var (
 
 func testBounds(b1, b2 *BoundingBox) (r *BoundingBox) {
 	r = new(BoundingBox)
-	r.Min = new(math.Vec3)
-	r.Max = new(math.Vec3)
 
 	if b1.Min.X < b2.Min.X {
 		r.Min.X = b1.Min.X
@@ -119,8 +116,6 @@ func calculateBounds(n *scene.Node, done chan bool) {
 			if cbb != nil {
 				if bb == nil {
 					bb = new(BoundingBox)
-					bb.Min = new(math.Vec3)
-					bb.Max = new(math.Vec3)
 				}
 				bb = testBounds(cbb, bb)
 			}

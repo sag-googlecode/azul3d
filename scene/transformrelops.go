@@ -13,7 +13,7 @@ import (
 //
 // If the other node is nil, this function simply invokes n.SetPosVec3(pos) and
 // returns.
-func (n *Node) SetRelativePosVec3(other *Node, pos *math.Vec3) {
+func (n *Node) SetRelativePosVec3(other *Node, pos math.Vec3) {
 	if other == nil {
 		n.SetPosVec3(pos)
 		return
@@ -52,7 +52,7 @@ func (n *Node) SetRelativePosVec3(other *Node, pos *math.Vec3) {
 // as seen by (relative to) the other node.
 //
 // If the other node is nil, this function simply returns n.PosVec3().
-func (n *Node) RelativePosVec3(other *Node) *math.Vec3 {
+func (n *Node) RelativePosVec3(other *Node) math.Vec3 {
 	if other == nil {
 		return n.PosVec3()
 	}
@@ -66,7 +66,7 @@ func (n *Node) RelativePosVec3(other *Node) *math.Vec3 {
 //
 // If the other node is nil, this function simply invokes n.SetRotVec3(rot) and
 // returns.
-func (n *Node) SetRelativeRotVec3(other *Node, rot *math.Vec3) {
+func (n *Node) SetRelativeRotVec3(other *Node, rot math.Vec3) {
 	if other == nil {
 		n.SetRotVec3(rot)
 		return
@@ -105,7 +105,7 @@ func (n *Node) SetRelativeRotVec3(other *Node, rot *math.Vec3) {
 // as seen by (relative to) the other node.
 //
 // If the other node is nil, this function simply returns n.RotVec3().
-func (n *Node) RelativeRotVec3(other *Node) *math.Vec3 {
+func (n *Node) RelativeRotVec3(other *Node) math.Vec3 {
 	if other == nil {
 		return n.RotVec3()
 	}
@@ -119,7 +119,7 @@ func (n *Node) RelativeRotVec3(other *Node) *math.Vec3 {
 //
 // If the other node is nil, this function simply invokes n.SetScaleVec3(pos) and
 // returns.
-func (n *Node) SetRelativeScaleVec3(other *Node, scale *math.Vec3) {
+func (n *Node) SetRelativeScaleVec3(other *Node, scale math.Vec3) {
 	if other == nil {
 		n.SetScaleVec3(scale)
 		return
@@ -158,7 +158,7 @@ func (n *Node) SetRelativeScaleVec3(other *Node, scale *math.Vec3) {
 // as seen by (relative to) the other node.
 //
 // If the other node is nil, this function simply returns n.ScaleVec3().
-func (n *Node) RelativeScaleVec3(other *Node) *math.Vec3 {
+func (n *Node) RelativeScaleVec3(other *Node) math.Vec3 {
 	if other == nil {
 		return n.ScaleVec3()
 	}
@@ -172,7 +172,7 @@ func (n *Node) RelativeScaleVec3(other *Node) *math.Vec3 {
 //
 // If the other node is nil, this function simply invokes n.SetShearVec3(shear) and
 // returns.
-func (n *Node) SetRelativeShearVec3(other *Node, shear *math.Vec3) {
+func (n *Node) SetRelativeShearVec3(other *Node, shear math.Vec3) {
 	if other == nil {
 		n.SetShearVec3(shear)
 		return
@@ -211,7 +211,7 @@ func (n *Node) SetRelativeShearVec3(other *Node, shear *math.Vec3) {
 // as seen by (relative to) the other node.
 //
 // If the other node is nil, this function simply returns n.ShearVec3().
-func (n *Node) RelativeShearVec3(other *Node) *math.Vec3 {
+func (n *Node) RelativeShearVec3(other *Node) math.Vec3 {
 	if other == nil {
 		return n.ShearVec3()
 	}
@@ -222,10 +222,10 @@ func (n *Node) RelativeShearVec3(other *Node) *math.Vec3 {
 
 // SetRelativePos is short hand for:
 //
-//  n.SetRelativePosVec3(other, math.Vector3(x, y, z))
+//  n.SetRelativePosVec3(other, math.Vec3{x, y, z})
 //
-func (n *Node) SetRelativePos(other *Node, x, y, z math.Real) {
-	n.SetRelativePosVec3(other, math.Vector3(x, y, z))
+func (n *Node) SetRelativePos(other *Node, x, y, z float64) {
+	n.SetRelativePosVec3(other, math.Vec3{x, y, z})
 }
 
 // RelativePos is short hand for:
@@ -233,17 +233,17 @@ func (n *Node) SetRelativePos(other *Node, x, y, z math.Real) {
 //  p := n.RelativePosVec3(other)
 //  return p.X, p.Y, p.Z
 //
-func (n *Node) RelativePos(other *Node) (x, y, z math.Real) {
+func (n *Node) RelativePos(other *Node) (x, y, z float64) {
 	p := n.RelativePosVec3(other)
 	return p.X, p.Y, p.Z
 }
 
 // SetRelativeRot is short hand for:
 //
-//  n.SetRelativeRotVec3(other, math.Vector3(rx, ry, rz))
+//  n.SetRelativeRotVec3(other, math.Vec3{rx, ry, rz})
 //
-func (n *Node) SetRelativeRot(other *Node, rx, ry, rz math.Real) {
-	n.SetRelativeRotVec3(other, math.Vector3(rx, ry, rz))
+func (n *Node) SetRelativeRot(other *Node, rx, ry, rz float64) {
+	n.SetRelativeRotVec3(other, math.Vec3{rx, ry, rz})
 }
 
 // RelativeRot is short hand for:
@@ -251,17 +251,17 @@ func (n *Node) SetRelativeRot(other *Node, rx, ry, rz math.Real) {
 //  r := n.RelativeRotVec3(other)
 //  return r.X, r.Y, r.Z
 //
-func (n *Node) RelativeRot(other *Node) (rx, ry, rz math.Real) {
+func (n *Node) RelativeRot(other *Node) (rx, ry, rz float64) {
 	r := n.RelativeRotVec3(other)
 	return r.X, r.Y, r.Z
 }
 
 // SetRelativeScale is short hand for:
 //
-//  n.SetRelativeScaleVec3(other, math.Vector3(sx, sy, sz))
+//  n.SetRelativeScaleVec3(other, math.Vec3{sx, sy, sz})
 //
-func (n *Node) SetRelativeScale(other *Node, sx, sy, sz math.Real) {
-	n.SetRelativeScaleVec3(other, math.Vector3(sx, sy, sz))
+func (n *Node) SetRelativeScale(other *Node, sx, sy, sz float64) {
+	n.SetRelativeScaleVec3(other, math.Vec3{sx, sy, sz})
 }
 
 // RelativeScale is short hand for:
@@ -269,17 +269,17 @@ func (n *Node) SetRelativeScale(other *Node, sx, sy, sz math.Real) {
 //  s := n.RelativeScaleVec3(other)
 //  return s.X, s.Y, s.Z
 //
-func (n *Node) RelativeScale(other *Node) (sx, sy, sz math.Real) {
+func (n *Node) RelativeScale(other *Node) (sx, sy, sz float64) {
 	s := n.RelativeScaleVec3(other)
 	return s.X, s.Y, s.Z
 }
 
 // SetRelativeShear is short hand for:
 //
-//  n.SetRelativeShearVec3(other, math.Vector3(shx, shy, shz))
+//  n.SetRelativeShearVec3(other, math.Vec3{shx, shy, shz})
 //
-func (n *Node) SetRelativeShear(other *Node, shx, shy, shz math.Real) {
-	n.SetRelativeShearVec3(other, math.Vector3(shx, shy, shz))
+func (n *Node) SetRelativeShear(other *Node, shx, shy, shz float64) {
+	n.SetRelativeShearVec3(other, math.Vec3{shx, shy, shz})
 }
 
 // RelativeShear is short hand for:
@@ -287,7 +287,7 @@ func (n *Node) SetRelativeShear(other *Node, shx, shy, shz math.Real) {
 //  sh := n.RelativeShearVec3(other)
 //  return sh.X, sh.Y, sh.Z
 //
-func (n *Node) RelativeShear(other *Node) (shx, shy, shz math.Real) {
+func (n *Node) RelativeShear(other *Node) (shx, shy, shz float64) {
 	sh := n.RelativeShearVec3(other)
 	return sh.X, sh.Y, sh.Z
 }

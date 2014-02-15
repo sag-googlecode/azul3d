@@ -278,9 +278,9 @@ func (m *Mesh) MakePixelPerfect() {
 	defer m.Unlock()
 
 	for vi, v := range m.Vertices {
-		rx := float32(math.Real(v.X).Rounded())
-		ry := float32(math.Real(v.Y).Rounded())
-		rz := float32(math.Real(v.Z).Rounded())
+		rx := float32(math.Rounded(float64(v.X)))
+		ry := float32(math.Rounded(float64(v.Y)))
+		rz := float32(math.Rounded(float64(v.Z)))
 		m.Vertices[vi] = Vertex{rx + +0.5, ry + 0.5, rz + 0.5}
 	}
 }
@@ -289,12 +289,12 @@ func (m *Mesh) MakePixelPerfect() {
 // transformation matrix.
 //
 // This function is thread-safe.
-func (m *Mesh) Transform(mat *math.Mat4) {
+func (m *Mesh) Transform(mat math.Mat4) {
 	m.Lock()
 	defer m.Unlock()
 
 	for vi, v := range m.Vertices {
-		vect := math.Vector3(math.Real(v.X), math.Real(v.Y), math.Real(v.Z))
+		vect := math.Vec3{float64(v.X), float64(v.Y), float64(v.Z)}
 		vect = vect.TransformMat4(mat)
 		m.Vertices[vi] = Vertex{float32(vect.X), float32(vect.Y), float32(vect.Z)}
 	}
@@ -347,12 +347,11 @@ func (m *Mesh) CalculateBounds() {
 
 	if len(m.Vertices) > 0 {
 		bb = new(BoundingBox)
-		min := new(math.Vec3)
-		max := new(math.Vec3)
+		var min, max math.Vec3
 		for _, vert := range m.Vertices {
-			vx := math.Real(vert.X)
-			vy := math.Real(vert.Y)
-			vz := math.Real(vert.Z)
+			vx := float64(vert.X)
+			vy := float64(vert.Y)
+			vz := float64(vert.Z)
 
 			if vx < min.X {
 				min.X = vx

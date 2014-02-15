@@ -6,7 +6,6 @@ package sprite
 
 import (
 	"azul3d.org/event"
-	"azul3d.org/math"
 	"azul3d.org/scene"
 	"azul3d.org/scene/bucket"
 	"azul3d.org/scene/geom"
@@ -110,7 +109,7 @@ func Destroy(n *scene.Node) {
 	o.mesh = nil
 }
 
-func SetSize(n *scene.Node, width, height math.Real) {
+func SetSize(n *scene.Node, width, height float32) {
 	if width <= 0 || height <= 0 {
 		panic("SetSize(): Width and height must be greater than zero!")
 	}
@@ -120,29 +119,29 @@ func SetSize(n *scene.Node, width, height math.Real) {
 	defer o.Unlock()
 
 	o.updateLater()
-	o.patches.Width = float32(width)
-	o.patches.Height = float32(height)
+	o.patches.Width = width
+	o.patches.Height = height
 }
 
-func Size(n *scene.Node) (width, height math.Real) {
+func Size(n *scene.Node) (width, height float32) {
 	o := mustGetObj(n)
 	o.RLock()
 	defer o.RUnlock()
 
-	return math.Real(o.patches.Width), math.Real(o.patches.Height)
+	return o.patches.Width, o.patches.Height
 }
 
-func TotalSize(n *scene.Node) (width, height math.Real) {
+func TotalSize(n *scene.Node) (width, height float32) {
 	o := mustGetObj(n)
 	o.RLock()
 	defer o.RUnlock()
 
 	w := o.patches.Width + o.patches.Left + o.patches.Right
 	h := o.patches.Height + o.patches.Bottom + o.patches.Top
-	return math.Real(w), math.Real(h)
+	return w, h
 }
 
-func SetBorders(n *scene.Node, left, right, bottom, top math.Real) {
+func SetBorders(n *scene.Node, left, right, bottom, top float32) {
 	o := mustGetObj(n)
 	o.Lock()
 	defer o.Unlock()
@@ -154,13 +153,13 @@ func SetBorders(n *scene.Node, left, right, bottom, top math.Real) {
 	o.patches.Top = float32(top)
 }
 
-func Borders(n *scene.Node) (left, right, bottom, top math.Real) {
+func Borders(n *scene.Node) (left, right, bottom, top float32) {
 	o := mustGetObj(n)
 	o.RLock()
 	defer o.RUnlock()
 
 	p := o.patches
-	return math.Real(p.Left), math.Real(p.Right), math.Real(p.Bottom), math.Real(p.Top)
+	return float32(p.Left), float32(p.Right), float32(p.Bottom), float32(p.Top)
 }
 
 func ClearBorders(n *scene.Node) {

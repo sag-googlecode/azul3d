@@ -35,7 +35,7 @@ func (s *backToFrontSorter) Less(cam, i, j Node) bool {
 	jCenter := jBounds.Center().TransformMat4(jRelCam)
 
 	camPos := cam.Node().PosVec3()
-	return camPos.Sub(iCenter).LengthSquared() > camPos.Sub(jCenter).LengthSquared()
+	return camPos.Sub(iCenter).LengthSq() > camPos.Sub(jCenter).LengthSq()
 }
 
 // NewBackToFrontSorter returns a new back-to-front sorter which sorts nodes

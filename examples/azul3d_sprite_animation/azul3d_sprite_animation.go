@@ -38,8 +38,8 @@ func onCursorPosition(ev *event.Event) {
 		// cube.
 		sx, sy, sz := player.Scale()
 
-		sx += math.Real(pos.X / 220)
-		sz += math.Real(-pos.Y / 220)
+		sx += float64(pos.X / 220)
+		sz += float64(-pos.Y / 220)
 
 		player.SetScale(sx, sy, sz)
 
@@ -48,8 +48,8 @@ func onCursorPosition(ev *event.Event) {
 		// cube.
 		shx, shy, shz := player.Shear()
 
-		shy += math.Real(pos.X / 220)
-		shz += math.Real(-pos.Y / 220)
+		shy += float64(pos.X / 220)
+		shz += float64(-pos.Y / 220)
 
 		player.SetShear(shx, shy, shz)
 
@@ -57,21 +57,23 @@ func onCursorPosition(ev *event.Event) {
 		// If an shift key is currently down, we apply relative rotation to the
 		// current cube.
 		width, height := sprite.Size(player)
-		width += math.Real(pos.X)
-		height -= math.Real(pos.Y)
+		width += float32(pos.X)
+		height -= float32(pos.Y)
 		if width <= 0 {
 			width = 1
 		}
 		if height <= 0 {
 			height = 1
 		}
-		sprite.SetSize(player, width.Rounded(), height.Rounded())
+		width = float32(math.Rounded(float64(width)))
+		height = float32(math.Rounded(float64(height)))
+		sprite.SetSize(player, width, height)
 
 	} else {
 		// Otherwise we apply relative movement to the current cube.
-		x := math.Real(pos.X)
-		z := math.Real(-pos.Y)
-		player.SetRelativePos(player, x.Rounded(), 0, z.Rounded())
+		x := float64(pos.X)
+		z := float64(-pos.Y)
+		player.SetRelativePos(player, math.Rounded(x), 0, math.Rounded(z))
 	}
 }
 
@@ -83,7 +85,7 @@ func resetTransforms(ev *event.Event) {
 	width, height := sprite.TotalSize(player)
 	halfWidth := width / 2
 	halfHeight := height / 2
-	player.SetPos(halfWidth.Rounded(), player.PosVec3().Y, -halfHeight.Rounded())
+	player.SetPos(math.Rounded(float64(halfWidth)), player.PosVec3().Y, -math.Rounded(float64(halfHeight)))
 }
 
 func printViewed(ev *event.Event) {
@@ -116,7 +118,7 @@ func program() {
 	width, height := sprite.TotalSize(player)
 	halfWidth := width / 2
 	halfHeight := height / 2
-	player.SetPos(halfWidth.Rounded(), player.PosVec3().Y, -halfHeight.Rounded())
+	player.SetPos(math.Rounded(float64(halfWidth)), player.PosVec3().Y, -math.Rounded(float64(halfHeight)))
 	bucket.Set(player, bucket.Transparent)
 
 	t, err := renderer.LoadTextureFile(engine.Renderer, "src/azul3d.org/assets/textures/player.png")

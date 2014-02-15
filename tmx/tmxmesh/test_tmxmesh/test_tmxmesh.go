@@ -27,9 +27,9 @@ func onCursorPosition(ev *event.Event) {
 	}
 
 	// Apply relative mouse movement to the 2D camera
-	x := math.Real(pos.X) * 0.1
-	z := math.Real(-pos.Y) * 0.1
-	engine.Camera2d.SetRelativePos(engine.Camera2d, x.Rounded(), 0, z.Rounded())
+	x := float64(pos.X) * 0.1
+	z := float64(-pos.Y) * 0.1
+	engine.Camera2d.SetRelativePos(engine.Camera2d, math.Rounded(x), 0, math.Rounded(z))
 }
 
 // Event handler to reset cube transforms (their positions, scales, etc)

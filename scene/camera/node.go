@@ -143,7 +143,7 @@ func Lens(n *scene.Node) *LensProjection {
 // space, to the specified camera 'n' node's film space.
 //
 // E.g. Converts a 3D point to a 2D screen point.
-func PointToFilm(n *scene.Node, point *math.Vec3, space *scene.Node) *math.Vec2 {
+func PointToFilm(n *scene.Node, point math.Vec3, space *scene.Node) math.Vec2 {
 	// Find top node
 	world := n.Top()
 
@@ -151,15 +151,14 @@ func PointToFilm(n *scene.Node, point *math.Vec3, space *scene.Node) *math.Vec2 
 	spaceToWorld := space.RelativeTransform(world).Mat4()
 
 	// Create translation matrix
-	mat := new(math.Mat4)
-	mat.SetTranslation(point)
+	mat := math.Mat4FromTranslation(point)
 
 	// Convert point from space to world space
 	mat = spaceToWorld.Mul(mat)
 
 	// Apply camera transform
 	camWorldTransform := n.RelativeTransform(world)
-	camInverse, _ := camWorldTransform.Mat4().Invert()
+	camInverse, _ := camWorldTransform.Mat4().Inverse()
 	mat = mat.Mul(camInverse)
 
 	// Retreive point from translation matrix (now in camera space).
@@ -168,17 +167,17 @@ func PointToFilm(n *scene.Node, point *math.Vec3, space *scene.Node) *math.Vec2 
 	// Convert the 3D camera space point to a camera 2D space point.
 	p2, ok := Lens(n).Project(point)
 	if !ok {
-		return nil
+		return math.Vec2Zero
 	}
 
-	return math.Vector2(p2.X, p2.Z)
+	return math.Vec2{p2.X, p2.Z}
 }
 
 // InView tells if the specified point in the specified node space is in the
 // view frustum of the camera node, n.
-func InView(n *scene.Node, point *math.Vec3, space *scene.Node) bool {
+func InView(n *scene.Node, point math.Vec3, space *scene.Node) bool {
 	filmSpace := PointToFilm(n, point, space)
-	if filmSpace == nil {
+	if filmSpace.Equals(math.Vec2Zero) {
 		return false
 	}
 	return true

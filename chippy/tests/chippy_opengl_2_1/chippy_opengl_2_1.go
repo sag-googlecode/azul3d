@@ -59,7 +59,7 @@ var(
 	shaderProgram, vertexShader, fragmentShader uint32
 
 	// Perspective camera matrix
-	perspective = new(math.Mat4)
+	perspective math.Mat4
 
 	// Our OpenGL window
 	window *chippy.Window
@@ -72,27 +72,25 @@ type object struct {
 	vertices []float32
 	VertexAttribIndex, ColorAttribIndex uint32
 	vboVertices, vboColors uint32
-	rotation math.Real
-	position *math.Vec3
-	matrix *math.Mat4
+	rotation float64
+	position math.Vec3
+	matrix math.Mat4
 }
 
 // updateMatrix updates the matrix of the object to reflect the position of the
 // object and the rotation of the object about the Y (up and down) axis.
 func (o *object) updateMatrix() {
-	// Set matrix to identity matrix
-	o.matrix = math.Mat4Identity.Copy()
-
-	// Set the translation of the matrix
-	o.matrix.SetTranslation(o.position)
+	// Create a translation matrix.
+	o.matrix = math.Mat4FromTranslation(o.position)
 
 	// Convert our rotation from degrees to radians
-	rads := o.rotation.Radians()
-	o.matrix.SetRotation(
+	rads := math.Radians(o.rotation)
+	rotation := math.Mat4FromAxisAngle(
+		math.Vec3{0, 1, 0},    // Rotate around the Y axis
 		rads,                  // Rotation in radians
-		math.Vector3(0, 1, 0), // Rotate around the Y axis
 		math.CoordSysYUpRight, // Y-Up Right-Handed coordinate system (the one OpenGL uses)
 	)
+	o.matrix = o.matrix.Mul(rotation)
 }
 
 // initScene is responsible for initializing the OpenGL scene.
@@ -108,13 +106,13 @@ func initScene() {
 	// Setup our perspective camera matrix
 	width, height := window.Size()
 	aspectRatio := float64(width) / float64(height)
-	perspective.SetPerspective(45.0, math.Real(aspectRatio), 0.1, 100.0)
+	perspective = math.Mat4Perspective(45.0, float64(aspectRatio), 0.1, 100.0)
 
 	// Initialize our triangle object
 	triangle = new(object)
 
 	// Triangle is 6 units into the screen
-	triangle.position = math.Vector3(0, 0, -6.0)
+	triangle.position = math.Vec3{0, 0, -6.0}
 
 	// Update position/rotation matrix of triangle object
 	triangle.updateMatrix()
@@ -231,7 +229,7 @@ func resizeScene(width, height int) {
 	gl.Viewport(0, 0, uint32(width), uint32(height))
 
 	aspectRatio := float64(width) / float64(height)
-	perspective.SetPerspective(45.0, math.Real(aspectRatio), 0.1, 100.0)
+	perspective = math.Mat4Perspective(45.0, float64(aspectRatio), 0.1, 100.0)
 }
 
 // renderScene is responsible for rendering a single frame of the OpenGL scene.
@@ -243,10 +241,10 @@ func renderScene() {
 	delta := glClock.Delta()
 
 	// Increase the rotation of the triangle object by 90 degrees each second
-	triangle.rotation += math.Real(90.0 * delta.Seconds())
+	triangle.rotation += float64(90.0 * delta.Seconds())
 
 	// Clamp the result to 360 degrees
-	triangle.rotation = triangle.rotation.Clamp(0, 360)
+	triangle.rotation = math.Clamp(triangle.rotation, 0, 360)
 
 
 	// Make the shader program active
@@ -257,9 +255,9 @@ func renderScene() {
 
 
 	// We do an unsafe conversion to float32, as the matrix is made of up
-	// [4][4]math.Real, and it needs a *float32 not *math.Real.
+	// [4][4]float64, and it needs a *float32 not *float64.
 	//
-	// math.Real is either float32 OR float64 depending on math.RealIsFloat64.
+	// float64 is either float32 OR float64 depending on float64IsFloat64.
 	matrixData := (*float32)(unsafe.Pointer(&perspective[0][0]))
 
 	// Update perspective camera matrix input

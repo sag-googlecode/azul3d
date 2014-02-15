@@ -18,9 +18,9 @@ type Transform struct {
 	access sync.RWMutex
 
 	arbitrary                        bool
-	built                            *math.Mat4
-	position, rotation, scale, shear *math.Vec3
-	quat                             *math.Quat
+	built                            math.Mat4
+	position, rotation, scale, shear math.Vec3
+	quat                             math.Quat
 }
 
 func (t *Transform) hasComponents() bool {
@@ -28,7 +28,12 @@ func (t *Transform) hasComponents() bool {
 		return false
 	}
 
-	return t.position != nil || t.rotation != nil || t.scale != nil || t.shear != nil || t.quat != nil
+	positionZero := t.position.Equals(math.Vec3Zero)
+	rotationZero := t.rotation.Equals(math.Vec3Zero)
+	scaleZero := t.scale.Equals(math.Vec3Zero)
+	shearZero := t.shear.Equals(math.Vec3Zero)
+	quatZero := t.quat.Equals(math.QuatZero)
+	return !positionZero || !rotationZero || !scaleZero || !shearZero || !quatZero
 }
 
 // HasComponents tells if this transformation has Pos(), Rot(), Scale(),
@@ -61,7 +66,7 @@ func (t *Transform) build() {
 	}
 
 	// Set to identity matrix to clear old transformation
-	t.built = math.Mat4Identity.Copy()
+	t.built = math.Mat4Identity
 
 	// If we don't have components to build with, we can just leave it as the
 	// identity matrix above.
@@ -70,12 +75,12 @@ func (t *Transform) build() {
 	}
 
 	scale := math.Vec3One
-	if t.scale != nil {
+	if !t.scale.Equals(math.Vec3Zero) {
 		scale = t.scale
 	}
 
 	shear := math.Vec3Zero
-	if t.shear != nil {
+	if !t.shear.Equals(math.Vec3Zero) {
 		// We expect shear in an different format from the math package. So
 		// handle this as we want here.
 		shear = t.shear
@@ -83,27 +88,25 @@ func (t *Transform) build() {
 
 	// Apply translation
 	pos := math.Vec3Zero
-	if t.position != nil {
+	if !t.position.Equals(math.Vec3Zero) {
 		pos = t.position
 	}
 
 	// Apply rotation
 	hpr := math.Vec3Zero
-	if t.rotation != nil {
+	if !t.rotation.Equals(math.Vec3Zero) {
 		// We have euler rotation
 		hpr = t.rotation.Radians().XyzToHpr()
 
-	} else if t.quat != nil {
+	} else if !t.quat.Equals(math.QuatZero) {
 		// We have quaternion rotation
 		hpr = t.quat.Hpr(math.CoordSysZUpRight)
 	}
 
-	m := math.Mat3Identity.Copy()
-	m.Compose(scale, shear, hpr, math.CoordSysZUpRight)
-	t.built.SetUpperMat3(m)
+	m := math.Mat3Compose(scale, shear, hpr, math.CoordSysZUpRight)
+	t.built = t.built.SetUpperMat3(m)
 
-	trans := new(math.Mat4)
-	trans.SetTranslation(pos)
+	trans := math.Mat4FromTranslation(pos)
 	t.built = t.built.Mul(trans)
 }
 
@@ -112,31 +115,32 @@ func (t *Transform) build() {
 //
 // Once an arbitrary transformation matrix is set, this transform's components
 // (such as position, rotation/quaternion, shear, etc) are not used.
-func (t *Transform) SetArbitraryMat4(m *math.Mat4) {
+func (t *Transform) SetArbitraryMat4(m math.Mat4) {
 	t.access.Lock()
 	defer t.access.Unlock()
 
-	if m == nil {
+	if m.Equals(math.Mat4Zeros) {
 		t.arbitrary = false
-		t.built = nil
+		t.built = math.Mat4Zeros
 	} else {
 		t.arbitrary = true
-		t.built = m.Copy()
+		t.built = m
 	}
 }
 
 // ArbitraryMat4 returns the arbitrary transformation matrix of this
 // transformation,
 //
-// Nil is returned if there is no arbitrary transformation matrix set.
-func (t *Transform) ArbitraryMat4() *math.Mat4 {
+// math.Mat4Zeros is returned if there is no arbitrary transformation matrix
+// set.
+func (t *Transform) ArbitraryMat4() math.Mat4 {
 	t.access.RLock()
 	defer t.access.RUnlock()
 
 	if t.arbitrary {
-		return t.built.Copy()
+		return t.built
 	}
-	return nil
+	return math.Mat4Zeros
 }
 
 // SetMat4 specifies the position, scale, shear, and rotation components of
@@ -147,7 +151,7 @@ func (t *Transform) ArbitraryMat4() *math.Mat4 {
 // matrix would not decompose nicely in this way, you may want to set an
 // arbitrary transformation matrix instead using SetArbitraryMat4() which does
 // not attempt to decompose the matrix.
-func (t *Transform) SetMat4(m *math.Mat4) {
+func (t *Transform) SetMat4(m math.Mat4) {
 	t.access.Lock()
 	defer t.access.Unlock()
 
@@ -164,139 +168,127 @@ func (t *Transform) SetMat4(m *math.Mat4) {
 // represented by an arbitrary transformation matrix or by components (i.e.
 // position, rotation/quaternion, scale, shear, etc) a matrix is always
 // returned.
-func (t *Transform) Mat4() *math.Mat4 {
+func (t *Transform) Mat4() math.Mat4 {
 	t.access.Lock()
 	defer t.access.Unlock()
 
-	if t.built == nil {
+	if t.built.Equals(math.Mat4Zeros) {
 		t.build()
 	}
-	return t.built.Copy()
+	return t.built
 }
 
 // SetPos specifies the position component of this transformation.
-func (t *Transform) SetPos(p *math.Vec3) {
+func (t *Transform) SetPos(p math.Vec3) {
 	t.access.Lock()
 	defer t.access.Unlock()
 
 	if !p.Equals(t.position) {
-		t.position = p.Copy()
-		t.built = nil
+		t.position = p
+		t.built = math.Mat4Zeros
 	}
 }
 
 // Pos returns the position component of this transformation.
-func (t *Transform) Pos() *math.Vec3 {
+func (t *Transform) Pos() math.Vec3 {
 	t.access.RLock()
 	defer t.access.RUnlock()
-
-	if t.position == nil {
-		return math.Vec3Zero.Copy()
-	}
 	return t.position
 }
 
 // SetRot specifies the rotation component of this transformation.
-func (t *Transform) SetRot(r *math.Vec3) {
+func (t *Transform) SetRot(r math.Vec3) {
 	t.access.Lock()
 	defer t.access.Unlock()
 
 	if !r.Equals(t.rotation) {
-		t.rotation = r.Copy()
-		t.built = nil
+		t.rotation = r
+		t.built = math.Mat4Zeros
 	}
 }
 
 // Rot returns the rotation component of this transformation.
-func (t *Transform) Rot() *math.Vec3 {
+func (t *Transform) Rot() math.Vec3 {
 	t.access.RLock()
 	defer t.access.RUnlock()
 
-	if t.rotation == nil {
-		if t.quat != nil {
+	if t.rotation.Equals(math.Vec3Zero) {
+		if !t.quat.Equals(math.QuatZero) {
 			hpr := t.quat.Hpr(math.CoordSysZUpRight)
 			return hpr.Degrees().HprToXyz()
 		} else {
-			return math.Vec3Zero.Copy()
+			return math.Vec3Zero
 		}
 	}
 	return t.rotation
 }
 
 // SetQuat specifies the quaternion rotation component of this transformation.
-func (t *Transform) SetQuat(q *math.Quat) {
+func (t *Transform) SetQuat(q math.Quat) {
 	t.access.Lock()
 	defer t.access.Unlock()
 
 	if !q.Equals(t.quat) {
-		t.quat = q.Copy()
-		t.built = nil
+		t.quat = q
+		t.built = math.Mat4Zeros
 	}
 }
 
 // Quat returns the quaternion component of this transformation.
-func (t *Transform) Quat() *math.Quat {
+func (t *Transform) Quat() math.Quat {
 	t.access.RLock()
 	defer t.access.RUnlock()
 
-	if t.quat == nil {
-		if t.rotation != nil {
+	if t.quat.Equals(math.QuatZero) {
+		if !t.rotation.Equals(math.Vec3Zero) {
 			// We have euler rotation values we can convert
 			hpr := t.rotation.Radians().XyzToHpr()
-
-			quat := new(math.Quat)
-			quat.SetHpr(hpr, math.CoordSysZUpRight)
-			return quat
-
+			return math.QuatFromHpr(hpr, math.CoordSysZUpRight)
 		} else {
-			return math.QuatIdentity.Copy()
+			return math.QuatIdentity
 		}
 	}
-	return t.quat.Copy()
+	return t.quat
 }
 
 // SetScale specifies the scale component of this transformation.
-func (t *Transform) SetScale(s *math.Vec3) {
+func (t *Transform) SetScale(s math.Vec3) {
 	t.access.Lock()
 	defer t.access.Unlock()
 
 	if !s.Equals(t.scale) {
-		t.scale = s.Copy()
-		t.built = nil
+		t.scale = s
+		t.built = math.Mat4Zeros
 	}
 }
 
 // Scale returns the scale component of this transformation.
-func (t *Transform) Scale() *math.Vec3 {
+func (t *Transform) Scale() math.Vec3 {
 	t.access.RLock()
 	defer t.access.RUnlock()
 
-	if t.scale == nil {
-		return math.Vec3One.Copy()
+	if t.scale.Equals(math.Vec3Zero) {
+		return math.Vec3One
 	}
-	return t.scale.Copy()
+	return t.scale
 }
 
 // SetShear specifies the shear component of this transformation.
-func (t *Transform) SetShear(s *math.Vec3) {
+func (t *Transform) SetShear(s math.Vec3) {
 	t.access.Lock()
 	defer t.access.Unlock()
 
 	if !s.Equals(t.shear) {
-		t.shear = s.Copy()
-		t.built = nil
+		t.shear = s
+		t.built = math.Mat4Zeros
 	}
 }
 
 // Shear returns the shear component of this transformation.
-func (t *Transform) Shear() *math.Vec3 {
+func (t *Transform) Shear() math.Vec3 {
 	t.access.RLock()
 	defer t.access.RUnlock()
-
-	if t.shear == nil {
-		return math.Vec3Zero.Copy()
-	}
-	return t.shear.Copy()
+	return t.shear
 }
 
 // Reset resets all the components of this transformation such that it is in
@@ -309,12 +301,12 @@ func (t *Transform) Reset() {
 	defer t.access.RUnlock()
 
 	t.arbitrary = false
-	t.built = nil
-	t.position = nil
-	t.rotation = nil
-	t.scale = nil
-	t.shear = nil
-	t.quat = nil
+	t.built = math.Mat4Zeros
+	t.position = math.Vec3Zero
+	t.rotation = math.Vec3Zero
+	t.scale = math.Vec3Zero
+	t.shear = math.Vec3Zero
+	t.quat = math.QuatZero
 }
 
 // Copy returns a new 1:1 copy of this transformation.
@@ -322,35 +314,13 @@ func (t *Transform) Copy() *Transform {
 	t.access.RLock()
 	defer t.access.RUnlock()
 
-	c := new(Transform)
-
-	if t.arbitrary {
-		c.arbitrary = true
+	return &Transform{
+		arbitrary: t.arbitrary,
+		built:     t.built,
+		position:  t.position,
+		rotation:  t.rotation,
+		scale:     t.scale,
+		shear:     t.shear,
+		quat:      t.quat,
 	}
-
-	if t.built != nil {
-		c.built = t.built.Copy()
-	}
-
-	if t.position != nil {
-		c.position = t.position.Copy()
-	}
-
-	if t.rotation != nil {
-		c.rotation = t.rotation.Copy()
-	}
-
-	if t.scale != nil {
-		c.scale = t.scale.Copy()
-	}
-
-	if t.shear != nil {
-		c.shear = t.shear.Copy()
-	}
-
-	if t.quat != nil {
-		c.quat = t.quat.Copy()
-	}
-
-	return c
 }

@@ -28,38 +28,34 @@ import (
 )
 
 var (
-	cw90, cwn90, horizFlip, vertFlip *math.Mat4
+	cw90, cwn90, horizFlip, vertFlip math.Mat4
 )
 
 func init() {
 	// Setup rotations
-	cw90 = new(math.Mat4)
-	cw90.SetRotation(
-		math.Real(90).Radians(),
-		math.Vector3(0, 1, 0),
+	cw90 = math.Mat4FromAxisAngle(
+		math.Vec3{0, 1, 0},
+		math.Radians(90),
 		math.CoordSysZUpRight,
 	)
 
-	cwn90 = new(math.Mat4)
-	cwn90.SetRotation(
-		math.Real(-90).Radians(),
-		math.Vector3(0, 1, 0),
+	cwn90 = math.Mat4FromAxisAngle(
+		math.Vec3{0, 1, 0},
+		math.Radians(-90),
 		math.CoordSysZUpRight,
 	)
 
 	// Setup horizontal flip
-	horizFlip = new(math.Mat4)
-	horizFlip.SetRotation(
-		math.Real(180).Radians(),
-		math.Vector3(0, 0, 1),
+	horizFlip = math.Mat4FromAxisAngle(
+		math.Vec3{0, 0, 1},
+		math.Radians(180),
 		math.CoordSysZUpRight,
 	)
 
 	// Setup vertical flip
-	vertFlip = new(math.Mat4)
-	vertFlip.SetRotation(
-		math.Real(180).Radians(),
-		math.Vector3(1, 0, 0),
+	vertFlip = math.Mat4FromAxisAngle(
+		math.Vec3{1, 0, 0},
+		math.Radians(180),
 		math.CoordSysZUpRight,
 	)
 }
@@ -136,7 +132,7 @@ func Load(m *tmx.Map, c *Config, tsImages map[string]*image.RGBA) *scene.Node {
 					card := procedural.Card(-halfWidth, halfWidth, -halfHeight, halfHeight, region, geom.Static)
 
 					// apply necessary flips
-					trans := math.Mat4Identity.Copy()
+					trans := math.Mat4Identity
 					diagFlipped := (gid & tmx.FLIPPED_DIAGONALLY_FLAG) > 0
 					horizFlipped := (gid & tmx.FLIPPED_HORIZONTALLY_FLAG) > 0
 					vertFlipped := (gid & tmx.FLIPPED_VERTICALLY_FLAG) > 0
@@ -163,11 +159,10 @@ func Load(m *tmx.Map, c *Config, tsImages map[string]*image.RGBA) *scene.Node {
 					card.Transform(trans)
 
 					// Move the card,
-					trans = math.Mat4Identity.Copy()
-					tileX := math.Real(x*m.TileWidth) + math.Real(halfWidth)
-					tileY := -math.Real(y*m.TileHeight) - math.Real(halfHeight)
+					tileX := float64(x*m.TileWidth) + float64(halfWidth)
+					tileY := -float64(y*m.TileHeight) - float64(halfHeight)
 					tileLayerOffset := -0.25 * float64(x) // * float64(x * y)
-					trans.SetTranslation(math.Vector3(tileX, math.Real(tileLayerOffset), tileY))
+					trans = math.Mat4FromTranslation(math.Vec3{tileX, float64(tileLayerOffset), tileY})
 					card.Transform(trans)
 
 					geom.Add(tsImageNode, card)
@@ -189,7 +184,7 @@ func Load(m *tmx.Map, c *Config, tsImages map[string]*image.RGBA) *scene.Node {
 
 			// Decrease Y by layer offset
 			x, _, z := collected.Pos()
-			collected.SetPos(x, math.Real(layerOffset), z)
+			collected.SetPos(x, float64(layerOffset), z)
 		}
 
 		// Decrease layer offset

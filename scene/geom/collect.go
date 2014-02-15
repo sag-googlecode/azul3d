@@ -17,9 +17,9 @@ func Collect(root *scene.Node) (amount int, collected *scene.Node) {
 	combined := new(Mesh)
 	Add(collected, combined)
 
-	addIndexed := func(index uint32, mesh *Mesh, mat *math.Mat4) {
+	addIndexed := func(index uint32, mesh *Mesh, mat math.Mat4) {
 		v := mesh.Vertices[index]
-		vect := math.Vector3(math.Real(v.X), math.Real(v.Y), math.Real(v.Z))
+		vect := math.Vec3{float64(v.X), float64(v.Y), float64(v.Z)}
 		vect = vect.TransformMat4(mat)
 		vtx := Vertex{float32(vect.X), float32(vect.Y), float32(vect.Z)}
 		combined.Vertices = append(combined.Vertices, vtx)
@@ -73,7 +73,7 @@ func Collect(root *scene.Node) (amount int, collected *scene.Node) {
 
 			} else {
 				for _, v := range mesh.Vertices {
-					vect := math.Vector3(math.Real(v.X), math.Real(v.Y), math.Real(v.Z))
+					vect := math.Vec3{float64(v.X), float64(v.Y), float64(v.Z)}
 					vect = vect.TransformMat4(mat)
 					vtx := Vertex{float32(vect.X), float32(vect.Y), float32(vect.Z)}
 					combined.Vertices = append(combined.Vertices, vtx)

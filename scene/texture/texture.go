@@ -15,9 +15,9 @@ import (
 type Type interface {
 	AnisotropicDegree() uint
 	AutoLoad() bool
-	BorderColor() (r, g, b, a math.Real)
+	BorderColor() (r, g, b, a float64)
 	BorderColorFloat32() []float32
-	BorderColorVec4() *math.Vec4
+	BorderColorVec4() math.Vec4
 	ClearOnLoad() bool
 	Compressed() bool
 	LoadNotify() chan bool
@@ -30,8 +30,8 @@ type Type interface {
 	NativeIdentity() interface{}
 	SetAnisotropicDegree(degree uint)
 	SetAutoLoad(autoLoad bool)
-	SetBorderColor(r, g, b, a math.Real)
-	SetBorderColorVec4(color *math.Vec4)
+	SetBorderColor(r, g, b, a float64)
+	SetBorderColorVec4(color math.Vec4)
 	SetClearOnLoad(clearOnLoad bool)
 	SetCompressed(compressed bool)
 	SetNativeIdentity(identity interface{})
@@ -68,7 +68,7 @@ type Texture struct {
 	clearOnLoad, autoLoad           bool
 	anisotropicDegree               uint
 	wrapModeU, wrapModeV, wrapModeW WrapMode
-	borderColor                     *math.Vec4
+	borderColor                     math.Vec4
 	minFilter, magFilter            Filter
 	compressed                      bool
 
@@ -225,7 +225,7 @@ func (t *Texture) AnisotropicDegree() uint {
 }
 
 // SetBorderColorVec4 sets the border color that will be used by this texture.
-func (t *Texture) SetBorderColorVec4(color *math.Vec4) {
+func (t *Texture) SetBorderColorVec4(color math.Vec4) {
 	t.Lock()
 	defer t.Unlock()
 
@@ -233,11 +233,11 @@ func (t *Texture) SetBorderColorVec4(color *math.Vec4) {
 }
 
 // BorderColorVec4 returns the border color that is used by this texture.
-func (t *Texture) BorderColorVec4() *math.Vec4 {
+func (t *Texture) BorderColorVec4() math.Vec4 {
 	t.RLock()
 	defer t.RUnlock()
 
-	return t.borderColor.Copy()
+	return t.borderColor
 }
 
 // BorderColorFloat32 returns a float32 array of the border color used by this
@@ -254,21 +254,21 @@ func (t *Texture) BorderColorFloat32() []float32 {
 	}
 }
 
-// SetBorderColor sets the border color of this texture as math.Real types.
-func (t *Texture) SetBorderColor(r, g, b, a math.Real) {
+// SetBorderColor sets the border color of this texture as float64 types.
+func (t *Texture) SetBorderColor(r, g, b, a float64) {
 	t.Lock()
 	defer t.Unlock()
 
-	r = r.Clamp(0, 1)
-	g = r.Clamp(0, 1)
-	b = r.Clamp(0, 1)
-	a = r.Clamp(0, 1)
+	r = math.Clamp(r, 0, 1)
+	g = math.Clamp(g, 0, 1)
+	b = math.Clamp(b, 0, 1)
+	a = math.Clamp(a, 0, 1)
 
-	t.borderColor = math.Vector4(r, g, b, a)
+	t.borderColor = math.Vec4{r, g, b, a}
 }
 
-// BorderColor returns the border color of this texture as math.Real types.
-func (t *Texture) BorderColor() (r, g, b, a math.Real) {
+// BorderColor returns the border color of this texture as float64 types.
+func (t *Texture) BorderColor() (r, g, b, a float64) {
 	t.RLock()
 	defer t.RUnlock()
 

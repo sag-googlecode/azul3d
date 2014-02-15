@@ -3,7 +3,6 @@ package main
 import (
 	"azul3d.org/engine"
 	"azul3d.org/event"
-	"azul3d.org/math"
 	"azul3d.org/scene"
 	"azul3d.org/scene/bucket"
 	"azul3d.org/scene/geom"
@@ -143,7 +142,7 @@ func program() {
 		"pre-frame": func(ev *event.Event) {
 			// Rotate at 45 deg/sec
 			deltaSeconds := float32(renderer.Clock(engine.Renderer).Delta()) / float32(time.Second)
-			center.SetRelativeRot(center, 0, 0, math.Real(45*deltaSeconds))
+			center.SetRelativeRot(center, 0, 0, float64(45*deltaSeconds))
 		},
 
 		"window-destroyed": func(ev *event.Event) {
