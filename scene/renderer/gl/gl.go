@@ -154,7 +154,7 @@ func (r *Renderer) useNode(rn renderNode) {
 
 	case transparency.AlphaBlend:
 		r.gl.Enable(opengl.BLEND)
-		r.gl.BlendFunc(opengl.SRC_ALPHA, opengl.ONE_MINUS_SRC_ALPHA)
+		r.gl.BlendFunc(opengl.ONE, opengl.ONE_MINUS_SRC_ALPHA)
 	}
 
 	// Update the shader program's inputs.
