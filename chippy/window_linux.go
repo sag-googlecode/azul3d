@@ -1088,7 +1088,7 @@ func (w *NativeWindow) fetchExtents() {
 		defer w.extentsAccess.Unlock()
 
 		// Note: We don't perform trySetExtents here but only in open(),
-		// because window extents should not change once the opened.
+		// because window extents should not change once the window is opened.
 		cpy := make([]int32, len(extents))
 		copy(cpy, extents)
 		w.extents = cpy
