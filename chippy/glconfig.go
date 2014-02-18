@@ -213,32 +213,6 @@ var (
 	// GLChooseConfig.
 	GLBestConfig = &GLConfig{
 		Accelerated:    true,
-		Transparent:    false,
-		RedBits:        255,
-		GreenBits:      255,
-		BlueBits:       255,
-		AlphaBits:      255,
-		AccumRedBits:   255,
-		AccumGreenBits: 255,
-		AccumBlueBits:  255,
-		AccumAlphaBits: 255,
-		Samples:        255,
-		AuxBuffers:     255,
-		DepthBits:      255,
-		StencilBits:    255,
-		DoubleBuffered: true,
-		StereoScopic:   false,
-	}
-
-	// Describes the best possible OpenGL frame buffer configuration that has
-	// transparency and can therefor be used for making the OpenGL window
-	// transparent, this is typically used as a parameter to GLChooseConfig.
-	//
-	// It's not advised to request a transparent configuration unless you
-	// intend to use the transparency, as some drivers have issues or artifacts
-	// with transparent configurations.
-	GLBestTransparentConfig = &GLConfig{
-		Accelerated:    true,
 		Transparent:    true,
 		RedBits:        255,
 		GreenBits:      255,
