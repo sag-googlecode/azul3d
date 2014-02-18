@@ -696,16 +696,10 @@ func (w *NativeWindow) doFindProperVisual() {
 
 	transparent := w.r.Transparent()
 
-	// See if we can use the visual that is associated with GLBestConfig or
-	// GLBestTransparentConfig, because then we would not require
-	// rebuilding the window should they try to turn the window into an
-	// OpenGL one.
-	var glxCompatible *GLConfig
-	if transparent {
-		glxCompatible = GLChooseConfig(w.r.GLConfigs(), GLWorstConfig, GLBestTransparentConfig)
-	} else {
-		glxCompatible = GLChooseConfig(w.r.GLConfigs(), GLWorstConfig, GLBestConfig)
-	}
+	// See if we can use the visual that is associated with GLBestConfig
+	// because then we would not require rebuilding the window should they try
+	// to turn the window into an OpenGL one.
+	glxCompatible := GLChooseConfig(w.r.GLConfigs(), GLWorstConfig, GLBestConfig)
 
 	var (
 		foundCompatibleVisual bool
