@@ -3,6 +3,7 @@ package freetype
 /*
 #cgo windows,amd64 LDFLAGS: libfreetype_windows_amd64.a libpng_windows_amd64.a libz_windows_amd64.a libbz2_windows_amd64.a
 #cgo CFLAGS: -I freetype-2.5.0.1/include/
+#cgo linux,amd64 LDFLAGS: -lm
 
 #include <ft2build.h>
 #include FT_FREETYPE_H
@@ -34,6 +35,7 @@ type GlyphMetrics struct {
 }
 
 type Glyph struct {
+	font        *Font
 	img         *image.Alpha
 	renderImage func() (*image.Alpha, error)
 
@@ -239,17 +241,18 @@ func (f *Font) Load(glyphIndex uint) (*Glyph, error) {
 		sliceHeader.Len = length
 		sliceHeader.Data = uintptr(unsafe.Pointer(g.bitmap.buffer))
 
-		//cpy := make([]uint8, len(data))
-		//copy(cpy, data)
+		cpy := make([]uint8, len(data))
+		copy(cpy, data)
 
 		img := image.NewAlpha(image.Rect(0, 0, width, height))
-		img.Pix = data
+		img.Pix = cpy
 		img.Stride = width
 		return img, nil
 	}
 
 	m := g.metrics
 	return &Glyph{
+		font:        f,
 		renderImage: renderImage,
 		Width:       int(m.width),
 		Height:      int(m.height),
