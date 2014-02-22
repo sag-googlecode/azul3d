@@ -442,7 +442,6 @@ type NativeWindow struct {
 	waitForMap, waitForUnmap, waitForFrameExtents, waitForMotifHints,
 	waitForNetWmAllowedActions chan bool
 
-	canAcceptPositionEvents  bool
 	extents                  []int32
 	xVisual                  x11.VisualId
 	xDepth                   uint8
@@ -451,7 +450,12 @@ type NativeWindow struct {
 	pixmapFmt32, pixmapFmt24 *x11.Format
 	cursors                  map[*Cursor]loadedCursor
 	activeRenderMode         int
-	pCanSendRelativeMove     bool
+
+	can struct {
+		sync.RWMutex
+		sendPositionEvents     bool
+		sendRelativeMoveEvents bool
+	}
 
 	// OpenGL things here
 	glVSyncMode         VSyncMode
@@ -770,18 +774,6 @@ func (w *NativeWindow) refreshIndicators() {
 	}
 }
 
-func (w *NativeWindow) canSendRelativeMove() bool {
-	w.access.RLock()
-	defer w.access.RUnlock()
-	return w.pCanSendRelativeMove
-}
-
-func (w *NativeWindow) setCanSendRelativeMove(v bool) {
-	w.access.Lock()
-	defer w.access.Unlock()
-	w.pCanSendRelativeMove = v
-}
-
 func (w *NativeWindow) handleEvent(ref *x11.GenericEvent, e interface{}) {
 	//logger().Println(reflect.TypeOf(e))
 	//logger().Printf("%+v\n", e)
@@ -916,14 +908,16 @@ func (w *NativeWindow) handleEvent(ref *x11.GenericEvent, e interface{}) {
 			diffX := float64(x - halfWidth)
 			diffY := float64(y - halfHeight)
 			if math.Abs(diffX) > 1 || math.Abs(diffY) > 1 {
-				if w.canSendRelativeMove() {
+				w.can.Lock()
+				if w.can.sendRelativeMoveEvents {
 					w.r.send(CursorPositionEvent{
 						T: time.Now(),
 						X: diffX,
 						Y: diffY,
 					})
 				}
-				w.setCanSendRelativeMove(true)
+				w.can.sendRelativeMoveEvents = true
+				w.can.Unlock()
 
 				// Event though we have the cursor grabbed, it might still
 				// hit the border of the window, in which case we can't
@@ -1009,11 +1003,13 @@ func (w *NativeWindow) handleEvent(ref *x11.GenericEvent, e interface{}) {
 		}
 
 		if ev.X != 0 || ev.Y != 0 {
-			if w.canSendPositionEvent() {
+			w.can.RLock()
+			if w.can.sendPositionEvents {
 				x := int(ev.X)
 				y := int(ev.Y)
 				w.r.trySetPosition(x, y)
 			}
+			w.can.RUnlock()
 		}
 
 	case *x11.ExposeEvent:
@@ -1052,20 +1048,6 @@ func (w *NativeWindow) handleEvent(ref *x11.GenericEvent, e interface{}) {
 	default:
 		logger().Println(reflect.TypeOf(ev))
 	}
-}
-
-func (w *NativeWindow) doStopPositionEvents() {
-	w.canAcceptPositionEvents = false
-}
-
-func (w *NativeWindow) doStartPositionEvents() {
-	w.canAcceptPositionEvents = true
-}
-
-func (w *NativeWindow) canSendPositionEvent() bool {
-	w.access.RLock()
-	defer w.access.RUnlock()
-	return w.canAcceptPositionEvents
 }
 
 func (w *NativeWindow) fetchExtents() {
@@ -1340,10 +1322,7 @@ func (w *NativeWindow) doSetVisible(visible bool) {
 		w.doUpdateMotifWMHints(w.r.Decorated())
 		w.doUpdateNetWmIcon()
 
-		err := xConnection.RequestCheck(xConnection.MapWindow(w.xWindow))
-		if err != nil {
-			logger().Println("MapWindow", err)
-		}
+		xConnection.MapWindow(w.xWindow)
 
 		// Place window *after* we map; some window managers *ONLY* respect
 		// this.
@@ -1374,16 +1353,19 @@ func (w *NativeWindow) doSetVisible(visible bool) {
 		// currently grabbed.
 		w.doSetCursorGrabbed(w.r.CursorGrabbed(), false)
 
-		// Start receiving position events once our configurePosition() has
-		// completed.
-		defer w.doStartPositionEvents()
-
 		xConnection.Flush()
+
+		// Start receiving position events now that configurePosition is completed.
+		w.can.Lock()
+		w.can.sendPositionEvents = true
+		w.can.Unlock()
 
 	} else {
 		// Stop receiving position events as some invalid ones come in after
 		// our UnmapWindow request.
-		w.doStopPositionEvents()
+		w.can.Lock()
+		w.can.sendPositionEvents = false
+		w.can.Unlock()
 
 		err := xConnection.RequestCheck(xConnection.UnmapWindow(w.xWindow))
 		if err != nil {
@@ -1441,7 +1423,9 @@ func (w *NativeWindow) setDecorated(decorated bool) {
 
 	x, y := w.r.Position()
 
-	w.doStopPositionEvents()
+	w.can.Lock()
+	w.can.sendPositionEvents = false
+	w.can.Unlock()
 
 	// Update motif window hints
 	w.doUpdateMotifWMHints(decorated)
@@ -1460,7 +1444,9 @@ l:
 		}
 	}
 
-	w.doStartPositionEvents()
+	w.can.Lock()
+	w.can.sendPositionEvents = true
+	w.can.Unlock()
 }
 
 func (w *NativeWindow) setAspectRatio(aspectRatio float32) {
@@ -1511,7 +1497,9 @@ func (w *NativeWindow) doSetCursorGrabbed(grabbed, restorePosition bool) {
 		}
 
 		w.doSetCursor(clearCursor)
-		w.pCanSendRelativeMove = false
+		w.can.Lock()
+		w.can.sendRelativeMoveEvents = false
+		w.can.Unlock()
 
 	} else {
 		xConnection.UngrabPointer(x11.TIME_CURRENT_TIME)
