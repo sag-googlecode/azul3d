@@ -5,7 +5,7 @@
 package gl
 
 import (
-	"azul3d.org/native/gl"
+	opengl "azul3d.org/native/gl"
 	"azul3d.org/scene/texture"
 	"image"
 	"runtime"
