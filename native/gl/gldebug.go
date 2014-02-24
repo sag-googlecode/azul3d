@@ -6,7 +6,7 @@
 // +build 386 amd64
 // +build opengl_debug
 
-// Package opengl implements Go bindings to OpenGL
+// Package gl implements Go bindings to OpenGL.
 //
 // Debugging OpenGL applications is made easy by using the build tag for this
 // package "opengl_debug", that is:
@@ -26,7 +26,7 @@
 // and will not run at full speed due to both disabled batching and the
 // additional glGetError call for each OpenGL call.
 //
-package opengl
+package gl
 
 /*
 #cgo linux LDFLAGS: -lGL
@@ -11307,11 +11307,11 @@ func (c *Context) GetMultisamplefv(pname int32, index uint32, val *float32) {
 	}
 }
 
-func (c *Context) SampleMaski(index uint32, mask uint32) {
-	defer c.trace("SampleMaski", fmt.Sprintf("%v, %v", index, mask))
+func (c *Context) SampleMaski(maskNumber uint32, mask uint32) {
+	defer c.trace("SampleMaski", fmt.Sprintf("%v, %v", maskNumber, mask))
 	if c.batching {
 		var glWrapHandlerArgs C.gl_wrap_handler_glSampleMaski_args
-		glWrapHandlerArgs.index = C.GLuint(index)
+		glWrapHandlerArgs.maskNumber = C.GLuint(maskNumber)
 		glWrapHandlerArgs.mask = C.GLbitfield(mask)
 
 		c.push(C.gl_wrap_batch_func{
@@ -11319,7 +11319,7 @@ func (c *Context) SampleMaski(index uint32, mask uint32) {
 			args:       unsafe.Pointer(&glWrapHandlerArgs),
 		})
 	} else {
-		C.gl_wrap_context_glSampleMaski(c.c, C.GLuint(index), C.GLbitfield(mask))
+		C.gl_wrap_context_glSampleMaski(c.c, C.GLuint(maskNumber), C.GLbitfield(mask))
 	}
 }
 

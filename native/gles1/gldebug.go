@@ -6,7 +6,7 @@
 // +build arm android
 // +build opengl_debug
 
-// Package opengl implements Go bindings to OpenGL ES
+// Package gles1 implements Go bindings to OpenGL ES.
 //
 // Debugging OpenGL applications is made easy by using the build tag for this
 // package "opengl_debug", that is:
@@ -26,7 +26,7 @@
 // and will not run at full speed due to both disabled batching and the
 // additional glGetError call for each OpenGL call.
 //
-package opengl
+package gles1
 
 /*
 #cgo linux LDFLAGS: -lGL

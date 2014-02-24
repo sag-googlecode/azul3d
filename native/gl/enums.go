@@ -5,8 +5,7 @@
 // This source file was automatically generated using glwrap.
 // +build 386 amd64
 
-// Package opengl implements Go bindings to OpenGL
-package opengl
+package gl
 
 const (
 	DEPTH_BUFFER_BIT                                           int32  = 0x00000100
@@ -1453,6 +1452,10 @@ const (
 	MAX_GEOMETRY_IMAGE_UNIFORMS                                int32  = 0x90CD
 	MAX_FRAGMENT_IMAGE_UNIFORMS                                int32  = 0x90CE
 	MAX_COMBINED_IMAGE_UNIFORMS                                int32  = 0x90CF
+	COMPRESSED_RGBA_BPTC_UNORM                                 int32  = 0x8E8C
+	COMPRESSED_SRGB_ALPHA_BPTC_UNORM                           int32  = 0x8E8D
+	COMPRESSED_RGB_BPTC_SIGNED_FLOAT                           int32  = 0x8E8E
+	COMPRESSED_RGB_BPTC_UNSIGNED_FLOAT                         int32  = 0x8E8F
 	TEXTURE_IMMUTABLE_FORMAT                                   int32  = 0x912F
 	NUM_SHADING_LANGUAGE_VERSIONS                              int32  = 0x82E9
 	VERTEX_ATTRIB_ARRAY_LONG                                   int32  = 0x874E

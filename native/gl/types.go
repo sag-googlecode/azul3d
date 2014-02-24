@@ -5,8 +5,7 @@
 // This source file was automatically generated using glwrap.
 // +build 386 amd64
 
-// Package opengl implements Go bindings to OpenGL
-package opengl
+package gl
 
 /*
 #include "gl.h"

@@ -4063,11 +4063,11 @@ void gl_wrap_context_glGetMultisamplefv(gl_wrap_context* ctx, GLenum pname, GLui
 	}
 	ctx->glGetMultisamplefvProc(pname, index, val);
 };
-void gl_wrap_context_glSampleMaski(gl_wrap_context* ctx, GLuint index, GLbitfield mask) {
+void gl_wrap_context_glSampleMaski(gl_wrap_context* ctx, GLuint maskNumber, GLbitfield mask) {
 	if(ctx->glSampleMaskiProc == NULL) {
 		ctx->glSampleMaskiProc = (PFNGLSAMPLEMASKIPROC)gl_wrap_get_pointer("glSampleMaski");
 	}
-	ctx->glSampleMaskiProc(index, mask);
+	ctx->glSampleMaskiProc(maskNumber, mask);
 };
 void gl_wrap_context_glBindFragDataLocationIndexed(gl_wrap_context* ctx, GLuint program, GLuint colorNumber, GLuint index, GLchar* name) {
 	if(ctx->glBindFragDataLocationIndexedProc == NULL) {
@@ -8809,7 +8809,7 @@ inline void gl_wrap_handler_glGetMultisamplefv(gl_wrap_context* ctx, void* argsP
 
 inline void gl_wrap_handler_glSampleMaski(gl_wrap_context* ctx, void* argsPtr) {
 	gl_wrap_handler_glSampleMaski_args args = *(gl_wrap_handler_glSampleMaski_args*)argsPtr;
-	gl_wrap_context_glSampleMaski(ctx, args.index, args.mask);
+	gl_wrap_context_glSampleMaski(ctx, args.maskNumber, args.mask);
 }
 
 inline void gl_wrap_handler_glBindFragDataLocationIndexed(gl_wrap_context* ctx, void* argsPtr) {

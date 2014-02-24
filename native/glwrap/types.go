@@ -20,8 +20,7 @@ const goTypesTemplate = `// Copyright 2014 The Azul3D Authors. All rights reserv
 // This source file was automatically generated using glwrap.{{range $tag := .BuildTags}}
 // +build {{$tag}}{{end}}
 
-// Package opengl implements Go bindings to {{.Title}}
-package opengl
+package {{.API}}
 
 /*
 #include "gl.h"
@@ -67,6 +66,7 @@ func writeGoTypes(out io.Writer, tmplData *TmplData) error {
 		"BuildTags": tmplData.BuildTags,
 		"Types":     tmplData.Types,
 		"Title":     tmplData.Title,
+		"API":       tmplData.API,
 	})
 	if err != nil {
 		return err

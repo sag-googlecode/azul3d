@@ -2622,7 +2622,7 @@ inline void gl_wrap_context_glFramebufferTexture(gl_wrap_context* ctx, GLenum ta
 inline void gl_wrap_context_glTexImage2DMultisample(gl_wrap_context* ctx, GLenum target, GLsizei samples, GLenum internalformat, GLsizei width, GLsizei height, GLboolean fixedsamplelocations);
 inline void gl_wrap_context_glTexImage3DMultisample(gl_wrap_context* ctx, GLenum target, GLsizei samples, GLenum internalformat, GLsizei width, GLsizei height, GLsizei depth, GLboolean fixedsamplelocations);
 inline void gl_wrap_context_glGetMultisamplefv(gl_wrap_context* ctx, GLenum pname, GLuint index, GLfloat* val);
-inline void gl_wrap_context_glSampleMaski(gl_wrap_context* ctx, GLuint index, GLbitfield mask);
+inline void gl_wrap_context_glSampleMaski(gl_wrap_context* ctx, GLuint maskNumber, GLbitfield mask);
 inline void gl_wrap_context_glBindFragDataLocationIndexed(gl_wrap_context* ctx, GLuint program, GLuint colorNumber, GLuint index, GLchar* name);
 inline GLint gl_wrap_context_glGetFragDataIndex(gl_wrap_context* ctx, GLuint program, GLchar* name);
 inline void gl_wrap_context_glGenSamplers(gl_wrap_context* ctx, GLsizei count, GLuint* samplers);
@@ -6510,7 +6510,7 @@ typedef struct {
 } gl_wrap_handler_glGetMultisamplefv_args;
 
 typedef struct {
-	GLuint index;
+	GLuint maskNumber;
 	GLbitfield mask;
 } gl_wrap_handler_glSampleMaski_args;
 

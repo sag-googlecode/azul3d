@@ -20,8 +20,7 @@ const enumsTemplate = `// Copyright 2014 The Azul3D Authors. All rights reserved
 // This source file was automatically generated using glwrap.{{range $tag := .BuildTags}}
 // +build {{$tag}}{{end}}
 
-// Package opengl implements Go bindings to {{.Title}}
-package opengl
+package {{.API}}
 
 const(
 {{range $element := .Constants}}	{{.Name}} {{.Type}} = {{.Value}}
@@ -35,6 +34,7 @@ func writeEnums(out io.Writer, tmplData *TmplData) error {
 		"BuildTags": tmplData.BuildTags,
 		"Constants": tmplData.Constants,
 		"Title":     tmplData.Title,
+		"API":       tmplData.API,
 	})
 	if err != nil {
 		return err

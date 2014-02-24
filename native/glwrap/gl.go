@@ -21,7 +21,7 @@ const goglTemplate = `// Copyright 2014 The Azul3D Authors. All rights reserved.
 // +build {{$tag}}{{end}}
 // +build {{.DebugBuildTag}}
 
-// Package opengl implements Go bindings to {{.Title}}
+// Package {{.API}} implements Go bindings to {{.Title}}.
 //
 // Debugging OpenGL applications is made easy by using the build tag for this
 // package "opengl_debug", that is:
@@ -41,7 +41,7 @@ const goglTemplate = `// Copyright 2014 The Azul3D Authors. All rights reserved.
 // and will not run at full speed due to both disabled batching and the
 // additional glGetError call for each OpenGL call.
 //
-package opengl
+package {{.API}}
 
 /*
 #cgo linux LDFLAGS: -lGL
@@ -545,6 +545,7 @@ func writeGoGL(out io.Writer, tmplData *TmplData, debug bool) error {
 		"BuildTags":     tmplData.BuildTags,
 		"Functions":     tmplData.Functions,
 		"Title":         tmplData.Title,
+		"API":           tmplData.API,
 		"Debug":         debug,
 	})
 	if err != nil {

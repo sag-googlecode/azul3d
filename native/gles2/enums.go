@@ -5,8 +5,7 @@
 // This source file was automatically generated using glwrap.
 // +build arm android
 
-// Package opengl implements Go bindings to OpenGL ES
-package opengl
+package gles2
 
 const(
 	DEPTH_BUFFER_BIT int32 = 0x00000100
