@@ -3,7 +3,6 @@ package freetype
 /*
 #cgo windows,amd64 LDFLAGS: libfreetype_windows_amd64.a libpng_windows_amd64.a libz_windows_amd64.a libbz2_windows_amd64.a
 #cgo CFLAGS: -I freetype-2.5.0.1/include/
-#cgo linux,amd64 LDFLAGS: -lm
 
 #include <ft2build.h>
 #include FT_FREETYPE_H
@@ -34,10 +33,20 @@ type GlyphMetrics struct {
 	Advance, UnhintedAdvance int
 }
 
+// GlyphImage is literally just *image.Alpha, except it must hold a pointer
+// internally to *Glyph to avoid a garbage collection invoking finalizers which
+// free the image data.
+type GlyphImage struct {
+	*image.Alpha
+
+	// Holds *Glyph to avoid GC.
+	glyph *Glyph
+}
+
 type Glyph struct {
+	// Holds *Font to avoid GC.
 	font        *Font
-	img         *image.Alpha
-	renderImage func() (*image.Alpha, error)
+	renderImage func(g *Glyph) (*GlyphImage, error)
 
 	// Width and height of glyph.
 	// Expressed in font units.
@@ -47,19 +56,19 @@ type Glyph struct {
 	HMetrics, VMetrics GlyphMetrics
 }
 
-// Renders and returns a 8-bit grayscale image of this glyph.
-func (g *Glyph) Image() (*image.Alpha, error) {
-	if g.img == nil {
-		var err error
-		g.img, err = g.renderImage()
-		if err != nil {
-			return nil, err
-		}
-	}
-	return g.img, nil
+// Renders and returns a alpha image, it is returned as *GlyphImage because a
+// reference internally must be held to this *Glyph.
+//
+// The returned glyph image's data resides in a single slot held by the font
+// this glyph came from, as such you must ensure you only use a single
+// GlyphImage from the same font source at any given time (or make a copy of
+// the returned image).
+func (g *Glyph) Image() (*GlyphImage, error) {
+	return g.renderImage(g)
 }
 
 type Font struct {
+	// Holds *Context to avoid GC.
 	ctx *Context
 
 	data []uint8
@@ -224,7 +233,7 @@ func (f *Font) Load(glyphIndex uint) (*Glyph, error) {
 
 	g := f.c.glyph
 
-	renderImage := func() (*image.Alpha, error) {
+	renderImage := func(glyph *Glyph) (*GlyphImage, error) {
 		err = C.FT_Render_Glyph(g, C.FT_RENDER_MODE_NORMAL)
 		if err != 0 {
 			return nil, lookupErr[int(err)]
@@ -241,13 +250,13 @@ func (f *Font) Load(glyphIndex uint) (*Glyph, error) {
 		sliceHeader.Len = length
 		sliceHeader.Data = uintptr(unsafe.Pointer(g.bitmap.buffer))
 
-		cpy := make([]uint8, len(data))
-		copy(cpy, data)
-
 		img := image.NewAlpha(image.Rect(0, 0, width, height))
-		img.Pix = cpy
+		img.Pix = data
 		img.Stride = width
-		return img, nil
+		return &GlyphImage{
+			glyph: glyph,
+			Alpha: img,
+		}, nil
 	}
 
 	m := g.metrics
