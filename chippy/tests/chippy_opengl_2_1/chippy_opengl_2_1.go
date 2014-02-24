@@ -10,7 +10,7 @@ import (
 	"azul3d.org/chippy/keyboard"
 	"azul3d.org/chippy"
 	"azul3d.org/clock"
-	"azul3d.org/native/gl"
+	opengl "azul3d.org/native/gl"
 	"azul3d.org/math"
 	"unsafe"
 	"log"
@@ -67,6 +67,16 @@ var(
 	// The clock used for measuring frame rate
 	glClock *clock.Clock
 )
+
+// Converts a 64-bit floating point matrix to a 32-bit floating point one.
+func convertMatrix(m math.Mat4) [4][4]float32 {
+	return [4][4]float32{
+		[4]float32{float32(m[0][0]), float32(m[0][1]), float32(m[0][2]), float32(m[0][3])},
+		[4]float32{float32(m[1][0]), float32(m[1][1]), float32(m[1][2]), float32(m[1][3])},
+		[4]float32{float32(m[2][0]), float32(m[2][1]), float32(m[2][2]), float32(m[2][3])},
+		[4]float32{float32(m[3][0]), float32(m[3][1]), float32(m[3][2]), float32(m[3][3])},
+	}
+}
 
 type object struct {
 	vertices []float32
@@ -198,6 +208,9 @@ func initScene() {
 	gl.AttachShader(shaderProgram, fragmentShader)
 	gl.LinkProgram(shaderProgram)
 
+	// Because gl.LinkProgram above must first be executed for there to be
+	// program link errors.
+	gl.Execute()
 
 	// Check for shader program link errors
 	var ok int32
@@ -253,39 +266,33 @@ func renderScene() {
 	// After rendering the triangle, we can make no shader program active.
 	defer gl.UseProgram(0)
 
-
-	// We do an unsafe conversion to float32, as the matrix is made of up
-	// [4][4]float64, and it needs a *float32 not *float64.
-	//
-	// float64 is either float32 OR float64 depending on float64IsFloat64.
-	matrixData := (*float32)(unsafe.Pointer(&perspective[0][0]))
-
 	// Update perspective camera matrix input
+	perspMatrix := convertMatrix(perspective)
 	byteName := []byte("Projection")
 	byteName = append(byteName, 0)
 	location := gl.GetUniformLocation(shaderProgram, &byteName[0])
+	gl.Execute()
 	if location > 0 {
 		gl.UniformMatrix4fv(
 			location,             // Index -- order in vertex shader
 			1,                    // Just one 4x4 matrix
 			opengl.GLBool(false), // transpose
-			matrixData,           // A pointer to the actual matrix data
+			&perspMatrix[0][0],   // A pointer to the actual matrix data
 		)
 	}
 
-	// See above comments
-	matrixData = (*float32)(unsafe.Pointer(&triangle.matrix[0][0]))
-
 	// Update triangle matrix input
+	triMatrix := convertMatrix(triangle.matrix)
 	byteName = []byte("Model")
 	byteName = append(byteName, 0)
 	location = gl.GetUniformLocation(shaderProgram, &byteName[0])
+	gl.Execute()
 	if location > 0 {
 		gl.UniformMatrix4fv(
 			location,             // Index -- order in vertex shader
 			1,                    // Just one 4x4 matrix
 			opengl.GLBool(false), // transpose
-			matrixData,           // A pointer to the actual matrix data
+			&triMatrix[0][0],           // A pointer to the actual matrix data
 		)
 	}
 	gl.Execute()
@@ -293,6 +300,7 @@ func renderScene() {
 
 	// After rendering the triangle, we can unbind the active buffer
 	defer gl.BindBuffer(opengl.ARRAY_BUFFER, 0)
+
 
 	// Bind the vertex VBO
 	gl.BindBuffer(opengl.ARRAY_BUFFER, triangle.vboVertices)

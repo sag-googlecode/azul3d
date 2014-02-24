@@ -10,7 +10,7 @@ import (
 	"azul3d.org/chippy"
 	"azul3d.org/chippy/keyboard"
 	"azul3d.org/clock"
-	"azul3d.org/native/gl"
+	opengl "azul3d.org/native/gl"
 	"log"
 	"math"
 	"os"
@@ -172,14 +172,14 @@ func program() {
 	defer runtime.UnlockOSThread()
 
 	// Create an OpenGL context with the OpenGL version we wish
-	sharedContext, err := window.GLCreateContext(2, 1, chippy.GLCoreProfile, nil)
+	sharedContext, err := window.GLCreateContext(1, 5, chippy.GLCoreProfile, nil)
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	// Create an OpenGL context which will share the above context, using the
 	// same OpenGL version.
-	renderContext, err := window.GLCreateContext(2, 1, chippy.GLCoreProfile, sharedContext)
+	renderContext, err := window.GLCreateContext(1, 5, chippy.GLCoreProfile, sharedContext)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -191,9 +191,8 @@ func program() {
 	// use just one of these here as our contexts are shared.
 	gl = opengl.New()
 	if gl == nil {
-		log.Fatal("You have no support for OpenGL 2.1!")
+		log.Fatal("You have no support for OpenGL 1.5!")
 	}
-	log.Println(gl.GetError())
 
 	// Build triangle list
 	buildTriangleList()

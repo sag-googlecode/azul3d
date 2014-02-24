@@ -10,7 +10,7 @@ import (
 	"azul3d.org/chippy/keyboard"
 	"azul3d.org/chippy"
 	"azul3d.org/clock"
-	"azul3d.org/native/gl"
+	opengl "azul3d.org/native/gl"
 	"log"
 	"math"
 	"os"
