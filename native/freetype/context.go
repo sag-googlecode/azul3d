@@ -20,6 +20,7 @@ import (
 	"unsafe"
 )
 
+// GlyphMetrics contains metrics of a single glyph.
 type GlyphMetrics struct {
 	// Left side bearing and top side bearing
 	// X values extend to the right, and positive Y values downward.
@@ -43,6 +44,7 @@ type GlyphImage struct {
 	glyph *Glyph
 }
 
+// Glyph represents a single renderable glyph.
 type Glyph struct {
 	// Holds *Font to avoid GC.
 	font        *Font
@@ -67,6 +69,7 @@ func (g *Glyph) Image() (*GlyphImage, error) {
 	return g.renderImage(g)
 }
 
+// Font represents a single Freetype font.
 type Font struct {
 	// Holds *Context to avoid GC.
 	ctx *Context
@@ -143,6 +146,8 @@ func (f *Font) init() {
 	f.UnderlineThickness = int(f.c.underline_thickness)
 }
 
+// SetSize sets the current size of the font given 26.6 width and height units
+// and X/Y axis resolutions.
 func (f *Font) SetSize(width, height, xResolution, yResolution int) error {
 	f.ctx.access.Lock()
 	defer f.ctx.access.Unlock()
@@ -168,6 +173,8 @@ func (f *Font) SetSize(width, height, xResolution, yResolution int) error {
 	return nil
 }
 
+// SetSizePixels sets the current size of the font given width and height pixel
+// based units.
 func (f *Font) SetSizePixels(width, height int) error {
 	f.ctx.access.Lock()
 	defer f.ctx.access.Unlock()
@@ -187,6 +194,7 @@ func (f *Font) SetSizePixels(width, height int) error {
 	return nil
 }
 
+// Index returns the glyph index for the given rune.
 func (f *Font) Index(r rune) (glyphIndex uint) {
 	f.ctx.access.Lock()
 	defer f.ctx.access.Unlock()
@@ -194,6 +202,8 @@ func (f *Font) Index(r rune) (glyphIndex uint) {
 	return uint(C.FT_Get_Char_Index(f.c, C.FT_ULong(r)))
 }
 
+// Kerning returns the X/Y kerning pair for the left and right horizontally
+// aligned glyphs, or x=0, y=0, and a error.
 func (f *Font) Kerning(leftGlyph, rightGlyph rune) (x, y int, e error) {
 	f.ctx.access.Lock()
 	defer f.ctx.access.Unlock()
@@ -218,6 +228,8 @@ func (f *Font) Kerning(leftGlyph, rightGlyph rune) (x, y int, e error) {
 	return int(vec.x), int(vec.y), nil
 }
 
+// Load loads the given glyph index into the font's glyph slot and returns the
+// glyph.
 func (f *Font) Load(glyphIndex uint) (*Glyph, error) {
 	f.ctx.access.Lock()
 	defer f.ctx.access.Unlock()
@@ -280,11 +292,15 @@ func (f *Font) Load(glyphIndex uint) (*Glyph, error) {
 	}, nil
 }
 
+// Context represents a single freetype context which must not be accessed
+// concurrently (typically each thread/goroutine uses a single context).
 type Context struct {
 	access sync.Mutex
 	c      C.FT_Library
 }
 
+// Load loads and returns the given font file data and returns the loaded font
+// or an error.
 func (c *Context) Load(fontFileData []byte) (*Font, error) {
 	c.access.Lock()
 
@@ -315,6 +331,7 @@ func (c *Context) Load(fontFileData []byte) (*Font, error) {
 	return f, nil
 }
 
+// Init initializes and returns a new freetype context, or returns a error.
 func Init() (*Context, error) {
 	c := new(Context)
 	err := C.FT_Init_FreeType(&c.c)
