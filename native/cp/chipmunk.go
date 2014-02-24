@@ -18,7 +18,8 @@
 package cp
 
 /*
-#cgo LDFLAGS: -lm
+#cgo linux,amd64 LDFLAGS: /usr/lib/x86_64-linux-gnu/libm.a
+#cgo !linux LDFLAGS: -lm
 #include "chipmunk/chipmunk.h"
 */
 import "C"
