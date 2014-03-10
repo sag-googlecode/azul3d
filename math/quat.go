@@ -16,7 +16,7 @@ type Quat struct {
 
 // String returns an string representation of this vector.
 func (a Quat) String() string {
-	return fmt.Sprintf("Quat(W=%v, X=%v, Y=%v, Z=%v)", a.W, a.X, a.Y, a.Z)
+	return fmt.Sprintf("Quat(W=%f, X=%f, Y=%f, Z=%f)", a.W, a.X, a.Y, a.Z)
 }
 
 // AlmostEquals tells if a == b using the specified epsilon value.

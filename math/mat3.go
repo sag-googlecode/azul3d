@@ -14,7 +14,7 @@ type Mat3 [3][3]float64
 
 // String returns an string representation of this matrix.
 func (a Mat3) String() string {
-	return fmt.Sprintf("Mat3(\n    %v, %v, %v\n    %v, %v, %v\n    %v, %v, %v\n)", a[0][0], a[0][1], a[0][2], a[1][0], a[1][1], a[1][2], a[2][0], a[2][1], a[2][2])
+	return fmt.Sprintf("Mat3(\n    %f, %f, %f\n    %f, %f, %f\n    %f, %f, %f\n)", a[0][0], a[0][1], a[0][2], a[1][0], a[1][1], a[1][2], a[2][0], a[2][1], a[2][2])
 }
 
 // SetRow sets the values of the specified matrix row to the values in the

@@ -16,7 +16,7 @@ type Vec3 struct {
 
 // String returns an string representation of this vector.
 func (a Vec3) String() string {
-	return fmt.Sprintf("Vec3(X=%v, Y=%v, Z=%v)", a.X, a.Y, a.Z)
+	return fmt.Sprintf("Vec3(X=%f, Y=%f, Z=%f)", a.X, a.Y, a.Z)
 }
 
 // AlmostEquals tells if a == b using the specified epsilon value.

@@ -16,7 +16,7 @@ type Vec4 struct {
 
 // String returns an string representation of this vector.
 func (a Vec4) String() string {
-	return fmt.Sprintf("Vec4(X=%v, Y=%v, Z=%v, W=%v)", a.X, a.Y, a.Z, a.W)
+	return fmt.Sprintf("Vec4(X=%f, Y=%f, Z=%f, W=%f)", a.X, a.Y, a.Z, a.W)
 }
 
 // AlmostEquals tells if a == b using the specified epsilon value.

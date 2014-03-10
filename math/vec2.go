@@ -16,7 +16,7 @@ type Vec2 struct {
 
 // String returns an string representation of this vector.
 func (a Vec2) String() string {
-	return fmt.Sprintf("Vec2(X=%v, Y=%v)", a.X, a.Y)
+	return fmt.Sprintf("Vec2(X=%f, Y=%f)", a.X, a.Y)
 }
 
 // AlmostEquals tells if a == b using the specified epsilon value.
