@@ -23,11 +23,11 @@ func (s sortedConfigs) Less(i, j int) bool {
 	// Accelerated
 	// RedBits, GreenBits, BlueBits, AlphaBits
 	// DoubleBuffered
-	// Transparent
 	// Samples
 	// DepthBits
 	// StencilBits
 	// StereoScopic
+	// Transparent
 	// AccumRedBits, AccumGreenBits, AccumBlueBits, AccumAlphaBits
 	// AuxBuffers
 	distCmp := func(a, b, target uint8) bool {
@@ -58,9 +58,6 @@ func (s sortedConfigs) Less(i, j int) bool {
 	if a.DoubleBuffered != b.DoubleBuffered {
 		return boolCmp(a.DoubleBuffered, b.DoubleBuffered, s.max.DoubleBuffered)
 	}
-	if a.Transparent != b.Transparent {
-		return boolCmp(a.Transparent, b.Transparent, s.max.Transparent)
-	}
 	if a.Samples != b.Samples {
 		return distCmp(a.Samples, b.Samples, s.max.Samples)
 	}
@@ -72,6 +69,9 @@ func (s sortedConfigs) Less(i, j int) bool {
 	}
 	if a.StereoScopic != b.StereoScopic {
 		return boolCmp(a.StereoScopic, b.StereoScopic, s.max.StereoScopic)
+	}
+	if a.Transparent != b.Transparent {
+		return boolCmp(a.Transparent, b.Transparent, s.max.Transparent)
 	}
 	if a.AccumRedBits != b.AccumRedBits {
 		return distCmp(a.AccumRedBits, b.AccumRedBits, s.max.AccumRedBits)
@@ -250,11 +250,11 @@ var (
 //  Accelerated
 //  RedBits, GreenBits, BlueBits, AlphaBits
 //  DoubleBuffered
-//  Transparent
 //  Samples
 //  DepthBits
 //  StencilBits
 //  StereoScopic
+//  Transparent
 //  AccumRedBits, AccumGreenBits, AccumBlueBits, AccumAlphaBits
 //  AuxBuffers
 //

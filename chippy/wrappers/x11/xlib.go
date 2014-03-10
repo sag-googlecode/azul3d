@@ -313,6 +313,8 @@ func XOpenDisplay(name string) *Display {
 }
 
 func XGetXCBConnection(d *Display) *Connection {
+	d.Lock()
+	defer d.Unlock()
 	c := C.XGetXCBConnection(d.c())
 	return (*Connection)(unsafe.Pointer(c))
 }
@@ -323,10 +325,14 @@ var (
 )
 
 func (d *Display) XSetEventQueueOwner(owner uint32) {
+	d.Lock()
+	defer d.Unlock()
 	C.XSetEventQueueOwner(d.c(), owner)
 }
 
 func (d *Display) XDefaultScreen() int {
+	d.Lock()
+	defer d.Unlock()
 	return int(C.XDefaultScreen(d.c()))
 }
 
@@ -361,7 +367,7 @@ func (ev *KeyReleaseEvent) XKeyEvent(display *Display) *XKeyEvent {
 	// all cases but does for the most important one: XLookupKeysym; it is kind
 	// of a hacky approach admittidly.
 	x := new(XKeyEvent)
-	x._type = C.KeyPress
+	x._type = C.KeyRelease
 	x.serial = C.ulong(ev.Sequence)
 	x.send_event = 0
 	x.display = (*C.Display)(unsafe.Pointer(display))
@@ -379,6 +385,8 @@ func (ev *KeyReleaseEvent) XKeyEvent(display *Display) *XKeyEvent {
 	return x
 }
 func (d *Display) XLookupKeysym(ev *XKeyEvent, index int) Keysym {
+	d.Lock()
+	defer d.Unlock()
 	ret := C.XLookupKeysym(
 		(*C.XKeyEvent)(unsafe.Pointer(ev)),
 		C.int(index),
@@ -389,6 +397,8 @@ func (d *Display) XLookupKeysym(ev *XKeyEvent, index int) Keysym {
 type XMappingEvent C.XMappingEvent
 
 func (d *Display) XRefreshKeyboardMapping(ev *XMappingEvent) {
+	d.Lock()
+	defer d.Unlock()
 	C.XRefreshKeyboardMapping((*C.XMappingEvent)(unsafe.Pointer(ev)))
 }
 
@@ -401,6 +411,8 @@ func XConvertCase(keysym Keysym, lower, upper *Keysym) {
 }
 
 func (d *Display) XKeysymToKeycode(keysym Keysym) Keycode {
+	d.Lock()
+	defer d.Unlock()
 	return Keycode(C.XKeysymToKeycode(
 		d.c(),
 		C.KeySym(keysym),
@@ -413,6 +425,8 @@ type XIM struct {
 }
 
 func (d *Display) XOpenIM(rdb *C.struct__XrmHashBucketRec, resName, resClass *C.char) *XIM {
+	d.Lock()
+	defer d.Unlock()
 	c := C.XOpenIM(d.c(), rdb, resName, resClass)
 	if c == nil {
 		return nil
@@ -431,6 +445,8 @@ type XIC struct {
 }
 
 func (d *Display) CreateIC(im *XIM, w Window) *XIC {
+	d.Lock()
+	defer d.Unlock()
 	c := C.chippy_CreateIC((C.XIM)(unsafe.Pointer(im.EXIM)), d.c(), C.Window(w))
 	if c == nil {
 		return nil
@@ -446,6 +462,8 @@ func (d *Display) CreateIC(im *XIM, w Window) *XIC {
 type Status C.int
 
 func (d *Display) XkbGetIndicatorState(deviceSpec uint32) (state uint32, status Status) {
+	d.Lock()
+	defer d.Unlock()
 	status = Status(C.XkbGetIndicatorState(
 		d.c(),
 		C.uint(deviceSpec),
@@ -455,6 +473,8 @@ func (d *Display) XkbGetIndicatorState(deviceSpec uint32) (state uint32, status 
 }
 
 func (d *Display) XLookupString(kev *XKeyEvent) (s string, keysym Keysym) {
+	d.Lock()
+	defer d.Unlock()
 	data := make([]byte, 32)
 	bytesLen := int(C.XLookupString(
 		(*C.XKeyEvent)(unsafe.Pointer(kev)),
@@ -470,10 +490,14 @@ func (d *Display) XLookupString(kev *XKeyEvent) (s string, keysym Keysym) {
 }
 
 func (d *Display) XFlush() {
+	d.Lock()
+	defer d.Unlock()
 	C.XFlush(d.c())
 }
 
 func (d *Display) XSync(x bool) {
+	d.Lock()
+	defer d.Unlock()
 	cx := C.Bool(C.False)
 	if x {
 		cx = C.True
@@ -481,7 +505,17 @@ func (d *Display) XSync(x bool) {
 	C.XSync(d.c(), cx)
 }
 
+func (d *Display) Lock() {
+	C.XLockDisplay(d.c())
+}
+
+func (d *Display) Unlock() {
+	C.XUnlockDisplay(d.c())
+}
+
 func (d *Display) Xutf8LookupString(ic *XIC, kev *XKeyEvent) (s string, keysym Keysym, hasKeysym bool) {
+	d.Lock()
+	defer d.Unlock()
 	var cstat Status
 
 	data := make([]byte, 1)

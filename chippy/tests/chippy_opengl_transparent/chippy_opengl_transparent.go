@@ -147,7 +147,12 @@ func program() {
 	configs := window.GLConfigs()
 
 	// See documentation for this function and vars to see how it determines the 'best' format
-	bestConfig := chippy.GLChooseConfig(configs, chippy.GLWorstHWConfig, chippy.GLBestConfig)
+	transparentCfg := *chippy.GLWorstConfig
+	transparentCfg.Transparent = true
+	bestConfig := chippy.GLChooseConfig(configs, &transparentCfg, chippy.GLBestConfig)
+	if bestConfig == nil {
+		log.Fatal("Could not find a proper transparent OpenGL configuration.")
+	}
 	window.GLSetConfig(bestConfig)
 
 	// Print out all the formats, and which one we determined to be the 'best'.
