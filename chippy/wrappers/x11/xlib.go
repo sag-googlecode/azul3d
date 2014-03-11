@@ -361,11 +361,10 @@ func (ev *KeyPressEvent) XKeyEvent(display *Display) *XKeyEvent {
 	return x
 }
 
-// Copy+Pasta
 func (ev *KeyReleaseEvent) XKeyEvent(display *Display) *XKeyEvent {
-	// Convert between XCB KeyPressEvent and Xlib XKeyEvent; this won't work in
-	// all cases but does for the most important one: XLookupKeysym; it is kind
-	// of a hacky approach admittidly.
+	// Convert between XCB KeyReleaseEvent and Xlib XKeyEvent; this won't work
+	// in all cases but does for the most important one: XLookupKeysym; it is
+	// kind of a hacky approach admittidly.
 	x := new(XKeyEvent)
 	x._type = C.KeyRelease
 	x.serial = C.ulong(ev.Sequence)
@@ -419,9 +418,9 @@ func (d *Display) XKeysymToKeycode(keysym Keysym) Keycode {
 	))
 }
 
-type EXIM C.struct_XIM
+type EXIM C.XIM
 type XIM struct {
-	*EXIM
+	EXIM *EXIM
 }
 
 func (d *Display) XOpenIM(rdb *C.struct__XrmHashBucketRec, resName, resClass *C.char) *XIM {
@@ -439,9 +438,9 @@ func (d *Display) XOpenIM(rdb *C.struct__XrmHashBucketRec, resName, resClass *C.
 	return xim
 }
 
-type EXIC C.struct_XIC
+type EXIC C.XIC
 type XIC struct {
-	*EXIC
+	EXIC *EXIC
 }
 
 func (d *Display) CreateIC(im *XIM, w Window) *XIC {
