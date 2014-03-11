@@ -92,6 +92,8 @@ func (d *Display) HandleGLXSecretEvent(ev *GenericEvent) bool {
 }
 
 func (d *Display) GLXCreateNewContext(config GLXFBConfig, renderType int, shareList GLXContext, direct bool) GLXContext {
+	d.Lock()
+	defer d.Unlock()
 	cDirect := C.Bool(0)
 	if direct {
 		cDirect = 1
@@ -106,6 +108,8 @@ func (d *Display) GLXCreateNewContext(config GLXFBConfig, renderType int, shareL
 }
 
 func (d *Display) GLXDestroyContext(ctx GLXContext) {
+	d.Lock()
+	defer d.Unlock()
 	C.glXDestroyContext(
 		(*[0]byte)(unsafe.Pointer(d)),
 		C.GLXContext(ctx),
@@ -113,6 +117,8 @@ func (d *Display) GLXDestroyContext(ctx GLXContext) {
 }
 
 func (d *Display) GLXMakeContextCurrent(draw, read GLXDrawable, ctx GLXContext) int {
+	d.Lock()
+	defer d.Unlock()
 	return int(C.glXMakeContextCurrent(
 		(*[0]byte)(unsafe.Pointer(d)),
 		C.GLXDrawable(draw),
@@ -122,6 +128,8 @@ func (d *Display) GLXMakeContextCurrent(draw, read GLXDrawable, ctx GLXContext) 
 }
 
 func (d *Display) GLXSwapBuffers(drawable GLXDrawable) {
+	d.Lock()
+	defer d.Unlock()
 	C.glXSwapBuffers(
 		(*[0]byte)(unsafe.Pointer(d)),
 		C.GLXDrawable(drawable),
@@ -131,6 +139,8 @@ func (d *Display) GLXSwapBuffers(drawable GLXDrawable) {
 type Int C.int
 
 func (d *Display) GLXQueryVersion(maj, min *Int) bool {
+	d.Lock()
+	defer d.Unlock()
 	return C.glXQueryVersion(
 		(*[0]byte)(unsafe.Pointer(d)),
 		(*C.int)(unsafe.Pointer(maj)),
@@ -139,6 +149,8 @@ func (d *Display) GLXQueryVersion(maj, min *Int) bool {
 }
 
 func (d *Display) GLXQueryExtensionsString(screen int) string {
+	d.Lock()
+	defer d.Unlock()
 	data := C.glXQueryExtensionsString(
 		(*[0]byte)(unsafe.Pointer(d)),
 		C.int(screen),
@@ -147,6 +159,8 @@ func (d *Display) GLXQueryExtensionsString(screen int) string {
 }
 
 func (d *Display) GLXGetFBConfigAttrib(config GLXFBConfig, attrib int) (value Int, ret int) {
+	d.Lock()
+	defer d.Unlock()
 	ret = int(C.glXGetFBConfigAttrib(
 		(*[0]byte)(unsafe.Pointer(d)),
 		C.GLXFBConfig(config),
@@ -157,6 +171,8 @@ func (d *Display) GLXGetFBConfigAttrib(config GLXFBConfig, attrib int) (value In
 }
 
 func (d *Display) GLXGetFBConfigs(screen int) (configs []GLXFBConfig) {
+	d.Lock()
+	defer d.Unlock()
 	var nConfigs C.int
 	cConfigs := C.glXGetFBConfigs(
 		(*[0]byte)(unsafe.Pointer(d)),
@@ -171,6 +187,8 @@ func (d *Display) GLXGetFBConfigs(screen int) (configs []GLXFBConfig) {
 }
 
 func (d *Display) GLXCreateWindow(config GLXFBConfig, win Window) GLXWindow {
+	d.Lock()
+	defer d.Unlock()
 	return GLXWindow(C.glXCreateWindow(
 		(*[0]byte)(unsafe.Pointer(d)),
 		C.GLXFBConfig(config),
@@ -180,6 +198,8 @@ func (d *Display) GLXCreateWindow(config GLXFBConfig, win Window) GLXWindow {
 }
 
 func (d *Display) GLXDestroyWindow(win GLXWindow) {
+	d.Lock()
+	defer d.Unlock()
 	C.glXDestroyWindow(
 		(*[0]byte)(unsafe.Pointer(d)),
 		C.GLXWindow(win),
@@ -187,6 +207,8 @@ func (d *Display) GLXDestroyWindow(win GLXWindow) {
 }
 
 func (d *Display) GLXGetVisualFromFBConfig(config GLXFBConfig) *XVisualInfo {
+	d.Lock()
+	defer d.Unlock()
 	return (*XVisualInfo)(unsafe.Pointer(C.glXGetVisualFromFBConfig(
 		(*[0]byte)(unsafe.Pointer(d)),
 		C.GLXFBConfig(config),
@@ -198,6 +220,8 @@ func GLXGetCurrentContext() GLXContext {
 }
 
 func (d *Display) GLXGetProcAddressARB(p string) unsafe.Pointer {
+	d.Lock()
+	defer d.Unlock()
 	cstr := C.CString(p)
 	defer C.free(unsafe.Pointer(cstr))
 	return unsafe.Pointer(C.glXGetProcAddressARB(
@@ -208,6 +232,8 @@ func (d *Display) GLXGetProcAddressARB(p string) unsafe.Pointer {
 var glXCreateContextAttribsARBPtr unsafe.Pointer
 
 func (d *Display) GLXCreateContextAttribsARB(config GLXFBConfig, share GLXContext, direct bool, attribs *Int) GLXContext {
+	d.Lock()
+	defer d.Unlock()
 	if glXCreateContextAttribsARBPtr == nil {
 		glXCreateContextAttribsARBPtr = d.GLXGetProcAddressARB("glXCreateContextAttribsARB")
 	}
@@ -229,6 +255,8 @@ func (d *Display) GLXCreateContextAttribsARB(config GLXFBConfig, share GLXContex
 var glXSwapIntervalEXTPtr unsafe.Pointer
 
 func (d *Display) GLXSwapIntervalEXT(drawable GLXDrawable, interval int) {
+	d.Lock()
+	defer d.Unlock()
 	if glXSwapIntervalEXTPtr == nil {
 		glXSwapIntervalEXTPtr = d.GLXGetProcAddressARB("glXSwapIntervalEXT")
 	}
@@ -244,6 +272,8 @@ func (d *Display) GLXSwapIntervalEXT(drawable GLXDrawable, interval int) {
 var glXSwapIntervalMESAPtr unsafe.Pointer
 
 func (d *Display) GLXSwapIntervalMESA(interval int) int {
+	d.Lock()
+	defer d.Unlock()
 	if glXSwapIntervalMESAPtr == nil {
 		glXSwapIntervalMESAPtr = d.GLXGetProcAddressARB("glXSwapIntervalMESA")
 	}
@@ -259,6 +289,8 @@ func (d *Display) GLXSwapIntervalMESA(interval int) int {
 var glXSwapIntervalSGIPtr unsafe.Pointer
 
 func (d *Display) GLXSwapIntervalSGI(interval int) int {
+	d.Lock()
+	defer d.Unlock()
 	if glXSwapIntervalSGIPtr == nil {
 		glXSwapIntervalSGIPtr = d.GLXGetProcAddressARB("glXSwapIntervalSGI")
 	}
