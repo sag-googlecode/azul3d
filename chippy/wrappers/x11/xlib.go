@@ -420,7 +420,7 @@ func (d *Display) XKeysymToKeycode(keysym Keysym) Keycode {
 
 type EXIM C.XIM
 type XIM struct {
-	EXIM *EXIM
+	EXIM EXIM
 }
 
 func (d *Display) XOpenIM(rdb *C.struct__XrmHashBucketRec, resName, resClass *C.char) *XIM {
@@ -431,29 +431,29 @@ func (d *Display) XOpenIM(rdb *C.struct__XrmHashBucketRec, resName, resClass *C.
 		return nil
 	}
 	xim := new(XIM)
-	xim.EXIM = (*EXIM)(unsafe.Pointer(c))
+	xim.EXIM = EXIM(c)
 	runtime.SetFinalizer(xim, func(f *XIM) {
-		C.XCloseIM((C.XIM)(unsafe.Pointer(f.EXIM)))
+		C.XCloseIM(C.XIM(f.EXIM))
 	})
 	return xim
 }
 
 type EXIC C.XIC
 type XIC struct {
-	EXIC *EXIC
+	EXIC EXIC
 }
 
 func (d *Display) CreateIC(im *XIM, w Window) *XIC {
 	d.Lock()
 	defer d.Unlock()
-	c := C.chippy_CreateIC((C.XIM)(unsafe.Pointer(im.EXIM)), d.c(), C.Window(w))
+	c := C.chippy_CreateIC(C.XIM(im.EXIM), d.c(), C.Window(w))
 	if c == nil {
 		return nil
 	}
 	xic := new(XIC)
-	xic.EXIC = (*EXIC)(unsafe.Pointer(c))
+	xic.EXIC = EXIC(c)
 	runtime.SetFinalizer(xic, func(f *XIC) {
-		C.XDestroyIC((C.XIC)(unsafe.Pointer(f.EXIC)))
+		C.XDestroyIC(C.XIC(f.EXIC))
 	})
 	return xic
 }
@@ -519,7 +519,7 @@ func (d *Display) Xutf8LookupString(ic *XIC, kev *XKeyEvent) (s string, keysym K
 
 	data := make([]byte, 1)
 	bytesLen := int(C.Xutf8LookupString(
-		(C.XIC)(unsafe.Pointer(ic.EXIC)),
+		C.XIC(ic.EXIC),
 		(*C.XKeyPressedEvent)(unsafe.Pointer(kev)),
 		(*C.char)(unsafe.Pointer(&data[0])),
 		C.int(len(data)),
@@ -530,7 +530,7 @@ func (d *Display) Xutf8LookupString(ic *XIC, kev *XKeyEvent) (s string, keysym K
 		cstat = 0
 		data = make([]byte, bytesLen)
 		bytesLen = int(C.Xutf8LookupString(
-			(C.XIC)(unsafe.Pointer(ic.EXIC)),
+			C.XIC(ic.EXIC),
 			(*C.XKeyPressedEvent)(unsafe.Pointer(kev)),
 			(*C.char)(unsafe.Pointer(&data[0])),
 			C.int(len(data)),
