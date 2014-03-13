@@ -78,8 +78,8 @@ func (c *Connection) RandrQueryVersionReply(cookie RandrQueryVersionCookie) (rep
 	if e == nil {
 		reply = new(RandrQueryVersionReply)
 		reply.ERandrQueryVersionReply = (*ERandrQueryVersionReply)(unsafe.Pointer(cReply))
-		runtime.SetFinalizer(reply, func(r *RandrQueryVersionReply) {
-			C.free(unsafe.Pointer(r.ERandrQueryVersionReply))
+		runtime.SetFinalizer(reply, func(f *RandrQueryVersionReply) {
+			C.free(unsafe.Pointer(f.ERandrQueryVersionReply))
 		})
 
 	} else {
@@ -128,8 +128,8 @@ func (c *Connection) RandrGetScreenResourcesCurrentReply(cookie RandrGetScreenRe
 	if e == nil {
 		reply = new(RandrGetScreenResourcesCurrentReply)
 		reply.ERandrGetScreenResourcesCurrentReply = (*ERandrGetScreenResourcesCurrentReply)(unsafe.Pointer(cReply))
-		runtime.SetFinalizer(reply, func(r *RandrGetScreenResourcesCurrentReply) {
-			C.free(unsafe.Pointer(r.ERandrGetScreenResourcesCurrentReply))
+		runtime.SetFinalizer(reply, func(f *RandrGetScreenResourcesCurrentReply) {
+			C.free(unsafe.Pointer(f.ERandrGetScreenResourcesCurrentReply))
 		})
 
 	} else {
@@ -206,8 +206,8 @@ func (c *Connection) RandrGetScreenResourcesReply(cookie RandrGetScreenResources
 	if e == nil {
 		reply = new(RandrGetScreenResourcesReply)
 		reply.ERandrGetScreenResourcesReply = (*ERandrGetScreenResourcesReply)(unsafe.Pointer(cReply))
-		runtime.SetFinalizer(reply, func(r *RandrGetScreenResourcesReply) {
-			C.free(unsafe.Pointer(r.ERandrGetScreenResourcesReply))
+		runtime.SetFinalizer(reply, func(f *RandrGetScreenResourcesReply) {
+			C.free(unsafe.Pointer(f.ERandrGetScreenResourcesReply))
 		})
 
 	} else {
@@ -298,8 +298,8 @@ func (c *Connection) RandrSetCrtcConfigReply(cookie RandrSetCrtcConfigCookie) (r
 	if e == nil {
 		reply = new(RandrSetCrtcConfigReply)
 		reply.ERandrSetCrtcConfigReply = (*ERandrSetCrtcConfigReply)(unsafe.Pointer(cReply))
-		runtime.SetFinalizer(reply, func(r *RandrSetCrtcConfigReply) {
-			C.free(unsafe.Pointer(r.ERandrSetCrtcConfigReply))
+		runtime.SetFinalizer(reply, func(f *RandrSetCrtcConfigReply) {
+			C.free(unsafe.Pointer(f.ERandrSetCrtcConfigReply))
 		})
 
 		switch reply.Status {
@@ -362,8 +362,8 @@ func (c *Connection) RandrGetCrtcInfoReply(cookie RandrGetCrtcInfoCookie) (reply
 	if e == nil {
 		reply = new(RandrGetCrtcInfoReply)
 		reply.ERandrGetCrtcInfoReply = (*ERandrGetCrtcInfoReply)(unsafe.Pointer(cReply))
-		runtime.SetFinalizer(reply, func(r *RandrGetCrtcInfoReply) {
-			C.free(unsafe.Pointer(r.ERandrGetCrtcInfoReply))
+		runtime.SetFinalizer(reply, func(f *RandrGetCrtcInfoReply) {
+			C.free(unsafe.Pointer(f.ERandrGetCrtcInfoReply))
 		})
 	} else {
 		err = errors.New("RandrGetCrtcInfoReply(): " + xcbError(e))
@@ -431,8 +431,8 @@ func (c *Connection) RandrGetOutputInfoReply(cookie RandrGetOutputInfoCookie) (r
 	if e == nil {
 		reply = new(RandrGetOutputInfoReply)
 		reply.ERandrGetOutputInfoReply = (*ERandrGetOutputInfoReply)(unsafe.Pointer(cReply))
-		runtime.SetFinalizer(reply, func(r *RandrGetOutputInfoReply) {
-			C.free(unsafe.Pointer(r.ERandrGetOutputInfoReply))
+		runtime.SetFinalizer(reply, func(f *RandrGetOutputInfoReply) {
+			C.free(unsafe.Pointer(f.ERandrGetOutputInfoReply))
 		})
 	}
 	if e != nil {

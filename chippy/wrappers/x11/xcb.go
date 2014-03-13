@@ -502,8 +502,8 @@ func (c *Connection) PollForEvent() (ev *GenericEvent) {
 	if cev != nil {
 		ev = new(GenericEvent)
 		ev.EGenericEvent = (*EGenericEvent)(unsafe.Pointer(cev))
-		runtime.SetFinalizer(ev, func(e *GenericEvent) {
-			C.free(unsafe.Pointer(ev.EGenericEvent))
+		runtime.SetFinalizer(ev, func(f *GenericEvent) {
+			C.free(unsafe.Pointer(f.EGenericEvent))
 		})
 	}
 	return
@@ -514,8 +514,8 @@ func (c *Connection) WaitForEvent() (ev *GenericEvent) {
 	if cev != nil {
 		ev = new(GenericEvent)
 		ev.EGenericEvent = (*EGenericEvent)(unsafe.Pointer(cev))
-		runtime.SetFinalizer(ev, func(e *GenericEvent) {
-			C.free(unsafe.Pointer(ev.EGenericEvent))
+		runtime.SetFinalizer(ev, func(f *GenericEvent) {
+			C.free(unsafe.Pointer(f.EGenericEvent))
 		})
 	}
 	return
@@ -605,8 +605,8 @@ func (c *Connection) GetProperty(delete bool, w Window, prop Atom, Type Atom, of
 
 		reply = new(GetPropertyReply)
 		reply.EGetPropertyReply = (*EGetPropertyReply)(unsafe.Pointer(cReply))
-		runtime.SetFinalizer(reply, func(r *GetPropertyReply) {
-			C.free(unsafe.Pointer(r.EGetPropertyReply))
+		runtime.SetFinalizer(reply, func(f *GetPropertyReply) {
+			C.free(unsafe.Pointer(f.EGetPropertyReply))
 		})
 
 	} else {
@@ -709,8 +709,8 @@ func (c *Connection) TranslateCoordinatesReply(cookie TranslateCoordinatesCookie
 	if e == nil {
 		reply = new(TranslateCoordinatesReply)
 		reply.ETranslateCoordinatesReply = (*ETranslateCoordinatesReply)(unsafe.Pointer(cReply))
-		runtime.SetFinalizer(reply, func(r *TranslateCoordinatesReply) {
-			C.free(unsafe.Pointer(r.ETranslateCoordinatesReply))
+		runtime.SetFinalizer(reply, func(f *TranslateCoordinatesReply) {
+			C.free(unsafe.Pointer(f.ETranslateCoordinatesReply))
 		})
 	}
 	if e != nil {
@@ -757,8 +757,8 @@ func (c *Connection) GetKeyboardMappingReply(cookie GetKeyboardMappingCookie) (r
 	if e == nil {
 		reply = new(GetKeyboardMappingReply)
 		reply.EGetKeyboardMappingReply = (*EGetKeyboardMappingReply)(unsafe.Pointer(cReply))
-		runtime.SetFinalizer(reply, func(r *GetKeyboardMappingReply) {
-			C.free(unsafe.Pointer(r.EGetKeyboardMappingReply))
+		runtime.SetFinalizer(reply, func(f *GetKeyboardMappingReply) {
+			C.free(unsafe.Pointer(f.EGetKeyboardMappingReply))
 		})
 	}
 	if e != nil {
@@ -830,8 +830,8 @@ func (c *Connection) GrabPointerReply(cookie GrabPointerCookie) (reply *GrabPoin
 	if e == nil {
 		reply = new(GrabPointerReply)
 		reply.EGrabPointerReply = (*EGrabPointerReply)(unsafe.Pointer(cReply))
-		runtime.SetFinalizer(reply, func(r *GrabPointerReply) {
-			C.free(unsafe.Pointer(r.EGrabPointerReply))
+		runtime.SetFinalizer(reply, func(f *GrabPointerReply) {
+			C.free(unsafe.Pointer(f.EGrabPointerReply))
 		})
 	}
 	if e != nil {
@@ -887,8 +887,8 @@ func (c *Connection) GrabKeyboardReply(cookie GrabKeyboardCookie) (reply *GrabKe
 	if e == nil {
 		reply = new(GrabKeyboardReply)
 		reply.EGrabKeyboardReply = (*EGrabKeyboardReply)(unsafe.Pointer(cReply))
-		runtime.SetFinalizer(reply, func(r *GrabKeyboardReply) {
-			C.free(unsafe.Pointer(r.EGrabKeyboardReply))
+		runtime.SetFinalizer(reply, func(f *GrabKeyboardReply) {
+			C.free(unsafe.Pointer(f.EGrabKeyboardReply))
 		})
 	}
 	if e != nil {
@@ -948,8 +948,8 @@ func (c *Connection) AllocColorReply(cookie AllocColorCookie) (reply *AllocColor
 	if e == nil {
 		reply = new(AllocColorReply)
 		reply.EAllocColorReply = (*EAllocColorReply)(unsafe.Pointer(cReply))
-		runtime.SetFinalizer(reply, func(r *AllocColorReply) {
-			C.free(unsafe.Pointer(r.EAllocColorReply))
+		runtime.SetFinalizer(reply, func(f *AllocColorReply) {
+			C.free(unsafe.Pointer(f.EAllocColorReply))
 		})
 	}
 	if e != nil {

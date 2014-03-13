@@ -91,8 +91,8 @@ func (c *Connection) RenderQueryPictFormatsReply(cookie RenderQueryPictFormatsCo
 	if e == nil {
 		reply = new(RenderQueryPictFormatsReply)
 		reply.ERenderQueryPictFormatsReply = (*ERenderQueryPictFormatsReply)(unsafe.Pointer(cReply))
-		runtime.SetFinalizer(reply, func(r *RenderQueryPictFormatsReply) {
-			C.free(unsafe.Pointer(r.ERenderQueryPictFormatsReply))
+		runtime.SetFinalizer(reply, func(f *RenderQueryPictFormatsReply) {
+			C.free(unsafe.Pointer(f.ERenderQueryPictFormatsReply))
 		})
 	}
 	if e != nil {

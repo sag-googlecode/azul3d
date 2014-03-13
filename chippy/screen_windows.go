@@ -33,10 +33,10 @@ type NativeScreen struct {
 func newNativeScreen() *NativeScreen {
 	s := &NativeScreen{}
 
-	runtime.SetFinalizer(s, func(s *NativeScreen) {
+	runtime.SetFinalizer(s, func(f *NativeScreen) {
 		go dispatch(func() {
 			// Do screen related cleanup here..
-			if !win32.DeleteDC(s.dc) {
+			if !win32.DeleteDC(f.dc) {
 				logger().Println("Cannot delete DC; DeleteDC():", win32.GetLastErrorString())
 			}
 		})
