@@ -15,7 +15,6 @@ import (
 
 var (
 	xDisplay                 *x11.Display
-	xim                      *x11.XIM
 	xConnection              *x11.Connection
 	xDisplayName             string
 	xrandrMajor, xrandrMinor int
@@ -23,7 +22,20 @@ var (
 	xDefaultScreenNumber     int
 	clearCursor              *Cursor
 
+	// There is no mention of thread-safety so we can only assume that context
+	// probably does not use TLS but doesn't provide synchronization, so we
+	// just use a simple mutex for synchronization.
+	xkbContext struct {
+		sync.Mutex
+		ctx *x11.XkbContext
+	}
+	xkbDevice    int32
+	xkbKeymap    *x11.XkbKeymap
+	xkbState     *x11.XkbState
+	xkbBaseEvent uint8
+
 	ErrInvalidGLXVersion = errors.New("GLX version 1.4 is required but not available.")
+	ErrInvalidXKBVersion = errors.New(fmt.Sprintf("XKB version %d.%d is required but not available.", xkbMinMajor, xkbMinMinor))
 )
 
 const (
@@ -34,6 +46,9 @@ const (
 	// We need Xinput2 for raw mouse input
 	xinputMinMajor = 2
 	xinputMinMinor = 0
+
+	xkbMinMajor = x11.XKB_X11_MIN_MAJOR_XKB_VERSION
+	xkbMinMinor = x11.XKB_X11_MIN_MINOR_XKB_VERSION
 
 	// We need GLX 1.4 for multisampling
 	glxMinMajor = 1
@@ -74,6 +89,25 @@ func initAtoms() {
 	aWmChangeState = xConnection.InternAtom(false, "WM_CHANGE_STATE")
 }
 
+func refreshKeyboardMapping() error {
+	// Create keymap from the device.
+	xkbContext.Lock()
+	xkbKeymap = xConnection.XkbX11KeymapNewFromDevice(xkbContext.ctx, xkbDevice, 0)
+	xkbContext.Unlock()
+	if xkbKeymap == nil {
+		return errors.New("XKB-common could not create keymap from device.")
+	}
+
+	// Create keyboard state manager from keymap and device.
+	xkbContext.Lock()
+	xkbState = xConnection.XkbX11StateNewFromDevice(xkbKeymap, xkbDevice)
+	xkbContext.Unlock()
+	if xkbState == nil {
+		return errors.New("XKB-common could not create keyboard state manager from device.")
+	}
+	return nil
+}
+
 // SetDisplayName sets the string that will be passed into XOpenDisplay; equivalent to the DISPLAY
 // environment variable on posix complaint systems.
 //
@@ -112,6 +146,33 @@ func findWindow(w x11.Window) (*NativeWindow, bool) {
 
 	nw, ok := xWindowLookup[w]
 	return nw, ok
+}
+
+func xkbHandleEvent(e *x11.GenericEvent) {
+	ev := (*x11.XkbAnyEvent)(unsafe.Pointer(e.EGenericEvent))
+	if int32(ev.DeviceID) != xkbDevice {
+		return
+	}
+	switch ev.XkbType {
+	case x11.XKB_NEW_KEYBOARD_NOTIFY:
+		refreshKeyboardMapping()
+
+	case x11.XKB_MAP_NOTIFY:
+		refreshKeyboardMapping()
+
+	case x11.XKB_STATE_NOTIFY:
+		ev := (*x11.XkbStateNotifyEvent)(unsafe.Pointer(e.EGenericEvent))
+		xkbContext.Lock()
+		xkbState.UpdateMask(
+			x11.XkbModMask(ev.BaseMods()),
+			x11.XkbModMask(ev.LatchedMods()),
+			x11.XkbModMask(ev.LockedMods()),
+			x11.XkbLayoutIndex(ev.BaseGroup()),
+			x11.XkbLayoutIndex(ev.LatchedGroup()),
+			x11.XkbLayoutIndex(ev.LockedGroup()),
+		)
+		xkbContext.Unlock()
+	}
 }
 
 var shutdownEventLoop = make(chan bool, 1)
@@ -317,15 +378,19 @@ func eventLoop() {
 				logger().Printf("%+v\n", ev)
 
 			default:
+				if uint8(e.ResponseType) == xkbBaseEvent {
+					// This is a XKB event.
+					xkbHandleEvent(e)
+				}
+
 				// GLX secret events it seems must be sent only on a single
 				// thread or else heap corruption may occur.
-				dispatch(func() {
-					if !xDisplay.HandleGLXSecretEvent(e) {
-						logger().Printf("Unhandled X event: %+v\n", e.EGenericEvent)
-					}
-				})
-				// It was either a GLX secret event or one unknown to us, we
-				// still need to free it though.
+				if !xDisplay.HandleGLXSecretEvent(e) {
+					logger().Printf("Unhandled X event: %+v\n", e.EGenericEvent)
+				}
+
+				// It was either a XKB event, a GLX secret event, or one
+				// unknown to us, we still need to free it though.
 				e.Free()
 			}
 		}
@@ -383,7 +448,81 @@ func backend_Init() (err error) {
 	// Initialize atoms used
 	initAtoms()
 
-	xim = xDisplay.XOpenIM(nil, nil, nil)
+	// Setup Xkb-common extension, we need the xkbBaseEvent to identify XKB
+	// events.
+	var (
+		ret                int
+		xkbMajor, xkbMinor uint16
+	)
+	ret, xkbMajor, xkbMinor, xkbBaseEvent, _ = xConnection.XkbX11SetupXkbExtension(xkbMinMajor, xkbMinMinor, 0)
+	if ret == 0 {
+		theLogger.Printf("XKB version %d.%d exists, we require at least %d.%d\n", xkbMajor, xkbMinor, xkbMinMajor, xkbMinMinor)
+		return ErrInvalidXKBVersion
+	}
+
+	// Create XKB context.
+	xkbContext.Lock()
+	xkbContext.ctx = x11.XkbContextNew(0)
+	xkbContext.Unlock()
+	if xkbContext.ctx == nil {
+		return errors.New("XKB-common context could not be initialized!")
+	}
+
+	// Query the core/default keyboard device id.
+	xkbDevice = xConnection.XkbX11GetCoreKeyboardDeviceId()
+	if xkbDevice == -1 {
+		return errors.New("XKB-common could not query core keyboard device")
+	}
+
+	// Refresh keyboard mapping.
+	err = refreshKeyboardMapping()
+	if err != nil {
+		return err
+	}
+
+	// Select device events.
+	var requiredEvents, requiredNknDetails, requiredMapParts, requiredStateDetails uint16
+	requiredEvents |= x11.XKB_EVENT_TYPE_NEW_KEYBOARD_NOTIFY
+	requiredEvents |= x11.XKB_EVENT_TYPE_MAP_NOTIFY
+	requiredEvents |= x11.XKB_EVENT_TYPE_STATE_NOTIFY
+
+	requiredNknDetails |= x11.XKB_NKN_DETAIL_KEYCODES
+
+	requiredMapParts |= x11.XKB_MAP_PART_KEY_TYPES
+	requiredMapParts |= x11.XKB_MAP_PART_KEY_SYMS
+	requiredMapParts |= x11.XKB_MAP_PART_MODIFIER_MAP
+	requiredMapParts |= x11.XKB_MAP_PART_EXPLICIT_COMPONENTS
+	requiredMapParts |= x11.XKB_MAP_PART_KEY_ACTIONS
+	requiredMapParts |= x11.XKB_MAP_PART_VIRTUAL_MODS
+	requiredMapParts |= x11.XKB_MAP_PART_VIRTUAL_MOD_MAP
+
+	requiredStateDetails |= x11.XKB_STATE_PART_MODIFIER_BASE
+	requiredStateDetails |= x11.XKB_STATE_PART_MODIFIER_LATCH
+	requiredStateDetails |= x11.XKB_STATE_PART_MODIFIER_LOCK
+	requiredStateDetails |= x11.XKB_STATE_PART_GROUP_BASE
+	requiredStateDetails |= x11.XKB_STATE_PART_GROUP_LATCH
+	requiredStateDetails |= x11.XKB_STATE_PART_GROUP_LOCK
+
+	details := &x11.XkbSelectEventDetails{
+		AffectNewKeyboard:  requiredNknDetails,
+		NewKeyboardDetails: requiredNknDetails,
+		AffectState:        requiredStateDetails,
+		StateDetails:       requiredStateDetails,
+	}
+
+	err = xConnection.RequestCheck(xConnection.XkbSelectEventsAuxChecked(
+		x11.XkbDeviceSpec(xkbDevice), // deviceSpec
+		requiredEvents,               // affectWhich
+		0,                            // clear
+		0,                            // selectAll
+		requiredMapParts,             // affectMap
+		requiredMapParts,             // map
+		details,                      // details
+	))
+	if err != nil {
+		logger().Println("XkbSelectEventsAux(): Failed to select keyboard events:", err)
+		return err
+	}
 
 	go eventLoop()
 	<-eventLoopReady

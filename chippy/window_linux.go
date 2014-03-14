@@ -437,7 +437,6 @@ type NativeWindow struct {
 	r *Window
 
 	xWindow x11.Window
-	xic     *x11.XIC
 
 	waitForMap, waitForUnmap, waitForFrameExtents, waitForMotifHints,
 	waitForNetWmAllowedActions chan bool
@@ -670,9 +669,6 @@ func (w *NativeWindow) doRebuildWindow() (err error) {
 	// Finally show/hide the window
 	w.doSetVisible(w.r.Visible())
 
-	// Create input context
-	w.xic = xDisplay.CreateIC(xim, w.xWindow)
-
 	// Send indicator events
 	w.refreshIndicators()
 
@@ -779,41 +775,26 @@ func (w *NativeWindow) handleEvent(ref *x11.GenericEvent, e interface{}) {
 	//logger().Printf("%+v\n", e)
 	switch ev := e.(type) {
 	case *x11.KeyPressEvent:
-		if w.xic == nil {
-			break
-		}
+		xkbContext.Lock()
+		keycode := x11.XkbKeycode(ev.Detail)
+		keysym := xkbState.KeyGetOneSym(keycode)
+		r := keysym.Rune()
+		xkbContext.Unlock()
 
-		// Convert event to XKeyEvent for xlib; then we locate the proper
-		// Keysym from the Keycode in the event.
-		xkev := ev.XKeyEvent(xDisplay)
-
-		str, keysym, hasKeysym := xDisplay.Xutf8LookupString(w.xic, xkev)
-		var r rune
-
-		if len(str) > 0 {
-			r, _ = utf8.DecodeRune([]byte(str))
-		}
-
-		if hasKeysym {
-			kb := toKeyboard(keysym)
-			if kb != keyboard.Invalid {
-				if kb == keyboard.CapsLock || kb == keyboard.NumLock || kb == keyboard.ScrollLock {
-					w.refreshIndicators()
-				} else {
-					w.r.tryAddKeyboardStateEvent(kb, keyboard.OS(keysym), keyboard.Down)
-				}
+		kb := toKeyboard(x11.Keysym(keysym))
+		if kb != keyboard.Invalid {
+			if kb == keyboard.CapsLock || kb == keyboard.NumLock || kb == keyboard.ScrollLock {
+				w.refreshIndicators()
 			} else {
-				logger().Println("Unknown X keysym", keysym)
+				w.r.tryAddKeyboardStateEvent(kb, keyboard.OS(keysym), keyboard.Down)
 			}
-
-			// Better UCS support
-			better := x11.Keysym2ucs(keysym)
-			if better != -1 {
-				r = better
-			}
+		} else {
+			logger().Println("Unknown X keysym", keysym)
 		}
 
-		if r != utf8.RuneError && r != 0 {
+		escape := '\u001b'
+		deleteKey := '\u007f'
+		if r != utf8.RuneError && r != 0 && r != escape && r != deleteKey {
 			w.r.send(keyboard.TypedEvent{
 				T:    time.Now(),
 				Rune: r,
@@ -821,22 +802,20 @@ func (w *NativeWindow) handleEvent(ref *x11.GenericEvent, e interface{}) {
 		}
 
 	case *x11.KeyReleaseEvent:
-		// Convert event to XKeyEvent for xlib; then we locate the proper
-		// Keysym from the Keycode in the event.
-		xkev := ev.XKeyEvent(xDisplay)
+		xkbContext.Lock()
+		keycode := x11.XkbKeycode(ev.Detail)
+		keysym := xkbState.KeyGetOneSym(keycode)
+		xkbContext.Unlock()
 
-		_, keysym := xDisplay.XLookupString(xkev)
-		if keysym != x11.NoSymbol {
-			kb := toKeyboard(keysym)
-			if kb != keyboard.Invalid {
-				if kb == keyboard.CapsLock || kb == keyboard.NumLock || kb == keyboard.ScrollLock {
-					w.refreshIndicators()
-				} else {
-					w.r.tryAddKeyboardStateEvent(kb, keyboard.OS(keysym), keyboard.Up)
-				}
+		kb := toKeyboard(x11.Keysym(keysym))
+		if kb != keyboard.Invalid {
+			if kb == keyboard.CapsLock || kb == keyboard.NumLock || kb == keyboard.ScrollLock {
+				w.refreshIndicators()
 			} else {
-				logger().Println("Unknown X keysym", keysym)
+				w.r.tryAddKeyboardStateEvent(kb, keyboard.OS(keysym), keyboard.Up)
 			}
+		} else {
+			logger().Println("Unknown X keysym", keysym)
 		}
 
 	case *x11.ButtonPressEvent:
