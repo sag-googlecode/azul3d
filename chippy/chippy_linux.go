@@ -229,8 +229,8 @@ func eventLoop() {
 					w.handleEvent(e, ev)
 				}
 
-			case x11.MAPPING_NOTIFY:
-				//ev := (*x11.MappingNotifyEvent)(unsafe.Pointer(e.EGenericEvent))
+			//case x11.MAPPING_NOTIFY:
+			//ev := (*x11.MappingNotifyEvent)(unsafe.Pointer(e.EGenericEvent))
 
 			case x11.CLIENT_MESSAGE:
 				ev := (*x11.ClientMessageEvent)(unsafe.Pointer(e.EGenericEvent))
@@ -324,6 +324,9 @@ func eventLoop() {
 						logger().Printf("Unhandled X event: %+v\n", e.EGenericEvent)
 					}
 				})
+				// It was either a GLX secret event or one unknown to us, we
+				// still need to free it though.
+				e.Free()
 			}
 		}
 	}

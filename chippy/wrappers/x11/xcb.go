@@ -495,18 +495,7 @@ type EGenericEvent struct {
 }
 type GenericEvent struct {
 	*EGenericEvent
-}
-
-func (c *Connection) PollForEvent() (ev *GenericEvent) {
-	cev := C.xcb_poll_for_event(c.c())
-	if cev != nil {
-		ev = new(GenericEvent)
-		ev.EGenericEvent = (*EGenericEvent)(unsafe.Pointer(cev))
-		runtime.SetFinalizer(ev, func(f *GenericEvent) {
-			C.free(unsafe.Pointer(f.EGenericEvent))
-		})
-	}
-	return
+	Free func()
 }
 
 func (c *Connection) WaitForEvent() (ev *GenericEvent) {
@@ -514,9 +503,9 @@ func (c *Connection) WaitForEvent() (ev *GenericEvent) {
 	if cev != nil {
 		ev = new(GenericEvent)
 		ev.EGenericEvent = (*EGenericEvent)(unsafe.Pointer(cev))
-		runtime.SetFinalizer(ev, func(f *GenericEvent) {
-			C.free(unsafe.Pointer(f.EGenericEvent))
-		})
+		ev.Free = func() {
+			C.free(unsafe.Pointer(ev.EGenericEvent))
+		}
 	}
 	return
 }

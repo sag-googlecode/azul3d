@@ -974,8 +974,10 @@ func (w *NativeWindow) handleEvent(ref *x11.GenericEvent, e interface{}) {
 		}
 
 	case *x11.PropertyNotifyEvent:
+		// Copy evente atom because ev will be free'd below.
+		evAtom := ev.Atom
 		go func() {
-			if ev.Atom == aNetFrameExtents {
+			if evAtom == aNetFrameExtents {
 				w.fetchExtents()
 				select {
 				case w.waitForFrameExtents <- true:
@@ -984,17 +986,14 @@ func (w *NativeWindow) handleEvent(ref *x11.GenericEvent, e interface{}) {
 					break
 				}
 
-			} else if ev.Atom == aMotifWmHints {
+			} else if evAtom == aMotifWmHints {
 				select {
 				case w.waitForMotifHints <- true:
 					break
 				case <-time.After(5 * time.Second):
 					break
 				}
-
-			} /* else {
-				logger().Println("PropertyNotifyEvent", ev)
-			}*/
+			}
 		}()
 
 	case *x11.ConfigureNotifyEvent:
@@ -1048,6 +1047,9 @@ func (w *NativeWindow) handleEvent(ref *x11.GenericEvent, e interface{}) {
 	default:
 		logger().Println(reflect.TypeOf(ev))
 	}
+
+	// Free the event reference.
+	ref.Free()
 }
 
 func (w *NativeWindow) fetchExtents() {
