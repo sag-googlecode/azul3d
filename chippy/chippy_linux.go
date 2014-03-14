@@ -524,6 +524,14 @@ func backend_Init() (err error) {
 		return err
 	}
 
+	// Ask to use detectable auto-repeat key events. This is more in sync with
+	// the way that other platforms handle keyboard events and is not strange
+	// to developers.
+	wasSet, supported := xDisplay.XkbSetDetectableAutoRepeat(true)
+	if !wasSet || !supported {
+		logger().Println("XkbSetDetectableAutoRepeat(): cannot set or not supported.")
+	}
+
 	go eventLoop()
 	<-eventLoopReady
 

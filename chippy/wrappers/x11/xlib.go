@@ -348,6 +348,22 @@ func (d *Display) XkbGetIndicatorState(deviceSpec uint32) (state uint32, status 
 	return
 }
 
+func (d *Display) XkbSetDetectableAutoRepeat(detectable bool) (wasSetOk, supported bool) {
+	cDetect := C.Bool(C.False)
+	if detectable {
+		cDetect = C.True
+	}
+	cSupport := C.Bool(C.False)
+	cWasSet := C.XkbSetDetectableAutoRepeat(d.c(), cDetect, &cSupport)
+	if cWasSet == C.True {
+		wasSetOk = true
+	}
+	if cSupport == C.True {
+		supported = true
+	}
+	return
+}
+
 func (d *Display) XFlush() {
 	d.Lock()
 	defer d.Unlock()
