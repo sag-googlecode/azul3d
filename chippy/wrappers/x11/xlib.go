@@ -463,11 +463,13 @@ type Status C.int
 func (d *Display) XkbGetIndicatorState(deviceSpec uint32) (state uint32, status Status) {
 	d.Lock()
 	defer d.Unlock()
+	var cstate C.uint
 	status = Status(C.XkbGetIndicatorState(
 		d.c(),
 		C.uint(deviceSpec),
-		(*C.uint)(unsafe.Pointer(&state)),
+		&cstate,
 	))
+	state = uint32(cstate)
 	return
 }
 
