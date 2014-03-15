@@ -234,12 +234,12 @@ func (d *Display) GLXGetProcAddressARB(p string) unsafe.Pointer {
 var glXCreateContextAttribsARBPtr unsafe.Pointer
 
 func (d *Display) GLXCreateContextAttribsARB(config GLXFBConfig, share GLXContext, direct bool, attribs *Int) GLXContext {
-	d.Lock()
-	defer d.Unlock()
 	if glXCreateContextAttribsARBPtr == nil {
 		glXCreateContextAttribsARBPtr = d.GLXGetProcAddressARB("glXCreateContextAttribsARB")
 	}
 
+	d.Lock()
+	defer d.Unlock()
 	cDirect := C.Bool(0)
 	if direct {
 		cDirect = 1
@@ -257,12 +257,12 @@ func (d *Display) GLXCreateContextAttribsARB(config GLXFBConfig, share GLXContex
 var glXSwapIntervalEXTPtr unsafe.Pointer
 
 func (d *Display) GLXSwapIntervalEXT(drawable GLXDrawable, interval int) {
-	d.Lock()
-	defer d.Unlock()
 	if glXSwapIntervalEXTPtr == nil {
 		glXSwapIntervalEXTPtr = d.GLXGetProcAddressARB("glXSwapIntervalEXT")
 	}
 
+	d.Lock()
+	defer d.Unlock()
 	C.chippy_glXSwapIntervalEXT(
 		glXSwapIntervalEXTPtr,
 		d.voidPtr(),
@@ -274,12 +274,12 @@ func (d *Display) GLXSwapIntervalEXT(drawable GLXDrawable, interval int) {
 var glXSwapIntervalMESAPtr unsafe.Pointer
 
 func (d *Display) GLXSwapIntervalMESA(interval int) int {
-	d.Lock()
-	defer d.Unlock()
 	if glXSwapIntervalMESAPtr == nil {
 		glXSwapIntervalMESAPtr = d.GLXGetProcAddressARB("glXSwapIntervalMESA")
 	}
 
+	d.Lock()
+	defer d.Unlock()
 	// Should be OK to use glXSwapIntervalEXT but with the MESA pointer because
 	// they have the same typedef
 	return int(C.chippy_glXSwapIntervalMESA(
@@ -291,12 +291,12 @@ func (d *Display) GLXSwapIntervalMESA(interval int) int {
 var glXSwapIntervalSGIPtr unsafe.Pointer
 
 func (d *Display) GLXSwapIntervalSGI(interval int) int {
-	d.Lock()
-	defer d.Unlock()
 	if glXSwapIntervalSGIPtr == nil {
 		glXSwapIntervalSGIPtr = d.GLXGetProcAddressARB("glXSwapIntervalSGI")
 	}
 
+	d.Lock()
+	defer d.Unlock()
 	// Should be OK to use glXSwapIntervalEXT but with the SGI pointer because
 	// they have the same typedef
 	return int(C.chippy_glXSwapIntervalSGI(
