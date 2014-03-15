@@ -9,7 +9,7 @@ package x11
 #include <stdlib.h>
 #include "xkbcommon/xkbcommon-x11.h"
 
-#cgo LDFLAGS: -lxcb -lXau -lXdmcp -lxcb-xkb -lxkbcommon
+#cgo LDFLAGS: -lxcb -lXau -lXdmcp -lxcb-xkb
 */
 import "C"
 

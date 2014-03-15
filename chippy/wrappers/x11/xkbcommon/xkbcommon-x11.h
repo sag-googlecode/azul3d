@@ -25,7 +25,7 @@
 #define _XKBCOMMON_X11_H
 
 #include <xcb/xcb.h>
-#include <xkbcommon/xkbcommon.h>
+#include "xkbcommon.h"
 
 #ifdef __cplusplus
 extern "C" {

@@ -85,8 +85,8 @@
 #include <stdio.h>
 #include <stdarg.h>
 
-#include <xkbcommon/xkbcommon-names.h>
-#include <xkbcommon/xkbcommon-keysyms.h>
+#include "xkbcommon-names.h"
+#include "xkbcommon-keysyms.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -1607,7 +1607,7 @@ xkb_state_led_index_is_active(struct xkb_state *state, xkb_led_index_t idx);
 /** @} */
 
 /* Leave this include last, so it can pick up our types, etc. */
-#include <xkbcommon/xkbcommon-compat.h>
+#include "xkbcommon-compat.h"
 
 #ifdef __cplusplus
 } /* extern "C" */
