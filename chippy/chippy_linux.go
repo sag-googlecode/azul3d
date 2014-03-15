@@ -385,9 +385,11 @@ func eventLoop() {
 
 				// GLX secret events it seems must be sent only on a single
 				// thread or else heap corruption may occur.
-				if !xDisplay.HandleGLXSecretEvent(e) {
-					logger().Printf("Unhandled X event: %+v\n", e.EGenericEvent)
-				}
+				dispatch(func() {
+					if !xDisplay.HandleGLXSecretEvent(e) {
+						logger().Printf("Unhandled X event: %+v\n", e.EGenericEvent)
+					}
+				})
 
 				// It was either a XKB event, a GLX secret event, or one
 				// unknown to us, we still need to free it though.

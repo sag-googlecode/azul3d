@@ -32,6 +32,7 @@ import "C"
 
 import (
 	"fmt"
+	"sync"
 	"unsafe"
 )
 
@@ -256,10 +257,18 @@ const (
 )
 
 type (
-	Display     C.Display
 	XVisualInfo C.XVisualInfo
 	Status      C.Status
 )
+
+type Display struct {
+	sync.Mutex
+	c *C.Display
+}
+
+func (d *Display) voidPtr() *[0]byte {
+	return (*[0]byte)(unsafe.Pointer(d.c))
+}
 
 func (v *XVisualInfo) Depth() int {
 	return int(v.depth)
@@ -279,10 +288,6 @@ func (v *XVisualInfo) BlueMask() int {
 
 func (v *XVisualInfo) Visualid() int {
 	return int(v.visualid)
-}
-
-func (c *Display) c() *C.Display {
-	return (*C.Display)(unsafe.Pointer(c))
 }
 
 var exportedXlibErrorCallback func(err string)
@@ -307,14 +312,15 @@ func XOpenDisplay(name string) *Display {
 		cstr = C.CString(name)
 		defer C.free(unsafe.Pointer(cstr))
 	}
-	dpy := C.XOpenDisplay(cstr)
-	return (*Display)(unsafe.Pointer(dpy))
+	dpy := new(Display)
+	dpy.c = C.XOpenDisplay(cstr)
+	return dpy
 }
 
 func XGetXCBConnection(d *Display) *Connection {
 	d.Lock()
 	defer d.Unlock()
-	c := C.XGetXCBConnection(d.c())
+	c := C.XGetXCBConnection(d.c)
 	return (*Connection)(unsafe.Pointer(c))
 }
 
@@ -326,13 +332,13 @@ var (
 func (d *Display) XSetEventQueueOwner(owner uint32) {
 	d.Lock()
 	defer d.Unlock()
-	C.XSetEventQueueOwner(d.c(), owner)
+	C.XSetEventQueueOwner(d.c, owner)
 }
 
 func (d *Display) XDefaultScreen() int {
 	d.Lock()
 	defer d.Unlock()
-	return int(C.XDefaultScreen(d.c()))
+	return int(C.XDefaultScreen(d.c))
 }
 
 func (d *Display) XkbGetIndicatorState(deviceSpec uint32) (state uint32, status Status) {
@@ -340,7 +346,7 @@ func (d *Display) XkbGetIndicatorState(deviceSpec uint32) (state uint32, status 
 	defer d.Unlock()
 	var cstate C.uint
 	status = Status(C.XkbGetIndicatorState(
-		d.c(),
+		d.c,
 		C.uint(deviceSpec),
 		&cstate,
 	))
@@ -354,7 +360,7 @@ func (d *Display) XkbSetDetectableAutoRepeat(detectable bool) (wasSetOk, support
 		cDetect = C.True
 	}
 	cSupport := C.Bool(C.False)
-	cWasSet := C.XkbSetDetectableAutoRepeat(d.c(), cDetect, &cSupport)
+	cWasSet := C.XkbSetDetectableAutoRepeat(d.c, cDetect, &cSupport)
 	if cWasSet == C.True {
 		wasSetOk = true
 	}
@@ -367,7 +373,7 @@ func (d *Display) XkbSetDetectableAutoRepeat(detectable bool) (wasSetOk, support
 func (d *Display) XFlush() {
 	d.Lock()
 	defer d.Unlock()
-	C.XFlush(d.c())
+	C.XFlush(d.c)
 }
 
 func (d *Display) XSync(x bool) {
@@ -377,15 +383,7 @@ func (d *Display) XSync(x bool) {
 	if x {
 		cx = C.True
 	}
-	C.XSync(d.c(), cx)
-}
-
-func (d *Display) Lock() {
-	C.XLockDisplay(d.c())
-}
-
-func (d *Display) Unlock() {
-	C.XUnlockDisplay(d.c())
+	C.XSync(d.c, cx)
 }
 
 func XInitThreads() {

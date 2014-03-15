@@ -85,8 +85,10 @@ type (
 )
 
 func (d *Display) HandleGLXSecretEvent(ev *GenericEvent) bool {
+	d.Lock()
+	defer d.Unlock()
 	return C.chippy_handle_glx_secret_event(
-		(*[0]byte)(unsafe.Pointer(d)),
+		d.voidPtr(),
 		(*C.xcb_generic_event_t)(unsafe.Pointer(ev.EGenericEvent)),
 	) != 0
 }
@@ -99,7 +101,7 @@ func (d *Display) GLXCreateNewContext(config GLXFBConfig, renderType int, shareL
 		cDirect = 1
 	}
 	return GLXContext(C.glXCreateNewContext(
-		(*[0]byte)(unsafe.Pointer(d)),
+		d.voidPtr(),
 		C.GLXFBConfig(config),
 		C.int(renderType),
 		C.GLXContext(shareList),
@@ -111,7 +113,7 @@ func (d *Display) GLXDestroyContext(ctx GLXContext) {
 	d.Lock()
 	defer d.Unlock()
 	C.glXDestroyContext(
-		(*[0]byte)(unsafe.Pointer(d)),
+		d.voidPtr(),
 		C.GLXContext(ctx),
 	)
 }
@@ -120,7 +122,7 @@ func (d *Display) GLXMakeContextCurrent(draw, read GLXDrawable, ctx GLXContext) 
 	d.Lock()
 	defer d.Unlock()
 	return int(C.glXMakeContextCurrent(
-		(*[0]byte)(unsafe.Pointer(d)),
+		d.voidPtr(),
 		C.GLXDrawable(draw),
 		C.GLXDrawable(read),
 		C.GLXContext(ctx),
@@ -131,7 +133,7 @@ func (d *Display) GLXSwapBuffers(drawable GLXDrawable) {
 	d.Lock()
 	defer d.Unlock()
 	C.glXSwapBuffers(
-		(*[0]byte)(unsafe.Pointer(d)),
+		d.voidPtr(),
 		C.GLXDrawable(drawable),
 	)
 }
@@ -142,7 +144,7 @@ func (d *Display) GLXQueryVersion(maj, min *Int) bool {
 	d.Lock()
 	defer d.Unlock()
 	return C.glXQueryVersion(
-		(*[0]byte)(unsafe.Pointer(d)),
+		d.voidPtr(),
 		(*C.int)(unsafe.Pointer(maj)),
 		(*C.int)(unsafe.Pointer(min)),
 	) != 0
@@ -152,7 +154,7 @@ func (d *Display) GLXQueryExtensionsString(screen int) string {
 	d.Lock()
 	defer d.Unlock()
 	data := C.glXQueryExtensionsString(
-		(*[0]byte)(unsafe.Pointer(d)),
+		d.voidPtr(),
 		C.int(screen),
 	)
 	return C.GoString(data)
@@ -162,7 +164,7 @@ func (d *Display) GLXGetFBConfigAttrib(config GLXFBConfig, attrib int) (value In
 	d.Lock()
 	defer d.Unlock()
 	ret = int(C.glXGetFBConfigAttrib(
-		(*[0]byte)(unsafe.Pointer(d)),
+		d.voidPtr(),
 		C.GLXFBConfig(config),
 		C.int(attrib),
 		(*C.int)(unsafe.Pointer(&value)),
@@ -175,7 +177,7 @@ func (d *Display) GLXGetFBConfigs(screen int) (configs []GLXFBConfig) {
 	defer d.Unlock()
 	var nConfigs C.int
 	cConfigs := C.glXGetFBConfigs(
-		(*[0]byte)(unsafe.Pointer(d)),
+		d.voidPtr(),
 		C.int(screen),
 		&nConfigs,
 	)
@@ -190,7 +192,7 @@ func (d *Display) GLXCreateWindow(config GLXFBConfig, win Window) GLXWindow {
 	d.Lock()
 	defer d.Unlock()
 	return GLXWindow(C.glXCreateWindow(
-		(*[0]byte)(unsafe.Pointer(d)),
+		d.voidPtr(),
 		C.GLXFBConfig(config),
 		C.Window(win),
 		nil,
@@ -201,7 +203,7 @@ func (d *Display) GLXDestroyWindow(win GLXWindow) {
 	d.Lock()
 	defer d.Unlock()
 	C.glXDestroyWindow(
-		(*[0]byte)(unsafe.Pointer(d)),
+		d.voidPtr(),
 		C.GLXWindow(win),
 	)
 }
@@ -210,7 +212,7 @@ func (d *Display) GLXGetVisualFromFBConfig(config GLXFBConfig) *XVisualInfo {
 	d.Lock()
 	defer d.Unlock()
 	return (*XVisualInfo)(unsafe.Pointer(C.glXGetVisualFromFBConfig(
-		(*[0]byte)(unsafe.Pointer(d)),
+		d.voidPtr(),
 		C.GLXFBConfig(config),
 	)))
 }
@@ -244,7 +246,7 @@ func (d *Display) GLXCreateContextAttribsARB(config GLXFBConfig, share GLXContex
 	}
 	return GLXContext(C.chippy_glXCreateContextAttribsARB(
 		glXCreateContextAttribsARBPtr,
-		(*[0]byte)(unsafe.Pointer(d)),
+		d.voidPtr(),
 		C.GLXFBConfig(config),
 		C.GLXContext(share),
 		cDirect,
@@ -263,7 +265,7 @@ func (d *Display) GLXSwapIntervalEXT(drawable GLXDrawable, interval int) {
 
 	C.chippy_glXSwapIntervalEXT(
 		glXSwapIntervalEXTPtr,
-		(*[0]byte)(unsafe.Pointer(d)),
+		d.voidPtr(),
 		C.GLXDrawable(drawable),
 		C.int(interval),
 	)
