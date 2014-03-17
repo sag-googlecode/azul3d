@@ -13,8 +13,6 @@ package x11
 
 #cgo LDFLAGS: -lX11 -lGL
 
-int chippy_handle_glx_secret_event(Display* d, xcb_generic_event_t* ev);
-
 GLXContext chippy_glXCreateContextAttribsARB(void* p, Display* dpy, GLXFBConfig config, GLXContext share, Bool direct, const int* attribs);
 void chippy_glXSwapIntervalEXT(void* p, Display* dpy, GLXDrawable d, int interval);
 int chippy_glXSwapIntervalMESA(void* p, int interval);
@@ -83,15 +81,6 @@ type (
 	GLXFBConfig C.GLXFBConfig
 	GLXWindow   C.GLXWindow
 )
-
-func (d *Display) HandleGLXSecretEvent(ev *GenericEvent) bool {
-	d.Lock()
-	defer d.Unlock()
-	return C.chippy_handle_glx_secret_event(
-		d.voidPtr(),
-		(*C.xcb_generic_event_t)(unsafe.Pointer(ev.EGenericEvent)),
-	) != 0
-}
 
 func (d *Display) GLXCreateNewContext(config GLXFBConfig, renderType int, shareList GLXContext, direct bool) GLXContext {
 	d.Lock()

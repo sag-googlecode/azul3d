@@ -14,7 +14,7 @@ import (
 )
 
 var (
-	xDisplay                 *x11.Display
+	xDisplay, glxDisplay     *x11.Display
 	xConnection              *x11.Connection
 	xDisplayName             string
 	xrandrMajor, xrandrMinor int
@@ -383,16 +383,7 @@ func eventLoop() {
 					xkbHandleEvent(e)
 				}
 
-				// GLX secret events it seems must be sent only on a single
-				// thread or else heap corruption may occur.
-				dispatch(func() {
-					if !xDisplay.HandleGLXSecretEvent(e) {
-						logger().Printf("Unhandled X event: %+v\n", e.EGenericEvent)
-					}
-				})
-
-				// It was either a XKB event, a GLX secret event, or one
-				// unknown to us, we still need to free it though.
+				// We still need to free the event.
 				e.Free()
 			}
 		}
@@ -419,11 +410,6 @@ func backend_Init() (err error) {
 	xrandrMajor = 0
 	xrandrMinor = 0
 
-	xDisplay = x11.XOpenDisplay(xDisplayName)
-	if xDisplay == nil {
-		return errors.New("Unable to open X11 display; Is the X server running?")
-	}
-
 	if clearCursor == nil {
 		clearCursor = &Cursor{
 			Image: image.NewRGBA(image.Rect(0, 0, 16, 16)),
@@ -432,8 +418,12 @@ func backend_Init() (err error) {
 		}
 	}
 
-	// We want XCB to own the event queue, not Xlib which does a poor job.
-	xDisplay.XSetEventQueueOwner(x11.XCBOwnsEventQueue)
+	// We use a Xlib connection for GLX purely.
+	glxDisplay = x11.XOpenDisplay(xDisplayName)
+	if glxDisplay == nil {
+		theLogger.Println("Unable to open X11 GLX display; Is the X server running?")
+		return errors.New("Unable to open X11 GLX display; Is the X server running?")
+	}
 
 	x11.XSetErrorHandler(func(err string) {
 		// Erm, if something below caused an error, we might hit a deadlock
@@ -444,6 +434,15 @@ func backend_Init() (err error) {
 		}()
 	})
 
+	// And we use an xcb connection for everything else.
+	xDisplay = x11.XOpenDisplay(xDisplayName)
+	if xDisplay == nil {
+		theLogger.Println("Unable to open X11 XCB display; Is the X server running?")
+		return errors.New("Unable to open X11 XCB display; Is the X server running?")
+	}
+
+	// We want XCB to own the event queue, not Xlib which does a poor job.
+	xDisplay.XSetEventQueueOwner(x11.XCBOwnsEventQueue)
 	xConnection = x11.XGetXCBConnection(xDisplay)
 	xDefaultScreenNumber = xDisplay.XDefaultScreen()
 
@@ -561,7 +560,7 @@ func backend_Init() (err error) {
 	}
 
 	var glxMajor, glxMinor x11.Int
-	if !xDisplay.GLXQueryVersion(&glxMajor, &glxMinor) || !atLeastVersion(int(glxMajor), int(glxMinor), glxMinMajor, glxMinMinor) {
+	if !glxDisplay.GLXQueryVersion(&glxMajor, &glxMinor) || !atLeastVersion(int(glxMajor), int(glxMinor), glxMinMajor, glxMinMinor) {
 		return ErrInvalidGLXVersion
 	}
 

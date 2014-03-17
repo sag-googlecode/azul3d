@@ -3,31 +3,6 @@
 
 #include "_cgo_export.h"
 
-// See the following:
-//
-// http://wrl.illest.net/post/45342765813/code-tip-glx-and-xcbownseventqueue
-int chippy_handle_glx_secret_event(Display* d, xcb_generic_event_t* ev) {
-	unsigned int rt = ev->response_type & ~0x80;
-	int (*setWireToEventProc)(Display*, XEvent*, xEvent*);
-
-	XLockDisplay(d);
-
-	setWireToEventProc = XESetWireToEvent(d, rt, 0);
-	if(setWireToEventProc) {
-		XESetWireToEvent(d, rt, setWireToEventProc);
-		XEvent xev;
-		ev->sequence = LastKnownRequestProcessed(d);
-		setWireToEventProc(d, &xev, (xEvent*)ev);
-	}
-
-	XUnlockDisplay(d);
-
-	if(setWireToEventProc) {
-		return 1;
-	}
-	return 0;
-}
-
 typedef GLXContext (*chippy_p_glXCreateContextAttribsARB) (Display* dpy, GLXFBConfig config, GLXContext share, Bool direct, const int* attribs);
 GLXContext chippy_glXCreateContextAttribsARB(void* p, Display* dpy, GLXFBConfig config, GLXContext share, Bool direct, const int* attribs) {
 	chippy_p_glXCreateContextAttribsARB fn = (chippy_p_glXCreateContextAttribsARB)p;

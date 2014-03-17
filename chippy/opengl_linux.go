@@ -36,12 +36,12 @@ type backend_GLConfig struct {
 
 func (w *NativeWindow) GLConfigs() (configs []*GLConfig) {
 	screen := w.r.Screen()
-	for _, glxConfig := range xDisplay.GLXGetFBConfigs(screen.NativeScreen.xScreen) {
+	for _, glxConfig := range glxDisplay.GLXGetFBConfigs(screen.NativeScreen.xScreen) {
 		config := new(GLConfig)
 		config.valid = true
 		config.glxConfig = glxConfig
 
-		vi := xDisplay.GLXGetVisualFromFBConfig(config.glxConfig)
+		vi := glxDisplay.GLXGetVisualFromFBConfig(config.glxConfig)
 		if vi == nil {
 			// Doesn't have a matching X visual, we can't use it.
 			continue
@@ -50,69 +50,69 @@ func (w *NativeWindow) GLConfigs() (configs []*GLConfig) {
 		config.xVisualDepth = uint8(vi.Depth())
 		x11.XFree(unsafe.Pointer(vi))
 
-		doubleBuffer, err := xDisplay.GLXGetFBConfigAttrib(glxConfig, x11.GLX_DOUBLEBUFFER)
+		doubleBuffer, err := glxDisplay.GLXGetFBConfigAttrib(glxConfig, x11.GLX_DOUBLEBUFFER)
 		if err == 0 {
 			config.DoubleBuffered = doubleBuffer == 1
 		}
 
-		stereo, err := xDisplay.GLXGetFBConfigAttrib(glxConfig, x11.GLX_STEREO)
+		stereo, err := glxDisplay.GLXGetFBConfigAttrib(glxConfig, x11.GLX_STEREO)
 		if err == 0 {
 			config.StereoScopic = stereo == 1
 		}
 
-		auxBuffers, err := xDisplay.GLXGetFBConfigAttrib(glxConfig, x11.GLX_AUX_BUFFERS)
+		auxBuffers, err := glxDisplay.GLXGetFBConfigAttrib(glxConfig, x11.GLX_AUX_BUFFERS)
 		if err == 0 {
 			config.AuxBuffers = uint8(auxBuffers)
 		}
 
-		redBits, err := xDisplay.GLXGetFBConfigAttrib(glxConfig, x11.GLX_RED_SIZE)
+		redBits, err := glxDisplay.GLXGetFBConfigAttrib(glxConfig, x11.GLX_RED_SIZE)
 		if err == 0 {
 			config.RedBits = uint8(redBits)
 		}
 
-		greenBits, err := xDisplay.GLXGetFBConfigAttrib(glxConfig, x11.GLX_GREEN_SIZE)
+		greenBits, err := glxDisplay.GLXGetFBConfigAttrib(glxConfig, x11.GLX_GREEN_SIZE)
 		if err == 0 {
 			config.GreenBits = uint8(greenBits)
 		}
 
-		blueBits, err := xDisplay.GLXGetFBConfigAttrib(glxConfig, x11.GLX_BLUE_SIZE)
+		blueBits, err := glxDisplay.GLXGetFBConfigAttrib(glxConfig, x11.GLX_BLUE_SIZE)
 		if err == 0 {
 			config.BlueBits = uint8(blueBits)
 		}
 
-		alphaBits, err := xDisplay.GLXGetFBConfigAttrib(glxConfig, x11.GLX_ALPHA_SIZE)
+		alphaBits, err := glxDisplay.GLXGetFBConfigAttrib(glxConfig, x11.GLX_ALPHA_SIZE)
 		if err == 0 {
 			config.AlphaBits = uint8(alphaBits)
 		}
 
-		depthBits, err := xDisplay.GLXGetFBConfigAttrib(glxConfig, x11.GLX_DEPTH_SIZE)
+		depthBits, err := glxDisplay.GLXGetFBConfigAttrib(glxConfig, x11.GLX_DEPTH_SIZE)
 		if err == 0 {
 			config.DepthBits = uint8(depthBits)
 		}
 
-		accumRedBits, err := xDisplay.GLXGetFBConfigAttrib(glxConfig, x11.GLX_ACCUM_RED_SIZE)
+		accumRedBits, err := glxDisplay.GLXGetFBConfigAttrib(glxConfig, x11.GLX_ACCUM_RED_SIZE)
 		if err == 0 {
 			config.AccumRedBits = uint8(accumRedBits)
 		}
 
-		accumGreenBits, err := xDisplay.GLXGetFBConfigAttrib(glxConfig, x11.GLX_ACCUM_GREEN_SIZE)
+		accumGreenBits, err := glxDisplay.GLXGetFBConfigAttrib(glxConfig, x11.GLX_ACCUM_GREEN_SIZE)
 		if err == 0 {
 			config.AccumGreenBits = uint8(accumGreenBits)
 		}
 
-		accumBlueBits, err := xDisplay.GLXGetFBConfigAttrib(glxConfig, x11.GLX_ACCUM_BLUE_SIZE)
+		accumBlueBits, err := glxDisplay.GLXGetFBConfigAttrib(glxConfig, x11.GLX_ACCUM_BLUE_SIZE)
 		if err == 0 {
 			config.AccumBlueBits = uint8(accumBlueBits)
 		}
 
-		accumAlphaBits, err := xDisplay.GLXGetFBConfigAttrib(glxConfig, x11.GLX_ACCUM_ALPHA_SIZE)
+		accumAlphaBits, err := glxDisplay.GLXGetFBConfigAttrib(glxConfig, x11.GLX_ACCUM_ALPHA_SIZE)
 		if err == 0 {
 			config.AccumAlphaBits = uint8(accumAlphaBits)
 		}
 
-		sampleBuffers, err := xDisplay.GLXGetFBConfigAttrib(glxConfig, x11.GLX_SAMPLE_BUFFERS)
+		sampleBuffers, err := glxDisplay.GLXGetFBConfigAttrib(glxConfig, x11.GLX_SAMPLE_BUFFERS)
 		if err == 0 && sampleBuffers > 0 {
-			samples, err := xDisplay.GLXGetFBConfigAttrib(glxConfig, x11.GLX_SAMPLES)
+			samples, err := glxDisplay.GLXGetFBConfigAttrib(glxConfig, x11.GLX_SAMPLES)
 			if err == 0 {
 				config.Samples = uint8(samples)
 			}
@@ -122,12 +122,12 @@ func (w *NativeWindow) GLConfigs() (configs []*GLConfig) {
 			config.Transparent = true
 		}
 
-		stencilBits, err := xDisplay.GLXGetFBConfigAttrib(glxConfig, x11.GLX_STENCIL_SIZE)
+		stencilBits, err := glxDisplay.GLXGetFBConfigAttrib(glxConfig, x11.GLX_STENCIL_SIZE)
 		if err == 0 {
 			config.StencilBits = uint8(stencilBits)
 		}
 
-		caveat, err := xDisplay.GLXGetFBConfigAttrib(glxConfig, x11.GLX_CONFIG_CAVEAT)
+		caveat, err := glxDisplay.GLXGetFBConfigAttrib(glxConfig, x11.GLX_CONFIG_CAVEAT)
 		if err == 0 {
 			config.Accelerated = caveat != x11.GLX_SLOW_CONFIG
 		}
@@ -163,6 +163,7 @@ func (w *NativeWindow) GLSetConfig(config *GLConfig) {
 	w.xDepth = config.xVisualDepth
 	w.xVisual = config.xVisual
 	w.doRebuildWindow()
+	glxDisplay.XSync(false)
 	xDisplay.XSync(false)
 }
 
@@ -241,7 +242,7 @@ func (w *NativeWindow) GLCreateContext(glVersionMajor, glVersionMinor uint, flag
 		attribs = append(attribs, 0)
 
 		// Create the context
-		c.glxContext = xDisplay.GLXCreateContextAttribsARB(
+		c.glxContext = glxDisplay.GLXCreateContextAttribsARB(
 			w.glConfig.glxConfig,
 			shareContext,
 			true, // direct
@@ -252,7 +253,7 @@ func (w *NativeWindow) GLCreateContext(glVersionMajor, glVersionMinor uint, flag
 		}
 
 	} else {
-		c.glxContext = xDisplay.GLXCreateNewContext(
+		c.glxContext = glxDisplay.GLXCreateNewContext(
 			w.glConfig.glxConfig,
 			x11.GLX_RGBA_TYPE,
 			shareContext,
@@ -263,8 +264,8 @@ func (w *NativeWindow) GLCreateContext(glVersionMajor, glVersionMinor uint, flag
 		}
 	}
 
-	xDisplay.GLXMakeContextCurrent(x11.GLXDrawable(w.xWindow), x11.GLXDrawable(w.xWindow), c.glxContext)
-	defer xDisplay.GLXMakeContextCurrent(0, 0, nil)
+	glxDisplay.GLXMakeContextCurrent(x11.GLXDrawable(w.xWindow), x11.GLXDrawable(w.xWindow), c.glxContext)
+	defer glxDisplay.GLXMakeContextCurrent(0, 0, nil)
 
 	ver := x11.GlGetString(x11.GL_VERSION)
 	if !versionSupported(ver, int(glVersionMajor), int(glVersionMinor)) {
@@ -280,7 +281,7 @@ func (w *NativeWindow) GLDestroyContext(c GLContext) {
 	wc.panicUnlessValid()
 	if !wc.destroyed {
 		wc.destroyed = true
-		xDisplay.GLXDestroyContext(wc.glxContext)
+		glxDisplay.GLXDestroyContext(wc.glxContext)
 	}
 }
 
@@ -294,7 +295,7 @@ func (w *NativeWindow) GLMakeCurrent(c GLContext) {
 		glxContext = wc.glxContext
 		glxWindow = x11.GLXDrawable(w.xWindow)
 	}
-	if xDisplay.GLXMakeContextCurrent(glxWindow, glxWindow, glxContext) == 0 {
+	if glxDisplay.GLXMakeContextCurrent(glxWindow, glxWindow, glxContext) == 0 {
 		logger().Println("glXMakeContextCurrent() failed!")
 	}
 }
@@ -307,7 +308,7 @@ func (w *NativeWindow) GLSwapBuffers() {
 		return
 	}
 
-	xDisplay.GLXSwapBuffers(x11.GLXDrawable(w.xWindow))
+	glxDisplay.GLXSwapBuffers(x11.GLXDrawable(w.xWindow))
 }
 
 func (w *NativeWindow) GLVerticalSync() VSyncMode {
@@ -316,7 +317,7 @@ func (w *NativeWindow) GLVerticalSync() VSyncMode {
 
 func (w *NativeWindow) glxExtensionSupported(wantedExt string) bool {
 	if len(w.glxExtensionsString) == 0 {
-		w.glxExtensionsString = xDisplay.GLXQueryExtensionsString(w.r.Screen().xScreen)
+		w.glxExtensionsString = glxDisplay.GLXQueryExtensionsString(w.r.Screen().xScreen)
 	}
 
 	return extSupported(w.glxExtensionsString, wantedExt)
@@ -361,13 +362,13 @@ func (w *NativeWindow) GLSetVerticalSync(mode VSyncMode) {
 		v = -1
 	}
 	if glxSwapControlEXT {
-		xDisplay.GLXSwapIntervalEXT(x11.GLXDrawable(w.xWindow), v)
+		glxDisplay.GLXSwapIntervalEXT(x11.GLXDrawable(w.xWindow), v)
 	} else if glxSwapControlMESA {
 		if mode == AdaptiveVerticalSync {
 			logger().Println("GLSetVerticalSync(): Driver does not support adaptive vsync; using regular vsync.")
 			v = 1
 		}
-		xDisplay.GLXSwapIntervalMESA(v)
+		glxDisplay.GLXSwapIntervalMESA(v)
 	}
 
 	// Actually, glxSwapControlSGI does not let us use adaptive vsync (-1), nor turn off vsync (0).
@@ -384,6 +385,6 @@ func (w *NativeWindow) GLSetVerticalSync(mode VSyncMode) {
 			logger().Println("GLSetVerticalSync(): Driver does not support turning off vsync; sorry.")
 			v = 1
 		}
-		xDisplay.GLXSwapIntervalSGI(v)
+		glxDisplay.GLXSwapIntervalSGI(v)
 	}*/
 }
