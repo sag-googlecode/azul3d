@@ -443,7 +443,10 @@ func (o *obj) setup() error {
 	}
 
 	o.rendererCreateExecute <- func() {
-		config := chippy.GLChooseConfig(o.Window.GLConfigs(), chippy.GLWorstConfig, chippy.GLBestConfig)
+		// Try to get only 2x MSAA at max.
+		target := *chippy.GLBestConfig
+		target.Samples = 2
+		config := chippy.GLChooseConfig(o.Window.GLConfigs(), chippy.GLWorstConfig, &target)
 		o.Window.GLSetConfig(config)
 
 		o.loaderContext, err = o.Window.GLCreateContext(2, 0, glContextFlags, nil)
