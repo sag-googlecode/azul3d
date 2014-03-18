@@ -52,8 +52,9 @@ type obj struct {
 
 	node *scene.Node
 
-	Clock  *clock.Clock
-	Window *chippy.Window
+	Clock             *clock.Clock
+	Window            *chippy.Window
+	worstCfg, bestCfg *chippy.GLConfig
 
 	renderer backend
 
@@ -362,12 +363,32 @@ func mustGetObj(n *scene.Node) *obj {
 // them appropriately into an window or offscreen buffer.
 //
 // The window parameter specifies which window will be used for rendering.
-func Create(n *scene.Node, window *chippy.Window) error {
+//
+// If worstCfg or bestCfg are not nil, then they are used in place of
+// chippy.GLWorstConfig and chippy.GLBestConfig (with Samples set to two) in
+// the call to chippy.GLChooseConfig() (this allows for choosing a specific
+// OpenGL hardware configuration).
+func Create(n *scene.Node, window *chippy.Window, worstCfg, bestCfg *chippy.GLConfig) error {
 	o := getObj(n)
 	if o == nil {
 		o = new(obj)
 		o.Clock = clock.New()
 		o.Window = window
+
+		// Use chippy.GLWorstConfig if worstCfg is nil.
+		if worstCfg == nil {
+			worst := *chippy.GLWorstConfig
+			worstCfg = &worst
+		}
+		o.worstCfg = worstCfg
+
+		// Use chippy.GLBestConfig (with Samples=2) if bestCfg is nil.
+		if bestCfg == nil {
+			best := *chippy.GLBestConfig
+			best.Samples = 2
+			bestCfg = &best
+		}
+		o.bestCfg = bestCfg
 
 		// Limit clock to 75FPS, for drivers that do not support vsync
 		o.Clock.SetMaxFrameRate(75)
@@ -443,10 +464,7 @@ func (o *obj) setup() error {
 	}
 
 	o.rendererCreateExecute <- func() {
-		// Try to get only 2x MSAA at max.
-		target := *chippy.GLBestConfig
-		target.Samples = 2
-		config := chippy.GLChooseConfig(o.Window.GLConfigs(), chippy.GLWorstConfig, &target)
+		config := chippy.GLChooseConfig(o.Window.GLConfigs(), o.worstCfg, o.bestCfg)
 		o.Window.GLSetConfig(config)
 
 		o.loaderContext, err = o.Window.GLCreateContext(2, 0, glContextFlags, nil)

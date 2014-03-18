@@ -60,7 +60,7 @@ func setup() {
 	}
 
 	Renderer = scene.New("renderer")
-	err = renderer.Create(Renderer, Window)
+	err = renderer.Create(Renderer, Window, nil, nil)
 	if err != nil {
 		log.Fatal(err)
 	}
