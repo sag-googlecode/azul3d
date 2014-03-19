@@ -837,6 +837,12 @@ func (w *NativeWindow) handleEvent(ref *x11.GenericEvent, e interface{}) {
 		case 5:
 			button = mouse.Wheel
 			state = mouse.ScrollBack
+		case 6:
+			button = mouse.Wheel
+			state = mouse.ScrollLeft
+		case 7:
+			button = mouse.Wheel
+			state = mouse.ScrollRight
 		default:
 			logger().Printf("Unknown button press event; Detail=%v\n", ev.Detail)
 			return
@@ -866,6 +872,12 @@ func (w *NativeWindow) handleEvent(ref *x11.GenericEvent, e interface{}) {
 		case 5:
 			button = mouse.Wheel
 			state = mouse.ScrollBack
+		case 6:
+			button = mouse.Wheel
+			state = mouse.ScrollLeft
+		case 7:
+			button = mouse.Wheel
+			state = mouse.ScrollRight
 		default:
 			logger().Printf("Unknown button release event; Detail=%v\n", ev.Detail)
 			return
