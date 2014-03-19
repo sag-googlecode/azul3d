@@ -453,6 +453,7 @@ type NativeWindow struct {
 	can struct {
 		sync.RWMutex
 		sendPositionEvents     bool
+		sendSizeEvents         bool
 		sendRelativeMoveEvents bool
 	}
 
@@ -988,19 +989,21 @@ func (w *NativeWindow) handleEvent(ref *x11.GenericEvent, e interface{}) {
 		}()
 
 	case *x11.ConfigureNotifyEvent:
+		w.can.RLock()
 		if ev.Width != 0 && ev.Height != 0 {
-			w.r.trySetSize(int(ev.Width), int(ev.Height))
+			if w.can.sendSizeEvents {
+				w.r.trySetSize(int(ev.Width), int(ev.Height))
+			}
 		}
 
 		if ev.X != 0 || ev.Y != 0 {
-			w.can.RLock()
 			if w.can.sendPositionEvents {
 				x := int(ev.X)
 				y := int(ev.Y)
 				w.r.trySetPosition(x, y)
 			}
-			w.can.RUnlock()
 		}
+		w.can.RUnlock()
 
 	case *x11.ExposeEvent:
 		go func() {
@@ -1297,29 +1300,32 @@ func (w *NativeWindow) setVisible(visible bool) {
 }
 
 func (w *NativeWindow) doSetVisible(visible bool) {
-	// Some window managers will allow us to specify window position *before*
-	// being mapped, and then the window won't flicker/jump on the user's
-	// screen.
+	// Some window managers will allow us to specify window position and size
+	// *before* being mapped, and then the window won't flicker/jump on the
+	// user's screen.
 	//
-	// But sadly other window managers will only respect window positions
-	// *after* being mapped. We try to get the absolute best of both worlds by
-	// sending the position requests twice.
+	// But sadly other window managers will only respect window positions and
+	// sizes *after* being mapped. We try to get the absolute best of both
+	// worlds by sending the position requests twice.
 
 	if visible {
-		// Place window *before* we map; *some* window managers respect this.
+		// Set the window position and size, before the window is mapped.
 		windowX, windowY := w.r.Position()
 		w.doConfigurePosition(windowX, windowY)
+		width, height := w.r.Size()
+		w.doConfigureSize(width, height)
 
 		// Required before mapping.
 		w.doUpdateNetWmState()
 		w.doUpdateMotifWMHints(w.r.Decorated())
 		w.doUpdateNetWmIcon()
 
+		// Map the window.
 		xConnection.MapWindow(w.xWindow)
 
-		// Place window *after* we map; some window managers *ONLY* respect
-		// this.
+		// Now set the window position and size, after it has been mapped.
 		w.doConfigurePosition(windowX, windowY)
+		w.doConfigureSize(width, height)
 		xConnection.Flush()
 
 		// Wait for an map notify event (or timeout if the server does not send it)
@@ -1348,16 +1354,19 @@ func (w *NativeWindow) doSetVisible(visible bool) {
 
 		xConnection.Flush()
 
-		// Start receiving position events now that configurePosition is completed.
+		// Start receiving position and size events now that configurePosition
+		// is completed.
 		w.can.Lock()
 		w.can.sendPositionEvents = true
+		w.can.sendSizeEvents = true
 		w.can.Unlock()
 
 	} else {
-		// Stop receiving position events as some invalid ones come in after
-		// our UnmapWindow request.
+		// Stop receiving position and size events as some invalid ones come in
+		// after our UnmapWindow request.
 		w.can.Lock()
 		w.can.sendPositionEvents = false
+		w.can.sendSizeEvents = false
 		w.can.Unlock()
 
 		err := xConnection.RequestCheck(xConnection.UnmapWindow(w.xWindow))
@@ -1418,6 +1427,7 @@ func (w *NativeWindow) setDecorated(decorated bool) {
 
 	w.can.Lock()
 	w.can.sendPositionEvents = false
+	w.can.sendSizeEvents = false
 	w.can.Unlock()
 
 	// Update motif window hints
@@ -1439,6 +1449,7 @@ l:
 
 	w.can.Lock()
 	w.can.sendPositionEvents = true
+	w.can.sendSizeEvents = true
 	w.can.Unlock()
 }
 
