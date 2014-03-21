@@ -1943,6 +1943,7 @@ func (w *NativeWindow) destroy() {
 	xWindowLookupAccess.Unlock()
 	xConnection.DestroyWindow(w.xWindow)
 	xConnection.FreeGC(w.xGC)
+	xConnection.Flush()
 }
 
 func newNativeWindow(real *Window) *NativeWindow {
