@@ -66,9 +66,9 @@ func (n *Node) doRecursiveClearActiveProps() {
 
 // ActiveProp returns the active property value for this node.
 //
-// This means the value that this node would use, as affected by weather or not
+// This means the value that this node would use, as affected by whether or not
 // parent node's have the property specified (essentially overriding this child
-// nodes wishes), or weather or not SetPropForced(prop, true) was used on this
+// nodes wishes), or whether or not SetPropForced(prop, true) was used on this
 // node, etc.
 func (n *Node) ActiveProp(prop interface{}) (value interface{}, ok bool) {
 	pair, havePair := n.loadActiveProp(prop)

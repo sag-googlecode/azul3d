@@ -21,7 +21,7 @@
 // Render order vs visual order
 //
 // The order that nodes are rendered in does not directly affect the order in
-// which objects appear on the screen relative to one another (i.e. weather an
+// which objects appear on the screen relative to one another (i.e. whether an
 // object is behind or in front of another object) but instead contributes to
 // it in addition to other factors such as depth testing.
 //

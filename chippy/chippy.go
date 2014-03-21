@@ -38,10 +38,10 @@ func removeDestroyCallback(c *callback) {
 var (
 	globalLock sync.RWMutex
 
-	// Tells weather chippy has been previously Init()
+	// Tells whether chippy has been previously Init()
 	isInit bool
 
-	// Tells weather a previous call to Init() failed
+	// Tells whether a previous call to Init() failed
 	initError error
 
 	mainLoopFrames chan func() bool
@@ -59,7 +59,7 @@ func dispatch(f func()) {
 	<-done
 }
 
-// IsInit returns weather Chippy has been initialized via a previous call to
+// IsInit returns whether Chippy has been initialized via a previous call to
 // Init().
 //
 // IsInit() returns false if Destroy() was previously called.
@@ -158,7 +158,7 @@ func Exit() {
 }
 
 // MainLoopFrames returns an channel of functions which return an boolean
-// status as to weather you should continue running the 'main loop'.
+// status as to whether you should continue running the 'main loop'.
 //
 // Typically you would not use this function and would instead use the
 // MainLoop() function.

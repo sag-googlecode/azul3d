@@ -66,12 +66,12 @@ func (w *Watcher) State(key Key) State {
 	return state
 }
 
-// Down tells weather the specified key is currently in the down state.
+// Down tells whether the specified key is currently in the down state.
 func (w *Watcher) Down(key Key) bool {
 	return w.State(key) == Down
 }
 
-// Up tells weather the specified key is currently in the up state.
+// Up tells whether the specified key is currently in the up state.
 func (w *Watcher) Up(key Key) bool {
 	return w.State(key) == Up
 }
@@ -108,12 +108,12 @@ func (w *Watcher) OSState(os OS) State {
 	return state
 }
 
-// OSDown tells weather the specified OS key value is currently in the down state.
+// OSDown tells whether the specified OS key value is currently in the down state.
 func (w *Watcher) OSDown(os OS) bool {
 	return w.OSState(os) == Down
 }
 
-// OSUp tells weather the specified OS key value is currently in the up state.
+// OSUp tells whether the specified OS key value is currently in the up state.
 func (w *Watcher) OSUp(os OS) bool {
 	return w.OSState(os) == Up
 }

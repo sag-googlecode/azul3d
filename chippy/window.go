@@ -192,7 +192,7 @@ func (w *Window) SetTitle(title string) {
 	w.access.RUnlock()
 }
 
-// SetVisible specifies weather this window should be visibly seen by the
+// SetVisible specifies whether this window should be visibly seen by the
 // user, if false the window will appear simply gone (even though it
 // actually exists, and you may render to it, and at an later time show the
 // window again).
@@ -217,7 +217,7 @@ func (w *Window) SetVisible(visible bool) {
 	w.access.RUnlock()
 }
 
-// SetTransparent specifies weather this window should be transparent, used
+// SetTransparent specifies whether this window should be transparent, used
 // in things like splash screens, etc.
 //
 // Default: false
@@ -240,7 +240,7 @@ func (w *Window) SetTransparent(transparent bool) {
 	w.access.RUnlock()
 }
 
-// SetDecorated specifies weather this window should have window
+// SetDecorated specifies whether this window should have window
 // decorations, this includes the title bar, exit buttons, borders, system
 // menu buttons, icons, etc.
 //
@@ -264,7 +264,7 @@ func (w *Window) SetDecorated(decorated bool) {
 	w.access.RUnlock()
 }
 
-// SetAlwaysOnTop specifies weather the window should be always on top of
+// SetAlwaysOnTop specifies whether the window should be always on top of
 // other windows.
 //
 // If the window is destroyed, this function will panic.
@@ -405,7 +405,7 @@ func (w *Window) SetSize(width, height int) {
 	w.access.RUnlock()
 }
 
-// SetCursorGrabbed specifies weather the mouse cursor should be grabbed,
+// SetCursorGrabbed specifies whether the mouse cursor should be grabbed,
 // this means the cursor will be invisible, and will be forced to stay
 // within the client region of the window. This behavior is the same as you
 // would typically see in first person shooter games.
@@ -524,7 +524,7 @@ func (w *Window) PrepareCursor(cursor *Cursor) {
 	}
 }
 
-// SetFullscreen specifies weather the window should be full screen,
+// SetFullscreen specifies whether the window should be full screen,
 // consuming the entire screen's size, and being the only thing displayed
 // on the screen.
 //
@@ -586,7 +586,7 @@ func (w *Window) trySetMinimized(minimized bool) bool {
 	return false
 }
 
-// SetMinimized specifies weather the window should currently be minimized.
+// SetMinimized specifies whether the window should currently be minimized.
 func (w *Window) SetMinimized(minimized bool) {
 	w.access.RLock()
 
@@ -627,7 +627,7 @@ func (w *Window) trySetMaximized(maximized bool) bool {
 	return false
 }
 
-// SetMaximized specifies weather the window should currently be maximized.
+// SetMaximized specifies whether the window should currently be maximized.
 func (w *Window) SetMaximized(maximized bool) {
 	w.access.RLock()
 
@@ -817,7 +817,7 @@ func (w *Window) SetPositionCenter(screen *Screen) {
 	w.SetPosition(halfScreenWidth-halfWindowWidth, halfScreenHeight-halfWindowHeight)
 }
 
-// Opened tells weather the window is currently open.
+// Opened tells whether the window is currently open.
 //
 // If the window is destroyed, the returned value will be false.
 func (w *Window) Opened() bool {
@@ -868,7 +868,7 @@ func (w *Window) Screen() *Screen {
 	return w.screen
 }
 
-// Destroyed tells weather there was an previous call to the Destroy function.
+// Destroyed tells whether there was an previous call to the Destroy function.
 func (w *Window) Destroyed() bool {
 	w.access.RLock()
 	defer w.access.RUnlock()
@@ -938,7 +938,7 @@ func (w *Window) AspectRatio() float32 {
 	return w.aspectRatio
 }
 
-// Minimized tells weather the window is currently minimized, as previously
+// Minimized tells whether the window is currently minimized, as previously
 // set via an call to the SetMinimized function, or due to the user
 // changing the minimized status of the window directly through the window
 // manager, or the default value of false.
@@ -949,7 +949,7 @@ func (w *Window) Minimized() bool {
 	return w.minimized
 }
 
-// Maximized tells weather the window is currently maximized, as previously
+// Maximized tells whether the window is currently maximized, as previously
 // set via an call to the SetMaximized function, or due to the user
 // changing the maximized status of the window directly through the window
 // manager, or the default value of false.
@@ -960,7 +960,7 @@ func (w *Window) Maximized() bool {
 	return w.maximized
 }
 
-// Fullscreen tells weather the window is currently full screen, as
+// Fullscreen tells whether the window is currently full screen, as
 // previously set by an call to the SetFullscreen function.
 func (w *Window) Fullscreen() bool {
 	w.access.RLock()
@@ -969,7 +969,7 @@ func (w *Window) Fullscreen() bool {
 	return w.fullscreen
 }
 
-// AlwaysOnTop tells weather the window is currently always on top of other
+// AlwaysOnTop tells whether the window is currently always on top of other
 // windows, due to an previous call to the SetAlwaysOnTop function, or due
 // to the user changing the always on top state directly through the window
 // manager itself.
@@ -1034,7 +1034,7 @@ func (w *Window) trySetCursorWithin(within bool) bool {
 	return false
 }
 
-// CursorWithin tells weather the mouse cursor is inside the window's
+// CursorWithin tells whether the mouse cursor is inside the window's
 // client region or not.
 func (w *Window) CursorWithin() bool {
 	w.access.RLock()
@@ -1043,7 +1043,7 @@ func (w *Window) CursorWithin() bool {
 	return w.cursorWithin
 }
 
-// CursorGrabbed tells weather the mouse cursor is currently grabbed, as
+// CursorGrabbed tells whether the mouse cursor is currently grabbed, as
 // previously set via an call to the SetCursorGrabbed function.
 func (w *Window) CursorGrabbed() bool {
 	w.access.RLock()
@@ -1103,7 +1103,7 @@ func (w *Window) trySetFocused(focused bool) bool {
 	return false
 }
 
-// Focused tells weather this window currently has focus, and is therefor
+// Focused tells whether this window currently has focus, and is therefor
 // the current window that is being interacted with by the user.
 func (w *Window) Focused() bool {
 	w.access.RLock()
@@ -1112,7 +1112,7 @@ func (w *Window) Focused() bool {
 	return w.focused
 }
 
-// Transparent tells weather this window is transparent, via an previous
+// Transparent tells whether this window is transparent, via an previous
 // call to SetTransparent()
 func (w *Window) Transparent() bool {
 	w.access.RLock()
@@ -1130,7 +1130,7 @@ func (w *Window) Title() string {
 	return w.title
 }
 
-// Visible tells weather this window is currently visible to the user, as
+// Visible tells whether this window is currently visible to the user, as
 // previously set by the SetVisible function, or the default value of true
 // (visible).
 func (w *Window) Visible() bool {
@@ -1140,7 +1140,7 @@ func (w *Window) Visible() bool {
 	return w.visible
 }
 
-// Decorations tells weather this window has window decorations on, as
+// Decorations tells whether this window has window decorations on, as
 // previously set by the SetDecorations function, or the default value of
 // true (on).
 func (w *Window) Decorated() bool {

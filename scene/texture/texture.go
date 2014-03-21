@@ -183,7 +183,7 @@ func (t *Texture) AutoLoad() bool {
 	return t.autoLoad
 }
 
-// SetClearOnLoad specifies weather or not to clear the source of this texture
+// SetClearOnLoad specifies whether or not to clear the source of this texture
 // when it is loaded.
 //
 // Default: true
@@ -194,7 +194,7 @@ func (t *Texture) SetClearOnLoad(clearOnLoad bool) {
 	t.clearOnLoad = clearOnLoad
 }
 
-// ClearOnLoad tells weather or not the source of this texture will be cleared
+// ClearOnLoad tells whether or not the source of this texture will be cleared
 // when it is loaded.
 //
 // Default: true
@@ -275,7 +275,7 @@ func (t *Texture) BorderColor() (r, g, b, a float64) {
 	return t.borderColor.X, t.borderColor.Y, t.borderColor.Z, t.borderColor.W
 }
 
-// SetCompressed sets weather or not this texture should be compressed in
+// SetCompressed sets whether or not this texture should be compressed in
 // memory.
 func (t *Texture) SetCompressed(compressed bool) {
 	t.Lock()
@@ -284,7 +284,7 @@ func (t *Texture) SetCompressed(compressed bool) {
 	t.compressed = compressed
 }
 
-// Compressed returns weather or not this texture is set to be compressed in
+// Compressed returns whether or not this texture is set to be compressed in
 // memory.
 func (t *Texture) Compressed() bool {
 	t.RLock()

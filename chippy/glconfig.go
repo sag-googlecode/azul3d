@@ -95,14 +95,14 @@ type GLConfig struct {
 	// An GLConfig is 'valid' when the user did not create it themself.
 	valid bool
 
-	// Tells weather this configuration is hardware accelerated or uses some
+	// Tells whether this configuration is hardware accelerated or uses some
 	// software implementation version of OpenGL.
 	//
 	// Note: Most software implementations are very low OpenGL versions. (I.e.
 	// GL 1.1)
 	Accelerated bool
 
-	// Tells weather or not this config will support the window being
+	// Tells whether or not this config will support the window being
 	// transparent while using OpenGL rendering
 	Transparent bool
 
@@ -153,7 +153,7 @@ func (c *GLConfig) String() string {
 	return fmt.Sprintf("GLConfig(Accelerated=%t, %dbpp[%d,%d,%d,%d], AccumBits=[%d,%d,%d,%d], Samples=%d, AuxBuffers=%d, DepthBits=%d, StencilBits=%d, DoubleBuffered=%t, Transparent=%t, StereoScopic=%t)", c.Accelerated, c.RedBits+c.GreenBits+c.BlueBits+c.AlphaBits, c.RedBits, c.GreenBits, c.BlueBits, c.AlphaBits, c.AccumRedBits, c.AccumGreenBits, c.AccumBlueBits, c.AccumAlphaBits, c.Samples, c.AuxBuffers, c.DepthBits, c.StencilBits, c.DoubleBuffered, c.Transparent, c.StereoScopic)
 }
 
-// Equals tells weather this GLConfig equals the other GLFrameBufferConfig, by
+// Equals tells whether this GLConfig equals the other GLFrameBufferConfig, by
 // comparing each attribute.
 func (c *GLConfig) Equals(other *GLConfig) bool {
 	o := other

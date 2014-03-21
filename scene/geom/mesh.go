@@ -14,7 +14,7 @@ import (
 )
 
 // Mesh represents a single mesh made up of several components. A mesh may or
-// may not be made up of indexed triangles, normals, etc, depending on weather
+// may not be made up of indexed triangles, normals, etc, depending on whether
 // or not len(m.Indices) == 0 holds true.
 //
 // In the event that a mesh is indexed, m.Indices holds the indices and it can
@@ -150,7 +150,7 @@ func (m *Mesh) UsageHint() Hint {
 	return m.Hint
 }
 
-// SetHidden specifies weather this mesh is considered hidden or not.
+// SetHidden specifies whether this mesh is considered hidden or not.
 //
 // This function is thread-safe.
 func (m *Mesh) SetHidden(hidden bool) {

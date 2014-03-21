@@ -41,7 +41,7 @@ type Layer struct {
 	// Value between 0 and 1 representing the opacity of the layer.
 	Opacity float64
 
-	// Boolean value representing weather or not the layer is visible.
+	// Boolean value representing whether or not the layer is visible.
 	Visible bool
 
 	// A map of 2D coordinates in this layer to so called "global tile IDs"

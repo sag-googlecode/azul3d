@@ -82,7 +82,7 @@
 //  down, and then automatically switch back to pixel-based ones, but due to
 //  the fact that pixel-based mouse movement is accelerated by the user's
 //  configured mouse sensitivity, the movement events would be different speeds
-//  depending on weather or not they held mouse buttons down or not -- which is
+//  depending on whether or not they held mouse buttons down or not -- which is
 //  obviously very bad. For this reason we decided to not use Xinput2 at all.
 //
 //  Xinput2 may still be used in the future for 32-bit keycodes should there be

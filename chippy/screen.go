@@ -41,7 +41,7 @@ func (s *Screen) String() string {
 	return fmt.Sprintf("Screen(\"%s\", %.0f by %.0fmm)", s.Name(), w, h)
 }
 
-// Equals compares this screen with the other screen, determining weather or
+// Equals compares this screen with the other screen, determining whether or
 // not they are the same physical screen.
 func (s *Screen) Equals(other *Screen) bool {
 	if s.String() == other.String() {

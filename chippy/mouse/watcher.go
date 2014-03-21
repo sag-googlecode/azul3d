@@ -60,12 +60,12 @@ func (s *Watcher) State(button Button) State {
 	return state
 }
 
-// Down tells weather the specified mouse button is currently in the down state.
+// Down tells whether the specified mouse button is currently in the down state.
 func (s *Watcher) Down(button Button) bool {
 	return s.State(button) == Down
 }
 
-// Up tells weather the specified mouse button is currently in the up state.
+// Up tells whether the specified mouse button is currently in the up state.
 func (s *Watcher) KeyUp(button Button) bool {
 	return s.State(button) == Up
 }

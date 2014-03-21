@@ -18,7 +18,7 @@ type Stats struct {
 	startedSamples map[string]time.Duration
 }
 
-// SetEnabled specifies weather or not to enable taking samples, if off (false), then calls to
+// SetEnabled specifies whether or not to enable taking samples, if off (false), then calls to
 // Begin() and End() are no-op.
 func (s *Stats) SetEnabled(enabled bool) {
 	s.access.Lock()
@@ -27,7 +27,7 @@ func (s *Stats) SetEnabled(enabled bool) {
 	s.enabled = enabled
 }
 
-// Enabled tells weather or not taking samples is currently enabled or not.
+// Enabled tells whether or not taking samples is currently enabled or not.
 func (s *Stats) Enabled() bool {
 	s.access.RLock()
 	defer s.access.RUnlock()
@@ -53,7 +53,7 @@ func (s *Stats) Remove(category string) {
 	delete(s.categories, category)
 }
 
-// Has tells weather or not the specified category exists.
+// Has tells whether or not the specified category exists.
 func (s *Stats) Has(category string) bool {
 	s.access.RLock()
 	defer s.access.RUnlock()

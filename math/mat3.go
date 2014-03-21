@@ -85,7 +85,7 @@ func (a Mat3) ColVec2(column int) Vec2 {
 	return Vec2{a[0][column], a[1][column]}
 }
 
-// AlmostEquals tells weather a is memberwise equal to b using the specified
+// AlmostEquals tells whether a is memberwise equal to b using the specified
 // epsilon value.
 func (a Mat3) AlmostEquals(b Mat3, epsilon float64) bool {
 	return AlmostEqual(a[0][0], b[0][0], epsilon) &&
@@ -101,7 +101,7 @@ func (a Mat3) AlmostEquals(b Mat3, epsilon float64) bool {
 		AlmostEqual(a[2][2], b[2][2], epsilon)
 }
 
-// Equals tells weather a is memberwise equal to b using the default EPSILON
+// Equals tells whether a is memberwise equal to b using the default EPSILON
 // value.
 func (a Mat3) Equals(b Mat3) bool {
 	return a.AlmostEquals(b, EPSILON)

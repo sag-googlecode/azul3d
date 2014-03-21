@@ -106,7 +106,7 @@ func (c *Context) SetBatching(batching bool) {
 	c.batching = batching
 }
 
-// Batching tells weather or not batching is on or off for this Context.
+// Batching tells whether or not batching is on or off for this Context.
 func (c *Context) Batching() bool {
 	return c.batching
 }
@@ -118,7 +118,7 @@ func (c *Context) push(f C.gl_wrap_batch_func) {
 // Execute executes all the currently pending OpenGL function calls for this
 // Context.
 //
-// This function executes pending calls regardless of weather or not batching
+// This function executes pending calls regardless of whether or not batching
 // is turned on.
 func (c *Context) Execute() {
 	if len(c.batch) > 0 {

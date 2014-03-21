@@ -11,7 +11,7 @@ import (
 // CoordSys represents an specific coordinate system.
 type CoordSys uint8
 
-// RightHanded tells weather this coordinate system is right-handed.
+// RightHanded tells whether this coordinate system is right-handed.
 // A panic will occur if the coordinate system is invalid.
 func (c CoordSys) RightHanded() bool {
 	switch c {

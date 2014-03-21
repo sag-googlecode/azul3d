@@ -12,7 +12,7 @@ import (
 
 // Region describes a single area on the final render surface (e.g. a window)
 // that a camera will draw it's associated scene into. It also describes the
-// area that will be cleared before each frame and weather or not the depth
+// area that will be cleared before each frame and whether or not the depth
 // buffer will be cleared, etc.
 type Region struct {
 	access sync.RWMutex
@@ -151,7 +151,7 @@ func (r *Region) Region() (x, y, width, height float64) {
 	return r.x, r.y, r.width, r.height
 }
 
-// SetClearColorActive specifies weather or not clearing the color buffer is
+// SetClearColorActive specifies whether or not clearing the color buffer is
 // enabled.
 //
 // Default: true
@@ -194,7 +194,7 @@ func (r *Region) ClearColor() color.Color {
 	return r.color
 }
 
-// SetClearDepthActive specifies weather or not clearing the depth buffer is
+// SetClearDepthActive specifies whether or not clearing the depth buffer is
 // enabled.
 //
 // Default: true
@@ -237,7 +237,7 @@ func (r *Region) ClearDepth() float64 {
 	return r.depth
 }
 
-// SetClearStencilActive specifies weather or not clearing the stencil buffer
+// SetClearStencilActive specifies whether or not clearing the stencil buffer
 // is enabled.
 //
 // Default: true

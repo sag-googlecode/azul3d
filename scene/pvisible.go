@@ -35,7 +35,7 @@ func (n *Node) Hidden() bool {
 	return !visible.(bool)
 }
 
-// SetShownThrough specifies weather or not this visibility of this node should
+// SetShownThrough specifies whether or not this visibility of this node should
 // be forced regardless of parent node wishes.
 //
 // Default: false
@@ -43,7 +43,7 @@ func (n *Node) SetShownThrough(shownThrough bool) {
 	n.SetPropForced(PVisible, shownThrough)
 }
 
-// ShownThrough tells weather or not the visibility of this node is forced
+// ShownThrough tells whether or not the visibility of this node is forced
 // regardless of parent node wishes.
 //
 // Default: false

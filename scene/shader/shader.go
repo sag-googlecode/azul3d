@@ -237,7 +237,7 @@ func (s *Shader) NativeIdentity() interface{} {
 	return s.nativeIdentity
 }
 
-// SetClearOnLoad specifies weather or not to clear the source of this shader
+// SetClearOnLoad specifies whether or not to clear the source of this shader
 // when it is loaded.
 //
 // Default: false
@@ -248,7 +248,7 @@ func (s *Shader) SetClearOnLoad(clearOnLoad bool) {
 	s.clearOnLoad = clearOnLoad
 }
 
-// ClearOnLoad tells weather or not the source of this shader will be cleared
+// ClearOnLoad tells whether or not the source of this shader will be cleared
 // when it is loaded.
 //
 // Default: false
