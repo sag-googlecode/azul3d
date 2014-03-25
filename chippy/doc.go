@@ -16,28 +16,25 @@
 //
 // OpenGL Support
 //
-// We support creating both OpenGL new and old style contexts (any OpenGL
-// version), also we can abstract away many platform specific OpenGL functions
-// for you (WGL, GLX, AGL extensions), we support shared OpenGL contexts, etc.
+// Creating both new and old style OpenGL contexts is supported (this allows
+// creating an OpenGL context of any version). Many platform specific OpenGL
+// functions are abstracted away for you (such as WGL, GLX, etc extensions).
+// Shared OpenGL contexts, multisampling, vertical sync toggling, etc are all
+// supported.
 //
-// Chippy works with any OpenGL wrappers, it does not try to solve the problem
-// of wrapping OpenGL or OpenGL extensions inside Go.
+// Chippy works with all OpenGL wrappers, it does not provide any OpenGL
+// wrappers itself (although azul3d.org/native/gl has some good ones).
 //
-// Chippy fixes up all of the platform specific parts of OpenGL for you -- but
-// it can't do any magic. OpenGL is still designed to be thread-local, Chippy
-// will never fix this issue with OpenGL, and OpenGL will never fix this
-// because of the inherit single-threaded nature of the graphics pipeline.
-//
-// As such you'll need to use runtime.LockOSThread(), and
-// runtime.UnlockOSThread() with OpenGL specific things, and be aware of
-// threads in your OpenGL related code, sorry!
+// Although we handle the platform-specific parts of OpenGL for you, no magic
+// is performed: OpenGL still uses thread local storage so when working with
+// OpenGL's API you'll need to utilize runtime.LockOSThread() properly.
 //
 // Microsoft Windows FAQ
 //
 // What versions of Windows are supported?
 //  Chippy requires Windows XP or higher.
 //
-//  It might also work on Windows 2000 Professional and Server editions, but
+//  It might also work on Windows 2000 Professional/Server editions, but
 //  support for these version is not tested actively.
 //
 // How do I add an application icon to my program?
@@ -56,52 +53,24 @@
 //
 // Linux-X11 FAQ
 //
-// What are the Linux/X11 requirements?
-//  Only the Xfree86 X server is supported (I.e. the 'normal' Linux one; not
-//  Apple's X server, Cygwin ones, etc).
+// What development files are needed?
+//  libxcb (including xcb-xkb and xcb-icccm components).
+//  libX11
+//  libGLX
 //
-//  The X-Extension 'xkb' is required and is used for various keyboard related
-//  tasks.
+// What X extensions are needed?
+//  GLX 1.4 (required, for OpenGL tasks, 1.4 is needed for multisampling)
+//  XRandR 1.2 (optional, used for screen-mode switching, etc)
+//  XInput 2.0 (required, for raw mouse input)
+//  XKB 1.0 (required, for keyboard input)
 //
-//  The X-Extension 'randr' is reccomended, but not required. Without the randr
-//  extension it becomes impossible to perform various screen related tasks,
-//  such as switching screen modes, etc.
+// What about a pure Wayland client?
+//  A pure Wayland implementation would be interesting and could be enabled
+//  using a build-tag until Wayland becomes more main-stream, but for now
+//  Wayland does have the ability to still run X applications so Chippy does
+//  still work on Wayland.
 //
-//  The X-Extension 'GLX' version 1.4 is required, it is needed for OpenGL
-//  support (but the specific version 1.4 is needed for multisampling).
-//
-// Why is Xinput2 not supported?
-//  We don't need Xinput2 for unicode keyboard input, as well we don't need it
-//  for proper mouse button input.
-//
-//  We would like to use Xinput2's raw mouse events for while cursor grabs are
-//  active, but unfortunetly due to the way the X server works raw mouse
-//  movement events are only sent while no mouse buttons are pressed.
-//
-//  We *could* only use raw mouse movement events while no buttons are held
-//  down, and then automatically switch back to pixel-based ones, but due to
-//  the fact that pixel-based mouse movement is accelerated by the user's
-//  configured mouse sensitivity, the movement events would be different speeds
-//  depending on whether or not they held mouse buttons down or not -- which is
-//  obviously very bad. For this reason we decided to not use Xinput2 at all.
-//
-//  Xinput2 may still be used in the future for 32-bit keycodes should there be
-//  an actual use for them, multi-touch input events, or possibly multiple
-//  mouse inputs (although other systems do not support this).
-//
-// What about Wayland support?
-//  Wayland support would be interesting for the future, namely because it
-//  operates with OpenGL ES which would make developing mobile games easy on a
-//  desktop operating system.
-//
-//  But because Wayland doesn't support hardware accelerated OpenGL at this
-//  time of writing, it's not currently a priority. We are however open to
-//  patches for adding Wayland support.
-//
-// Other FAQ
-//
-// What are those sub-packages chippy/wrappers/... ? Can I use those?
-//  You should not use them, they provide support code that Chippy uses
-//  internally and may change without notice.
+//  A pure Wayland client is not a priority right now, but we are open to
+//  working with a contributor who would like to add this feature.
 //
 package chippy
