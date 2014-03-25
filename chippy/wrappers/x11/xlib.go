@@ -329,6 +329,12 @@ var (
 	XCBOwnsEventQueue  uint32 = C.XCBOwnsEventQueue
 )
 
+func (d *Display) Close() {
+	d.Lock()
+	defer d.Unlock()
+	C.XCloseDisplay(d.c)
+}
+
 func (d *Display) XSetEventQueueOwner(owner uint32) {
 	d.Lock()
 	defer d.Unlock()

@@ -569,5 +569,7 @@ func backend_Init() (err error) {
 
 func backend_Destroy() {
 	shutdownEventLoop <- true
+	xDisplay.Close()
+	glxDisplay.Close()
 	xConnection.Disconnect()
 }
