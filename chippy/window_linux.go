@@ -892,7 +892,7 @@ func (w *NativeWindow) handleEvent(ref *x11.GenericEvent, e interface{}) {
 	case *x11.MotionNotifyEvent:
 		x := int(ev.EventX)
 		y := int(ev.EventY)
-		if w.r.CursorGrabbed() {
+		if w.r.CursorGrabbed() && w.r.Focused() {
 			// Find relative movement
 			wWidth, wHeight := w.r.Size()
 			halfWidth := wWidth / 2
@@ -926,11 +926,18 @@ func (w *NativeWindow) handleEvent(ref *x11.GenericEvent, e interface{}) {
 
 	case *x11.EnterNotifyEvent:
 		w.r.trySetCursorWithin(true)
-		if w.r.CursorGrabbed() {
+
+		// The cursor is inside the window, and the window has focus so we
+		// should grab the cursor.
+		if w.r.CursorGrabbed() && w.r.Focused() {
 			go func() {
 				w.access.Lock()
 				defer w.access.Unlock()
-				w.doSetCursorGrabbed(w.r.CursorGrabbed(), false)
+				w.doSetCursorGrabbed(
+					true,  // grabbed
+					false, // restore position
+				)
+				xConnection.Flush()
 			}()
 		}
 
@@ -939,21 +946,51 @@ func (w *NativeWindow) handleEvent(ref *x11.GenericEvent, e interface{}) {
 
 	case *x11.FocusInEvent:
 		w.r.trySetFocused(true)
-		if !w.r.CursorGrabbed() {
-			go func() {
-				w.access.Lock()
-				defer w.access.Unlock()
-				w.doSetCursorGrabbed(w.r.CursorGrabbed(), false)
-			}()
+
+		if w.r.CursorGrabbed() {
+			if w.r.CursorWithin() {
+				// Window in focus, cursor inside, grabbing is allowed.
+				go func() {
+					w.access.Lock()
+					defer w.access.Unlock()
+					w.doSetCursorGrabbed(
+						true,  // grabbed
+						false, // restore position
+					)
+					xConnection.Flush()
+				}()
+			} else {
+				// Window in focus, cursor not inside, no grabbing allowed.
+				go func() {
+					w.access.Lock()
+					defer w.access.Unlock()
+					w.doSetCursorGrabbed(
+						false, // grabbed
+						false, // restore position
+					)
+					xConnection.Flush()
+				}()
+			}
 		}
 
 	case *x11.FocusOutEvent:
 		w.r.trySetFocused(false)
-		if !w.r.CursorGrabbed() {
+
+		// The window has lost focus, ungrab the cursor now otherwise the user
+		// won't have a mouse cursor (i.e. if they alt-tab away from the app or
+		// switch screens).
+		if w.r.CursorGrabbed() {
+			// We only restore the cursor position if it's actually inside the
+			// window.
+			restorePosition := w.r.CursorWithin()
 			go func() {
 				w.access.Lock()
 				defer w.access.Unlock()
-				w.doSetCursorGrabbed(w.r.CursorGrabbed(), false)
+				w.doSetCursorGrabbed(
+					false,           // grabbed
+					restorePosition, // restore position
+				)
+				xConnection.Flush()
 			}()
 		}
 
@@ -1481,6 +1518,7 @@ func (w *NativeWindow) setCursorGrabbed(grabbed bool) {
 	defer w.access.Unlock()
 
 	w.doSetCursorGrabbed(grabbed, true)
+	xConnection.Flush()
 }
 
 func (w *NativeWindow) doSetCursorGrabbed(grabbed, restorePosition bool) {
@@ -1526,7 +1564,7 @@ func (w *NativeWindow) setPosition(x, y int) {
 }
 
 func (w *NativeWindow) setCursorPosition(x, y int) {
-	if w.r.CursorGrabbed() {
+	if w.r.CursorGrabbed() && w.r.Focused() {
 		return
 	}
 
