@@ -1,8 +1,8 @@
-// Copyright 2012 Lightpoke. All rights reserved.
-// This source code is subject to the terms and
-// conditions defined in the "License.txt" file.
+// Copyright 2014 The Azul3D Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style
+// license that can be found in the LICENSE file.
 
-// Package binpack implements 2D bin packing using Jake Gordon's algorithm.
+// Package binpack implements Jake Gordon's 2D binpacking algorithm.
 //
 // The algorithm used is described on Jake's blog here:
 //
