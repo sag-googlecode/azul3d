@@ -3,6 +3,7 @@
 // license that can be found in the LICENSE file.
 // +build tests
 
+// Test - Displays some OpenAL device information.
 package main
 
 import (
