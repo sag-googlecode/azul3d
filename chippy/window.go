@@ -5,8 +5,8 @@
 package chippy
 
 import (
-	"azul3d.org/v1/chippy/keyboard"
-	"azul3d.org/v1/chippy/mouse"
+	"azul3d.org/v1/keyboard"
+	"azul3d.org/v1/mouse"
 	"fmt"
 	"image"
 	"sync"
@@ -1168,18 +1168,18 @@ func (w *Window) send(ev Event) {
 	}
 }
 
-func (w *Window) tryAddKeyboardStateEvent(k keyboard.Key, os keyboard.OS, s keyboard.State) {
+func (w *Window) tryAddKeyboardStateEvent(k keyboard.Key, raw uint64, s keyboard.State) {
 	// Prevent accidentially repeating an identical state event
-	if w.Keyboard.State(k) == s && w.Keyboard.OSState(os) == s {
+	if w.Keyboard.State(k) == s && w.Keyboard.RawState(raw) == s {
 		return
 	}
 
 	w.Keyboard.SetState(k, s)
-	w.Keyboard.SetOSState(os, s)
+	w.Keyboard.SetRawState(raw, s)
 	w.send(keyboard.StateEvent{
 		T:     time.Now(),
 		Key:   k,
-		OS:    os,
+		Raw:   raw,
 		State: s,
 	})
 }
@@ -1202,16 +1202,16 @@ func (w *Window) releaseDownedButtons() {
 	}
 
 	// Release the keys that we are unknown to us.
-	for os, state := range w.Keyboard.OSStates() {
+	for raw, state := range w.Keyboard.RawStates() {
 		if state == keyboard.Down {
 			// Change Key state
 			state = keyboard.Up
-			w.Keyboard.SetOSState(os, state)
+			w.Keyboard.SetRawState(raw, state)
 
 			// Send event
 			w.send(keyboard.StateEvent{
 				T:     time.Now(),
-				OS:    os,
+				Raw:   raw,
 				State: state,
 			})
 		}

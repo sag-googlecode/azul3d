@@ -5,10 +5,10 @@
 package chippy
 
 import (
-	"azul3d.org/v1/chippy/keyboard"
-	"azul3d.org/v1/chippy/mouse"
 	"azul3d.org/v1/chippy/thirdparty/resize"
 	"azul3d.org/v1/chippy/wrappers/x11"
+	"azul3d.org/v1/keyboard"
+	"azul3d.org/v1/mouse"
 	"errors"
 	"image"
 	"image/draw"
@@ -744,7 +744,7 @@ func (w *NativeWindow) refreshIndicators() {
 	if status == x11.Success {
 		// Caps Lock
 		key := keyboard.CapsLock
-		os := keyboard.OS(x11.XK_Caps_Lock)
+		os := uint64(x11.XK_Caps_Lock)
 		keyState := keyboard.Off
 		if (state & 0x01) > 0 {
 			keyState = keyboard.On
@@ -753,7 +753,7 @@ func (w *NativeWindow) refreshIndicators() {
 
 		// Num Lock
 		key = keyboard.NumLock
-		os = keyboard.OS(x11.XK_Num_Lock)
+		os = uint64(x11.XK_Num_Lock)
 		keyState = keyboard.Off
 		if (state & 0x02) > 0 {
 			keyState = keyboard.On
@@ -762,7 +762,7 @@ func (w *NativeWindow) refreshIndicators() {
 
 		// Scroll Lock
 		key = keyboard.ScrollLock
-		os = keyboard.OS(x11.XK_Scroll_Lock)
+		os = uint64(x11.XK_Scroll_Lock)
 		keyState = keyboard.Off
 		if (state & 0x04) > 0 {
 			keyState = keyboard.On
@@ -787,7 +787,7 @@ func (w *NativeWindow) handleEvent(ref *x11.GenericEvent, e interface{}) {
 			if kb == keyboard.CapsLock || kb == keyboard.NumLock || kb == keyboard.ScrollLock {
 				w.refreshIndicators()
 			} else {
-				w.r.tryAddKeyboardStateEvent(kb, keyboard.OS(keysym), keyboard.Down)
+				w.r.tryAddKeyboardStateEvent(kb, uint64(keysym), keyboard.Down)
 			}
 		} else {
 			logger().Println("Unknown X keysym", keysym)
@@ -813,7 +813,7 @@ func (w *NativeWindow) handleEvent(ref *x11.GenericEvent, e interface{}) {
 			if kb == keyboard.CapsLock || kb == keyboard.NumLock || kb == keyboard.ScrollLock {
 				w.refreshIndicators()
 			} else {
-				w.r.tryAddKeyboardStateEvent(kb, keyboard.OS(keysym), keyboard.Up)
+				w.r.tryAddKeyboardStateEvent(kb, uint64(keysym), keyboard.Up)
 			}
 		} else {
 			logger().Println("Unknown X keysym", keysym)

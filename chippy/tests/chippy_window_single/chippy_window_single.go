@@ -12,7 +12,7 @@ package main
 
 import (
 	"azul3d.org/v1/chippy"
-	"azul3d.org/v1/chippy/keyboard"
+	"azul3d.org/v1/keyboard"
 	"fmt"
 	"log"
 	"os"
