@@ -115,9 +115,11 @@ func program() {
 			fmt.Printf("%v FPS (%v Avg.)\n", cl.FrameRate(), int(cl.AverageFrameRate()))
 
 		case e := <-events:
-			ev, ok := e.(chippy.ResizedEvent)
-			if ok {
+			switch ev := e.(type) {
+			case chippy.ResizedEvent:
 				r.UpdateBounds(image.Rect(0, 0, ev.Width, ev.Height))
+			case chippy.CloseEvent, chippy.DestroyedEvent:
+				return
 			}
 
 		case fn := <-r.RenderExec:
