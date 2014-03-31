@@ -7,10 +7,10 @@
 package main
 
 import (
-	"azul3d.org/chippy/keyboard"
-	"azul3d.org/chippy"
-	"azul3d.org/clock"
-	opengl "azul3d.org/native/gl"
+	"azul3d.org/v0/chippy"
+	"azul3d.org/v0/chippy/keyboard"
+	"azul3d.org/v0/clock"
+	opengl "azul3d.org/v0/native/gl"
 	"log"
 	"math"
 	"os"
@@ -18,7 +18,7 @@ import (
 	"time"
 )
 
-var(
+var (
 	// Gives us API access to a single OpenGL context.
 	gl *opengl.Context
 
@@ -65,7 +65,7 @@ func resizeScene(width, height int) {
 	gl.Viewport(0, 0, uint32(width), uint32(height)) // Reset The Current Viewport And Perspective Transformation
 	gl.MatrixMode(opengl.PROJECTION)
 	gl.LoadIdentity()
-	gluPerspective(gl, 45.0, float64(width) / float64(height), 0.1, 100.0)
+	gluPerspective(gl, 45.0, float64(width)/float64(height), 0.1, 100.0)
 	gl.MatrixMode(opengl.MODELVIEW)
 }
 
@@ -112,15 +112,15 @@ func renderScene() {
 func toggleVerticalSync() {
 	vsync := window.GLVerticalSync()
 
-	switch(vsync) {
-		case chippy.NoVerticalSync:
-			vsync = chippy.VerticalSync
+	switch vsync {
+	case chippy.NoVerticalSync:
+		vsync = chippy.VerticalSync
 
-		case chippy.VerticalSync:
-			vsync = chippy.AdaptiveVerticalSync
+	case chippy.VerticalSync:
+		vsync = chippy.AdaptiveVerticalSync
 
-		case chippy.AdaptiveVerticalSync:
-			vsync = chippy.NoVerticalSync
+	case chippy.AdaptiveVerticalSync:
+		vsync = chippy.NoVerticalSync
 	}
 
 	log.Println(vsync)
@@ -128,6 +128,7 @@ func toggleVerticalSync() {
 }
 
 var MSAA = true
+
 func toggleMSAA() {
 	if MSAA {
 		MSAA = false
@@ -225,24 +226,24 @@ func program() {
 		for i := 0; i < len(events); i++ {
 			e := <-events
 			switch ev := e.(type) {
-				case chippy.ResizedEvent:
-					resizeScene(ev.Width, ev.Height)
+			case chippy.ResizedEvent:
+				resizeScene(ev.Width, ev.Height)
 
-				case keyboard.StateEvent:
-					if ev.State == keyboard.Down {
-						switch ev.Key {
-						case keyboard.V:
-							toggleVerticalSync()
-						case keyboard.M:
-							toggleMSAA()
-						case keyboard.B:
-							gl.SetBatching(!gl.Batching())
-							log.Println("Batching?", gl.Batching())
-						}
+			case keyboard.StateEvent:
+				if ev.State == keyboard.Down {
+					switch ev.Key {
+					case keyboard.V:
+						toggleVerticalSync()
+					case keyboard.M:
+						toggleMSAA()
+					case keyboard.B:
+						gl.SetBatching(!gl.Batching())
+						log.Println("Batching?", gl.Batching())
 					}
+				}
 
-				case chippy.CloseEvent:
-					return
+			case chippy.CloseEvent:
+				return
 			}
 		}
 
@@ -275,4 +276,3 @@ func main() {
 	// Enter main loop
 	chippy.MainLoop()
 }
-

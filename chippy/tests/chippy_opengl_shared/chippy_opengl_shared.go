@@ -7,10 +7,10 @@
 package main
 
 import (
-	"azul3d.org/chippy"
-	"azul3d.org/chippy/keyboard"
-	"azul3d.org/clock"
-	opengl "azul3d.org/native/gl"
+	"azul3d.org/v0/chippy"
+	"azul3d.org/v0/chippy/keyboard"
+	"azul3d.org/v0/clock"
+	opengl "azul3d.org/v0/native/gl"
 	"log"
 	"math"
 	"os"
@@ -127,6 +127,7 @@ func toggleVerticalSync() {
 }
 
 var MSAA = true
+
 func toggleMSAA() {
 	if MSAA {
 		MSAA = false

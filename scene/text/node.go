@@ -5,12 +5,12 @@
 package text
 
 import (
-	"azul3d.org/event"
-	"azul3d.org/scene"
-	"azul3d.org/scene/bucket"
-	"azul3d.org/scene/geom"
-	"azul3d.org/scene/texture"
-	"azul3d.org/scene/transparency"
+	"azul3d.org/v0/event"
+	"azul3d.org/v0/scene"
+	"azul3d.org/v0/scene/bucket"
+	"azul3d.org/v0/scene/geom"
+	"azul3d.org/v0/scene/texture"
+	"azul3d.org/v0/scene/transparency"
 	"image"
 	"sync"
 )

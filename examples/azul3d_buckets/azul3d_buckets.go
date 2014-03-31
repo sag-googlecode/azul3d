@@ -1,15 +1,15 @@
 package main
 
 import (
-	"azul3d.org/engine"
-	"azul3d.org/event"
-	"azul3d.org/scene"
-	"azul3d.org/scene/bucket"
-	"azul3d.org/scene/geom"
-	"azul3d.org/scene/geom/procedural"
-	"azul3d.org/scene/renderer"
-	"azul3d.org/scene/texture"
-	"azul3d.org/scene/transparency"
+	"azul3d.org/v0/engine"
+	"azul3d.org/v0/event"
+	"azul3d.org/v0/scene"
+	"azul3d.org/v0/scene/bucket"
+	"azul3d.org/v0/scene/geom"
+	"azul3d.org/v0/scene/geom/procedural"
+	"azul3d.org/v0/scene/renderer"
+	"azul3d.org/v0/scene/texture"
+	"azul3d.org/v0/scene/transparency"
 	_ "image/jpeg"
 	_ "image/png"
 	"log"
@@ -45,7 +45,7 @@ func createCard(name string) *scene.Node {
 	//
 	// Note that the larger the texture the more memory it will consume, and it
 	// could eat all your system's memory.
-	prefix := "src/azul3d.org/assets/textures"
+	prefix := "src/azul3d.org/v0/assets/textures"
 	//texFilePath := prefix + "/clouds_8192x8192.jpg"
 	//texFilePath := prefix+"/clouds_4096x4096.jpg"
 	//texFilePath := prefix+"/clouds_2048x2048.jpg"

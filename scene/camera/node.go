@@ -6,8 +6,8 @@
 package camera
 
 import (
-	"azul3d.org/math"
-	"azul3d.org/scene"
+	"azul3d.org/v0/math"
+	"azul3d.org/v0/scene"
 	"sync"
 )
 

@@ -5,10 +5,10 @@
 package renderer
 
 import (
-	"azul3d.org/scene"
-	"azul3d.org/scene/geom"
-	"azul3d.org/scene/shader"
-	"azul3d.org/scene/texture"
+	"azul3d.org/v0/scene"
+	"azul3d.org/v0/scene/geom"
+	"azul3d.org/v0/scene/shader"
+	"azul3d.org/v0/scene/texture"
 )
 
 func LoadTexture(n *scene.Node, t texture.Type) {

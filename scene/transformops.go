@@ -5,7 +5,7 @@
 package scene
 
 import (
-	"azul3d.org/math"
+	"azul3d.org/v0/math"
 )
 
 // SetPosVec3 sets the position component of this node's transformation to the

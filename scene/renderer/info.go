@@ -5,7 +5,7 @@
 package renderer
 
 import (
-	"azul3d.org/scene"
+	"azul3d.org/v0/scene"
 )
 
 // MaxTextureSize returns the maximum dimension (width/height) that a texture

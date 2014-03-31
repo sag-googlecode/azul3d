@@ -7,16 +7,16 @@
 package main
 
 import (
-	"azul3d.org/chippy/keyboard"
-	"azul3d.org/chippy"
-	"azul3d.org/clock"
-	opengl "azul3d.org/native/gl"
-	"azul3d.org/math"
-	"unsafe"
+	"azul3d.org/v0/chippy"
+	"azul3d.org/v0/chippy/keyboard"
+	"azul3d.org/v0/clock"
+	"azul3d.org/v0/math"
+	opengl "azul3d.org/v0/native/gl"
 	"log"
 	"os"
 	"runtime"
 	"time"
+	"unsafe"
 )
 
 var vertexShaderSource = []byte(`
@@ -48,7 +48,7 @@ void main()
 }
 `)
 
-var(
+var (
 	// OpenGL context API access
 	gl *opengl.Context
 
@@ -79,12 +79,12 @@ func convertMatrix(m math.Mat4) [4][4]float32 {
 }
 
 type object struct {
-	vertices []float32
+	vertices                            []float32
 	VertexAttribIndex, ColorAttribIndex uint32
-	vboVertices, vboColors uint32
-	rotation float64
-	position math.Vec3
-	matrix math.Mat4
+	vboVertices, vboColors              uint32
+	rotation                            float64
+	position                            math.Vec3
+	matrix                              math.Mat4
 }
 
 // updateMatrix updates the matrix of the object to reflect the position of the
@@ -96,8 +96,8 @@ func (o *object) updateMatrix() {
 	// Convert our rotation from degrees to radians
 	rads := math.Radians(o.rotation)
 	rotation := math.Mat4FromAxisAngle(
-		math.Vec3{0, 1, 0},    // Rotate around the Y axis
-		rads,                  // Rotation in radians
+		math.Vec3{0, 1, 0}, // Rotate around the Y axis
+		rads,               // Rotation in radians
 		math.CoordSysYUpRight, // Y-Up Right-Handed coordinate system (the one OpenGL uses)
 	)
 	o.matrix = o.matrix.Mul(rotation)
@@ -127,15 +127,13 @@ func initScene() {
 	// Update position/rotation matrix of triangle object
 	triangle.updateMatrix()
 
-
 	// Later on, unbind the active VBO
 	defer gl.BindBuffer(opengl.ARRAY_BUFFER, 0)
 
-
 	// Create a Vertex Buffer Object to store vertices of the triangle
 	triangle.vertices = []float32{
-		 0.0,  1.0, 0.0, // Top
-		 1.0, -1.0, 0.0, // Bottom Right
+		0.0, 1.0, 0.0, // Top
+		1.0, -1.0, 0.0, // Bottom Right
 		-1.0, -1.0, 0.0, // Bottom Left
 	}
 
@@ -143,7 +141,6 @@ func initScene() {
 	gl.BindBuffer(opengl.ARRAY_BUFFER, triangle.vboVertices)
 	gl.BufferData(opengl.ARRAY_BUFFER, uintptr(len(triangle.vertices)), unsafe.Pointer(&triangle.vertices[0]), opengl.STATIC_DRAW)
 	gl.Execute()
-
 
 	// Create a Vertex Buffer Object to store vertex colors of the triangle
 	colors := []float32{
@@ -175,7 +172,6 @@ func initScene() {
 		}
 	}
 
-
 	// Create vertex shader
 	vertexShader = gl.CreateShader(opengl.VERTEX_SHADER)
 	lengths := int32(len(vertexShaderSource))
@@ -188,7 +184,6 @@ func initScene() {
 	gl.Execute()
 	handleShaderErrors(vertexShader, "Vertex shader has errors:")
 
-
 	// Create fragment shader
 	fragmentShader = gl.CreateShader(opengl.FRAGMENT_SHADER)
 	lengths = int32(len(fragmentShaderSource))
@@ -200,7 +195,6 @@ func initScene() {
 	// shader compilation errors.
 	gl.Execute()
 	handleShaderErrors(fragmentShader, "Fragment shader has errors:")
-
 
 	// Link the shader program all together
 	shaderProgram = gl.CreateProgram()
@@ -259,7 +253,6 @@ func renderScene() {
 	// Clamp the result to 360 degrees
 	triangle.rotation = math.Clamp(triangle.rotation, 0, 360)
 
-
 	// Make the shader program active
 	gl.UseProgram(shaderProgram)
 
@@ -292,15 +285,13 @@ func renderScene() {
 			location,             // Index -- order in vertex shader
 			1,                    // Just one 4x4 matrix
 			opengl.GLBool(false), // transpose
-			&triMatrix[0][0],           // A pointer to the actual matrix data
+			&triMatrix[0][0],     // A pointer to the actual matrix data
 		)
 	}
 	gl.Execute()
 
-
 	// After rendering the triangle, we can unbind the active buffer
 	defer gl.BindBuffer(opengl.ARRAY_BUFFER, 0)
-
 
 	// Bind the vertex VBO
 	gl.BindBuffer(opengl.ARRAY_BUFFER, triangle.vboVertices)
@@ -312,7 +303,6 @@ func renderScene() {
 	// Load vertices from the bound triangle VBO
 	gl.VertexAttribPointer(0, 3, opengl.FLOAT, opengl.GLBool(false), 0, nil)
 
-
 	// Bind the color VBO
 	gl.BindBuffer(opengl.ARRAY_BUFFER, triangle.vboColors)
 
@@ -322,7 +312,6 @@ func renderScene() {
 
 	// Load vertex attributes for color attribute index from the bound color VBO
 	gl.VertexAttribPointer(1, 4, opengl.FLOAT, opengl.GLBool(false), 0, nil)
-
 
 	// Draw the triangle
 	gl.DrawArrays(opengl.TRIANGLES, 0, uint32(len(triangle.vertices)))
@@ -335,15 +324,15 @@ func renderScene() {
 func toggleVerticalSync() {
 	vsync := window.GLVerticalSync()
 
-	switch(vsync) {
-		case chippy.NoVerticalSync:
-			vsync = chippy.VerticalSync
+	switch vsync {
+	case chippy.NoVerticalSync:
+		vsync = chippy.VerticalSync
 
-		case chippy.VerticalSync:
-			vsync = chippy.AdaptiveVerticalSync
+	case chippy.VerticalSync:
+		vsync = chippy.AdaptiveVerticalSync
 
-		case chippy.AdaptiveVerticalSync:
-			vsync = chippy.NoVerticalSync
+	case chippy.AdaptiveVerticalSync:
+		vsync = chippy.NoVerticalSync
 	}
 
 	log.Println(vsync)
@@ -353,6 +342,7 @@ func toggleVerticalSync() {
 // toggleMSAA is responsible for turning on/off OpenGL Multi Sample Anti
 // Aliasing (MSAA)
 var MSAA = true
+
 func toggleMSAA() {
 	if MSAA {
 		MSAA = false
@@ -451,24 +441,24 @@ func program() {
 			e := <-events
 
 			switch ev := e.(type) {
-				case chippy.ResizedEvent:
-					resizeScene(ev.Width, ev.Height)
+			case chippy.ResizedEvent:
+				resizeScene(ev.Width, ev.Height)
 
-				case keyboard.StateEvent:
-					if ev.State == keyboard.Down {
-						switch ev.Key {
-						case keyboard.V:
-							toggleVerticalSync()
-						case keyboard.M:
-							toggleMSAA()
-						case keyboard.B:
-							gl.SetBatching(!gl.Batching())
-							log.Println("Batching?", gl.Batching())
-						}
+			case keyboard.StateEvent:
+				if ev.State == keyboard.Down {
+					switch ev.Key {
+					case keyboard.V:
+						toggleVerticalSync()
+					case keyboard.M:
+						toggleMSAA()
+					case keyboard.B:
+						gl.SetBatching(!gl.Batching())
+						log.Println("Batching?", gl.Batching())
 					}
+				}
 
-				case chippy.CloseEvent:
-					return
+			case chippy.CloseEvent:
+				return
 			}
 		}
 
@@ -501,4 +491,3 @@ func main() {
 	// Enter main loop
 	chippy.MainLoop()
 }
-

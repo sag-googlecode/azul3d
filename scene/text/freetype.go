@@ -5,7 +5,7 @@
 package text
 
 import (
-	"azul3d.org/native/freetype"
+	"azul3d.org/v0/native/freetype"
 	"image"
 	"image/color"
 	"image/draw"

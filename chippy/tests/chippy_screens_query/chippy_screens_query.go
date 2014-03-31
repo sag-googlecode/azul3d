@@ -7,7 +7,7 @@
 package main
 
 import (
-	"azul3d.org/chippy"
+	"azul3d.org/v0/chippy"
 	"fmt"
 	"log"
 	"os"

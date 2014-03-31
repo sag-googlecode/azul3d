@@ -4,7 +4,7 @@
 
 package bucket
 
-import "azul3d.org/scene"
+import "azul3d.org/v0/scene"
 
 var PSort = scene.NewProp("Sort")
 

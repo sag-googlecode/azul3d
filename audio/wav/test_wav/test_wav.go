@@ -6,9 +6,9 @@
 // Test - Opens and decodes a wav file.
 package main
 
-import(
-	_ "azul3d.org/audio/wav"
-	"azul3d.org/audio"
+import (
+	"azul3d.org/v0/audio"
+	_ "azul3d.org/v0/audio/wav"
 	"log"
 	"os"
 )
@@ -16,7 +16,7 @@ import(
 func test(fileName string) {
 	log.Println(fileName)
 
-	file, err := os.Open("src/azul3d.org/assets/audio/" + fileName)
+	file, err := os.Open("src/azul3d.org/v0/assets/audio/" + fileName)
 	if err != nil {
 		log.Fatal(err)
 	}

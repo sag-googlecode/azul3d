@@ -5,7 +5,7 @@
 package geom
 
 import (
-	"azul3d.org/math"
+	"azul3d.org/v0/math"
 )
 
 // BoundingBox represents a single axis aligned bounding box.

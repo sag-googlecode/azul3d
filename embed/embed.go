@@ -6,7 +6,7 @@
 package main
 
 import (
-	"azul3d.org/embed/embed"
+	"azul3d.org/v0/embed/embed"
 	"flag"
 	"io"
 	"log"

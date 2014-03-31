@@ -5,8 +5,8 @@
 package chippy
 
 import (
-	"azul3d.org/chippy/keyboard"
-	"azul3d.org/chippy/mouse"
+	"azul3d.org/v0/chippy/keyboard"
+	"azul3d.org/v0/chippy/mouse"
 	"fmt"
 	"image"
 	"sync"

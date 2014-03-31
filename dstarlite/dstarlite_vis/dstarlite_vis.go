@@ -6,8 +6,8 @@
 // Test - Uses termbox to visualize D* Lite grid pathfinding.
 package main
 
-import(
-	"azul3d.org/dstarlite/grid"
+import (
+	"azul3d.org/v0/dstarlite/grid"
 	"github.com/nsf/termbox-go"
 	"log"
 )
@@ -16,9 +16,9 @@ type Player struct {
 	X, Y int
 }
 
-var(
+var (
 	player Player
-	g *grid.Data
+	g      *grid.Data
 )
 
 func draw() {
@@ -29,7 +29,7 @@ func draw() {
 		for y := 0; y < height; y++ {
 			for n := 0; n < 2; n++ {
 				color := termbox.ColorWhite
-				v, ok := g.Get(grid.Coord{x/2, y})
+				v, ok := g.Get(grid.Coord{x / 2, y})
 				if !ok {
 					log.Fatal("This shouldn't happen (coordinate outside grid).")
 				}
@@ -37,7 +37,7 @@ func draw() {
 				if v == -1 {
 					color = termbox.ColorRed
 				}
-				termbox.SetCell(x + n, y, rune(' '), termbox.ColorDefault, color)
+				termbox.SetCell(x+n, y, rune(' '), termbox.ColorDefault, color)
 			}
 		}
 	}
@@ -45,16 +45,16 @@ func draw() {
 	// Draw path
 	for _, coord := range g.Plan() {
 		for n := 0; n < 2; n++ {
-			termbox.SetCell(coord[0] * 2 + n, coord[1], rune(' '), termbox.ColorDefault, termbox.ColorYellow)
+			termbox.SetCell(coord[0]*2+n, coord[1], rune(' '), termbox.ColorDefault, termbox.ColorYellow)
 		}
 	}
 
 	// Draw player and goal
 	for n := 0; n < 2; n++ {
-		termbox.SetCell(player.X*2 + n, player.Y, rune(' '), termbox.ColorDefault, termbox.ColorBlue)
+		termbox.SetCell(player.X*2+n, player.Y, rune(' '), termbox.ColorDefault, termbox.ColorBlue)
 
 		goal := g.Goal()
-		termbox.SetCell(goal[0] * 2 + n, goal[1], rune(' '), termbox.ColorDefault, termbox.ColorGreen)
+		termbox.SetCell(goal[0]*2+n, goal[1], rune(' '), termbox.ColorDefault, termbox.ColorGreen)
 	}
 
 	// Draw path
@@ -74,7 +74,7 @@ func main() {
 	width /= 2
 
 	// Create grid
-	g = grid.New(width, height, grid.Coord{0, 0}, grid.Coord{width/2, height/2})
+	g = grid.New(width, height, grid.Coord{0, 0}, grid.Coord{width / 2, height / 2})
 
 	// Resets the player position and clears all grid cells
 	reset := func() {
@@ -90,60 +90,61 @@ func main() {
 	reset()
 
 	// Main loop to wait for keyboard input
-loop: for {
+loop:
+	for {
 		switch ev := termbox.PollEvent(); ev.Type {
-			case termbox.EventKey:
-				switch {
-					case ev.Key == termbox.KeyArrowUp:
-						if player.Y > 0 {
-							player.Y -= 1
-						}
-						draw()
-
-					case ev.Key == termbox.KeyArrowDown:
-						if player.Y < height-1 {
-							player.Y += 1
-						}
-						draw()
-
-					case ev.Key == termbox.KeyArrowLeft:
-						if player.X > 0 {
-							player.X -= 1
-						}
-						draw()
-
-					case ev.Key == termbox.KeyArrowRight:
-						if player.X < width-1 {
-							player.X += 1
-						}
-						draw()
-
-					case ev.Key == termbox.KeyEsc:
-						break loop
-
-					case ev.Key == termbox.KeyEnter:
-						draw()
-
-					case ev.Key == termbox.KeySpace:
-						c := grid.Coord{player.X, player.Y}
-						v, ok := g.Get(c)
-						if ok {
-							if v == -1 {
-								g.Set(c, 1)
-							} else {
-								g.Set(c, -1)
-							}
-						}
-						draw()
-
-					case ev.Ch == rune('s') || ev.Ch == rune('S'):
-						g.UpdateStart(grid.Coord{player.X, player.Y})
-						draw()
-
-					case ev.Ch == rune('r') || ev.Ch == rune('R'):
-						reset()
-						draw()
+		case termbox.EventKey:
+			switch {
+			case ev.Key == termbox.KeyArrowUp:
+				if player.Y > 0 {
+					player.Y -= 1
 				}
+				draw()
+
+			case ev.Key == termbox.KeyArrowDown:
+				if player.Y < height-1 {
+					player.Y += 1
+				}
+				draw()
+
+			case ev.Key == termbox.KeyArrowLeft:
+				if player.X > 0 {
+					player.X -= 1
+				}
+				draw()
+
+			case ev.Key == termbox.KeyArrowRight:
+				if player.X < width-1 {
+					player.X += 1
+				}
+				draw()
+
+			case ev.Key == termbox.KeyEsc:
+				break loop
+
+			case ev.Key == termbox.KeyEnter:
+				draw()
+
+			case ev.Key == termbox.KeySpace:
+				c := grid.Coord{player.X, player.Y}
+				v, ok := g.Get(c)
+				if ok {
+					if v == -1 {
+						g.Set(c, 1)
+					} else {
+						g.Set(c, -1)
+					}
+				}
+				draw()
+
+			case ev.Ch == rune('s') || ev.Ch == rune('S'):
+				g.UpdateStart(grid.Coord{player.X, player.Y})
+				draw()
+
+			case ev.Ch == rune('r') || ev.Ch == rune('R'):
+				reset()
+				draw()
+			}
 		}
 	}
 }

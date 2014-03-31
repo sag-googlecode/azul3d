@@ -1,16 +1,16 @@
 package main
 
 import (
-	"azul3d.org/chippy"
-	"azul3d.org/chippy/keyboard"
-	"azul3d.org/engine"
-	"azul3d.org/event"
-	"azul3d.org/scene"
-	"azul3d.org/scene/camera"
-	"azul3d.org/scene/color"
-	"azul3d.org/scene/geom"
-	"azul3d.org/scene/geom/procedural"
-	"azul3d.org/scene/shader"
+	"azul3d.org/v0/chippy"
+	"azul3d.org/v0/chippy/keyboard"
+	"azul3d.org/v0/engine"
+	"azul3d.org/v0/event"
+	"azul3d.org/v0/scene"
+	"azul3d.org/v0/scene/camera"
+	"azul3d.org/v0/scene/color"
+	"azul3d.org/v0/scene/geom"
+	"azul3d.org/v0/scene/geom/procedural"
+	"azul3d.org/v0/scene/shader"
 	"log"
 	"sync"
 )

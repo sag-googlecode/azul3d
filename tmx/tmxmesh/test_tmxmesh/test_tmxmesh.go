@@ -7,13 +7,13 @@
 package main
 
 import (
-	"azul3d.org/engine"
-	"azul3d.org/chippy"
-	"azul3d.org/event"
-	"azul3d.org/math"
-	"azul3d.org/tmx/tmxmesh"
-	_ "image/png"
+	"azul3d.org/v0/chippy"
+	"azul3d.org/v0/engine"
+	"azul3d.org/v0/event"
+	"azul3d.org/v0/math"
+	"azul3d.org/v0/tmx/tmxmesh"
 	"flag"
+	_ "image/png"
 	"log"
 )
 
@@ -44,9 +44,9 @@ func toggleCursorGrabbed(ev *event.Event) {
 	engine.Window.SetCursorGrabbed(!isGrabbed)
 }
 
-var(
-	defaultMapFile = "src/azul3d.org/tmx/testdata/test_csv_tsx.tmx"
-	mapFile = flag.String("file", defaultMapFile, "tmx map file to load")
+var (
+	defaultMapFile = "src/azul3d.org/v0/tmx/testdata/test_csv_tsx.tmx"
+	mapFile        = flag.String("file", defaultMapFile, "tmx map file to load")
 )
 
 func init() {

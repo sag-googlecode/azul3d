@@ -7,10 +7,10 @@
 package main
 
 import (
-	"azul3d.org/chippy/keyboard"
-	"azul3d.org/chippy"
-	"azul3d.org/clock"
-	opengl "azul3d.org/native/gl"
+	"azul3d.org/v0/chippy"
+	"azul3d.org/v0/chippy/keyboard"
+	"azul3d.org/v0/clock"
+	opengl "azul3d.org/v0/native/gl"
 	"log"
 	"math"
 	"os"
@@ -18,10 +18,10 @@ import (
 	"time"
 )
 
-var(
-	gl *opengl.Context
-	rot float64
-	window *chippy.Window
+var (
+	gl      *opengl.Context
+	rot     float64
+	window  *chippy.Window
 	glClock *clock.Clock
 )
 
@@ -36,7 +36,7 @@ func resizeScene(width, height int) {
 	gl.Viewport(0, 0, uint32(width), uint32(height)) // Reset The Current Viewport And Perspective Transformation
 	gl.MatrixMode(opengl.PROJECTION)
 	gl.LoadIdentity()
-	gluPerspective(gl, 45.0, float64(width) / float64(height), 0.1, 100.0)
+	gluPerspective(gl, 45.0, float64(width)/float64(height), 0.1, 100.0)
 	gl.MatrixMode(opengl.MODELVIEW)
 }
 
@@ -45,7 +45,7 @@ func initScene() {
 	gl.Enable(opengl.ALPHA_TEST)
 	gl.Enable(opengl.DEPTH_TEST)
 
-    gl.BlendFunc(opengl.SRC_ALPHA, opengl.ONE_MINUS_SRC_ALPHA)
+	gl.BlendFunc(opengl.SRC_ALPHA, opengl.ONE_MINUS_SRC_ALPHA)
 	gl.ClearColor(0.0, 0.0, 0.0, 0.3)
 
 	gl.ClearDepth(1.0)
@@ -95,15 +95,15 @@ func renderScene() {
 func toggleVerticalSync() {
 	vsync := window.GLVerticalSync()
 
-	switch(vsync) {
-		case chippy.NoVerticalSync:
-			vsync = chippy.VerticalSync
+	switch vsync {
+	case chippy.NoVerticalSync:
+		vsync = chippy.VerticalSync
 
-		case chippy.VerticalSync:
-			vsync = chippy.AdaptiveVerticalSync
+	case chippy.VerticalSync:
+		vsync = chippy.AdaptiveVerticalSync
 
-		case chippy.AdaptiveVerticalSync:
-			vsync = chippy.NoVerticalSync
+	case chippy.AdaptiveVerticalSync:
+		vsync = chippy.NoVerticalSync
 	}
 
 	log.Println(vsync)
@@ -111,6 +111,7 @@ func toggleVerticalSync() {
 }
 
 var MSAA = true
+
 func toggleMSAA() {
 	if MSAA {
 		MSAA = false
@@ -256,4 +257,3 @@ func main() {
 	// Enter main loop
 	chippy.MainLoop()
 }
-

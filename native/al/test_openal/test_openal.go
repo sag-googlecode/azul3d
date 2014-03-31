@@ -6,7 +6,7 @@
 package main
 
 import (
-	"azul3d.org/native/al"
+	"azul3d.org/v0/native/al"
 	"log"
 )
 

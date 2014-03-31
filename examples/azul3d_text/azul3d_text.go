@@ -1,13 +1,13 @@
 package main
 
 import (
-	"azul3d.org/chippy"
-	"azul3d.org/chippy/keyboard"
-	"azul3d.org/engine"
-	"azul3d.org/event"
-	"azul3d.org/math"
-	"azul3d.org/scene"
-	"azul3d.org/scene/text"
+	"azul3d.org/v0/chippy"
+	"azul3d.org/v0/chippy/keyboard"
+	"azul3d.org/v0/engine"
+	"azul3d.org/v0/event"
+	"azul3d.org/v0/math"
+	"azul3d.org/v0/scene"
+	"azul3d.org/v0/scene/text"
 	"image/color"
 	_ "image/png"
 	"log"
@@ -84,7 +84,7 @@ func toggleCursorGrabbed(ev *event.Event) {
 func program() {
 	var (
 		err  error
-		path = "src/azul3d.org/assets/fonts/vera/Vera.ttf"
+		path = "src/azul3d.org/v0/assets/fonts/vera/Vera.ttf"
 	)
 	text.DefaultOptions.Source, err = text.LoadFontFile(path)
 	if err != nil {

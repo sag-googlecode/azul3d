@@ -5,19 +5,19 @@
 
 package main
 
-import(
-	"azul3d.org/scene/text"
-	"image/png"
+import (
+	"azul3d.org/v0/scene/text"
 	"image"
+	"image/png"
 	"io/ioutil"
-	"time"
 	"log"
 	"os"
+	"time"
 )
 
 func main() {
 	// Open font file
-	file, err := os.Open("src/azul3d.org/assets/fonts/vera/Vera.ttf")
+	file, err := os.Open("src/azul3d.org/v0/assets/fonts/vera/Vera.ttf")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -72,7 +72,7 @@ func main() {
 		avg += t1
 		log.Println("Atlas", i, t1)
 	}
-	log.Println("Average", avg / 64)
+	log.Println("Average", avg/64)
 
 	end := time.Since(start)
 	log.Println("Time taken:", end)
@@ -88,4 +88,3 @@ func main() {
 		log.Fatal(err)
 	}
 }
-

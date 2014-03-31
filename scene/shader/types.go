@@ -4,7 +4,7 @@
 
 package shader
 
-import "azul3d.org/math"
+import "azul3d.org/v0/math"
 
 func ConvertMat4(m math.Mat4) Mat4 {
 	return Mat4{

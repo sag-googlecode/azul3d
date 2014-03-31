@@ -5,13 +5,13 @@
 package gl
 
 import (
-	opengl "azul3d.org/native/gl"
-	"azul3d.org/scene"
-	"azul3d.org/scene/camera"
-	"azul3d.org/scene/color"
-	"azul3d.org/scene/geom"
-	"azul3d.org/scene/shader"
-	"azul3d.org/scene/transparency"
+	opengl "azul3d.org/v0/native/gl"
+	"azul3d.org/v0/scene"
+	"azul3d.org/v0/scene/camera"
+	"azul3d.org/v0/scene/color"
+	"azul3d.org/v0/scene/geom"
+	"azul3d.org/v0/scene/shader"
+	"azul3d.org/v0/scene/transparency"
 	"strconv"
 	"sync"
 )

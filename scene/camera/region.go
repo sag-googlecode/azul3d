@@ -5,7 +5,7 @@
 package camera
 
 import (
-	"azul3d.org/scene/color"
+	"azul3d.org/v0/scene/color"
 	"fmt"
 	"sync"
 )

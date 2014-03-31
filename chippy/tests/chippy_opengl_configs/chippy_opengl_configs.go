@@ -7,7 +7,7 @@
 package main
 
 import (
-	"azul3d.org/chippy"
+	"azul3d.org/v0/chippy"
 	"log"
 	"os"
 )
@@ -53,4 +53,3 @@ func main() {
 	// Enter main loop
 	chippy.MainLoop()
 }
-

@@ -1,17 +1,17 @@
 package main
 
 import (
-	"azul3d.org/chippy"
-	"azul3d.org/chippy/keyboard"
-	"azul3d.org/engine"
-	"azul3d.org/event"
-	"azul3d.org/math"
-	"azul3d.org/scene"
-	"azul3d.org/scene/camera"
-	"azul3d.org/scene/geom/procedural"
-	"azul3d.org/scene/renderer"
-	"azul3d.org/scene/sprite"
-	"azul3d.org/scene/texture"
+	"azul3d.org/v0/chippy"
+	"azul3d.org/v0/chippy/keyboard"
+	"azul3d.org/v0/engine"
+	"azul3d.org/v0/event"
+	"azul3d.org/v0/math"
+	"azul3d.org/v0/scene"
+	"azul3d.org/v0/scene/camera"
+	"azul3d.org/v0/scene/geom/procedural"
+	"azul3d.org/v0/scene/renderer"
+	"azul3d.org/v0/scene/sprite"
+	"azul3d.org/v0/scene/texture"
 	_ "image/png"
 	"log"
 	"runtime"
@@ -126,7 +126,7 @@ func program() {
 	halfHeight := height / 2
 	player.SetPos(math.Rounded(float64(halfWidth)), player.PosVec3().Y, -math.Rounded(float64(halfHeight)))
 
-	t, err := renderer.LoadTextureFile(engine.Renderer, "src/azul3d.org/assets/textures/panel.9.png")
+	t, err := renderer.LoadTextureFile(engine.Renderer, "src/azul3d.org/v0/assets/textures/panel.9.png")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -136,7 +136,7 @@ func program() {
 	tex := t.(*texture.Texture2D)
 	texture.Set(player, texture.DefaultLayer, tex)
 
-	t2, err := renderer.LoadTextureFile(engine.Renderer, "src/azul3d.org/assets/textures/player.png")
+	t2, err := renderer.LoadTextureFile(engine.Renderer, "src/azul3d.org/v0/assets/textures/player.png")
 	if err != nil {
 		log.Fatal(err)
 	}

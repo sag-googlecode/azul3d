@@ -5,7 +5,7 @@
 package gl
 
 import (
-	opengl "azul3d.org/native/gl"
+	opengl "azul3d.org/v0/native/gl"
 )
 
 func (r *Renderer) GPUName() string {

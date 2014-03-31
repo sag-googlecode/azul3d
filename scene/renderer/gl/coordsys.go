@@ -5,7 +5,7 @@
 package gl
 
 import (
-	"azul3d.org/math"
+	"azul3d.org/v0/math"
 )
 
 var (

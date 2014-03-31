@@ -5,9 +5,9 @@
 package renderer
 
 import (
-	"azul3d.org/scene"
-	"azul3d.org/scene/texture"
-	"azul3d.org/thirdparty/resize"
+	"azul3d.org/v0/scene"
+	"azul3d.org/v0/scene/texture"
+	"azul3d.org/v0/thirdparty/resize"
 	"image"
 	"image/draw"
 	"log"

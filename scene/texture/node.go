@@ -5,7 +5,7 @@
 package texture
 
 import (
-	"azul3d.org/scene"
+	"azul3d.org/v0/scene"
 	"sort"
 	"sync"
 )

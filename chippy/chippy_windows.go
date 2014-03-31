@@ -5,8 +5,8 @@
 package chippy
 
 import (
-	"azul3d.org/chippy/keyboard"
-	"azul3d.org/chippy/wrappers/win32"
+	"azul3d.org/v0/chippy/keyboard"
+	"azul3d.org/v0/chippy/wrappers/win32"
 	"fmt"
 	"runtime"
 	"sync"

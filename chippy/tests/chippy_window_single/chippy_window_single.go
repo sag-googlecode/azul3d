@@ -11,12 +11,12 @@ package main
 // to hide the command prompt
 
 import (
-	"azul3d.org/chippy/keyboard"
-	"azul3d.org/chippy"
-	"unicode/utf8"
+	"azul3d.org/v0/chippy"
+	"azul3d.org/v0/chippy/keyboard"
 	"fmt"
 	"log"
 	"os"
+	"unicode/utf8"
 )
 
 func program() {
@@ -76,7 +76,7 @@ func program() {
 				// Backspace - remove one character from the end of the string.
 				if len(title) > 0 {
 					_, size := utf8.DecodeLastRune([]byte(title))
-					window.SetTitle(title[:len(title) - size])
+					window.SetTitle(title[:len(title)-size])
 				}
 			} else {
 				window.SetTitle(title + string(typedEvent.Rune))

@@ -7,15 +7,15 @@
 package main
 
 import (
-	"azul3d.org/chippy"
-	"runtime/pprof"
+	"azul3d.org/v0/chippy"
+	"flag"
 	"image"
 	"image/draw"
 	_ "image/png"
 	"log"
 	"os"
+	"runtime/pprof"
 	"time"
-	"flag"
 )
 
 var cpuprofile = flag.String("cpuprofile", "", "write cpu profile to file")
@@ -26,7 +26,7 @@ func program() {
 	var err error
 
 	// Load the image that we'll use for the window icon
-	file, err := os.Open("src/azul3d.org/chippy/tests/data/chippy_720x320.png")
+	file, err := os.Open("src/azul3d.org/v0/chippy/tests/data/chippy_720x320.png")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -67,11 +67,11 @@ func program() {
 	events := window.Events()
 	defer window.CloseEvents(events)
 
-	var(
-		measureBlitSpeed = time.After(10 * time.Second)
+	var (
+		measureBlitSpeed   = time.After(10 * time.Second)
 		measuringBlitSpeed bool
-		numBlits int
-		totalBlitTime time.Duration
+		numBlits           int
+		totalBlitTime      time.Duration
 	)
 
 	for {
@@ -88,7 +88,7 @@ func program() {
 		numBlits++
 		totalBlitTime += blitTime
 
-		log.Printf("PixelBlit(): %v (%v average)", blitTime, totalBlitTime / time.Duration(numBlits))
+		log.Printf("PixelBlit(): %v (%v average)", blitTime, totalBlitTime/time.Duration(numBlits))
 
 		if measuringBlitSpeed {
 			// Say that PixelBlit() above takes more time than it takes for
@@ -124,7 +124,8 @@ func program() {
 
 		// Wait for an paint event
 		gotPaintEvent := false
-loop: for !gotPaintEvent {
+	loop:
+		for !gotPaintEvent {
 			select {
 			case <-measureBlitSpeed:
 				measuringBlitSpeed = true
@@ -150,20 +151,20 @@ loop: for !gotPaintEvent {
 
 stats:
 	log.Printf("%d PixelBlit() over %v\n", numBlits, totalBlitTime)
-	log.Printf("Average blit time: %v\n", totalBlitTime / time.Duration(numBlits))
+	log.Printf("Average blit time: %v\n", totalBlitTime/time.Duration(numBlits))
 }
 
 func main() {
-    flag.Parse()
-    if *cpuprofile != "" {
-        f, err := os.Create(*cpuprofile)
-        if err != nil {
-            log.Fatal(err)
-        }
+	flag.Parse()
+	if *cpuprofile != "" {
+		f, err := os.Create(*cpuprofile)
+		if err != nil {
+			log.Fatal(err)
+		}
 		defer f.Close()
-        pprof.StartCPUProfile(f)
-        defer pprof.StopCPUProfile()
-    }
+		pprof.StartCPUProfile(f)
+		defer pprof.StopCPUProfile()
+	}
 
 	log.SetFlags(0)
 

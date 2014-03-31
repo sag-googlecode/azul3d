@@ -6,7 +6,7 @@
 package grid
 
 import (
-	"azul3d.org/dstarlite"
+	"azul3d.org/v0/dstarlite"
 	"math"
 )
 
