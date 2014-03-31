@@ -65,6 +65,12 @@ func program() {
 		log.Fatal(err)
 	}
 
+	// Create the OpenGL loader context.
+	loaderCtx, err := window.GLCreateContext(2, 1, chippy.GLCoreProfile, ctx)
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	// OpenGL rendering context must be active to create the renderer.
 	window.GLMakeCurrent(ctx)
 	defer window.GLMakeCurrent(nil)
@@ -82,7 +88,7 @@ func program() {
 	go gfxLoop(window, r)
 
 	cl := clock.New()
-	cl.SetMaxFrameRate(0)
+	//cl.SetMaxFrameRate(0)
 	printFPS := time.Tick(1 * time.Second)
 
 	// Start loading goroutine.
@@ -90,12 +96,6 @@ func program() {
 		// All OpenGL related calls must occur in the same OS thread.
 		runtime.LockOSThread()
 		defer runtime.UnlockOSThread()
-
-		// Create the OpenGL loader context.
-		loaderCtx, err := window.GLCreateContext(2, 1, chippy.GLCoreProfile, ctx)
-		if err != nil {
-			log.Fatal(err)
-		}
 
 		// OpenGL loading context must be active.
 		window.GLMakeCurrent(loaderCtx)
