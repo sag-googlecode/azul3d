@@ -24,7 +24,7 @@ type StateEvent struct {
 	T     time.Time
 	Key   Key
 	State State
-	Raw   uint32
+	Raw   uint64
 }
 
 // Time returns the time at which this event occured.
