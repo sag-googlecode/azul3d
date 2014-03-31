@@ -10,7 +10,7 @@ import (
 	"sync"
 )
 
-// Watcher watches the state of various mouse buttons.
+// Watcher watches the state of various mouse buttons and their states.
 type Watcher struct {
 	access sync.RWMutex
 	states map[Button]State
@@ -19,9 +19,12 @@ type Watcher struct {
 // String returns a multi-line string representation of this mouse watcher and
 // it's associated states.
 func (w *Watcher) String() string {
+	w.access.RLock()
+	defer w.access.RUnlock()
+
 	bb := new(bytes.Buffer)
-	fmt.Fprintf(bb, "mouse.Watcher(\n")
-	for b, s := range w.States() {
+	fmt.Fprintf(bb, "Watcher(\n")
+	for b, s := range w.states {
 		fmt.Fprintf(bb, "    %v: %v\n", b, s)
 	}
 	fmt.Fprintf(bb, ")")
@@ -66,11 +69,11 @@ func (s *Watcher) Down(button Button) bool {
 }
 
 // Up tells whether the specified mouse button is currently in the up state.
-func (s *Watcher) KeyUp(button Button) bool {
+func (s *Watcher) Up(button Button) bool {
 	return s.State(button) == Up
 }
 
-// NewWatcher returns a new, initialized, watcher.
+// NewWatcher returns a new, initialized, mouse watcher.
 func NewWatcher() *Watcher {
 	s := new(Watcher)
 	s.states = make(map[Button]State)

@@ -1,6 +1,6 @@
-// Copyright 2012 Lightpoke. All rights reserved.
-// This source code is subject to the terms and
-// conditions defined in the "License.txt" file.
+// Copyright 2014 The Azul3D Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style
+// license that can be found in the LICENSE file.
 
 package mouse
 
@@ -9,19 +9,20 @@ import (
 	"time"
 )
 
-// Event represents an single mouse event, such as pushing an button, or using the scroller, etc.
+// Event represents an single mouse event, such as pushing an button, or using
+// the scroll-wheel, etc.
 type Event struct {
 	T      time.Time
 	Button Button
 	State  State
 }
 
-// Implements the chippy.Event interface.
+// Time returns the time at which this event occured.
 func (e Event) Time() time.Time {
 	return e.T
 }
 
 // String returns an string representation of this event.
 func (e Event) String() string {
-	return fmt.Sprintf("mouse.Event(Button=%s, State=%s, Time=%v)", e.Button.String(), e.State.String(), e.T)
+	return fmt.Sprintf("Event(Button=%v, State=%v, Time=%v)", e.Button, e.State, e.T)
 }

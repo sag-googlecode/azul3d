@@ -1,6 +1,6 @@
-// Copyright 2012 Lightpoke. All rights reserved.
-// This source code is subject to the terms and
-// conditions defined in the "License.txt" file.
+// Copyright 2014 The Azul3D Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style
+// license that can be found in the LICENSE file.
 
 // Package mouse implements various mouse related data types.
 package mouse
@@ -9,9 +9,9 @@ import (
 	"fmt"
 )
 
-// State represents an single mouse state, such as Up, Down, or an scroll
+// State represents an single mouse state, such as Up, Down, or a scroll
 // direction.
-type State uint8
+type State int
 
 const (
 	InvalidState State = iota
@@ -27,25 +27,25 @@ const (
 func (s State) String() string {
 	switch s {
 	case InvalidState:
-		return "mouse.InvalidState"
+		return "InvalidState"
 	case Down:
-		return "mouse.Down"
+		return "Down"
 	case Up:
-		return "mouse.Up"
+		return "Up"
 	case ScrollForward:
-		return "mouse.ScrollForward"
+		return "ScrollForward"
 	case ScrollBack:
-		return "mouse.ScrollBack"
+		return "ScrollBack"
 	case ScrollLeft:
-		return "mouse.ScrollLeft"
+		return "ScrollLeft"
 	case ScrollRight:
-		return "mouse.ScrollRight"
+		return "ScrollRight"
 	}
-	return fmt.Sprintf("mouse.State(%d)")
+	return fmt.Sprintf("State(%d)")
 }
 
 // Button represents an single mouse button.
-type Button uint8
+type Button int
 
 const (
 	Invalid Button = iota
@@ -63,25 +63,25 @@ const (
 func (b Button) String() string {
 	switch b {
 	case Invalid:
-		return "mouse.Invalid"
+		return "Invalid"
 	case Left:
-		return "mouse.Left"
+		return "Left"
 	case Right:
-		return "mouse.Right"
+		return "Right"
 	case Wheel:
-		return "mouse.Wheel"
+		return "Wheel"
 	case Four:
-		return "mouse.Four"
+		return "Four"
 	case Five:
-		return "mouse.Five"
+		return "Five"
 	case Six:
-		return "mouse.Six"
+		return "Six"
 	case Seven:
-		return "mouse.Seven"
+		return "Seven"
 	case Eight:
-		return "mouse.Eight"
+		return "Eight"
 	}
-	return fmt.Sprintf("mouse.Button(%d)", b)
+	return fmt.Sprintf("Button(%d)", b)
 }
 
 const (
