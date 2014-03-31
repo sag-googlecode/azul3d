@@ -1,8 +1,8 @@
 package main
 
 import (
-	"azul3d.org/v0/engine"
-	"azul3d.org/v0/scene/renderer"
+	"azul3d.org/v1/engine"
+	"azul3d.org/v1/scene/renderer"
 	"log"
 )
 

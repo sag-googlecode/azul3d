@@ -5,7 +5,7 @@
 package chippy
 
 import (
-	"azul3d.org/v0/chippy/wrappers/win32"
+	"azul3d.org/v1/chippy/wrappers/win32"
 	"errors"
 	"fmt"
 	"runtime"

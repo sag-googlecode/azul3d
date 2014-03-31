@@ -5,7 +5,7 @@
 package scene
 
 import (
-	"azul3d.org/v0/math"
+	"azul3d.org/v1/math"
 	"sync"
 )
 

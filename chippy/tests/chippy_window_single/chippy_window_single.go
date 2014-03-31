@@ -11,8 +11,8 @@ package main
 // to hide the command prompt
 
 import (
-	"azul3d.org/v0/chippy"
-	"azul3d.org/v0/chippy/keyboard"
+	"azul3d.org/v1/chippy"
+	"azul3d.org/v1/chippy/keyboard"
 	"fmt"
 	"log"
 	"os"

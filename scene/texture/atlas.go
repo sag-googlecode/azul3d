@@ -5,7 +5,7 @@
 package texture
 
 import (
-	"azul3d.org/v0/binpack"
+	"azul3d.org/v1/binpack"
 	"image"
 	"image/draw"
 	"sort"

@@ -7,11 +7,11 @@
 package main
 
 import (
-	"azul3d.org/v0/chippy"
-	"azul3d.org/v0/chippy/keyboard"
-	"azul3d.org/v0/clock"
-	"azul3d.org/v0/math"
-	opengl "azul3d.org/v0/native/gl"
+	"azul3d.org/v1/chippy"
+	"azul3d.org/v1/chippy/keyboard"
+	"azul3d.org/v1/clock"
+	"azul3d.org/v1/math"
+	opengl "azul3d.org/v1/native/gl"
 	"log"
 	"os"
 	"runtime"

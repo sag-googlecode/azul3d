@@ -32,7 +32,7 @@ BOOL audioDSEnumCallback(LPGUID, LPTSTR, LPTSTR, LPVOID);
 import "C"
 
 import (
-	"azul3d.org/v0/audio"
+	"azul3d.org/v1/audio"
 	"errors"
 	"fmt"
 	"reflect"

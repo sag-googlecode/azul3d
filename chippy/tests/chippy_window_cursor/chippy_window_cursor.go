@@ -7,7 +7,7 @@
 package main
 
 import (
-	"azul3d.org/v0/chippy"
+	"azul3d.org/v1/chippy"
 	"image"
 	_ "image/png"
 	"log"
@@ -19,7 +19,7 @@ func program() {
 	defer chippy.Exit()
 
 	// Load the image that we'll use for the window icon
-	file, err := os.Open("src/azul3d.org/v0/chippy/tests/data/cursor_32x32_3x4.png")
+	file, err := os.Open("src/azul3d.org/v1/chippy/tests/data/cursor_32x32_3x4.png")
 	if err != nil {
 		log.Fatal(err)
 	}

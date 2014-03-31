@@ -5,7 +5,7 @@
 package text
 
 import (
-	"azul3d.org/v0/scene/texture"
+	"azul3d.org/v1/scene/texture"
 	"image"
 )
 

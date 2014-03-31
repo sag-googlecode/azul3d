@@ -1,7 +1,7 @@
 package aio
 
 import (
-	"azul3d.org/v0/audio"
+	"azul3d.org/v1/audio"
 	"fmt"
 	"sync"
 )

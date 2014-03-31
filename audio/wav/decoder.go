@@ -5,7 +5,7 @@
 package wav
 
 import (
-	"azul3d.org/v0/audio"
+	"azul3d.org/v1/audio"
 	"encoding/binary"
 	"errors"
 	"io"

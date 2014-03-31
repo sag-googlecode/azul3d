@@ -5,8 +5,8 @@
 package procedural
 
 import (
-	"azul3d.org/v0/scene/geom"
-	"azul3d.org/v0/scene/texture"
+	"azul3d.org/v1/scene/geom"
+	"azul3d.org/v1/scene/texture"
 )
 
 // AppendCard builds and appends a texture card mesh to the specified mesh 'm'.

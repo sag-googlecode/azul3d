@@ -23,7 +23,7 @@
 // supported.
 //
 // Chippy works with all OpenGL wrappers, it does not provide any OpenGL
-// wrappers itself (although azul3d.org/v0/native/gl has some good ones).
+// wrappers itself (although azul3d.org/v1/native/gl has some good ones).
 //
 // Although we handle the platform-specific parts of OpenGL for you, no magic
 // is performed: OpenGL still uses thread local storage so when working with

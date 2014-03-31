@@ -1,17 +1,17 @@
 package main
 
 import (
-	"azul3d.org/v0/chippy"
-	"azul3d.org/v0/chippy/keyboard"
-	"azul3d.org/v0/engine"
-	"azul3d.org/v0/event"
-	"azul3d.org/v0/math"
-	"azul3d.org/v0/scene"
-	"azul3d.org/v0/scene/bucket"
-	"azul3d.org/v0/scene/camera"
-	"azul3d.org/v0/scene/renderer"
-	"azul3d.org/v0/scene/sprite"
-	"azul3d.org/v0/scene/texture"
+	"azul3d.org/v1/chippy"
+	"azul3d.org/v1/chippy/keyboard"
+	"azul3d.org/v1/engine"
+	"azul3d.org/v1/event"
+	"azul3d.org/v1/math"
+	"azul3d.org/v1/scene"
+	"azul3d.org/v1/scene/bucket"
+	"azul3d.org/v1/scene/camera"
+	"azul3d.org/v1/scene/renderer"
+	"azul3d.org/v1/scene/sprite"
+	"azul3d.org/v1/scene/texture"
 	_ "image/png"
 	"log"
 	"runtime"
@@ -121,7 +121,7 @@ func program() {
 	player.SetPos(math.Rounded(float64(halfWidth)), player.PosVec3().Y, -math.Rounded(float64(halfHeight)))
 	bucket.Set(player, bucket.Transparent)
 
-	t, err := renderer.LoadTextureFile(engine.Renderer, "src/azul3d.org/v0/assets/textures/player.png")
+	t, err := renderer.LoadTextureFile(engine.Renderer, "src/azul3d.org/v1/assets/textures/player.png")
 	if err != nil {
 		log.Fatal(err)
 	}

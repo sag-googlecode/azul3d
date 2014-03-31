@@ -6,9 +6,9 @@
 package geom
 
 import (
-	"azul3d.org/v0/math"
-	"azul3d.org/v0/scene/color"
-	"azul3d.org/v0/scene/texture"
+	"azul3d.org/v1/math"
+	"azul3d.org/v1/scene/color"
+	"azul3d.org/v1/scene/texture"
 	"fmt"
 	"sync"
 )

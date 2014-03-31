@@ -5,8 +5,8 @@
 package procedural
 
 import (
-	"azul3d.org/v0/scene/geom"
-	"azul3d.org/v0/scene/texture"
+	"azul3d.org/v1/scene/geom"
+	"azul3d.org/v1/scene/texture"
 )
 
 // Cube builds and returns an new 3D cube mesh.

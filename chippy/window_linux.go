@@ -5,10 +5,10 @@
 package chippy
 
 import (
-	"azul3d.org/v0/chippy/keyboard"
-	"azul3d.org/v0/chippy/mouse"
-	"azul3d.org/v0/chippy/thirdparty/resize"
-	"azul3d.org/v0/chippy/wrappers/x11"
+	"azul3d.org/v1/chippy/keyboard"
+	"azul3d.org/v1/chippy/mouse"
+	"azul3d.org/v1/chippy/thirdparty/resize"
+	"azul3d.org/v1/chippy/wrappers/x11"
 	"errors"
 	"image"
 	"image/draw"

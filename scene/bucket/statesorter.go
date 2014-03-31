@@ -5,9 +5,9 @@
 package bucket
 
 import (
-	"azul3d.org/v0/scene/shader"
-	"azul3d.org/v0/scene/texture"
-	"azul3d.org/v0/scene/transparency"
+	"azul3d.org/v1/scene/shader"
+	"azul3d.org/v1/scene/texture"
+	"azul3d.org/v1/scene/transparency"
 )
 
 type stateSorter struct{}

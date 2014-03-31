@@ -5,7 +5,7 @@
 package chippy
 
 import (
-	"azul3d.org/v0/chippy/wrappers/x11"
+	"azul3d.org/v1/chippy/wrappers/x11"
 	"errors"
 	"fmt"
 	"sync"

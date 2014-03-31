@@ -12,12 +12,12 @@
 package engine
 
 import (
-	"azul3d.org/v0/chippy"
-	"azul3d.org/v0/clock"
-	"azul3d.org/v0/event"
-	"azul3d.org/v0/scene"
-	"azul3d.org/v0/scene/camera"
-	"azul3d.org/v0/scene/renderer"
+	"azul3d.org/v1/chippy"
+	"azul3d.org/v1/clock"
+	"azul3d.org/v1/event"
+	"azul3d.org/v1/scene"
+	"azul3d.org/v1/scene/camera"
+	"azul3d.org/v1/scene/renderer"
 	"fmt"
 	"log"
 	"os"

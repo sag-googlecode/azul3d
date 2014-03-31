@@ -4,7 +4,7 @@
 
 package bucket
 
-import "azul3d.org/v0/scene"
+import "azul3d.org/v1/scene"
 
 // Sorter works on this node interface, so that the underlying type can
 // store other node information (e.g. a renderer could store information

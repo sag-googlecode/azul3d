@@ -7,8 +7,8 @@
 package main
 
 import (
-	"azul3d.org/v0/audio"
-	_ "azul3d.org/v0/audio/wav"
+	"azul3d.org/v1/audio"
+	_ "azul3d.org/v1/audio/wav"
 	"log"
 	"os"
 )
@@ -16,7 +16,7 @@ import (
 func test(fileName string) {
 	log.Println(fileName)
 
-	file, err := os.Open("src/azul3d.org/v0/assets/audio/" + fileName)
+	file, err := os.Open("src/azul3d.org/v1/assets/audio/" + fileName)
 	if err != nil {
 		log.Fatal(err)
 	}

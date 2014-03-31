@@ -5,8 +5,8 @@
 package gl
 
 import (
-	opengl "azul3d.org/v0/native/gl"
-	"azul3d.org/v0/scene/geom"
+	opengl "azul3d.org/v1/native/gl"
+	"azul3d.org/v1/scene/geom"
 	"runtime"
 	"unsafe"
 )
