@@ -73,7 +73,7 @@ func program(gfxLoop func(w *chippy.Window, r gfx.Renderer)) {
 	go gfxLoop(window, r)
 
 	cl := clock.New()
-	cl.SetMaxFrameRate(0)
+	//cl.SetMaxFrameRate(0)
 	printFPS := time.Tick(1 * time.Second)
 
 	// Start loading goroutine.
