@@ -1,6 +1,6 @@
-// Copyright 2012 Lightpoke. All rights reserved.
-// This source code is subject to the terms and
-// conditions defined in the "License.txt" file.
+// Copyright 2014 The Azul3D Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style
+// license that can be found in the LICENSE file.
 
 package keyboard
 
@@ -18,14 +18,15 @@ const (
 	Off          = Up   // the off/inactive state (for lock keys; Caps Lock; Num Lock; etc..)
 )
 
+// String returns a string representation of this keyboard key state.
 func (s State) String() string {
 	switch s {
 	case InvalidState:
-		return "keyboard.InvalidState"
+		return "InvalidState"
 	case Down:
-		return "keyboard.Down"
+		return "Down"
 	case Up:
-		return "keyboard.Up"
+		return "Up"
 	}
-	return fmt.Sprintf("keyboard.State(%d)", s)
+	return fmt.Sprintf("State(%d)", s)
 }

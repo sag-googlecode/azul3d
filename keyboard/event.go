@@ -1,6 +1,6 @@
-// Copyright 2012 Lightpoke. All rights reserved.
-// This source code is subject to the terms and
-// conditions defined in the "License.txt" file.
+// Copyright 2014 The Azul3D Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style
+// license that can be found in the LICENSE file.
 
 package keyboard
 
@@ -9,31 +9,32 @@ import (
 	"time"
 )
 
-// StateEvent represents an event when an keyboard key changes state, that is,
+// StateEvent represents an event when an keyboard key changes state (i.e.
 // being pushed down when it was previously up, or being toggled on when it was
-// previously off, etc.
+// previously off, etc)
 //
-// A StateEvent may have an Invalid key; in which case the OS unique identifier
-// may be used to identify the key uniquely. (E.g. for special keys and non-US
-// keyboard keys).
+// If Key == Invalid then the key may not be known, but it can still be
+// uniquely identified and it's state watched via the Raw member (e.g. for
+// special or non-US keys).
 //
-// The StateEvent must always have a unique OS value which uniquely represents
-// the key, even if the Key value is set to Invalid.
+// The Raw member must uniquely identify the keyboard button whose state is
+// changing, and must always be present regardless of whether or not Key ==
+// Invalid.
 type StateEvent struct {
 	T     time.Time
 	Key   Key
-	OS    OS
 	State State
+	Raw   uint32
 }
 
-// Implements the chippy.Event interface.
+// Time returns the time at which this event occured.
 func (e StateEvent) Time() time.Time {
 	return e.T
 }
 
 // String returns an string representation of this event.
 func (e StateEvent) String() string {
-	return fmt.Sprintf("keyboard.StateEvent(Key=%v, OS=%v, State=%v, Time=%v)", e.Key.String(), e.OS, e.State.String(), e.T)
+	return fmt.Sprintf("StateEvent(Key=%v, State=%v, Raw=%v, Time=%v)", e.Key, e.State, e.Raw, e.T)
 }
 
 // TypedEvent represents an event where some sort of user input has generated
@@ -43,12 +44,12 @@ type TypedEvent struct {
 	Rune rune
 }
 
-// Implements the chippy.Event interface.
+// Time returns the time at which this event occured.
 func (e TypedEvent) Time() time.Time {
 	return e.T
 }
 
 // String returns an string representation of this event.
 func (e TypedEvent) String() string {
-	return fmt.Sprintf("keyboard.TypedEvent(Rune=%U %q, Time=%v)", e.Rune, string(e.Rune), e.T)
+	return fmt.Sprintf("TypedEvent(Rune=%U %q, Time=%v)", e.Rune, string(e.Rune), e.T)
 }

@@ -1,6 +1,6 @@
-// Copyright 2012 Lightpoke. All rights reserved.
-// This source code is subject to the terms and
-// conditions defined in the "License.txt" file.
+// Copyright 2014 The Azul3D Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style
+// license that can be found in the LICENSE file.
 
 // Package keyboard implements various keyboard related data types.
 package keyboard
@@ -9,22 +9,12 @@ import (
 	"fmt"
 )
 
-// OS represents an keyboard button's unique identifier at an operating system
-// or hardware level. The actual value varies between platforms (I.e. it could
-// be a hardware or virtual key code, or something else entirely) the only
-// promise you are made is that the value will uniquely represent a single key.
-//
-// This OS value is used to represent keys not known (where a Key constant is
-// not defined), thus allowing applications to use *any* keyboard button (E.g.
-// for an applications 'modify keyboard shortcuts menu).
-type OS uintptr
-
 // Key represents an single keyboard button.
 //
 // It should be noted that it does not represent an character that pressing an
 // keyboard button would otherwise generate (hence you will find no capital
 // keys defined).
-type Key uint32
+type Key int
 
 const (
 	Invalid Key = iota

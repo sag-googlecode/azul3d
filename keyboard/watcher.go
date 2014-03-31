@@ -1,6 +1,6 @@
-// Copyright 2012 Lightpoke. All rights reserved.
-// This source code is subject to the terms and
-// conditions defined in the "License.txt" file.
+// Copyright 2014 The Azul3D Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style
+// license that can be found in the LICENSE file.
 
 package keyboard
 
@@ -10,23 +10,18 @@ import (
 	"sync"
 )
 
-type watcherKey struct {
-	key Key
-	os  OS
-}
-
 // Watcher watches the state of various keyboard keys.
 type Watcher struct {
-	access   sync.RWMutex
-	states   map[Key]State
-	osStates map[OS]State
+	access    sync.RWMutex
+	states    map[Key]State
+	rawStates map[uint64]State
 }
 
 // String returns a multi-line string representation of this keyboard watcher
-// and it's associated states (but not OS ones).
+// and it's associated states (but not raw ones).
 func (w *Watcher) String() string {
 	bb := new(bytes.Buffer)
-	fmt.Fprintf(bb, "keyboard.Watcher(\n")
+	fmt.Fprintf(bb, "Watcher(\n")
 	for k, s := range w.States() {
 		fmt.Fprintf(bb, "    %v: %v\n", k, s)
 	}
@@ -76,52 +71,52 @@ func (w *Watcher) Up(key Key) bool {
 	return w.State(key) == Up
 }
 
-// SetOSState specifies the current state of the specified OS key value.
-func (w *Watcher) SetOSState(os OS, state State) {
+// SetRawState specifies the current state of the specified raw key value.
+func (w *Watcher) SetRawState(raw uint64, state State) {
 	w.access.Lock()
 	defer w.access.Unlock()
 
-	w.osStates[os] = state
+	w.rawStates[raw] = state
 }
 
-// OSStates returns an copy of the internal OS key state map used by this watcher.
-func (w *Watcher) OSStates() map[OS]State {
+// RawStates returns an copy of the internal raw key state map used by this watcher.
+func (w *Watcher) RawStates() map[uint64]State {
 	w.access.RLock()
 	defer w.access.RUnlock()
 
-	copy := make(map[OS]State)
-	for os, state := range w.osStates {
-		copy[os] = state
+	copy := make(map[uint64]State)
+	for raw, state := range w.rawStates {
+		copy[raw] = state
 	}
 	return copy
 }
 
-// OSState returns the current state of the specified OS key value.
-func (w *Watcher) OSState(os OS) State {
+// RawState returns the current state of the specified raw key value.
+func (w *Watcher) RawState(raw uint64) State {
 	w.access.Lock()
 	defer w.access.Unlock()
 
-	state, ok := w.osStates[os]
+	state, ok := w.rawStates[raw]
 	if !ok {
-		w.osStates[os] = Up
+		w.rawStates[raw] = Up
 	}
 	return state
 }
 
-// OSDown tells whether the specified OS key value is currently in the down state.
-func (w *Watcher) OSDown(os OS) bool {
-	return w.OSState(os) == Down
+// RawDown tells whether the specified raw key value is currently in the down state.
+func (w *Watcher) RawDown(raw uint64) bool {
+	return w.RawState(raw) == Down
 }
 
-// OSUp tells whether the specified OS key value is currently in the up state.
-func (w *Watcher) OSUp(os OS) bool {
-	return w.OSState(os) == Up
+// RawUp tells whether the specified raw key value is currently in the up state.
+func (w *Watcher) RawUp(raw uint64) bool {
+	return w.RawState(raw) == Up
 }
 
 // NewWatcher returns a new, initialized, watcher.
 func NewWatcher() *Watcher {
 	w := new(Watcher)
 	w.states = make(map[Key]State)
-	w.osStates = make(map[OS]State)
+	w.rawStates = make(map[uint64]State)
 	return w
 }
