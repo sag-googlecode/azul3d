@@ -478,9 +478,11 @@ func NewRenderer(dcMakeCurrent, lcMakeCurrent func(current bool)) (*Renderer, er
 	r.gl.GetIntegerv(opengl.NUM_COMPRESSED_TEXTURE_FORMATS, &numFormats)
 	r.gl.Execute()
 
-	r.compressedTextureFormats = make([]int32, numFormats)
-	r.gl.GetIntegerv(opengl.COMPRESSED_TEXTURE_FORMATS, &r.compressedTextureFormats[0])
-	r.gl.Execute()
+	if numFormats > 0 {
+		r.compressedTextureFormats = make([]int32, numFormats)
+		r.gl.GetIntegerv(opengl.COMPRESSED_TEXTURE_FORMATS, &r.compressedTextureFormats[0])
+		r.gl.Execute()
+	}
 
 	return r, nil
 }
