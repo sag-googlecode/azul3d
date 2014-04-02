@@ -6,9 +6,12 @@ package freetype
 
 /*
 #cgo windows,amd64 LDFLAGS: libfreetype_windows_amd64.a libpng_windows_amd64.a libz_windows_amd64.a libbz2_windows_amd64.a
-#cgo CFLAGS: -I freetype-2.5.0.1/include/
+#cgo windows,amd64 CFLAGS: -I freetype-2.5.0.1/include/
 
-#include <ft2build.h>
+#cgo linux LDFLAGS: -l:libfreetype.a -l:libz.a -l:libpng.a -l:libbz2.a -l:libm.a
+#cgo linux CFLAGS: -I/usr/include/freetype2
+
+#include <freetype2/ft2build.h>
 #include FT_FREETYPE_H
 #include FT_SIZES_H
 #include FT_GLYPH_H
