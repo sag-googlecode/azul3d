@@ -481,6 +481,7 @@ func (w *NativeWindow) doRebuildWindow() (err error) {
 	if w.r.Opened() {
 		w.destroy()
 	}
+	w.clearLastCursorPosition()
 	screen := w.r.Screen()
 	width, height := w.r.clampedSize()
 	x, y := w.r.Position()
@@ -899,10 +900,21 @@ func (w *NativeWindow) handleEvent(ref *x11.GenericEvent, e interface{}) {
 		y := int(ev.EventY)
 		if w.r.CursorGrabbed() && w.r.Focused() {
 			// Find relative movement
-			w.last.RLock()
+			w.last.Lock()
 			diffX := float64(x - w.last.cursorX)
 			diffY := float64(y - w.last.cursorY)
-			w.last.RUnlock()
+
+			// Check if the last cursor position was not known, if so reject
+			// this relative movement.
+			if w.last.cursorX == -1 || w.last.cursorY == -1 {
+				diffX = 0
+				diffY = 0
+				// Update cursor position to this one (warpPointer does it for
+				// us below but we won't get to it in this case):
+				w.last.cursorX = x
+				w.last.cursorY = y
+			}
+			w.last.Unlock()
 			if diffX != 0 || diffY != 0 {
 				w.can.Lock()
 				if w.can.sendRelativeMoveEvents {
@@ -935,6 +947,7 @@ func (w *NativeWindow) handleEvent(ref *x11.GenericEvent, e interface{}) {
 
 	case *x11.EnterNotifyEvent:
 		w.r.trySetCursorWithin(true)
+		w.clearLastCursorPosition()
 
 		// The cursor is inside the window, and the window has focus so we
 		// should grab the cursor.
@@ -1577,6 +1590,13 @@ func (w *NativeWindow) setCursorPosition(x, y int) {
 		return
 	}
 	w.warpPointer(x, y)
+}
+
+func (w *NativeWindow) clearLastCursorPosition() {
+	w.last.Lock()
+	w.last.cursorX = -1
+	w.last.cursorY = -1
+	w.last.Unlock()
 }
 
 func (w *NativeWindow) warpPointer(x, y int) {
