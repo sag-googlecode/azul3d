@@ -21,27 +21,23 @@ package win32
 
 WORD win32_MAKELANGID(USHORT usPrimaryLanguage, USHORT usSubLanguage);
 
-LRESULT CALLBACK win32_WndProcWrapper(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
-
-WNDPROC win32_WndProcWrapperHandle;
-
-DWORD win32_DEVMODE_dmDisplayFixedOutput(DEVMODE* dm);
-POINTL win32_DEVMODE_dmPosition(DEVMODE* dm);
-
-MONITORENUMPROC win32_MonitorEnumProcCallbackHandle;
-HOOKPROC win32_LowLevelKeyboardHookCallbackHandle;
-
-LPTSTR macro_MAKEINTRESOURCE(WORD wInteger);
-
+extern LRESULT LowLevelKeyboardHookCallback(int, WPARAM, LPARAM);
+extern LRESULT WndProcCallback(HWND, UINT, WPARAM, LPARAM);
+extern BOOL MonitorEnumProcCallback(HMONITOR, HDC, LPRECT, LPARAM);
 */
 import "C"
 
 import (
 	"reflect"
 	"sync"
+	"syscall"
 	"unicode/utf16"
 	"unsafe"
 )
+
+func String(s []uint16) string {
+	return syscall.UTF16ToString(s)
+}
 
 type LPTSTR C.LPTSTR
 
@@ -89,312 +85,8 @@ func StringToLPTSTR(g string) C.LPTSTR {
 	return cstr
 }
 
-type HDC C.HDC
-
-// http://msdn.microsoft.com/en-us/library/windows/desktop/dd183569(v=vs.85).aspx
-type DISPLAY_DEVICE C.DISPLAY_DEVICE
-
-/*
-  typedef struct _DISPLAY_DEVICEA {
-    DWORD StateFlags;
-    CHAR DeviceID[128];
-    CHAR DeviceKey[128];
-  } DISPLAY_DEVICEA,*PDISPLAY_DEVICEA,*LPDISPLAY_DEVICEA;
-
-  typedef struct _DISPLAY_DEVICEW {
-    WCHAR DeviceString[128];
-    DWORD StateFlags;
-    WCHAR DeviceID[128];
-    WCHAR DeviceKey[128];
-  } DISPLAY_DEVICEW,*PDISPLAY_DEVICEW,*LPDISPLAY_DEVICEW;
-*/
-
-func (c *DISPLAY_DEVICE) GetDeviceName() string {
-	return LPTSTRToString((C.LPTSTR)(unsafe.Pointer(&c.DeviceName)))
-}
-
-func (c *DISPLAY_DEVICE) GetDeviceString() string {
-	return LPTSTRToString((C.LPTSTR)(unsafe.Pointer(&c.DeviceString)))
-}
-
-const (
-	DISPLAY_DEVICE_ACTIVE           = C.DISPLAY_DEVICE_ACTIVE
-	DISPLAY_DEVICE_ATTACHED         = C.DISPLAY_DEVICE_ATTACHED
-	DISPLAY_DEVICE_MIRRORING_DRIVER = C.DISPLAY_DEVICE_MIRRORING_DRIVER
-	DISPLAY_DEVICE_MODESPRUNED      = C.DISPLAY_DEVICE_MODESPRUNED
-	DISPLAY_DEVICE_PRIMARY_DEVICE   = C.DISPLAY_DEVICE_PRIMARY_DEVICE
-	DISPLAY_DEVICE_REMOVABLE        = C.DISPLAY_DEVICE_REMOVABLE
-	DISPLAY_DEVICE_VGA_COMPATIBLE   = C.DISPLAY_DEVICE_VGA_COMPATIBLE
-)
-
-func (c *DISPLAY_DEVICE) GetStateFlags() DWORD {
-	return DWORD(c.StateFlags)
-}
-
-func (c *DISPLAY_DEVICE) GetDeviceID() string {
-	return LPTSTRToString((C.LPTSTR)(unsafe.Pointer(&c.DeviceID)))
-}
-
-func (c *DISPLAY_DEVICE) GetDeviceKey() string {
-	return LPTSTRToString((C.LPTSTR)(unsafe.Pointer(&c.DeviceKey)))
-}
-
-// http://msdn.microsoft.com/en-us/library/windows/desktop/dd162609(v=vs.85).aspx
-func EnumDisplayDevices(lpDevice string, iDevNum, dwFlags DWORD) (ret bool, displayDevice *DISPLAY_DEVICE) {
-	dd := new(C.DISPLAY_DEVICE)
-	dd.cb = C.DWORD(unsafe.Sizeof(*dd))
-
-	cDevice := StringToLPTSTR(lpDevice)
-	defer C.free(unsafe.Pointer(cDevice))
-
-	ret = C.EnumDisplayDevices(cDevice, C.DWORD(iDevNum), (C.PDISPLAY_DEVICE)(unsafe.Pointer(dd)), C.DWORD(dwFlags)) != 0
-	displayDevice = (*DISPLAY_DEVICE)(dd)
-	return
-}
-
-type DEVMODE C.DEVMODE
-
-func NewDEVMODE() *DEVMODE {
-	m := DEVMODE{}
-	m.dmSize = C.WORD(unsafe.Sizeof(m))
-	return &m
-}
-
-func (m *DEVMODE) DmDeviceName() string {
-	return LPTSTRToString((C.LPTSTR)(unsafe.Pointer(&m.dmDeviceName)))
-}
-
-func (m *DEVMODE) DmBitsPerPel() DWORD {
-	return DWORD(m.dmBitsPerPel)
-}
-
-func (m *DEVMODE) DmPelsWidth() DWORD {
-	return DWORD(m.dmPelsWidth)
-}
-
-func (m *DEVMODE) DmPelsHeight() DWORD {
-	return DWORD(m.dmPelsHeight)
-}
-
-func (m *DEVMODE) DmDisplayFrequency() DWORD {
-	return DWORD(m.dmDisplayFrequency)
-}
-
-const (
-	DMDFO_DEFAULT = C.DMDFO_DEFAULT
-	DMDFO_CENTER  = C.DMDFO_CENTER
-	DMDFO_STRETCH = C.DMDFO_STRETCH
-)
-
-func (m *DEVMODE) DmDisplayFixedOutput() DWORD {
-	return DWORD(C.win32_DEVMODE_dmDisplayFixedOutput((*C.DEVMODE)(m)))
-}
-
-type POINTL C.POINTL
-
-func (c POINTL) X() LONG {
-	return LONG(c.x)
-}
-func (c POINTL) Y() LONG {
-	return LONG(c.y)
-}
-
-func (m *DEVMODE) DmPosition() POINTL {
-	return POINTL(C.win32_DEVMODE_dmPosition((*C.DEVMODE)(m)))
-}
-
-const (
-	DM_BITSPERPEL       = C.DM_BITSPERPEL
-	DM_PELSWIDTH        = C.DM_PELSWIDTH
-	DM_PELSHEIGHT       = C.DM_PELSHEIGHT
-	DM_DISPLAYFLAGS     = C.DM_DISPLAYFLAGS
-	DM_DISPLAYFREQUENCY = C.DM_DISPLAYFREQUENCY
-	DM_POSITION         = C.DM_POSITION
-)
-
-func (m *DEVMODE) SetDmFields(fields DWORD) {
-	m.dmFields = C.DWORD(fields)
-}
-
-func (m *DEVMODE) SetDmPelsWidth(value DWORD) {
-	m.dmPelsWidth = C.DWORD(value)
-}
-
-func (m *DEVMODE) SetDmPelsHeight(value DWORD) {
-	m.dmPelsHeight = C.DWORD(value)
-}
-
-func (m *DEVMODE) SetDmBitsPerPel(value DWORD) {
-	m.dmBitsPerPel = C.DWORD(value)
-}
-
-func (m *DEVMODE) SetDmDisplayFrequency(value DWORD) {
-	m.dmDisplayFrequency = C.DWORD(value)
-}
-
-/*
-typedef struct _devicemode {
-  TCHAR dmDeviceName[CCHDEVICENAME];
-  WORD  dmSpecVersion;
-  WORD  dmDriverVersion;
-  WORD  dmSize;
-  WORD  dmDriverExtra;
-  DWORD dmFields;
-  union {
-    struct {
-      short dmOrientation;
-      short dmPaperSize;
-      short dmPaperLength;
-      short dmPaperWidth;
-      short dmScale;
-      short dmCopies;
-      short dmDefaultSource;
-      short dmPrintQuality;
-    };
-    struct {
-      POINTL dmPosition;
-      DWORD  dmDisplayOrientation;
-      DWORD  dmDisplayFixedOutput;
-    };
-  };
-  short dmColor;
-  short dmDuplex;
-  short dmYResolution;
-  short dmTTOption;
-  short dmCollate;
-  TCHAR dmFormName[CCHFORMNAME];
-  WORD  dmLogPixels;
-  //DWORD dmBitsPerPel;
-  //DWORD dmPelsWidth;
-  //DWORD dmPelsHeight;
-  union {
-    DWORD dmDisplayFlags;
-    DWORD dmNup;
-  };
-  //DWORD dmDisplayFrequency;
-#if (WINVER >= 0x0400)
-  DWORD dmICMMethod;
-  DWORD dmICMIntent;
-  DWORD dmMediaType;
-  DWORD dmDitherType;
-  DWORD dmReserved1;
-  DWORD dmReserved2;
-#if (WINVER >= 0x0500) || (_WIN32_WINNT >= 0x0400)
-  DWORD dmPanningWidth;
-  DWORD dmPanningHeight;
-#endif
-#endif
-} DEVMODE, *PDEVMODE, *LPDEVMODE;
-*/
-
-const ENUM_CURRENT_SETTINGS = C.ENUM_CURRENT_SETTINGS
-
-func EnumDisplaySettings(lpszDeviceName string, iModeNum DWORD) (ret bool, devMode *DEVMODE) {
-	var mode C.DEVMODE
-
-	cDeviceName := StringToLPTSTR(lpszDeviceName)
-	defer C.free(unsafe.Pointer(cDeviceName))
-
-	ret = C.EnumDisplaySettings(cDeviceName, C.DWORD(iModeNum), (C.LPDEVMODE)(unsafe.Pointer(&mode))) != 0
-	devMode = (*DEVMODE)(&mode)
-	return
-}
-
-type VIDEOPARAMETERS C.VIDEOPARAMETERS
-
-/*
-typedef struct _VIDEOPARAMETERS {
-  GUID  guid;
-  ULONG dwOffset;
-  ULONG dwCommand;
-  ULONG dwFlags;
-  ULONG dwMode;
-  ULONG dwTVStandard;
-  ULONG dwAvailableModes;
-  ULONG dwAvailableTVStandard;
-  ULONG dwFlickerFilter;
-  ULONG dwOverScanX;
-  ULONG dwOverScanY;
-  ULONG dwMaxUnscaledX;
-  ULONG dwMaxUnscaledY;
-  ULONG dwPositionX;
-  ULONG dwPositionY;
-  ULONG dwBrightness;
-  ULONG dwContrast;
-
-  ULONG dwCPType;
-  ULONG dwCPCommand;
-  ULONG dwCPStandard;
-  ULONG dwCPKey;
-  ULONG bCP_APSTriggerBits;
-  UCHAR bOEMCopyProtection[256];
-} VIDOEPARAMETERS, *PVIDEOPARAMETERS;
-*/
-
-const (
-	DISP_CHANGE_SUCCESSFUL  = C.DISP_CHANGE_SUCCESSFUL
-	DISP_CHANGE_BADDUALVIEW = C.DISP_CHANGE_BADDUALVIEW
-	DISP_CHANGE_BADFLAGS    = C.DISP_CHANGE_BADFLAGS
-	DISP_CHANGE_BADMODE     = C.DISP_CHANGE_BADMODE
-	DISP_CHANGE_BADPARAM    = C.DISP_CHANGE_BADPARAM
-	DISP_CHANGE_FAILED      = C.DISP_CHANGE_FAILED
-	DISP_CHANGE_NOTUPDATED  = C.DISP_CHANGE_NOTUPDATED
-	DISP_CHANGE_RESTART     = C.DISP_CHANGE_RESTART
-
-	CDS_TEST           = C.CDS_TEST
-	CDS_UPDATEREGISTRY = C.CDS_UPDATEREGISTRY
-)
-
-// http://msdn.microsoft.com/en-us/library/windows/desktop/dd183413(v=vs.85).aspx
-func ChangeDisplaySettingsEx(lpszDeviceName string, lpDevMode *DEVMODE, dwFlags DWORD, lParam *VIDEOPARAMETERS) (ret LONG) {
-	cDeviceName := StringToLPTSTR(lpszDeviceName)
-	defer C.free(unsafe.Pointer(cDeviceName))
-
-	ret = LONG(C.ChangeDisplaySettingsEx(cDeviceName, (C.LPDEVMODE)(unsafe.Pointer(lpDevMode)), nil, C.DWORD(dwFlags), (C.LPVOID)(unsafe.Pointer(lParam))))
-	return
-}
-
-// http://msdn.microsoft.com/en-us/library/windows/desktop/dd372194(v=vs.85).aspx
-func SetDeviceGammaRamp(device HDC, ramp [3][256]WORD) (ret bool) {
-	ret = C.SetDeviceGammaRamp(C.HDC(device), (C.LPVOID)(&ramp[0])) != 0
-	return
-}
-
-// http://msdn.microsoft.com/en-us/library/windows/desktop/dd316946(v=vs.85).aspx
-func GetDeviceGammaRamp(dc HDC) (ret bool, ramp [3][256]WORD) {
-	ret = C.GetDeviceGammaRamp(C.HDC(dc), (C.LPVOID)(&ramp[0])) != 0
-	return
-}
-
-// nIndex possible values:
-const (
-	HORZSIZE      = C.HORZSIZE      // mm width
-	VERTSIZE      = C.VERTSIZE      // mm height
-	HORZRES       = C.HORZRES       // px width
-	VERTRES       = C.VERTRES       // px height
-	VREFRESH      = C.VREFRESH      // current refresh rate
-	CM_GAMMA_RAMP = C.CM_GAMMA_RAMP // supports gamma ramps
-)
-
-//
 func GetDeviceCaps(dc HDC, nIndex Int) (ret Int) {
 	ret = Int(C.GetDeviceCaps(C.HDC(dc), C.int(nIndex)))
-	return
-}
-
-func CreateDC(lpszDriver, lpszDevice string, lpInitData *DEVMODE) (dc HDC) {
-	var cDriver, cDevice C.LPTSTR
-	if len(lpszDriver) > 0 {
-		cDriver = StringToLPTSTR(lpszDriver)
-		defer C.free(unsafe.Pointer(cDriver))
-	}
-
-	if len(lpszDevice) > 0 {
-		cDevice = StringToLPTSTR(lpszDevice)
-		defer C.free(unsafe.Pointer(cDevice))
-	}
-
-	dc = HDC(C.CreateDC(cDriver, cDevice, nil, (*C.DEVMODEW)(lpInitData)))
 	return
 }
 
@@ -403,8 +95,6 @@ func DeleteDC(dc HDC) (ret bool) {
 	ret = C.DeleteDC(C.HDC(dc)) != 0
 	return
 }
-
-type HWND C.HWND
 
 // http://msdn.microsoft.com/en-us/library/windows/desktop/dd162920(v=vs.85).aspx
 // just returns bool even though docs say int.. stupid!
@@ -423,20 +113,24 @@ func GetLastError() (ret DWORD) {
 func GetLastErrorString() (ret string) {
 	err := DWORD(C.GetLastError())
 
-	var lpMsgBuf C.LPVOID
-	defer C.LocalFree((C.HLOCAL)(lpMsgBuf))
+	var msgBuf uintptr
+	defer C.LocalFree((C.HLOCAL)(msgBuf))
 
-	C.FormatMessage(C.FORMAT_MESSAGE_ALLOCATE_BUFFER|C.FORMAT_MESSAGE_FROM_SYSTEM|C.FORMAT_MESSAGE_IGNORE_INSERTS, nil, C.DWORD(err), C.DWORD(C.win32_MAKELANGID(C.LANG_NEUTRAL, C.SUBLANG_DEFAULT)), (C.LPTSTR)(unsafe.Pointer(&lpMsgBuf)), 0, nil)
+	FormatMessage(
+		C.FORMAT_MESSAGE_ALLOCATE_BUFFER|C.FORMAT_MESSAGE_FROM_SYSTEM|C.FORMAT_MESSAGE_IGNORE_INSERTS,
+		nil,
+		DWORD(err),
+		DWORD(C.win32_MAKELANGID(C.LANG_NEUTRAL, C.SUBLANG_DEFAULT)),
+		unsafe.Pointer(&msgBuf),
+		0,
+		nil,
+	)
 
-	ret = LPTSTRToString((C.LPTSTR)(lpMsgBuf))
+	ret = LPTSTRToString((C.LPTSTR)(unsafe.Pointer(msgBuf)))
 	return
 }
 
 type CREATESTRUCT C.CREATESTRUCT
-
-type HMENU C.HMENU
-
-type HINSTANCE C.HINSTANCE
 
 type WPARAM C.WPARAM
 
@@ -445,21 +139,6 @@ func (c WPARAM) HIWORD() uint16 {
 }
 func (c WPARAM) LOWORD() uint16 {
 	return uint16(c)
-}
-
-type POINT C.POINT
-
-func (c *POINT) SetX(x LONG) {
-	c.x = C.LONG(x)
-}
-func (c *POINT) SetY(y LONG) {
-	c.y = C.LONG(y)
-}
-func (c *POINT) X() LONG {
-	return LONG(c.x)
-}
-func (c *POINT) Y() LONG {
-	return LONG(c.y)
 }
 
 func ScreenToClient(hwnd HWND, point *POINT) bool {
@@ -472,24 +151,6 @@ func ClientToScreen(hwnd HWND, point *POINT) bool {
 
 func WindowFromDC(hdc HDC) HWND {
 	return HWND(C.WindowFromDC(C.HDC(hdc)))
-}
-
-type MINMAXINFO C.MINMAXINFO
-
-/*
-typedef struct tagMINMAXINFO {
-  POINT ptReserved;
-  POINT ptMaxSize;
-  POINT ptMaxPosition;
-  POINT ptMinTrackSize;
-  POINT ptMaxTrackSize;
-} MINMAXINFO, *PMINMAXINFO, *LPMINMAXINFO;
-*/
-func (c *MINMAXINFO) PtMinTrackSize() *POINT {
-	return (*POINT)(&c.ptMinTrackSize)
-}
-func (c *MINMAXINFO) PtMaxTrackSize() *POINT {
-	return (*POINT)(&c.ptMaxTrackSize)
 }
 
 type LPARAM C.LPARAM
@@ -514,55 +175,24 @@ func (c LPARAM) RECT() *RECT {
 	return (*RECT)(unsafe.Pointer(uintptr(c)))
 }
 
-type HICON C.HICON
-
-type HCURSOR C.HCURSOR
-
-type HBRUSH C.HBRUSH
-
 func IntToHBRUSH(v Int) HBRUSH {
 	return (HBRUSH)(unsafe.Pointer(&v))
 }
-
-type COLORREF C.COLORREF
 
 func CreateSolidBrush(crColor COLORREF) HBRUSH {
 	return HBRUSH(C.CreateSolidBrush(C.COLORREF(crColor)))
 }
 
-type HRGN C.HRGN
-
 func CreateRectRgn(nLeftRect, nTopRect, nRightRect, nBottomRect int) HRGN {
 	return HRGN(C.CreateRectRgn(C.int(nLeftRect), C.int(nTopRect), C.int(nRightRect), C.int(nBottomRect)))
 }
-
-type HMONITOR C.HMONITOR
 
 func MonitorFromWindow(hwnd HWND, dwFlags DWORD) HMONITOR {
 	return HMONITOR(C.MonitorFromWindow(C.HWND(hwnd), C.DWORD(dwFlags)))
 }
 
-type MONITORINFOEX struct {
-	CbSize    DWORD
-	RcMonitor RECT
-	RcWork    RECT
-	DwFlags   DWORD
-	szDevice  [C.CCHDEVICENAME]uint16
-}
-
-func (m *MONITORINFOEX) SetSize() {
-	m.CbSize = DWORD(unsafe.Sizeof(MONITORINFOEX{}))
-}
-
-func (m *MONITORINFOEX) Device() string {
-	ar := make([]uint16, len(m.szDevice)+1)
-	for i, c := range m.szDevice {
-		ar[i] = c
-	}
-	return LPTSTRToString((C.LPTSTR)(unsafe.Pointer(&ar[0])))
-}
-
 func GetMonitorInfo(hMonitor HMONITOR, lpmi *MONITORINFOEX) bool {
+	lpmi.CbSize = uint32(unsafe.Sizeof(MONITORINFOEX{}))
 	return C.GetMonitorInfo(C.HMONITOR(hMonitor), (C.LPMONITORINFO)(unsafe.Pointer(lpmi))) != 0
 }
 
@@ -580,16 +210,21 @@ BOOL CALLBACK MonitorEnumProc(
 */
 
 //export MonitorEnumProcCallback
-func MonitorEnumProcCallback(hMonitor HMONITOR, hdcMonitor HDC, lprcMonitor *RECT, dwData LPARAM) C.WINBOOL {
-	if monitorEnumProcCallback(hMonitor, hdcMonitor, lprcMonitor, dwData) {
-		return C.WINBOOL(1)
+func MonitorEnumProcCallback(hMonitor C.HMONITOR, hdcMonitor C.HDC, lprcMonitor *C.RECT, dwData LPARAM) C.BOOL {
+	if monitorEnumProcCallback(HMONITOR(hMonitor), HDC(hdcMonitor), (*RECT)(unsafe.Pointer(lprcMonitor)), dwData) {
+		return C.BOOL(1)
 	}
-	return C.WINBOOL(0)
+	return C.BOOL(0)
 }
 
 func EnumDisplayMonitors(hdc HDC, lprcClip *RECT, fn MonitorEnumProc, dwData LPARAM) bool {
 	monitorEnumProcCallback = fn
-	ret := C.EnumDisplayMonitors(C.HDC(hdc), (C.LPCRECT)(unsafe.Pointer(lprcClip)), C.win32_MonitorEnumProcCallbackHandle, C.LPARAM(dwData)) != 0
+	ret := C.EnumDisplayMonitors(
+		C.HDC(hdc),
+		(C.LPCRECT)(unsafe.Pointer(lprcClip)),
+		(*[0]byte)(C.MonitorEnumProcCallback),
+		C.LPARAM(dwData),
+	) != 0
 	monitorEnumProcCallback = nil
 	return ret
 }
@@ -620,24 +255,19 @@ func LowLevelKeyboardHookCallback(nCode C.int, wParam C.WPARAM, lParam C.LPARAM)
 	return C.LRESULT(lowLevelKeyboardHookCallback(Int(nCode), WPARAM(wParam), LPARAM(lParam)))
 }
 
-type HHOOK C.HHOOK
-
 func SetLowLevelKeyboardHook(fn LowLevelKeyboardHookProc, hMod HINSTANCE, dwThreadId DWORD) HHOOK {
 	lowLevelKeyboardHookCallback = fn
-	return HHOOK(C.SetWindowsHookEx(C.WH_KEYBOARD_LL, C.win32_LowLevelKeyboardHookCallbackHandle, C.HINSTANCE(hMod), C.DWORD(dwThreadId)))
+	return HHOOK(C.SetWindowsHookEx(
+		C.WH_KEYBOARD_LL,
+		(*[0]byte)(C.LowLevelKeyboardHookCallback),
+		C.HINSTANCE(hMod),
+		C.DWORD(dwThreadId),
+	))
 }
 
 func UnhookWindowsHookEx(hook HHOOK) bool {
 	lowLevelKeyboardHookCallback = nil
 	return C.UnhookWindowsHookEx(C.HHOOK(hook)) != 0
-}
-
-type KBDLLHOOKSTRUCT struct {
-	VkCode      DWORD
-	ScanCode    DWORD
-	Flags       DWORD
-	Time        DWORD
-	DwExtraInfo ULONG_PTR
 }
 
 const (
@@ -648,26 +278,12 @@ func CallNextHookEx(hhk HHOOK, nCode Int, wParam WPARAM, lParam LPARAM) LRESULT 
 	return LRESULT(C.CallNextHookEx(C.HHOOK(hhk), C.int(nCode), C.WPARAM(wParam), C.LPARAM(lParam)))
 }
 
-type WNDCLASSEX C.WNDCLASSEX
-
-func NewWNDCLASSEX() *WNDCLASSEX {
-	w := WNDCLASSEX{}
-	w.cbSize = C.UINT(unsafe.Sizeof(w))
-	return &w
-}
-
-func (w *WNDCLASSEX) SetStyle(style UINT) {
-	w.style = C.UINT(style)
-}
-
 var callbacks = make(map[HWND]func(HWND, UINT, WPARAM, LPARAM) LRESULT)
 var callbacksAccess sync.RWMutex
 
 //export WndProcCallback
 func WndProcCallback(hwnd C.HWND, msg C.UINT, wParam C.WPARAM, lParam C.LPARAM) C.LRESULT {
 	// This gets called from C
-	//fmt.Println("HWND", hwnd)
-
 	callbacksAccess.RLock()
 	callback, ok := callbacks[HWND(hwnd)]
 	callbacksAccess.RUnlock()
@@ -676,11 +292,6 @@ func WndProcCallback(hwnd C.HWND, msg C.UINT, wParam C.WPARAM, lParam C.LPARAM) 
 		return C.LRESULT(callback(HWND(hwnd), UINT(msg), WPARAM(wParam), LPARAM(lParam)))
 	}
 	return C.DefWindowProc(hwnd, msg, wParam, lParam)
-}
-
-func (w *WNDCLASSEX) SetLpfnWndProc() {
-
-	w.lpfnWndProc = C.win32_WndProcWrapperHandle
 }
 
 func RegisterWndProc(hwnd HWND, fn func(HWND, UINT, WPARAM, LPARAM) LRESULT) {
@@ -696,51 +307,7 @@ func UnregisterWndProc(hwnd HWND) {
 
 }
 
-func (w *WNDCLASSEX) SetCbClsExtra(v Int) {
-	w.cbClsExtra = C.int(v)
-}
-
-func (w *WNDCLASSEX) SetCbWndExtra(v Int) {
-	w.cbWndExtra = C.int(v)
-}
-
-func (w *WNDCLASSEX) SetHInstance(instance HINSTANCE) {
-	w.hInstance = C.HINSTANCE(instance)
-}
-
-func (w *WNDCLASSEX) SetHIcon(icon HICON) {
-	w.hIcon = C.HICON(icon)
-}
-
-func (w *WNDCLASSEX) SetHIconSm(icon HICON) {
-	w.hIconSm = C.HICON(icon)
-}
-
-func (w *WNDCLASSEX) SetHCursor(cursor HCURSOR) {
-	w.hCursor = C.HCURSOR(cursor)
-}
-
 const COLOR_WINDOW = C.COLOR_WINDOW
-
-func (w *WNDCLASSEX) SetHbrBackground(v HBRUSH) {
-	w.hbrBackground = C.HBRUSH(v)
-}
-
-func (w *WNDCLASSEX) SetLpszMenuName(v string) {
-	cstr := StringToLPTSTR(v)
-	defer C.free(unsafe.Pointer(cstr))
-
-	w.lpszMenuName = (C.LPCWSTR)(cstr)
-}
-
-func (w *WNDCLASSEX) SetLpszClassName(v string) {
-	cClassName := (C.LPCWSTR)(unsafe.Pointer(StringToLPTSTR(v)))
-
-	// Never free here, this is free'd with UnregisterClass() calls
-	//defer C.free(unsafe.Pointer(cClassName))
-
-	w.lpszClassName = cClassName
-}
 
 // http://msdn.microsoft.com/en-us/library/windows/desktop/ms632600(v=vs.85).aspx
 const (
@@ -869,16 +436,6 @@ const (
 	GWL_STYLE   = C.GWL_STYLE
 )
 
-func SetWindowLongPtr(hwnd HWND, nIndex Int, dwNewLong LONG_PTR) (ret LONG_PTR) {
-	ret = LONG_PTR(C.SetWindowLongPtr(C.HWND(hwnd), C.int(nIndex), C.LONG_PTR(dwNewLong)))
-	return
-}
-
-func GetWindowLongPtr(hwnd HWND, nIndex Int) (ret LONG_PTR) {
-	ret = LONG_PTR(C.LONG_PTR(C.GetWindowLongPtr(C.HWND(hwnd), C.int(nIndex))))
-	return
-}
-
 func CreateWindowEx(dwExStyle uint32, lpClassName, lpWindowName string, dwStyle DWORD, x, y, nWidth, nHeight Int, hWndParent HWND, hMenu HMENU, hInstance HINSTANCE, createStruct *CREATESTRUCT) (ret HWND) {
 	cClassName := (*C.WCHAR)(unsafe.Pointer(StringToLPTSTR(lpClassName)))
 	defer C.free(unsafe.Pointer(cClassName))
@@ -962,27 +519,7 @@ func ShowWindow(hwnd HWND, nCmdShow Int) (wasShownBefore bool) {
 
 type HMODULE C.HMODULE
 
-func GetModuleHandle(lpModuleName string) (ret HMODULE) {
-	cModuleName := StringToLPTSTR(lpModuleName)
-	defer C.free(unsafe.Pointer(cModuleName))
-
-	ret = HMODULE(C.GetModuleHandle((C.LPTSTR)(cModuleName)))
-	return
-}
-
 type ATOM C.ATOM
-
-func RegisterClassEx(lpwcx *WNDCLASSEX) (class ATOM) {
-	class = ATOM(C.RegisterClassEx((*C.WNDCLASSEXW)(lpwcx)))
-	return
-}
-
-func UnregisterClass(class string, instance HINSTANCE) (ret bool) {
-	cClass := StringToLPTSTR(class)
-	defer C.free(unsafe.Pointer(cClass))
-	ret = C.UnregisterClass(cClass, C.HINSTANCE(instance)) != 0
-	return
-}
 
 func DefWindowProc(hwnd HWND, msg UINT, wParam WPARAM, lParam LPARAM) (ret LRESULT) {
 	ret = LRESULT(C.DefWindowProc(C.HWND(hwnd), C.UINT(msg), C.WPARAM(wParam), C.LPARAM(lParam)))
@@ -991,37 +528,24 @@ func DefWindowProc(hwnd HWND, msg UINT, wParam WPARAM, lParam LPARAM) (ret LRESU
 
 type MSG C.MSG
 
-/*
-  HWND   hwnd;
-  UINT   message;
-  WPARAM wParam;
-  LPARAM lParam;
-  DWORD  time;
-  POINT  pt;
-*/
-
 func (c *MSG) Hwnd() HWND {
 	return HWND(c.hwnd)
 }
-
 func (c *MSG) Message() UINT {
 	return UINT(c.message)
 }
-
 func (c *MSG) WParam() WPARAM {
 	return WPARAM(c.wParam)
 }
-
 func (c *MSG) LParam() LPARAM {
 	return LPARAM(c.lParam)
 }
-
 func (c *MSG) Time() DWORD {
 	return DWORD(c.time)
 }
 
 func DispatchMessage(msg *MSG) (ret LRESULT) {
-	ret = LRESULT(C.DispatchMessage((*C.MSG)(msg)))
+	ret = LRESULT(C.DispatchMessage((*C.MSG)(unsafe.Pointer(msg))))
 	return
 }
 
@@ -1051,25 +575,6 @@ const (
 	PM_QS_SENDMESSAGE = C.PM_QS_SENDMESSAGE
 )
 
-func PeekMessage(hwnd HWND, wMsgFilterMin, wMsgFilterMax, wRemoveMsg UINT) (ret bool, msg *MSG) {
-	var cMsg C.MSG
-	ret = C.PeekMessage((C.LPMSG)(unsafe.Pointer(&cMsg)), C.HWND(hwnd), C.UINT(wMsgFilterMin), C.UINT(wMsgFilterMax), C.UINT(wRemoveMsg)) != 0
-	msg = (*MSG)(&cMsg)
-	return
-}
-
-func GetMessage(hwnd HWND, wMsgFilterMin, wMsgFilterMax UINT) (ret bool, msg *MSG) {
-	var cMsg C.MSG
-	ret = C.GetMessage((C.LPMSG)(unsafe.Pointer(&cMsg)), C.HWND(hwnd), C.UINT(wMsgFilterMin), C.UINT(wMsgFilterMax)) != 0
-	msg = (*MSG)(&cMsg)
-	return
-}
-
-func TranslateMessage(msg *MSG) (ret bool) {
-	ret = C.TranslateMessage((*C.MSG)(msg)) != 0
-	return
-}
-
 type TIMERPROC C.TIMERPROC
 
 const (
@@ -1091,11 +596,10 @@ const (
 
 	WM_SETCURSOR = C.WM_SETCURSOR
 
-	ICON_BIG    = C.ICON_BIG
-	ICON_SMALL  = C.ICON_SMALL
-	ICON_SMALL2 = C.ICON_SMALL2
-	WM_GETICON  = C.WM_GETICON
-	WM_SETICON  = C.WM_SETICON
+	ICON_BIG   = C.ICON_BIG
+	ICON_SMALL = C.ICON_SMALL
+	WM_GETICON = C.WM_GETICON
+	WM_SETICON = C.WM_SETICON
 
 	WM_SIZE        = C.WM_SIZE
 	SIZE_MAXIMIZED = C.SIZE_MAXIMIZED
@@ -1121,18 +625,7 @@ const (
 	WM_MBUTTONDBLCLK = C.WM_MBUTTONDBLCLK
 	WM_MOUSEWHEEL    = C.WM_MOUSEWHEEL
 
-	MK_CONTROL       = 0x0008
-	MK_LBUTTON       = 0x0001
-	MK_MBUTTON       = 0x0010
-	MK_RBUTTON       = 0x0002
-	MK_SHIFT         = 0x0004
-	MK_XBUTTON1      = 0x0020
-	MK_XBUTTON2      = 0x0040
-	WM_XBUTTONDOWN   = C.WM_XBUTTONDOWN
-	WM_XBUTTONUP     = C.WM_XBUTTONUP
-	WM_XBUTTONDBLCLK = C.WM_XBUTTONDBLCLK
-	WM_MOUSELAST     = C.WM_MOUSELAST
-	WM_MOUSEHWHEEL   = 0x020E
+	WM_MOUSELAST = C.WM_MOUSELAST
 
 	// WM_MOUSEMOVE is WM_MOUSEENTER
 	WM_MOUSELEAVE = C.WM_MOUSELEAVE
@@ -1145,8 +638,6 @@ const (
 	WM_CHAR = C.WM_CHAR
 
 	WM_MOVE = C.WM_MOVE
-
-	WM_INPUT = C.WM_INPUT
 
 	GIDC_ARRIVAL           = 1
 	GIDC_REMOVAL           = 2
@@ -1166,89 +657,6 @@ func IsIconic(hwnd HWND) bool {
 
 func SetCursorPos(x, y int32) bool {
 	return C.SetCursorPos(C.int(x), C.int(y)) != 0
-}
-
-func SetTimer(hwnd HWND, nIDEvent UINT_PTR, uElapse UINT, lpTimerFunc TIMERPROC) (timer UINT_PTR) {
-	timer = UINT_PTR(C.SetTimer(C.HWND(hwnd), C.UINT_PTR(nIDEvent), C.UINT(uElapse), C.TIMERPROC(lpTimerFunc)))
-	return
-}
-
-func KillTimer(hwnd HWND, uIDEvent UINT_PTR) (ret bool) {
-	ret = C.KillTimer(C.HWND(hwnd), C.UINT_PTR(uIDEvent)) != 0
-	return
-}
-
-type RECT C.RECT
-
-func (c *RECT) Left() LONG {
-	return LONG(c.left)
-}
-func (c *RECT) Top() LONG {
-	return LONG(c.top)
-}
-func (c *RECT) Right() LONG {
-	return LONG(c.right)
-}
-func (c *RECT) Bottom() LONG {
-	return LONG(c.bottom)
-}
-
-func (c *RECT) SetLeft(v LONG) {
-	c.left = C.LONG(v)
-}
-func (c *RECT) SetTop(v LONG) {
-	c.top = C.LONG(v)
-}
-func (c *RECT) SetRight(v LONG) {
-	c.right = C.LONG(v)
-}
-func (c *RECT) SetBottom(v LONG) {
-	c.bottom = C.LONG(v)
-}
-
-func GetUpdateRect(hwnd HWND, lpRect *RECT, bErase bool) bool {
-	cbool := C.WINBOOL(0)
-	if bErase {
-		cbool = 1
-	}
-	if lpRect != nil {
-		return C.GetUpdateRect(C.HWND(hwnd), (C.LPRECT)(unsafe.Pointer(lpRect)), cbool) != 0
-	}
-	return C.GetUpdateRect(C.HWND(hwnd), nil, cbool) != 0
-}
-
-func ValidateRect(hwnd HWND, rect *RECT) bool {
-	if rect != nil {
-		return C.ValidateRect(C.HWND(hwnd), (*C.RECT)(unsafe.Pointer(&rect))) != 0
-	}
-	return C.ValidateRect(C.HWND(hwnd), nil) != 0
-}
-
-func GetWindowRect(hwnd HWND) (status bool, r *RECT) {
-	var cr C.RECT
-	status = C.GetWindowRect(C.HWND(hwnd), (C.LPRECT)(unsafe.Pointer(&cr))) != 0
-	r = (*RECT)(&cr)
-	return
-}
-
-func GetClientRect(hwnd HWND) (status bool, r *RECT) {
-	var cr C.RECT
-	status = C.GetClientRect(C.HWND(hwnd), (C.LPRECT)(unsafe.Pointer(&cr))) != 0
-	r = (*RECT)(&cr)
-	return
-}
-
-func ClipCursor(rect *RECT) bool {
-	return C.ClipCursor((*C.RECT)(unsafe.Pointer(rect))) != 0
-}
-
-func GetClipCursor() (clip *RECT, ok bool) {
-	var c RECT
-	ret := C.GetClipCursor((C.LPRECT)(unsafe.Pointer(&c)))
-	if ret != 0 {
-		return &c, true
-	}
-	return nil, false
 }
 
 const (
@@ -1297,44 +705,6 @@ var (
 	HWND_TOPMOST   = *(*HWND)(unsafe.Pointer(&iHWND_TOPMOST))
 	HWND_NOTOPMOST = *(*HWND)(unsafe.Pointer(&iHWND_NOTOPMOST))
 )
-
-func SetWindowPos(hwnd, hwndInsertAfter HWND, X, Y, cx, cy Int, uFlags UINT) (ret bool) {
-	ret = C.SetWindowPos(C.HWND(hwnd), C.HWND(hwndInsertAfter), C.int(X), C.int(Y), C.int(cx), C.int(cy), C.UINT(uFlags)) != 0
-	return
-}
-
-func MoveWindow(hwnd HWND, x, y, width, height Int, repaint bool) bool {
-	cbool := C.WINBOOL(0)
-	if repaint {
-		cbool = 1
-	}
-	return C.MoveWindow(C.HWND(hwnd), C.int(x), C.int(y), C.int(width), C.int(height), cbool) != 0
-}
-
-func EnableWindow(hwnd HWND, bEnable bool) (ret bool) {
-	var enable C.WINBOOL
-	if bEnable {
-		enable = 1
-	} else {
-		enable = 0
-	}
-	ret = C.EnableWindow(C.HWND(hwnd), enable) != 0
-	return
-}
-
-func FlashWindow(hwnd HWND, bInvert bool) (ret bool) {
-	cInvert := 1
-	if bInvert {
-		cInvert = 0
-	}
-	return C.FlashWindow(C.HWND(hwnd), C.WINBOOL(cInvert)) != 0
-}
-
-func SetWindowText(hwnd HWND, lpString string) bool {
-	cstr := StringToLPTSTR(lpString)
-	defer C.free(unsafe.Pointer(cstr))
-	return C.SetWindowText(C.HWND(hwnd), cstr) != 0
-}
 
 type HBITMAP unsafe.Pointer
 
@@ -1424,104 +794,9 @@ func TransparentBlt(a HDC, b, c, d, e Int, f HDC, g, h, i, j Int, k uint32) bool
 	return C.TransparentBlt(C.HDC(a), C.int(b), C.int(c), C.int(d), C.int(e), C.HDC(f), C.int(g), C.int(h), C.int(i), C.int(j), C.UINT(k)) != 0
 }
 
-var (
-	IDC_ARROW = LPTSTR(C.macro_MAKEINTRESOURCE(32512))
-)
-
-func LoadCursor(hinstance HINSTANCE, lpCursorName LPTSTR) HCURSOR {
-	return HCURSOR(C.LoadCursor(C.HINSTANCE(hinstance), C.LPTSTR(lpCursorName)))
-}
-
-func DestroyCursor(cursor HCURSOR) bool {
-	return C.DestroyCursor(C.HCURSOR(cursor)) != 0
-}
-
-func DestroyIcon(icon HICON) bool {
-	return C.DestroyIcon(C.HICON(icon)) != 0
-}
-
-func CreateIconIndirect(piconinfo *ICONINFO) HICON {
-	return HICON(C.CreateIconIndirect((C.PICONINFO)(unsafe.Pointer(piconinfo))))
-}
-
-func CreateCompatibleBitmap(hdc HDC, nWidth, nHeight Int) HBITMAP {
-	return HBITMAP(C.CreateCompatibleBitmap(C.HDC(hdc), C.int(nWidth), C.int(nHeight)))
-}
-
-func SetDIBits(hdc HDC, hbmp HBITMAP, uStartScan, cScanLines UINT, lpvBits unsafe.Pointer, lpbmi *BITMAPINFO, fuColorUse UINT) Int {
-	return Int(C.SetDIBits(C.HDC(hdc), C.HBITMAP(hbmp), C.UINT(uStartScan), C.UINT(cScanLines), lpvBits, (*C.BITMAPINFO)(unsafe.Pointer(lpbmi)), C.UINT(fuColorUse)))
-}
-
-// See: http://msdn.microsoft.com/en-us/library/ms724833(v=vs.85).aspx
-type OSVERSIONINFOEX C.OSVERSIONINFOEX
-
-/*
-typedef struct _OSVERSIONINFOEX {
-  DWORD dwOSVersionInfoSize;
-  DWORD dwMajorVersion;
-  DWORD dwMinorVersion;
-  DWORD dwBuildNumber;
-  DWORD dwPlatformId;
-  TCHAR szCSDVersion[128];
-  WORD  wServicePackMajor;
-  WORD  wServicePackMinor;
-  WORD  wSuiteMask;
-  BYTE  wProductType;
-  BYTE  wReserved;
-} OSVERSIONINFOEX, *POSVERSIONINFOEX, *LPOSVERSIONINFOEX;
-*/
-
-func (c *OSVERSIONINFOEX) DwMajorVersion() DWORD {
-	return DWORD(c.dwMajorVersion)
-}
-
-func (c *OSVERSIONINFOEX) DwMinorVersion() DWORD {
-	return DWORD(c.dwMinorVersion)
-}
-
-func GetVersionEx() (ret bool, lpVersionInfo *OSVERSIONINFOEX) {
-	var vi C.OSVERSIONINFOEX
-	vi.dwOSVersionInfoSize = C.DWORD(unsafe.Sizeof(C.OSVERSIONINFOEX{}))
-
-	return C.GetVersionEx((C.LPOSVERSIONINFO)(unsafe.Pointer(&vi))) != 0, (*OSVERSIONINFOEX)(&vi)
-}
-
 func GetDC(hwnd HWND) HDC {
 	return HDC(C.GetDC(C.HWND(hwnd)))
 }
-
-type PIXELFORMATDESCRIPTOR C.PIXELFORMATDESCRIPTOR
-
-/*
-ct tagPIXELFORMATDESCRIPTOR {
-  WORD  nSize;
-  WORD  nVersion;
-  DWORD dwFlags;
-  BYTE  iPixelType;
-  BYTE  cColorBits;
-  BYTE  cRedBits;
-  BYTE  cRedShift;
-  BYTE  cGreenBits;
-  BYTE  cGreenShift;
-  BYTE  cBlueBits;
-  BYTE  cBlueShift;
-  BYTE  cAlphaBits;
-  BYTE  cAlphaShift;
-  BYTE  cAccumBits;
-  BYTE  cAccumRedBits;
-  BYTE  cAccumGreenBits;
-  BYTE  cAccumBlueBits;
-  BYTE  cAccumAlphaBits;
-  BYTE  cDepthBits;
-  BYTE  cStencilBits;
-  BYTE  cAuxBuffers;
-  BYTE  iLayerType;
-  BYTE  bReserved;
-  DWORD dwLayerMask;
-  DWORD dwVisibleMask;
-  DWORD dwDamageMask;
-} PIXELFORMATDESCRIPTOR, *PPIXELFORMATDESCRIPTOR;
-*/
 
 const (
 	PFD_DRAW_TO_WINDOW      = C.PFD_DRAW_TO_WINDOW
@@ -1539,51 +814,10 @@ const (
 	PFD_SUPPORT_COMPOSITION = 0x00008000
 )
 
-func (c *PIXELFORMATDESCRIPTOR) DwFlags() DWORD {
-	return DWORD(c.dwFlags)
-}
-
 const (
 	PFD_TYPE_RGBA       = C.PFD_TYPE_RGBA
 	PFD_TYPE_COLORINDEX = C.PFD_TYPE_COLORINDEX
 )
-
-func (c *PIXELFORMATDESCRIPTOR) IPixelType() BYTE {
-	return BYTE(c.iPixelType)
-}
-func (c *PIXELFORMATDESCRIPTOR) CRedBits() BYTE {
-	return BYTE(c.cRedBits)
-}
-func (c *PIXELFORMATDESCRIPTOR) CGreenBits() BYTE {
-	return BYTE(c.cGreenBits)
-}
-func (c *PIXELFORMATDESCRIPTOR) CBlueBits() BYTE {
-	return BYTE(c.cBlueBits)
-}
-func (c *PIXELFORMATDESCRIPTOR) CAlphaBits() BYTE {
-	return BYTE(c.cAlphaBits)
-}
-func (c *PIXELFORMATDESCRIPTOR) CAccumRedBits() BYTE {
-	return BYTE(c.cAccumRedBits)
-}
-func (c *PIXELFORMATDESCRIPTOR) CAccumGreenBits() BYTE {
-	return BYTE(c.cAccumGreenBits)
-}
-func (c *PIXELFORMATDESCRIPTOR) CAccumBlueBits() BYTE {
-	return BYTE(c.cAccumBlueBits)
-}
-func (c *PIXELFORMATDESCRIPTOR) CAccumAlphaBits() BYTE {
-	return BYTE(c.cAccumAlphaBits)
-}
-func (c *PIXELFORMATDESCRIPTOR) CDepthBits() BYTE {
-	return BYTE(c.cDepthBits)
-}
-func (c *PIXELFORMATDESCRIPTOR) CStencilBits() BYTE {
-	return BYTE(c.cStencilBits)
-}
-func (c *PIXELFORMATDESCRIPTOR) CAuxBuffers() BYTE {
-	return BYTE(c.cAuxBuffers)
-}
 
 func DescribePixelFormat(hdc HDC, iPixelFormat Int) (Int, *PIXELFORMATDESCRIPTOR) {
 	nBytes := unsafe.Sizeof(C.PIXELFORMATDESCRIPTOR{})
@@ -1592,95 +826,18 @@ func DescribePixelFormat(hdc HDC, iPixelFormat Int) (Int, *PIXELFORMATDESCRIPTOR
 }
 
 func SetPixelFormat(hdc HDC, iPixelFormat Int, ppfd *PIXELFORMATDESCRIPTOR) bool {
-	return C.SetPixelFormat(C.HDC(hdc), C.int(iPixelFormat), (*C.PIXELFORMATDESCRIPTOR)(ppfd)) != 0
+	return C.SetPixelFormat(C.HDC(hdc), C.int(iPixelFormat), (*C.PIXELFORMATDESCRIPTOR)(unsafe.Pointer(ppfd))) != 0
 }
 
 func SwapBuffers(hdc HDC) bool {
 	return C.SwapBuffers(C.HDC(hdc)) != 0
 }
 
-const (
-	HID_USAGE_PAGE_GENERIC  USHORT = 0x01
-	HID_USAGE_GENERIC_MOUSE USHORT = 0x02
-	RIDEV_INPUTSINK                = C.RIDEV_INPUTSINK
-
-	RID_INPUT     = C.RID_INPUT
-	RIM_TYPEMOUSE = C.RIM_TYPEMOUSE
-)
-
-type RAWINPUTHEADER struct {
-	Type   DWORD
-	Size   DWORD
-	Device unsafe.Pointer
-	Param  WPARAM
-}
-
-type RAWMOUSE C.RAWMOUSE
-
-/*
-typedef struct tagRAWMOUSE {
-  USHORT usFlags;
-  union {
-    ULONG  ulButtons;
-    struct {
-      USHORT usButtonFlags;
-      USHORT usButtonData;
-    };
-  };
-  ULONG  ulRawButtons;
-  LONG   lLastX;
-  LONG   lLastY;
-  ULONG  ulExtraInformation;
-} RAWMOUSE, *PRAWMOUSE, *LPRAWMOUSE;
-*/
-func (c *RAWMOUSE) LastX() LONG {
-	return LONG(c.lLastX)
-}
-func (c *RAWMOUSE) LastY() LONG {
-	return LONG(c.lLastY)
-}
-
-type RAWINPUT C.RAWINPUT
-
-/*
-typedef struct tagRAWINPUT {
-  RAWINPUTHEADER header;
-  union {
-    RAWMOUSE    mouse;
-    RAWKEYBOARD keyboard;
-    RAWHID      hid;
-  } data;
-} RAWINPUT, *PRAWINPUT, *LPRAWINPUT;
-*/
-
-func (c *RAWINPUT) Header() *RAWINPUTHEADER {
-	return (*RAWINPUTHEADER)(unsafe.Pointer(&c.header))
-}
-
-func (c *RAWINPUT) Mouse() *RAWMOUSE {
-	x := (*RAWMOUSE)(unsafe.Pointer(&c.data[0]))
-	return x
-}
-
-type RAWINPUTDEVICE struct {
-	UsagePage USHORT
-	Usage     USHORT
-	Flags     DWORD
-	Target    HWND
-}
-
-func RegisterRawInputDevices(pRawInputDevices *RAWINPUTDEVICE, uiNumDevices UINT, cbSize UINT) bool {
-	return C.RegisterRawInputDevices((C.PCRAWINPUTDEVICE)(unsafe.Pointer(pRawInputDevices)), C.UINT(uiNumDevices), C.UINT(cbSize)) != 0
-}
-
-func GetRegisteredRawInputDevices(pRawInputDevices *RAWINPUTDEVICE, puiNumDevices *UINT, cbSize UINT) UINT {
-	return UINT(C.GetRegisteredRawInputDevices((C.PRAWINPUTDEVICE)(unsafe.Pointer(pRawInputDevices)), (C.PUINT)(unsafe.Pointer(puiNumDevices)), C.UINT(cbSize)))
-}
-
-type HRAWINPUT C.HRAWINPUT
-
-func GetRawInputData(hRawInput HRAWINPUT, uiCommand UINT, pData unsafe.Pointer, pcbSize *UINT, cbSizeHeader UINT) UINT {
-	return UINT(C.GetRawInputData(C.HRAWINPUT(hRawInput), C.UINT(uiCommand), (C.LPVOID)(pData), (C.PUINT)(unsafe.Pointer(pcbSize)), C.UINT(cbSizeHeader)))
+// See:
+// http://msdn.microsoft.com/en-us/library/windows/desktop/ms645562(v=vs.85).aspx
+// RAWMOUSE is in a union
+func (r *RAWINPUT) Mouse() RAWMOUSE {
+	return *(*RAWMOUSE)(unsafe.Pointer(&r.Data[0]))
 }
 
 func GetAsyncKeyState(vKey Int) int16 {
@@ -1689,6 +846,50 @@ func GetAsyncKeyState(vKey Int) int16 {
 
 func GetKeyState(vKey Int) int16 {
 	return int16(C.GetKeyState(C.int(vKey)))
+}
+
+type WNDCLASSEX C.WNDCLASSEX
+
+func NewWNDCLASSEX() *WNDCLASSEX {
+	w := WNDCLASSEX{}
+	w.cbSize = C.UINT(unsafe.Sizeof(w))
+	return &w
+}
+func (w *WNDCLASSEX) SetStyle(style UINT) {
+	w.style = C.UINT(style)
+}
+func (w *WNDCLASSEX) SetLpfnWndProc() {
+	w.lpfnWndProc = (C.WNDPROC)(C.WndProcCallback)
+}
+func (w *WNDCLASSEX) SetCbClsExtra(v Int) {
+	w.cbClsExtra = C.int(v)
+}
+func (w *WNDCLASSEX) SetCbWndExtra(v Int) {
+	w.cbWndExtra = C.int(v)
+}
+func (w *WNDCLASSEX) SetHInstance(instance HINSTANCE) {
+	w.hInstance = C.HINSTANCE(instance)
+}
+func (w *WNDCLASSEX) SetHIcon(icon HICON) {
+	w.hIcon = C.HICON(icon)
+}
+func (w *WNDCLASSEX) SetHIconSm(icon HICON) {
+	w.hIconSm = C.HICON(icon)
+}
+func (w *WNDCLASSEX) SetHCursor(cursor HCURSOR) {
+	w.hCursor = C.HCURSOR(cursor)
+}
+func (w *WNDCLASSEX) SetHbrBackground(v HBRUSH) {
+	w.hbrBackground = C.HBRUSH(v)
+}
+func (w *WNDCLASSEX) SetLpszMenuName(v string) {
+	cstr := StringToLPTSTR(v)
+	defer C.free(unsafe.Pointer(cstr))
+	w.lpszMenuName = (C.LPCWSTR)(unsafe.Pointer(cstr))
+}
+func (w *WNDCLASSEX) SetLpszClassName(v string) {
+	cClassName := (C.LPCWSTR)(unsafe.Pointer(StringToLPTSTR(v)))
+	w.lpszClassName = cClassName
 }
 
 const (

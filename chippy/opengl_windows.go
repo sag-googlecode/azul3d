@@ -49,17 +49,17 @@ func (w *NativeWindow) olderGLConfigs() (configs []*GLConfig) {
 			// We can only use pixel formats who have PFD_SUPPORT_OPENGL and
 			// PFD_DRAW_TO_WINDOW (otherwise it may be an offscreen pixel
 			// format)
-			drawToWindow := (pf.DwFlags() & win32.PFD_DRAW_TO_WINDOW) > 0
+			drawToWindow := (pf.DwFlags & win32.PFD_DRAW_TO_WINDOW) > 0
 			if !drawToWindow {
 				continue
 			}
-			supportOpenGL := (pf.DwFlags() & win32.PFD_SUPPORT_OPENGL) > 0
+			supportOpenGL := (pf.DwFlags & win32.PFD_SUPPORT_OPENGL) > 0
 			if !supportOpenGL {
 				continue
 			}
 
 			// We only want ones whose pixel type is PFD_TYPE_RGBA
-			if pf.IPixelType() != win32.PFD_TYPE_RGBA {
+			if pf.IPixelType != win32.PFD_TYPE_RGBA {
 				continue
 			}
 
@@ -67,33 +67,33 @@ func (w *NativeWindow) olderGLConfigs() (configs []*GLConfig) {
 			config.valid = true
 			config.index = index
 
-			config.RedBits = uint8(pf.CRedBits())
-			config.GreenBits = uint8(pf.CGreenBits())
-			config.BlueBits = uint8(pf.CBlueBits())
-			config.AlphaBits = uint8(pf.CAlphaBits())
+			config.RedBits = uint8(pf.CRedBits)
+			config.GreenBits = uint8(pf.CGreenBits)
+			config.BlueBits = uint8(pf.CBlueBits)
+			config.AlphaBits = uint8(pf.CAlphaBits)
 
-			config.AccumRedBits = uint8(pf.CAccumRedBits())
-			config.AccumGreenBits = uint8(pf.CAccumGreenBits())
-			config.AccumBlueBits = uint8(pf.CAccumBlueBits())
-			config.AccumAlphaBits = uint8(pf.CAccumAlphaBits())
+			config.AccumRedBits = uint8(pf.CAccumRedBits)
+			config.AccumGreenBits = uint8(pf.CAccumGreenBits)
+			config.AccumBlueBits = uint8(pf.CAccumBlueBits)
+			config.AccumAlphaBits = uint8(pf.CAccumAlphaBits)
 
-			config.AuxBuffers = uint8(pf.CAuxBuffers())
+			config.AuxBuffers = uint8(pf.CAuxBuffers)
 
-			if (pf.DwFlags()&win32.PFD_GENERIC_ACCELERATED) == 0 && (pf.DwFlags()&win32.PFD_GENERIC_FORMAT) > 0 {
+			if (pf.DwFlags&win32.PFD_GENERIC_ACCELERATED) == 0 && (pf.DwFlags&win32.PFD_GENERIC_FORMAT) > 0 {
 				config.Accelerated = false
 			} else {
 				config.Accelerated = true
 			}
 
-			config.DoubleBuffered = (pf.DwFlags() & win32.PFD_DOUBLEBUFFER) > 0
-			config.StereoScopic = (pf.DwFlags() & win32.PFD_STEREO) > 0
-			config.DepthBits = uint8(pf.CDepthBits())
-			config.StencilBits = uint8(pf.CStencilBits())
+			config.DoubleBuffered = (pf.DwFlags & win32.PFD_DOUBLEBUFFER) > 0
+			config.StereoScopic = (pf.DwFlags & win32.PFD_STEREO) > 0
+			config.DepthBits = uint8(pf.CDepthBits)
+			config.StencilBits = uint8(pf.CStencilBits)
 
 			// Even some 24-bit RGB modes support composition, but only
 			// ones with alpha frame buffer bits will be transparent.
 			if config.AlphaBits > 0 && config.Accelerated {
-				config.Transparent = (pf.DwFlags() & win32.PFD_SUPPORT_COMPOSITION) > 0
+				config.Transparent = (pf.DwFlags & win32.PFD_SUPPORT_COMPOSITION) > 0
 			}
 
 			configs = append(configs, config)

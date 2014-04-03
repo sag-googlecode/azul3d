@@ -35,16 +35,19 @@ const (
 func DwmEnableBlurBehindWindow(hwnd HWND, pBlurBehind *DWM_BLURBEHIND) error {
 	err := pDwmEnableBlurBehindWindow.Find()
 	if err != nil {
-		return errors.New("No window blur support: " + err.Error())
+		return err
 	}
 
-	cRet, _, _ := pDwmEnableBlurBehindWindow.Call(uintptr(unsafe.Pointer(hwnd)), uintptr(unsafe.Pointer(pBlurBehind)))
+	cRet, _, _ := pDwmEnableBlurBehindWindow.Call(
+		uintptr(unsafe.Pointer(hwnd)),
+		uintptr(unsafe.Pointer(pBlurBehind)),
+	)
 	ret := int64(cRet)
 
 	if ret >= 0 {
 		return nil
 	} else {
-		return errors.New(fmt.Sprintf("No window blur support: DwmEnableBlurBehindWindow(): HRESULT = %d", ret))
+		return errors.New(fmt.Sprintf("DwmEnableBlurBehindWindow(): HRESULT = %d", ret))
 	}
 }
 
@@ -55,15 +58,18 @@ type MARGINS struct {
 func DwmExtendFrameIntoClientArea(hwnd HWND, pMarInset *MARGINS) error {
 	err := pDwmExtendFrameIntoClientArea.Find()
 	if err != nil {
-		return errors.New("No dwmExtendFrameIntoClientArea support: " + err.Error())
+		return err
 	}
 
-	cRet, _, _ := pDwmExtendFrameIntoClientArea.Call(uintptr(unsafe.Pointer(hwnd)), uintptr(unsafe.Pointer(pMarInset)))
+	cRet, _, _ := pDwmExtendFrameIntoClientArea.Call(
+		uintptr(unsafe.Pointer(hwnd)),
+		uintptr(unsafe.Pointer(pMarInset)),
+	)
 	ret := int64(cRet)
 
 	if ret >= 0 {
 		return nil
 	} else {
-		return errors.New(fmt.Sprintf("No window blur support: DwmExtendFrameIntoClientArea(): HRESULT = %d", ret))
+		return errors.New(fmt.Sprintf("DwmExtendFrameIntoClientArea(): HRESULT = %d", ret))
 	}
 }

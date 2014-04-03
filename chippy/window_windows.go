@@ -43,7 +43,7 @@ type NativeWindow struct {
 	hwnd                                                                     win32.HWND
 	windowClass                                                              string
 	styleFlags                                                               win32.DWORD
-	lastWmSizingLeft, lastWmSizingRight, lastWmSizingBottom, lastWmSizingTop win32.LONG
+	lastWmSizingLeft, lastWmSizingRight, lastWmSizingBottom, lastWmSizingTop int32
 	lastCursorClip                                                           *win32.RECT
 
 	// Blit things here
@@ -127,7 +127,7 @@ func (w *NativeWindow) doRebuildWindow() (err error) {
 	windowClass.SetStyle(win32.CS_OWNDC)
 
 	//windowClass.SetHIcon(win32.LoadIcon(hInstance, szAppName))
-	//windowClass.SetHCursor(win32.LoadCursor(nil, win32.IDC_ARROW))
+	//windowClass.SetHCursor(win32.LoadCursor(nil, "IDC_ARROW"))
 	//windowClass.SetHbrBackground(win32.IntToHBRUSH(win32.COLOR_WINDOW+2)) // Black background
 	//windowClass.SetLpszMenuName(szAppName)
 
@@ -185,10 +185,10 @@ func (w *NativeWindow) doRebuildWindow() (err error) {
 	supportRawInput := w32VersionMajor >= 5 && w32VersionMinor >= 1
 	if supportRawInput {
 		rid := win32.RAWINPUTDEVICE{}
-		rid.UsagePage = win32.HID_USAGE_PAGE_GENERIC
-		rid.Usage = win32.HID_USAGE_GENERIC_MOUSE
-		rid.Flags = win32.RIDEV_INPUTSINK
-		rid.Target = w.hwnd
+		rid.UsUsagePage = win32.HID_USAGE_PAGE_GENERIC
+		rid.UsUsage = win32.HID_USAGE_GENERIC_MOUSE
+		rid.DwFlags = win32.RIDEV_INPUTSINK
+		rid.HwndTarget = w.hwnd
 		win32.RegisterRawInputDevices(&rid, 1, win32.UINT(unsafe.Sizeof(rid)))
 	}
 
@@ -244,11 +244,12 @@ func (w *NativeWindow) PixelClear(rect image.Rectangle) {
 	}
 
 	dispatch(func() {
-		r := &win32.RECT{}
-		r.SetLeft(win32.LONG(rect.Min.X))
-		r.SetTop(win32.LONG(rect.Min.Y))
-		r.SetBottom(win32.LONG(rect.Max.Y))
-		r.SetRight(win32.LONG(rect.Max.X))
+		r := &win32.RECT{
+			Left:   int32(rect.Min.X),
+			Top:    int32(rect.Min.Y),
+			Bottom: int32(rect.Max.Y),
+			Right:  int32(rect.Max.X),
+		}
 		win32.FillRect(w.dc, r, win32.HBRUSH(win32.GetStockObject(win32.BLACK_BRUSH)))
 	})
 }
@@ -318,11 +319,12 @@ func (w *NativeWindow) PixelBlit(x, y uint, image *image.RGBA) {
 		return
 	}
 
-	r := new(win32.RECT)
-	r.SetLeft(win32.LONG(x))
-	r.SetTop(win32.LONG(y))
-	r.SetRight(win32.LONG(x + width))
-	r.SetBottom(win32.LONG(y + height))
+	r := &win32.RECT{
+		Left:   int32(x),
+		Top:    int32(y),
+		Right:  int32(x + width),
+		Bottom: int32(y + height),
+	}
 	brush := win32.GetStockObject(win32.BLACK_BRUSH)
 	if !win32.FillRect(w.dc, r, win32.HBRUSH(brush)) {
 		logger().Println("PixelBlit(): FillRect():", win32.GetLastErrorString())
@@ -860,7 +862,7 @@ func (w *NativeWindow) doSetCursor() {
 			} else {
 				// There is no cursor.
 				lc := new(loadedCursor)
-				lc.hCursor = win32.HICON(win32.LoadCursor(nil, win32.IDC_ARROW))
+				lc.hCursor = win32.HICON(win32.LoadCursor(nil, "IDC_ARROW"))
 				if lc.hCursor == nil {
 					logger().Println("Unable to load default (IDC_ARROW) cursor! LoadCursor():", win32.GetLastErrorString())
 				} else {
@@ -946,8 +948,8 @@ func (w *NativeWindow) doSetWindowPos() {
 
 	// Need to make the position relative to the original screen
 	r := w.r.OriginalScreen().NativeScreen.w32Position
-	x = win32.Int(r.Left()) + x
-	y = win32.Int(r.Top()) + y
+	x = win32.Int(r.Left) + x
+	y = win32.Int(r.Top) + y
 
 	if !w.r.Decorated() {
 		x += win32.Int(extentLeft)
@@ -987,8 +989,8 @@ func (w *NativeWindow) doSetWindowPos() {
 	if w.r.Fullscreen() {
 		screen := w.r.Screen()
 		r := screen.NativeScreen.w32Position
-		x = win32.Int(r.Left())
-		y = win32.Int(r.Top())
+		x = win32.Int(r.Left)
+		y = win32.Int(r.Top)
 		sm := screen.Mode()
 		screenWidth, screenHeight := sm.Resolution()
 		width, height = float64(screenWidth), float64(screenHeight)
@@ -1359,26 +1361,26 @@ func (w *NativeWindow) updateCursorClip() {
 	}
 
 	tl := new(win32.POINT)
-	tl.SetX(0)
-	tl.SetY(0)
+	tl.X = 0
+	tl.Y = 0
 	if !win32.ClientToScreen(w.hwnd, tl) {
 		logger().Println("Unable to set clip cursor; ClientToScreen():", win32.GetLastErrorString())
 	}
 
 	wWidth, wHeight := w.r.clampedSize()
 	br := new(win32.POINT)
-	br.SetX(win32.LONG(wWidth))
-	br.SetY(win32.LONG(wHeight))
+	br.X = int32(wWidth)
+	br.Y = int32(wHeight)
 	if !win32.ClientToScreen(w.hwnd, br) {
 		logger().Println("Unable to set clip cursor; ClientToScreen():", win32.GetLastErrorString())
 	}
 
-	clip := new(win32.RECT)
-	clip.SetLeft(tl.X())
-	clip.SetTop(tl.Y())
-
-	clip.SetRight(br.X())
-	clip.SetBottom(br.Y())
+	clip := &win32.RECT{
+		Left:   int32(tl.X),
+		Top:    int32(tl.Y),
+		Right:  int32(br.X),
+		Bottom: int32(br.Y),
+	}
 
 	if !win32.ClipCursor(clip) {
 		logger().Println("Unable to set clip cursor; ClipCursor():", win32.GetLastErrorString())
@@ -1417,10 +1419,10 @@ func mainWindowProc(hwnd win32.HWND, msg win32.UINT, wParam win32.WPARAM, lParam
 			if win32.GetUpdateRect(w.hwnd, rect, false) {
 				win32.ValidateRect(w.hwnd, nil)
 
-				x0 := int(rect.Left())
-				y0 := int(rect.Top())
-				x1 := int(rect.Right())
-				y1 := int(rect.Bottom())
+				x0 := int(rect.Left)
+				y0 := int(rect.Top)
+				x1 := int(rect.Right)
+				y1 := int(rect.Bottom)
 
 				if x0 <= x1 && y0 <= y1 {
 					w.r.send(PaintEvent{
@@ -1466,17 +1468,17 @@ func mainWindowProc(hwnd win32.HWND, msg win32.UINT, wParam win32.WPARAM, lParam
 			minMaxInfo := lParam.MINMAXINFO()
 
 			if minWidth > 0 {
-				minMaxInfo.PtMinTrackSize().SetX(win32.LONG(newMinWidth))
+				minMaxInfo.PtMinTrackSize.X = int32(newMinWidth)
 			}
 			if minHeight > 0 {
-				minMaxInfo.PtMinTrackSize().SetY(win32.LONG(newMinHeight))
+				minMaxInfo.PtMinTrackSize.Y = int32(newMinHeight)
 			}
 
 			if maxWidth > 0 {
-				minMaxInfo.PtMaxTrackSize().SetX(win32.LONG(newMaxWidth))
+				minMaxInfo.PtMaxTrackSize.X = int32(newMaxWidth)
 			}
 			if maxHeight > 0 {
-				minMaxInfo.PtMaxTrackSize().SetY(win32.LONG(newMaxHeight))
+				minMaxInfo.PtMaxTrackSize.Y = int32(newMaxHeight)
 			}
 			return 0
 
@@ -1485,32 +1487,32 @@ func mainWindowProc(hwnd win32.HWND, msg win32.UINT, wParam win32.WPARAM, lParam
 			r := lParam.RECT()
 
 			if ratio != 0 {
-				width := r.Right() - r.Left()
-				height := r.Bottom() - r.Top()
+				width := r.Right - r.Left
+				height := r.Bottom - r.Top
 
 				newHeight := (1.0 / ratio) * float32(width)
 				newWidth := ratio * float32(height)
 
-				newRight := r.Left() + win32.LONG(newWidth)
-				//newLeft := r.Right() - win32.LONG(newWidth)
-				newBottom := r.Top() + win32.LONG(newHeight)
-				newTop := r.Bottom() - win32.LONG(newHeight)
+				newRight := r.Left + int32(newWidth)
+				//newLeft := r.Right - int32(newWidth)
+				newBottom := r.Top + int32(newHeight)
+				newTop := r.Bottom - int32(newHeight)
 
 				if wParam == win32.WMSZ_RIGHT || wParam == win32.WMSZ_LEFT {
-					r.SetBottom(newBottom)
+					r.Bottom = newBottom
 				} else if wParam == win32.WMSZ_BOTTOM || wParam == win32.WMSZ_TOP {
-					r.SetRight(newRight)
+					r.Right = newRight
 
 				} else if wParam == win32.WMSZ_TOPLEFT || wParam == win32.WMSZ_TOPRIGHT {
-					r.SetTop(newTop)
+					r.Top = newTop
 				} else if wParam == win32.WMSZ_BOTTOMLEFT || wParam == win32.WMSZ_BOTTOMRIGHT {
-					r.SetBottom(newBottom)
+					r.Bottom = newBottom
 				}
 
-				w.lastWmSizingLeft = r.Left()
-				w.lastWmSizingRight = r.Right()
-				w.lastWmSizingBottom = r.Bottom()
-				w.lastWmSizingTop = r.Top()
+				w.lastWmSizingLeft = r.Left
+				w.lastWmSizingRight = r.Right
+				w.lastWmSizingBottom = r.Bottom
+				w.lastWmSizingTop = r.Top
 			}
 
 			newWidth := int(w.lastWmSizingRight - w.lastWmSizingLeft)
@@ -1560,13 +1562,12 @@ func mainWindowProc(hwnd win32.HWND, msg win32.UINT, wParam win32.WPARAM, lParam
 			hMonitor := win32.MonitorFromWindow(w.hwnd, win32.MONITOR_DEFAULTTONEAREST)
 
 			mi := new(win32.MONITORINFOEX)
-			mi.SetSize()
 			if !win32.GetMonitorInfo(hMonitor, mi) {
 				logger().Println("Unable to detect monitor position; GetMonitorInfo():", win32.GetLastErrorString())
 			} else {
 				screens := backend_doScreens()
 				for _, screen := range screens {
-					if screen.NativeScreen.w32GraphicsDeviceName == mi.Device() {
+					if screen.NativeScreen.w32GraphicsDeviceName == win32.String(mi.SzDevice[:]) {
 						if w.r.trySetScreen(screen) {
 							screen.NativeScreen.w32Position = mi.RcMonitor
 						}
@@ -1811,9 +1812,9 @@ func mainWindowProc(hwnd win32.HWND, msg win32.UINT, wParam win32.WPARAM, lParam
 
 				win32.GetRawInputData((win32.HRAWINPUT)(unsafe.Pointer(uintptr(lParam))), win32.RID_INPUT, unsafe.Pointer(&raw), &cbSize, win32.UINT(unsafe.Sizeof(win32.RAWINPUTHEADER{})))
 
-				if raw.Header().Type == win32.RIM_TYPEMOUSE {
-					diffX := raw.Mouse().LastX()
-					diffY := raw.Mouse().LastY()
+				if raw.Header.DwType == win32.RIM_TYPEMOUSE {
+					diffX := raw.Mouse().LLastX
+					diffY := raw.Mouse().LLastY
 					if diffX != 0 || diffY != 0 {
 						w.r.send(CursorPositionEvent{
 							T: time.Now(),

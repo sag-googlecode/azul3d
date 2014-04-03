@@ -55,7 +55,7 @@ func (s *NativeScreen) setMode(newMode *ScreenMode) (err error) {
 		//mode.SetDmFields(win32.DM_PELSWIDTH & win32.DM_PELSHEIGHT & win32.DM_DISPLAYFREQUENCY)
 
 		ret := win32.ChangeDisplaySettingsEx(s.w32GraphicsDeviceName, mode, win32.CDS_TEST, nil)
-		if ret != 0 {
+		if ret == win32.DISP_CHANGE_BADMODE {
 			logger().Println("Unable to set screen mode; ChangeDisplaySettingsEx(,,CDS_TEST,) reports bad mode.")
 			err = ErrBadScreenMode
 			return
@@ -101,16 +101,17 @@ func (s *NativeScreen) setMode(newMode *ScreenMode) (err error) {
 }
 
 func fetchScreenModes(w32GraphicsDeviceName string) (modes []*ScreenMode, currentMode *ScreenMode) {
-	hasCurrentMode, mode := win32.EnumDisplaySettings(w32GraphicsDeviceName, win32.ENUM_CURRENT_SETTINGS)
+	mode := new(win32.DEVMODE)
+	hasCurrentMode := win32.EnumDisplaySettings(w32GraphicsDeviceName, win32.ENUM_CURRENT_SETTINGS, mode)
 
 	if hasCurrentMode {
-		width := int(mode.DmPelsWidth())
-		height := int(mode.DmPelsHeight())
-		refreshRate := float32(mode.DmDisplayFrequency())
-		bpp := int(mode.DmBitsPerPel())
+		width := int(mode.DmPelsWidth)
+		height := int(mode.DmPelsHeight)
+		refreshRate := float32(mode.DmDisplayFrequency)
+		bpp := int(mode.DmBitsPerPel)
 
 		currentMode = newScreenMode(width, height, bpp, refreshRate)
-		currentMode.NativeScreenMode.w32Bpp = mode.DmBitsPerPel()
+		currentMode.NativeScreenMode.w32Bpp = win32.DWORD(mode.DmBitsPerPel)
 		//currentMode.NativeScreenMode.w32Mode = mode // See: 'Assign it here' below
 		modes = append(modes, currentMode)
 	}
@@ -118,8 +119,8 @@ func fetchScreenModes(w32GraphicsDeviceName string) (modes []*ScreenMode, curren
 	hasNext := true
 	i := 0
 	for hasNext {
-		var mode *win32.DEVMODE
-		hasNext, mode = win32.EnumDisplaySettings(w32GraphicsDeviceName, win32.DWORD(i))
+		mode := new(win32.DEVMODE)
+		hasNext = win32.EnumDisplaySettings(w32GraphicsDeviceName, win32.DWORD(i), mode)
 		i++
 		if hasNext {
 			// This one is an good one
@@ -130,12 +131,12 @@ func fetchScreenModes(w32GraphicsDeviceName string) (modes []*ScreenMode, curren
 				continue
 			}
 
-			width := int(mode.DmPelsWidth())
-			height := int(mode.DmPelsHeight())
-			refreshRate := float32(mode.DmDisplayFrequency())
-			bpp := int(mode.DmBitsPerPel())
+			width := int(mode.DmPelsWidth)
+			height := int(mode.DmPelsHeight)
+			refreshRate := float32(mode.DmDisplayFrequency)
+			bpp := int(mode.DmBitsPerPel)
 			screenMode := newScreenMode(width, height, bpp, refreshRate)
-			screenMode.NativeScreenMode.w32Bpp = mode.DmBitsPerPel()
+			screenMode.NativeScreenMode.w32Bpp = win32.DWORD(mode.DmBitsPerPel)
 			screenMode.NativeScreenMode.w32Mode = mode
 
 			if hasCurrentMode {
@@ -170,26 +171,26 @@ func backend_doScreens() (screens []*Screen) {
 	hasNext := true
 	i := 0
 	for hasNext {
-		var dd *win32.DISPLAY_DEVICE
-		hasNext, dd = win32.EnumDisplayDevices("", win32.DWORD(i), 0)
+		dd := new(win32.DISPLAY_DEVICE)
+		hasNext = win32.EnumDisplayDevices("", win32.DWORD(i), dd, 0)
 		i++
 		if hasNext {
 			// We're only interested in active devices (graphics cards)
-			graphicsCardName := dd.GetDeviceName()
-			graphicsCardString := dd.GetDeviceString()
+			graphicsCardName := win32.String(dd.DeviceName[:])
+			graphicsCardString := win32.String(dd.DeviceString[:])
 
-			gflags := dd.GetStateFlags()
+			gflags := dd.StateFlags
 			if (gflags & win32.DISPLAY_DEVICE_ACTIVE) > 0 {
 				hasMoreMonitors := true
 				j := 0
 				for hasMoreMonitors {
-					hasMoreMonitors, dd = win32.EnumDisplayDevices(dd.GetDeviceName(), 0, 0)
+					hasMoreMonitors = win32.EnumDisplayDevices(win32.String(dd.DeviceName[:]), 0, dd, 0)
 					j++
 
 					// We're only interested in active monitors, but windows 2000 and below
 					// never sets the DISPLAY_DEVICE_ACTIVE flag.
 					//
-					flags := dd.GetStateFlags()
+					flags := dd.StateFlags
 
 					active := (flags & win32.DISPLAY_DEVICE_ACTIVE) > 0
 					attached := (flags & win32.DISPLAY_DEVICE_ATTACHED) > 0
@@ -213,7 +214,7 @@ func backend_doScreens() (screens []*Screen) {
 							modes, currentMode := fetchScreenModes(w32GraphicsDeviceName)
 							screen := newScreen(name, physicalWidth, physicalHeight, modes, currentMode)
 							screen.NativeScreen.w32GraphicsDeviceName = w32GraphicsDeviceName
-							screen.NativeScreen.w32MonitorDeviceName = dd.GetDeviceName()
+							screen.NativeScreen.w32MonitorDeviceName = win32.String(dd.DeviceName[:])
 							if (gflags&win32.DISPLAY_DEVICE_PRIMARY_DEVICE) > 0 && j == 1 {
 								screen.NativeScreen.isDefaultScreen = true
 							}
@@ -236,12 +237,11 @@ func backend_doScreens() (screens []*Screen) {
 	// Find the correct MONITORINFO struct for each screen and assign their w32Position properties
 	proc := func(hMonitor win32.HMONITOR, hdcMonitor win32.HDC, lprcMonitor *win32.RECT, dwData win32.LPARAM) bool {
 		mi := new(win32.MONITORINFOEX)
-		mi.SetSize()
 		if !win32.GetMonitorInfo(hMonitor, mi) {
 			logger().Println("Unable to detect monitor position; GetMonitorInfo():", win32.GetLastErrorString())
 		} else {
 			for _, screen := range screens {
-				if screen.NativeScreen.w32GraphicsDeviceName == mi.Device() {
+				if screen.NativeScreen.w32GraphicsDeviceName == win32.String(mi.SzDevice[:]) {
 					screen.NativeScreen.w32Position = mi.RcMonitor
 				}
 			}

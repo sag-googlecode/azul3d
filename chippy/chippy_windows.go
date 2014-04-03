@@ -15,20 +15,16 @@ import (
 )
 
 func eventLoop() {
-	runtime.LockOSThread()
-	defer runtime.UnlockOSThread()
-
 	for {
 		hasMessage := true
 
+		var msg win32.MSG
 		dispatch(func() {
-			var msg *win32.MSG
-
 			for hasMessage {
-				hasMessage, msg = win32.PeekMessage(nil, 0, 0, win32.PM_REMOVE|win32.PM_NOYIELD)
+				hasMessage = win32.PeekMessage(&msg, nil, 0, 0, win32.PM_REMOVE)
 				if hasMessage {
-					win32.TranslateMessage(msg)
-					win32.DispatchMessage(msg)
+					win32.TranslateMessage(&msg)
+					win32.DispatchMessage(&msg)
 				}
 			}
 		})
@@ -85,7 +81,7 @@ func keyboardHook(nCode win32.Int, wParam win32.WPARAM, lParam win32.LPARAM) win
 
 			anyKeysToEat := false
 			for _, k := range keysToEat {
-				if k == p.VkCode {
+				if k == win32.DWORD(p.VkCode) {
 					anyKeysToEat = true
 					break
 				}
@@ -147,15 +143,21 @@ func backend_Init() error {
 		// Get OS version, we use this to do some hack-ish fixes for different windows versions
 		ret, vi := win32.GetVersionEx()
 		if ret {
-			w32VersionMajor = vi.DwMajorVersion()
-			w32VersionMinor = vi.DwMinorVersion()
+			w32VersionMajor = win32.DWORD(vi.DwMajorVersion)
+			w32VersionMinor = win32.DWORD(vi.DwMinorVersion)
 		} else {
 			logger().Printf("Unable to determine windows version information; GetVersionEx():", win32.GetLastErrorString())
 		}
 
-		hKeyboardHook = win32.SetLowLevelKeyboardHook(keyboardHook, hInstance, 0)
-		if hKeyboardHook == nil {
-			logger().Println("Failed to disable keyboard shortcuts; SetWindowsHookEx():", win32.GetLastErrorString())
+		// It's not safe to set a low level keyboard hook if our process is
+		// 32-bit and we are running in a 64-bit OS, additionally it seems that
+		// there is a bug with 32-bit versions of windows and keyboard hooks
+		// that causes a crash (we should look into it).
+		if runtime.GOARCH != "386" {
+			hKeyboardHook = win32.SetLowLevelKeyboardHook(keyboardHook, hInstance, 0)
+			if hKeyboardHook == nil {
+				logger().Println("Failed to disable keyboard shortcuts; SetWindowsHookEx():", win32.GetLastErrorString())
+			}
 		}
 	})
 
