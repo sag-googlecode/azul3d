@@ -450,6 +450,11 @@ type NativeWindow struct {
 	cursors                  map[*Cursor]loadedCursor
 	activeRenderMode         int
 
+	last struct {
+		sync.RWMutex
+		cursorX, cursorY int
+	}
+
 	can struct {
 		sync.RWMutex
 		sendPositionEvents     bool
@@ -894,12 +899,11 @@ func (w *NativeWindow) handleEvent(ref *x11.GenericEvent, e interface{}) {
 		y := int(ev.EventY)
 		if w.r.CursorGrabbed() && w.r.Focused() {
 			// Find relative movement
-			wWidth, wHeight := w.r.Size()
-			halfWidth := wWidth / 2
-			halfHeight := wHeight / 2
-			diffX := float64(x - halfWidth)
-			diffY := float64(y - halfHeight)
-			if math.Abs(diffX) > 1 || math.Abs(diffY) > 1 {
+			w.last.RLock()
+			diffX := float64(x - w.last.cursorX)
+			diffY := float64(y - w.last.cursorY)
+			w.last.RUnlock()
+			if diffX != 0 || diffY != 0 {
 				w.can.Lock()
 				if w.can.sendRelativeMoveEvents {
 					w.r.send(CursorPositionEvent{
@@ -917,10 +921,15 @@ func (w *NativeWindow) handleEvent(ref *x11.GenericEvent, e interface{}) {
 				//
 				// Best thing we can do is set it back to the center of the
 				// window.
-				defer xConnection.Flush()
-				xConnection.WarpPointer(0, w.xWindow, 0, 0, 0, 0, int16(halfWidth), int16(halfHeight))
+				wWidth, wHeight := w.r.Size()
+				w.warpPointer(wWidth/2, wHeight/2)
+				return
 			}
 		} else {
+			w.last.Lock()
+			w.last.cursorX = x
+			w.last.cursorY = y
+			w.last.Unlock()
 			w.r.trySetCursorPosition(x, y)
 		}
 
@@ -1550,7 +1559,7 @@ func (w *NativeWindow) doSetCursorGrabbed(grabbed, restorePosition bool) {
 			// Restore cursor to the original position it was in before the grab.
 			x, y := w.r.CursorPosition()
 			if x != 0 && y != 0 {
-				xConnection.WarpPointer(0, w.xWindow, 0, 0, 0, 0, int16(x), int16(y))
+				w.warpPointer(x, y)
 			}
 		}
 
@@ -1567,9 +1576,16 @@ func (w *NativeWindow) setCursorPosition(x, y int) {
 	if w.r.CursorGrabbed() && w.r.Focused() {
 		return
 	}
+	w.warpPointer(x, y)
+}
 
-	defer xConnection.Flush()
+func (w *NativeWindow) warpPointer(x, y int) {
+	w.last.Lock()
+	w.last.cursorX = x
+	w.last.cursorY = y
+	w.last.Unlock()
 	xConnection.WarpPointer(0, w.xWindow, 0, 0, 0, 0, int16(x), int16(y))
+	xConnection.Flush()
 }
 
 func (w *NativeWindow) setCursor(cursor *Cursor) {
