@@ -998,6 +998,10 @@ func (w *NativeWindow) handleEvent(ref *x11.GenericEvent, e interface{}) {
 	case *x11.FocusOutEvent:
 		w.r.trySetFocused(false)
 
+		// Release downed mouse buttons or else they will become stuck and
+		// annoy the user.
+		w.r.releaseDownedButtons()
+
 		// The window has lost focus, ungrab the cursor now otherwise the user
 		// won't have a mouse cursor (i.e. if they alt-tab away from the app or
 		// switch screens).
