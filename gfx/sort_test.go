@@ -51,31 +51,25 @@ func TestSortByDist(t *testing.T) {
 
 func sortByDist(amount int, b *testing.B) {
 	b.StopTimer()
-	objs := make([]*Object, amount)
-	for i := 0; i < amount; i++ {
-		objs[i] = NewObject()
-	}
-
 	byDist := ByDist{
-		Objects: objs,
+		Objects: make([]*Object, amount),
+		Target: math.Vec3{
+			rand.Float64(),
+			rand.Float64(),
+			rand.Float64(),
+		},
+	}
+	for i := 0; i < amount; i++ {
+		byDist.Objects[i] = NewObject()
 	}
 
-	randomize := func() {
-		byDist.Target = math.Vec3{
+	for _, o := range byDist.Objects {
+		o.Transform.Pos = math.Vec3{
 			rand.Float64(),
 			rand.Float64(),
 			rand.Float64(),
 		}
-
-		for _, o := range objs {
-			o.Transform.Pos = math.Vec3{
-				rand.Float64(),
-				rand.Float64(),
-				rand.Float64(),
-			}
-		}
 	}
-	randomize()
 	b.StartTimer()
 
 	sort.Sort(byDist)
@@ -133,5 +127,62 @@ func TestSortByState(t *testing.T) {
 		if !s.Texturing || !s.Dithering || !s.DepthTest || !s.DepthWrite {
 			t.Fail()
 		}
+	}
+
+	for _, o := range l {
+		t.Log(o.Texturing, o.Dithering, o.DepthTest, o.DepthWrite)
+	}
+}
+
+func sortByState(amount int, b *testing.B) {
+	b.StopTimer()
+	objs := make([]*Object, amount)
+	for i := 0; i < amount; i++ {
+		objs[i] = NewObject()
+	}
+
+	randBool := func() bool {
+		return (rand.Int() % 2) == 0
+	}
+
+	for _, o := range objs {
+		o.State = State{
+			Texturing:   randBool(),
+			WriteRed:    randBool(),
+			WriteGreen:  randBool(),
+			WriteBlue:   randBool(),
+			WriteAlpha:  randBool(),
+			Dithering:   randBool(),
+			DepthTest:   randBool(),
+			DepthWrite:  randBool(),
+			StencilTest: randBool(),
+		}
+	}
+	b.StartTimer()
+
+	sort.Sort(ByState(objs))
+}
+
+func BenchmarkSortByState250(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		sortByState(250, b)
+	}
+}
+
+func BenchmarkSortByState500(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		sortByState(500, b)
+	}
+}
+
+func BenchmarkSortByState1000(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		sortByState(1000, b)
+	}
+}
+
+func BenchmarkSortByState5000(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		sortByState(5000, b)
 	}
 }
