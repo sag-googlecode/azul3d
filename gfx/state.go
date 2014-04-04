@@ -57,6 +57,57 @@ type State struct {
 	StencilFront, StencilBack StencilState
 }
 
+// Equalness returns a normalized float in the range of zero to one
+// representing how equal each component (or sub component) of this state is
+// compared to the other one. This is useful for state-sorting algorithms.
+func (s State) Equalness(other State) (weight float64) {
+	if s == other {
+		return 1.0
+	}
+	if s.AlphaMode == other.AlphaMode {
+		weight++
+	}
+	if s.Texturing == other.Texturing {
+		weight++
+	}
+	if s.WriteRed == other.WriteRed {
+		weight++
+	}
+	if s.WriteGreen == other.WriteGreen {
+		weight++
+	}
+	if s.WriteBlue == other.WriteBlue {
+		weight++
+	}
+	if s.WriteAlpha == other.WriteAlpha {
+		weight++
+	}
+	if s.Dithering == other.Dithering {
+		weight++
+	}
+	if s.DepthTest == other.DepthTest {
+		weight++
+	}
+	if s.DepthWrite == other.DepthWrite {
+		weight++
+	}
+	if s.DepthCmp == other.DepthCmp {
+		weight++
+	}
+	if s.StencilTest == other.StencilTest {
+		weight++
+	}
+	if s.FaceCulling == other.FaceCulling {
+		weight++
+	}
+	weight += s.Blend.Equalness(other.Blend)
+	weight += s.StencilFront.Equalness(other.StencilFront)
+	weight += s.StencilBack.Equalness(other.StencilBack)
+
+	// Normalize by dividing by the number of components in total.
+	return weight / 15.0
+}
+
 // The default state that should be used for graphics objects.
 var DefaultState = State{
 	AlphaMode:    NoAlpha,

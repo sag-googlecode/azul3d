@@ -4,9 +4,7 @@
 
 package gfx
 
-import (
-	"sync"
-)
+import "sync"
 
 // Object represents a single graphics object for rendering, it has a
 // transformation matrix which is applied to each vertex of each mesh, it
