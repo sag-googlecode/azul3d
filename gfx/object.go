@@ -8,7 +8,7 @@ import "sync"
 
 // NativeObject represents a native graphics object, they are normally only
 // created by renderers.
-type NativeObject interface{
+type NativeObject interface {
 	// If the GPU supports occlusion queries (see GPUInfo.OcclusionQuery) and
 	// OcclusionTest is set to true on the graphics object, then this method
 	// will return the number of samples that passed the depth and stencil

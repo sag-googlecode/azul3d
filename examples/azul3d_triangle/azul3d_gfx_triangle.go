@@ -268,7 +268,7 @@ func gfxLoop(w *chippy.Window, r gfx.Renderer) {
 
 			// The percent of the window that the triangle drew to:
 			bounds := r.Bounds()
-			percentage := float64(pixels) / float64(bounds.Dx() * bounds.Dy())
+			percentage := float64(pixels) / float64(bounds.Dx()*bounds.Dy())
 
 			fmt.Printf("Drew %v samples (%vpx, %f%% of window)\n", samples, pixels, percentage)
 		}

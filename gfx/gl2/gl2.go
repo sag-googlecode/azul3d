@@ -7,9 +7,9 @@ package gl2
 import (
 	"azul3d.org/v1/gfx"
 	"azul3d.org/v1/native/gl"
-	"runtime"
 	"errors"
 	"image"
+	"runtime"
 	"sync"
 )
 
@@ -164,7 +164,7 @@ func (r *Renderer) queryYield() int {
 		return 0
 	}
 	r.pending.Lock()
-	var(
+	var (
 		available, result int32
 	)
 	for queryIndex, query := range r.pending.queries {
@@ -186,7 +186,7 @@ func (r *Renderer) queryYield() int {
 			// Remove from pending slice.
 			r.pending.queries = append(r.pending.queries[:queryIndex], r.pending.queries[queryIndex+1:]...)
 		}
- 	}
+	}
 	length := len(r.pending.queries)
 	r.pending.Unlock()
 	return length
@@ -204,7 +204,7 @@ func (r *Renderer) queryWait() {
 	for i := 0; r.queryYield() > 0; i++ {
 		// Only runtime.Gosched() every 16th iteration to avoid bogging down
 		// rendering.
-		if i != 0 && (i % 16) == 0 {
+		if i != 0 && (i%16) == 0 {
 			runtime.Gosched()
 		}
 	}

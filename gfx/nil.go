@@ -10,6 +10,7 @@ import (
 )
 
 type nilNativeObject struct{}
+
 func (n nilNativeObject) SampleCount() int {
 	return 0
 }
