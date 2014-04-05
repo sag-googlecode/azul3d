@@ -16,6 +16,8 @@ import (
 //
 // Using sort.Reverse this doubles as front-to-back sorting (which is useful
 // for drawing opaque objects efficiently due to depth testing).
+//
+// The Less() method properly read-locks the objects when required.
 type ByDist struct {
 	// The list of objects to sort.
 	Objects []*Object
@@ -38,9 +40,22 @@ func (b ByDist) Swap(i, j int) {
 
 // Implements sort.Interface.
 func (b ByDist) Less(i, j int) bool {
-	// Calculate the distance from each object to the target position.
+	k := b[i]
+	v := b[j]
+
+	// Lock both objects for reading.
+	k.RLock()
+	v.RLock()
+
+	// Grab their transforms.
 	iTransform := b.Objects[i].Transform
 	jTransform := b.Objects[j].Transform
+
+	// Unlock the objects.
+	v.RUnlock()
+	k.RUnlock()
+
+	// Calculate the distance from each object to the target position.
 	iDist := iTransform.Pos.Sub(b.Target).Length()
 	jDist := jTransform.Pos.Sub(b.Target).Length()
 
@@ -64,6 +79,8 @@ func InsertionSort(data sort.Interface) {
 // graphics state in order to reduce graphics state changes and increase the
 // overall throughput when rendering several objects whose graphics state
 // differ.
+//
+// The Less() method properly read-locks the objects when required.
 type ByState []*Object
 
 // Implements sort.Interface.
@@ -80,62 +97,16 @@ func (b ByState) Swap(i, j int) {
 func (b ByState) Less(i, j int) bool {
 	k := b[i]
 	v := b[j]
-	return k.Compare(v)
 
-	// Compare shaders.
-	if k.Shader != v.Shader {
-		return false
-	}
+	// Lock both objects for reading.
+	k.RLock()
+	v.RLock()
 
-	// Compare textures.
-	for tIndex, t := range k.Textures {
-		if v.Textures[tIndex] != t {
-			return false
-		}
-	}
+	// Grab state comparison.
+	less := k.Compare(v)
 
-	// Compare state in order of most-commonly-changed.
-	if k.AlphaMode != v.AlphaMode {
-		return k.AlphaMode == DefaultState.AlphaMode
-	}
-	if k.Blend != v.Blend {
-		return k.Blend.Compare(v.Blend)
-	}
-	if k.DepthTest != v.DepthTest {
-		return k.DepthTest == DefaultState.DepthTest
-	}
-	if k.StencilTest != v.StencilTest {
-		return k.StencilTest == DefaultState.StencilTest
-	}
-	if k.StencilFront != v.StencilFront {
-		return k.StencilFront.Compare(v.StencilFront)
-	}
-	if k.StencilBack != v.StencilBack {
-		return k.StencilBack.Compare(v.StencilBack)
-	}
-	if k.DepthWrite != v.DepthWrite {
-		return k.DepthWrite == DefaultState.DepthWrite
-	}
-	if k.DepthCmp != v.DepthCmp {
-		return k.DepthCmp == DefaultState.DepthCmp
-	}
-	if k.FaceCulling != v.FaceCulling {
-		return k.FaceCulling == DefaultState.FaceCulling
-	}
-	if k.WriteRed != v.WriteRed {
-		return k.WriteRed == DefaultState.WriteRed
-	}
-	if k.WriteGreen != v.WriteGreen {
-		return k.WriteGreen == DefaultState.WriteGreen
-	}
-	if k.WriteBlue != v.WriteBlue {
-		return k.WriteBlue == DefaultState.WriteBlue
-	}
-	if k.WriteAlpha != v.WriteAlpha {
-		return k.WriteAlpha == DefaultState.WriteAlpha
-	}
-	if k.Dithering != v.Dithering {
-		return k.Dithering == DefaultState.Dithering
-	}
-	return true
+	// Unlock the objects.
+	v.RUnlock()
+	k.RUnlock()
+	return less
 }
