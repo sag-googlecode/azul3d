@@ -88,6 +88,7 @@ func gfxLoop(w *chippy.Window, r gfx.Renderer) {
 	// Create a triangle object.
 	triangle := gfx.NewObject()
 	triangle.Shader = shader
+	triangle.OcclusionTest = true
 	triangle.State.FaceCulling = gfx.NoFaceCulling
 	triangle.Meshes = []*gfx.Mesh{
 		&gfx.Mesh{
@@ -255,6 +256,22 @@ func gfxLoop(w *chippy.Window, r gfx.Renderer) {
 
 		// Render the whole frame.
 		r.Render()
+
+		// Print the number of samples the triangle drew (only if the GPU
+		// supports occlusion queries).
+		if r.GPUInfo().OcclusionQuery {
+			// The number of samples the triangle drew:
+			samples := triangle.SampleCount()
+
+			// The number of pixels the triangle drew:
+			pixels := samples / r.Precision().Samples
+
+			// The percent of the window that the triangle drew to:
+			bounds := r.Bounds()
+			percentage := float64(pixels) / float64(bounds.Dx() * bounds.Dy())
+
+			fmt.Printf("Drew %v samples (%vpx, %f%% of window)\n", samples, pixels, percentage)
+		}
 	}
 }
 
