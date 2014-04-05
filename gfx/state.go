@@ -25,10 +25,6 @@ type State struct {
 	// BlendedAlpha.
 	Blend BlendState
 
-	// Whether or not texturing of meshes should be turned off when rendering
-	// the object.
-	Texturing bool
-
 	// Whether or not red/green/blue/alpha should be written to the color
 	// buffer or not when rendering this object.
 	WriteRed, WriteGreen, WriteBlue, WriteAlpha bool
@@ -113,7 +109,6 @@ func (s State) Compare(other State) bool {
 var DefaultState = State{
 	AlphaMode:    NoAlpha,
 	Blend:        DefaultBlendState,
-	Texturing:    true,
 	WriteRed:     true,
 	WriteGreen:   true,
 	WriteBlue:    true,
