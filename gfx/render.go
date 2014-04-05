@@ -185,7 +185,9 @@ type Canvas interface {
 
 	// Render should finalize all pending clear and draw operations as if they
 	// where all submitted over a single channel like so:
-	//  for op := range pendingChannel  {
+	//  pending := len(ops)
+	//  for i := 0; i < pending; i++ {
+	//      op := <-ops
 	//      finalize(op)
 	//  }
 	// and once complete the final frame should be sent to the graphics
