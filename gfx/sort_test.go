@@ -49,7 +49,7 @@ func TestSortByDist(t *testing.T) {
 	}
 }
 
-func sortByDist(amount int, b *testing.B) {
+func sortByDist(shifts, amount int, b *testing.B, standard bool) {
 	b.StopTimer()
 	byDist := ByDist{
 		Objects: make([]*Object, amount),
@@ -72,30 +72,72 @@ func sortByDist(amount int, b *testing.B) {
 	}
 	b.StartTimer()
 
-	sort.Sort(byDist)
-}
+	if standard {
+		sort.Sort(byDist)
+	} else {
+		InsertionSort(byDist)
+	}
 
-func BenchmarkSortByDist250(b *testing.B) {
-	for i := 0; i < b.N; i++ {
-		sortByDist(250, b)
+	for i := 0; i < shifts; i++ {
+		// Test that the sorting algorithm exploits temporal coherence by shifting
+		// a eighth of the objects by a random small amount.
+		b.StopTimer()
+		for _, o := range byDist.Objects[:len(byDist.Objects)/8] {
+			offset := math.Vec3{
+				rand.Float64() * 0.1,
+				rand.Float64() * 0.1,
+				rand.Float64() * 0.1,
+			}
+			o.Transform.Pos = o.Transform.Pos.Add(offset)
+		}
+		b.StartTimer()
+
+		if standard {
+			sort.Sort(byDist)
+		} else {
+			InsertionSort(byDist)
+		}
 	}
 }
 
-func BenchmarkSortByDist500(b *testing.B) {
+func BenchmarkDistSortOpt250(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		sortByDist(500, b)
+		sortByDist(250, 250, b, false)
 	}
 }
-
-func BenchmarkSortByDist1000(b *testing.B) {
+func BenchmarkDistSortOpt500(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		sortByDist(1000, b)
+		sortByDist(250, 500, b, false)
 	}
 }
-
-func BenchmarkSortByDist5000(b *testing.B) {
+func BenchmarkDistSortOpt1k(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		sortByDist(5000, b)
+		sortByDist(250, 1000, b, false)
+	}
+}
+func BenchmarkDistSortOpt5k(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		sortByDist(250, 5000, b, false)
+	}
+}
+func BenchmarkDistSortStd250(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		sortByDist(250, 250, b, true)
+	}
+}
+func BenchmarkDistSortStd500(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		sortByDist(250, 500, b, true)
+	}
+}
+func BenchmarkDistSortStd1k(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		sortByDist(250, 1000, b, true)
+	}
+}
+func BenchmarkDistSortStd5k(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		sortByDist(250, 5000, b, true)
 	}
 }
 
@@ -167,25 +209,25 @@ func sortByState(amount int, b *testing.B) {
 	sort.Sort(ByState(objs))
 }
 
-func BenchmarkSortByState250(b *testing.B) {
+func BenchmarkStateSort250(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		sortByState(250, b)
 	}
 }
 
-func BenchmarkSortByState500(b *testing.B) {
+func BenchmarkStateSort500(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		sortByState(500, b)
 	}
 }
 
-func BenchmarkSortByState1000(b *testing.B) {
+func BenchmarkStateSort1k(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		sortByState(1000, b)
 	}
 }
 
-func BenchmarkSortByState5000(b *testing.B) {
+func BenchmarkStateSort5k(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		sortByState(5000, b)
 	}

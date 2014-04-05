@@ -4,7 +4,10 @@
 
 package gfx
 
-import "azul3d.org/v1/math"
+import (
+	"azul3d.org/v1/math"
+	"sort"
+)
 
 // ByDist sorts a list of graphics objects based on their distance away from
 // a target position (typically the camera). As such if the sorted objects are
@@ -43,6 +46,18 @@ func (b ByDist) Less(i, j int) bool {
 
 	// If i is further away from j (greater value) then it should sort first.
 	return iDist > jDist
+}
+
+// InsertionSort performs a simple insertion sort on the sort interface. In the
+// case of ByDist it performs generally as fast as sort.Sort() except that it
+// can exploit temporal coherence improving performance dramatically when the
+// objects have not moved much.
+func InsertionSort(data sort.Interface) {
+	for i := 0; i < data.Len(); i++ {
+		for j := i; j > 0 && data.Less(j, j-1); j-- {
+			data.Swap(j, j-1)
+		}
+	}
 }
 
 // ByState sorts a list of graphics objects based on the change of their
