@@ -50,7 +50,7 @@ func texCoordName(i int) string {
 	return n
 }
 
-// Used as the *gfx.Object.Native interface value.
+// Used as the *gfx.Object.NativeObject interface value.
 type nativeObject struct {
 	// The graphics object's last-known transform, if they are not equal then
 	// the matrices must be recalculated.
@@ -64,6 +64,17 @@ type nativeObject struct {
 	// recalculate matrices every single frame but instead only when they
 	// actually change.
 	model, view, projection, mvp gfx.Mat4
+
+	// The pending occlusion query ID.
+	pendingQuery uint32
+
+	// The sample count of the object the last time it was drawn.
+	sampleCount int
+}
+
+// Implements the gfx.NativeObject interface.
+func (n nativeObject) SampleCount() int {
+	return n.sampleCount
 }
 
 func (n nativeObject) needRebuild(o *gfx.Object, c *gfx.Camera) bool {
@@ -211,6 +222,9 @@ func (r *Renderer) Draw(rect image.Rectangle, o *gfx.Object, c *gfx.Camera) {
 		return
 	}
 
+	// Must set at least an empty native object before Draw() returns.
+	o.NativeObject = nativeObject{}
+
 	// Ask the render loop to perform drawing.
 	r.RenderExec <- func() bool {
 		// Set global GL state.
@@ -237,6 +251,10 @@ func (r *Renderer) Draw(rect image.Rectangle, o *gfx.Object, c *gfx.Camera) {
 
 		// Unlock the object now that we are done drawing it.
 		unlock()
+
+		// Yield for occlusion query results, if any are available.
+		r.queryYield()
+
 		return false
 	}
 }
@@ -321,6 +339,29 @@ func (r *Renderer) updateUniform(native *nativeShader, name string, value interf
 	}
 }
 
+func (r *Renderer) beginQuery(o *gfx.Object, n nativeObject) nativeObject {
+	if r.glArbOcclusionQuery && o.OcclusionTest {
+		r.render.GenQueries(1, &n.pendingQuery)
+		r.render.Execute()
+		r.render.BeginQuery(gl.SAMPLES_PASSED, n.pendingQuery)
+		r.render.Execute()
+
+		// Add the pending query.
+		r.pending.Lock()
+		r.pending.queries = append(r.pending.queries, pendingQuery{n.pendingQuery, o})
+		r.pending.Unlock()
+	}
+	return n
+}
+
+func (r *Renderer) endQuery(o *gfx.Object, n nativeObject) nativeObject {
+	if r.glArbOcclusionQuery && o.OcclusionTest {
+		r.render.EndQuery(gl.SAMPLES_PASSED)
+		r.render.Execute()
+	}
+	return n
+}
+
 func (r *Renderer) useState(ns *nativeShader, obj *gfx.Object, c *gfx.Camera) {
 	// Use object state.
 	r.stateColorWrite(obj.WriteRed, obj.WriteGreen, obj.WriteBlue, obj.WriteAlpha)
@@ -349,12 +390,12 @@ func (r *Renderer) useState(ns *nativeShader, obj *gfx.Object, c *gfx.Camera) {
 	}
 
 	// Consider rebuilding the object's cached matrices, if needed.
-	nativeObj, ok := obj.Native.(nativeObject)
-	if !ok || nativeObj.needRebuild(obj, c) {
+	nativeObj := obj.NativeObject.(nativeObject)
+	if nativeObj.needRebuild(obj, c) {
 		// Rebuild cached matrices.
 		nativeObj = nativeObj.rebuild(obj, c)
 	}
-	obj.Native = nativeObj
+	obj.NativeObject = nativeObj
 
 	// Add the matrix inputs for the object.
 	r.updateUniform(ns, "Model", nativeObj.model)
@@ -409,9 +450,15 @@ func (r *Renderer) useState(ns *nativeShader, obj *gfx.Object, c *gfx.Camera) {
 		// Add uniform input.
 		r.updateUniform(ns, textureName(i), texSlot(i))
 	}
+
+	// Begin occlusion query.
+	obj.NativeObject = r.beginQuery(obj, nativeObj)
 }
 
 func (r *Renderer) clearState(ns *nativeShader, obj *gfx.Object) {
+	// End occlusion query.
+	obj.NativeObject = r.endQuery(obj, obj.NativeObject.(nativeObject))
+
 	// Use no texture.
 	r.render.BindTexture(gl.TEXTURE_2D, 0)
 	r.render.ActiveTexture(gl.TEXTURE0)

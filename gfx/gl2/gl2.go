@@ -7,6 +7,7 @@ package gl2
 import (
 	"azul3d.org/v1/gfx"
 	"azul3d.org/v1/native/gl"
+	"runtime"
 	"errors"
 	"image"
 	"sync"
@@ -14,6 +15,14 @@ import (
 
 // Used when attempting to create an OpenGL 2.0 renderer in a lesser OpenGL context.
 var ErrInvalidVersion = errors.New("invalid OpenGL version; must be at least OpenGL 2.0")
+
+type pendingQuery struct {
+	// The ID of the pending occlusion query.
+	id uint32
+
+	// The object of the pending occlusion query.
+	o *gfx.Object
+}
 
 // Renderer is an OpenGL 2 based graphics renderer, it runs independant of the
 // window management library being used (GLFW, SDL, Chippy, QML, etc).
@@ -42,7 +51,7 @@ type Renderer struct {
 	gpuInfo gfx.GPUInfo
 
 	// Whether or not certain extensions we use are present or not.
-	glArbMultisample, glArbFramebufferObject bool
+	glArbMultisample, glArbFramebufferObject, glArbOcclusionQuery bool
 
 	// Number of multisampling samples, buffers.
 	samples, sampleBuffers int32
@@ -91,6 +100,12 @@ type Renderer struct {
 		shader                                                                           *gfx.Shader
 	}
 
+	// Structure used to manage pending occlusion queries.
+	pending struct {
+		sync.Mutex
+		queries []pendingQuery
+	}
+
 	// Whether or not our global OpenGL state has been set for this frame.
 	stateSetForFrame bool
 
@@ -119,6 +134,7 @@ func (r *Renderer) Bounds() image.Rectangle {
 func (r *Renderer) Clear(rect image.Rectangle, bg gfx.Color) {
 	r.RenderExec <- func() bool {
 		r.performClear(rect, bg)
+		r.queryYield()
 		return false
 	}
 }
@@ -127,6 +143,7 @@ func (r *Renderer) Clear(rect image.Rectangle, bg gfx.Color) {
 func (r *Renderer) ClearDepth(rect image.Rectangle, depth float64) {
 	r.RenderExec <- func() bool {
 		r.performClearDepth(rect, depth)
+		r.queryYield()
 		return false
 	}
 }
@@ -135,8 +152,80 @@ func (r *Renderer) ClearDepth(rect image.Rectangle, depth float64) {
 func (r *Renderer) ClearStencil(rect image.Rectangle, stencil int) {
 	r.RenderExec <- func() bool {
 		r.performClearStencil(rect, stencil)
+		r.queryYield()
 		return false
 	}
+}
+
+// Tries to receive pending occlusion query results, returns immediately if
+// none are available yet. Returns the number of queries still pending.
+func (r *Renderer) queryYield() int {
+	if !r.glArbOcclusionQuery {
+		return 0
+	}
+	r.pending.Lock()
+	var(
+		available, result int32
+	)
+	for queryIndex, query := range r.pending.queries {
+		r.render.GetQueryObjectiv(query.id, gl.QUERY_RESULT_AVAILABLE, &available)
+		r.render.Execute()
+		if available == gl.TRUE {
+			// Get the result then.
+			r.render.GetQueryObjectiv(query.id, gl.QUERY_RESULT, &result)
+
+			// Delete the query.
+			r.render.DeleteQueries(1, &query.id)
+			r.render.Execute()
+
+			// Update object's sample count.
+			nativeObj := query.o.NativeObject.(nativeObject)
+			nativeObj.sampleCount = int(result)
+			query.o.NativeObject = nativeObj
+
+			// Remove from pending slice.
+			r.pending.queries = append(r.pending.queries[:queryIndex], r.pending.queries[queryIndex+1:]...)
+		}
+ 	}
+	length := len(r.pending.queries)
+	r.pending.Unlock()
+	return length
+}
+
+// Blocks until all pending occlusion query results are received.
+func (r *Renderer) queryWait() {
+	if !r.glArbOcclusionQuery {
+		return
+	}
+
+	// We have no choice except to busy-wait until the results come: OpenGL
+	// doesn't provide a blocking mechanism for waiting for query results but
+	// at least we can runtime.Gosched() other goroutines.
+	for i := 0; r.queryYield() > 0; i++ {
+		// Only runtime.Gosched() every 16th iteration to avoid bogging down
+		// rendering.
+		if i != 0 && (i % 16) == 0 {
+			runtime.Gosched()
+		}
+	}
+}
+
+// Implements gfx.Renderer interface.
+func (r *Renderer) QueryWait() {
+	// Ask the render channel to wait for query results now.
+	r.RenderExec <- func() bool {
+		// Flush and execute any pending OpenGL commands.
+		r.render.Flush()
+		r.render.Execute()
+
+		// Wait for occlusion query results to come in.
+		r.queryWait()
+
+		// signal render completion.
+		r.renderComplete <- struct{}{}
+		return false
+	}
+	<-r.renderComplete
 }
 
 // Implements gfx.Renderer interface.
@@ -157,6 +246,9 @@ func (r *Renderer) Render() {
 
 		// Clear our OpenGL state now.
 		r.clearGlobalState()
+
+		// Wait for occlusion query results to come in.
+		r.queryWait()
 
 		// signal render completion.
 		r.renderComplete <- struct{}{}
@@ -312,6 +404,9 @@ func New() (*Renderer, error) {
 	// Query whether we have the GL_ARB_framebuffer_object.
 	r.glArbFramebufferObject = r.render.Extension("GL_ARB_framebuffer_object")
 
+	// Query whether we have the GL_ARB_occlusion_query.
+	r.glArbOcclusionQuery = r.render.Extension("GL_ARB_occlusion_query")
+
 	// Query whether we have the GL_ARB_multisample extension.
 	r.glArbMultisample = r.render.Extension("GL_ARB_multisample")
 	if r.glArbMultisample {
@@ -323,11 +418,14 @@ func New() (*Renderer, error) {
 	}
 
 	// Store GPU info.
-	var maxTextureSize, maxVaryingFloats, maxVertexInputs, maxFragmentInputs int32
+	var maxTextureSize, maxVaryingFloats, maxVertexInputs, maxFragmentInputs, occlusionQueryBits int32
 	r.render.GetIntegerv(gl.MAX_TEXTURE_SIZE, &maxTextureSize)
 	r.render.GetIntegerv(gl.MAX_VARYING_FLOATS, &maxVaryingFloats)
 	r.render.GetIntegerv(gl.MAX_VERTEX_UNIFORM_COMPONENTS, &maxVertexInputs)
 	r.render.GetIntegerv(gl.MAX_FRAGMENT_UNIFORM_COMPONENTS, &maxFragmentInputs)
+	if r.glArbOcclusionQuery {
+		r.render.GetQueryiv(gl.SAMPLES_PASSED, gl.QUERY_COUNTER_BITS, &occlusionQueryBits)
+	}
 	r.render.Execute()
 
 	r.gpuInfo.MaxTextureSize = int(maxTextureSize)
@@ -340,6 +438,8 @@ func New() (*Renderer, error) {
 	r.gpuInfo.Vendor = gl.String(r.render.GetString(gl.VENDOR))
 	r.gpuInfo.GLMajor, r.gpuInfo.GLMinor, _ = r.render.Version()
 	r.gpuInfo.GLSLMajor, r.gpuInfo.GLSLMinor, _ = r.render.ShaderVersion()
+	r.gpuInfo.OcclusionQuery = r.glArbOcclusionQuery && occlusionQueryBits > 0
+	r.gpuInfo.OcclusionQueryBits = int(occlusionQueryBits)
 
 	// Grab the current renderer bounds (opengl viewport).
 	var viewport [4]int32

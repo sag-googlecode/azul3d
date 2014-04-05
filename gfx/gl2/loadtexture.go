@@ -125,6 +125,9 @@ func (r *Renderer) Download(rect image.Rectangle, complete chan image.Image) {
 		// We must vertically flip the image.
 		verticalFlip(img)
 
+		// Yield for occlusion query results, if any are available.
+		r.queryYield()
+
 		complete <- img
 		return false
 	}
