@@ -57,55 +57,56 @@ type State struct {
 	StencilFront, StencilBack StencilState
 }
 
-// Equalness returns a normalized float in the range of zero to one
-// representing how equal each component (or sub component) of this state is
-// compared to the other one. This is useful for state-sorting algorithms.
-func (s State) Equalness(other State) (weight float64) {
+// Compare compares this state against the other one using DefaultState as a
+// reference when inequality occurs and returns whether or not this state
+// should sort before the other one for purposes of state sorting.
+func (s State) Compare(other State) bool {
 	if s == other {
-		return 1.0
+		return true
 	}
-	if s.AlphaMode == other.AlphaMode {
-		weight++
+	if s.AlphaMode != other.AlphaMode {
+		return s.AlphaMode == DefaultState.AlphaMode
 	}
-	if s.Texturing == other.Texturing {
-		weight++
+	if s.Blend != other.Blend {
+		return s.Blend.Compare(other.Blend)
 	}
-	if s.WriteRed == other.WriteRed {
-		weight++
+	if s.DepthTest != other.DepthTest {
+		return s.DepthTest == DefaultState.DepthTest
 	}
-	if s.WriteGreen == other.WriteGreen {
-		weight++
+	if s.StencilTest != other.StencilTest {
+		return s.StencilTest == DefaultState.StencilTest
 	}
-	if s.WriteBlue == other.WriteBlue {
-		weight++
+	if s.StencilFront != other.StencilFront {
+		return s.StencilFront.Compare(other.StencilFront)
 	}
-	if s.WriteAlpha == other.WriteAlpha {
-		weight++
+	if s.StencilBack != other.StencilBack {
+		return s.StencilBack.Compare(other.StencilBack)
 	}
-	if s.Dithering == other.Dithering {
-		weight++
+	if s.DepthWrite != other.DepthWrite {
+		return s.DepthWrite == DefaultState.DepthWrite
 	}
-	if s.DepthTest == other.DepthTest {
-		weight++
+	if s.DepthCmp != other.DepthCmp {
+		return s.DepthCmp == DefaultState.DepthCmp
 	}
-	if s.DepthWrite == other.DepthWrite {
-		weight++
+	if s.FaceCulling != other.FaceCulling {
+		return s.FaceCulling == DefaultState.FaceCulling
 	}
-	if s.DepthCmp == other.DepthCmp {
-		weight++
+	if s.WriteRed != other.WriteRed {
+		return s.WriteRed == DefaultState.WriteRed
 	}
-	if s.StencilTest == other.StencilTest {
-		weight++
+	if s.WriteGreen != other.WriteGreen {
+		return s.WriteGreen == DefaultState.WriteGreen
 	}
-	if s.FaceCulling == other.FaceCulling {
-		weight++
+	if s.WriteBlue != other.WriteBlue {
+		return s.WriteBlue == DefaultState.WriteBlue
 	}
-	weight += s.Blend.Equalness(other.Blend)
-	weight += s.StencilFront.Equalness(other.StencilFront)
-	weight += s.StencilBack.Equalness(other.StencilBack)
-
-	// Normalize by dividing by the number of components in total.
-	return weight / 15.0
+	if s.WriteAlpha != other.WriteAlpha {
+		return s.WriteAlpha == DefaultState.WriteAlpha
+	}
+	if s.Dithering != other.Dithering {
+		return s.Dithering == DefaultState.Dithering
+	}
+	return true
 }
 
 // The default state that should be used for graphics objects.

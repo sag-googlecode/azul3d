@@ -105,32 +105,36 @@ func TestSortByState(t *testing.T) {
 	a.State.Dithering = true
 	a.State.DepthTest = true
 	a.State.DepthWrite = true
+	a.State.WriteRed = false
+	a.State.WriteGreen = true
+	a.State.WriteBlue = false
+	a.State.WriteAlpha = true
 
 	b := NewObject()
 	b.State.Texturing = true
 	b.State.Dithering = false
 	b.State.DepthTest = true
 	b.State.DepthWrite = false
+	a.State.WriteRed = false
+	a.State.WriteGreen = false
+	a.State.WriteBlue = true
+	a.State.WriteAlpha = true
 
 	var l = []*Object{a, b, a, b, a, a, b, b, a, a, a, a, b, b, b, b}
 	sort.Sort(ByState(l))
 
 	for i := 0; i < 8; i++ {
 		s := l[i].State
-		if !s.Texturing || s.Dithering || !s.DepthTest || s.DepthWrite {
+		if !s.Texturing || !s.Dithering || !s.DepthTest || !s.DepthWrite {
 			t.Fail()
 		}
 	}
 
 	for i := 8; i < 16; i++ {
 		s := l[i].State
-		if !s.Texturing || !s.Dithering || !s.DepthTest || !s.DepthWrite {
+		if !s.Texturing || s.Dithering || !s.DepthTest || s.DepthWrite {
 			t.Fail()
 		}
-	}
-
-	for _, o := range l {
-		t.Log(o.Texturing, o.Dithering, o.DepthTest, o.DepthWrite)
 	}
 }
 

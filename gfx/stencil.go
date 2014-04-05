@@ -58,37 +58,35 @@ type StencilState struct {
 	Cmp Cmp
 }
 
-// Equalness returns a normalized float in the range of zero to one
-// representing how equal each component (or sub component) of this state is
-// compared to the other one. This is useful for state-sorting algorithms.
-func (s StencilState) Equalness(other StencilState) (weight float64) {
+// Compare compares this state against the other one using DefaultStencilState
+// as a reference when inequality occurs and returns whether or not this state
+// should sort before the other one for purposes of state sorting.
+func (s StencilState) Compare(other StencilState) bool {
 	if s == other {
-		return 1.0
+		return true
 	}
 	if s.WriteMask != other.WriteMask {
-		weight++
+		return s.WriteMask == DefaultStencilState.WriteMask
 	}
 	if s.ReadMask != other.ReadMask {
-		weight++
+		return s.ReadMask == DefaultStencilState.ReadMask
 	}
 	if s.Reference != other.Reference {
-		weight++
+		return s.Reference == DefaultStencilState.Reference
 	}
 	if s.Fail != other.Fail {
-		weight++
+		return s.Fail == DefaultStencilState.Fail
 	}
 	if s.DepthFail != other.DepthFail {
-		weight++
+		return s.DepthFail == DefaultStencilState.DepthFail
 	}
 	if s.DepthPass != other.DepthPass {
-		weight++
+		return s.DepthPass == DefaultStencilState.DepthPass
 	}
 	if s.Cmp != other.Cmp {
-		weight++
+		return s.Cmp == DefaultStencilState.Cmp
 	}
-
-	// Normalize by dividing by the number of components in total.
-	return weight / 7.0
+	return true
 }
 
 // The default stencil state that should be used for graphics objects.

@@ -45,6 +45,30 @@ type Object struct {
 	Textures []*Texture
 }
 
+// Compare compares this object's state (including shader and textures) against
+// the other one and determines if it should sort before the other one for
+// state sorting purposes.
+func (o *Object) Compare(other *Object) bool {
+	if o == other {
+		return true
+	}
+
+	// Compare shaders.
+	if o.Shader != other.Shader {
+		return false
+	}
+
+	// Compare textures.
+	for i, tex := range o.Textures {
+		if other.Textures[i] != tex {
+			return false
+		}
+	}
+
+	// Compare state then.
+	return o.State.Compare(other.State)
+}
+
 // NewObject creates and returns a new object with:
 //  o.State == DefaultState
 //  o.Transform == DefaultTransform

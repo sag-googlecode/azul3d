@@ -27,37 +27,38 @@ type BlendState struct {
 	RGBEq, AlphaEq BlendEq
 }
 
-// Equalness returns a normalized float in the range of zero to one
-// representing how equal each component (or sub component) of this state is
-// compared to the other one. This is useful for state-sorting algorithms.
-func (b BlendState) Equalness(other BlendState) (weight float64) {
+// Compare compares this state against the other one using DefaultBlendState as
+// a reference when inequality occurs and returns whether or not this state
+// should sort before the other one for purposes of state sorting.
+func (b BlendState) Compare(other BlendState) bool {
 	if b == other {
-		return 1.0
+		return true
 	}
-	if b.Color == other.Color {
-		weight++
+	if b.Color != other.Color {
+		return b.Color == DefaultBlendState.Color
 	}
-	if b.SrcRGB == other.SrcRGB {
-		weight++
+	if b.SrcRGB != other.SrcRGB {
+		return b.SrcRGB == DefaultBlendState.SrcRGB
 	}
-	if b.DstRGB == other.DstRGB {
-		weight++
+	if b.DstRGB != other.DstRGB {
+		return b.DstRGB == DefaultBlendState.DstRGB
 	}
-	if b.SrcAlpha == other.SrcAlpha {
-		weight++
+	if b.SrcRGB != other.SrcRGB {
+		return b.SrcRGB == DefaultBlendState.SrcRGB
 	}
-	if b.DstAlpha == other.DstAlpha {
-		weight++
+	if b.SrcAlpha != other.SrcAlpha {
+		return b.SrcAlpha == DefaultBlendState.SrcAlpha
 	}
-	if b.RGBEq == other.RGBEq {
-		weight++
+	if b.DstAlpha != other.DstAlpha {
+		return b.DstAlpha == DefaultBlendState.DstAlpha
 	}
-	if b.AlphaEq == other.AlphaEq {
-		weight++
+	if b.RGBEq != other.RGBEq {
+		return b.RGBEq == DefaultBlendState.RGBEq
 	}
-
-	// Normalize by dividing by the number of components in total.
-	return weight / 7.0
+	if b.AlphaEq != other.AlphaEq {
+		return b.AlphaEq == DefaultBlendState.AlphaEq
+	}
+	return true
 }
 
 // The default blend state to use for graphics objects (by default it works
