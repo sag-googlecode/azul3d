@@ -9,6 +9,11 @@ import (
 	"sync"
 )
 
+type nilNativeObject struct{}
+func (n nilNativeObject) SampleCount() int {
+	return 0
+}
+
 type nilRenderer struct {
 	// The MSAA state.
 	msaa struct {
@@ -36,6 +41,7 @@ func (n *nilRenderer) GPUInfo() GPUInfo {
 	return GPUInfo{
 		MaxTextureSize:  8096,
 		AlphaToCoverage: true,
+		OcclusionQuery:  false,
 	}
 }
 func (n *nilRenderer) Download(r image.Rectangle, complete chan image.Image) {
@@ -56,8 +62,12 @@ func (n *nilRenderer) Clear(r image.Rectangle, bg Color)           {}
 func (n *nilRenderer) ClearDepth(r image.Rectangle, depth float64) {}
 func (n *nilRenderer) ClearStencil(r image.Rectangle, stencil int) {}
 func (n *nilRenderer) Draw(r image.Rectangle, o *Object, c *Camera) {
+	o.Lock()
+	o.NativeObject = nilNativeObject{}
+	o.Unlock()
 }
-func (n *nilRenderer) Render() {}
+func (n *nilRenderer) QueryWait() {}
+func (n *nilRenderer) Render()    {}
 
 func (n *nilRenderer) LoadMesh(m *Mesh, done chan *Mesh) {
 	m.Lock()

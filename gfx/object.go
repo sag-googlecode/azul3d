@@ -6,6 +6,17 @@ package gfx
 
 import "sync"
 
+// NativeObject represents a native graphics object, they are normally only
+// created by renderers.
+type NativeObject interface{
+	// If the GPU supports occlusion queries (see GPUInfo.OcclusionQuery) and
+	// OcclusionTest is set to true on the graphics object, then this method
+	// will return the number of samples that passed the depth and stencil
+	// testing phases the last time the object was drawn. If occlusion queries
+	// are not supported then -1 will be returned.
+	SampleCount() int
+}
+
 // Object represents a single graphics object for rendering, it has a
 // transformation matrix which is applied to each vertex of each mesh, it
 // has a shader program, meshes, and textures used for rendering the object.
@@ -16,9 +27,13 @@ type Object struct {
 	sync.RWMutex
 
 	// The native object of this graphics object. The renderer using this
-	// graphics object may assign anything to this interface. Typically clients
-	// will not use this field at all.
-	Native interface{}
+	// graphics object must assign a value to this field after a call to
+	// Draw() has finished before unlocking the object.
+	NativeObject
+
+	// Whether or not this object should be occlusion tested. See also the
+	// SampleCount() method of NativeObject.
+	OcclusionTest bool
 
 	// The render state of this object.
 	State

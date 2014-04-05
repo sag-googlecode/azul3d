@@ -154,6 +154,13 @@ type Canvas interface {
 	// given camera object (taking into account the camera object's
 	// transformation and projection matrices).
 	//
+	// If the GPU supports occlusion queries (see GPUInfo.OcclusionQuery) and
+	// o.OcclusionTest is set to true then at some point in the future (or when
+	// QueryWait() is called) the native object will record the number of
+	// samples that passed depth and stencil testing phases such that when
+	// SampleCount() is called it will return the number of samples last drawn
+	// by the object.
+	//
 	// The object will not be drawn if any of the following cases are true:
 	//  o.Shader == nil
 	//  len(o.Shader.Error) > 0
@@ -163,6 +170,19 @@ type Canvas interface {
 	// If the rectangle is empty the entire canvas is cleared.
 	Draw(r image.Rectangle, o *Object, c *Camera)
 
+	// QueryWait blocks until all pending draw object's occlusion queries
+	// completely finish. Most clients should avoid this call as it can easilly
+	// cause graphics pipeline stalls if not handled with care.
+	//
+	// Instead of calling QueryWait immediately for conditional rendering, it is
+	// common practice to instead make use of the previous frame's occlusion
+	// query results as this allows the CPU and GPU to work in parralel instead
+	// of being directly synchronized with one another.
+	//
+	// If the GPU does not support occlusion queries (see
+	// GPUInfo.OcclusionQuery) then this function is no-op.
+	QueryWait()
+
 	// Render should finalize all pending clear and draw operations as if they
 	// where all submitted over a single channel like so:
 	//  for op := range pendingChannel  {
@@ -170,6 +190,8 @@ type Canvas interface {
 	//  }
 	// and once complete the final frame should be sent to the graphics
 	// hardware for rasterization.
+	//
+	// Additionally, a call to Render() means an implicit call to QueryWait().
 	Render()
 }
 
@@ -184,6 +206,14 @@ type GPUInfo struct {
 	// Whether or not the AlphaToCoverage alpha mode is supported (if false
 	// then BinaryAlpha will automatically be used as a fallback).
 	AlphaToCoverage bool
+
+	// Whether or not occlusion queries are supported or not.
+	OcclusionQuery bool
+
+	// The number of bits reserved for the sample count when performing
+	// occlusion queries, if the number goes above what this many bits could
+	// store then it is generally (but not always) clamped to that value.
+	OcclusionQueryBits int
 
 	// The name of the graphics hardware, or an empty string if not available.
 	// For example it may look something like:
