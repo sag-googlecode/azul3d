@@ -40,8 +40,8 @@ func (b ByDist) Swap(i, j int) {
 
 // Implements sort.Interface.
 func (b ByDist) Less(i, j int) bool {
-	k := b[i]
-	v := b[j]
+	k := b.Objects[i]
+	v := b.Objects[j]
 
 	// Lock both objects for reading.
 	k.RLock()
