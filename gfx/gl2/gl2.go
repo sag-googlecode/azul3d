@@ -240,6 +240,12 @@ func (r *Renderer) Render() {
 
 	// Ask the render channel to render things now.
 	r.RenderExec <- func() bool {
+		// Execute all pending operations.
+		for i := 0; i < len(r.RenderExec); i++ {
+			f := <-r.RenderExec
+			f()
+		}
+
 		// Flush and execute any pending OpenGL commands.
 		r.render.Flush()
 		r.render.Execute()
