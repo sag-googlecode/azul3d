@@ -21,6 +21,8 @@ func gfxLoop(w *chippy.Window, r gfx.Renderer) {
 	fmt.Println("GPU Vendor:", gpu.Vendor)
 	fmt.Printf("OpenGL: v%d.%d\n", gpu.GLMajor, gpu.GLMinor)
 	fmt.Printf("GLSL: v%d.%d\n", gpu.GLSLMajor, gpu.GLSLMinor)
+	fmt.Println("OcclusionQuery =", gpu.OcclusionQuery)
+	fmt.Println("OcclusionQueryBits =", gpu.OcclusionQueryBits)
 	fmt.Println("MaxTextureSize =", gpu.MaxTextureSize)
 	fmt.Println("AlphaToCoverage =", gpu.AlphaToCoverage)
 	fmt.Println("GLSLMaxVaryingFloats =", gpu.GLSLMaxVaryingFloats)
