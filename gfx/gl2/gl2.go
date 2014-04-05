@@ -456,8 +456,10 @@ func New() (*Renderer, error) {
 	r.render.Execute() // Needed because glGetIntegerv must execute now.
 
 	// Store the slice of texture compression formats.
-	r.compressedTextureFormats = make([]int32, numFormats)
-	r.render.GetIntegerv(gl.COMPRESSED_TEXTURE_FORMATS, &r.compressedTextureFormats[0])
-	r.render.Execute() // Needed because glGetIntegerv must execute now.
+	if numFormats > 0 {
+		r.compressedTextureFormats = make([]int32, numFormats)
+		r.render.GetIntegerv(gl.COMPRESSED_TEXTURE_FORMATS, &r.compressedTextureFormats[0])
+		r.render.Execute() // Needed because glGetIntegerv must execute now.
+	}
 	return r, nil
 }
