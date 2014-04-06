@@ -183,6 +183,33 @@ func (r *Renderer) freeTextures() {
 	r.texturesToFree.Unlock()
 }
 
+const (
+	// We really should try to get our GL bindings to wrap extensions..
+	// See: http://www.opengl.org/registry/specs/EXT/texture_compression_s3tc.txt
+	glCOMPRESSED_RGB_S3TC_DXT1_EXT  = 0x83F0
+	glCOMPRESSED_RGBA_S3TC_DXT1_EXT = 0x83F1
+	glCOMPRESSED_RGBA_S3TC_DXT3_EXT = 0x83F2
+	glCOMPRESSED_RGBA_S3TC_DXT5_EXT = 0x83F3
+)
+
+func convertTexFormat(f gfx.TexFormat) int32 {
+	switch f {
+	case gfx.RGBA:
+		return gl.RGBA
+	case gfx.RGB:
+		return gl.RGB
+	case gfx.DXT1:
+		return glCOMPRESSED_RGB_S3TC_DXT1_EXT
+	case gfx.DXT1RGBA:
+		return glCOMPRESSED_RGBA_S3TC_DXT1_EXT
+	case gfx.DXT3:
+		return glCOMPRESSED_RGBA_S3TC_DXT3_EXT
+	case gfx.DXT5:
+		return glCOMPRESSED_RGBA_S3TC_DXT5_EXT
+	}
+	panic("unknown format")
+}
+
 func (r *Renderer) LoadTexture(t *gfx.Texture, done chan *gfx.Texture) {
 	// Lock the texture until we are done loading it.
 	t.Lock()
@@ -213,15 +240,12 @@ func (r *Renderer) LoadTexture(t *gfx.Texture, done chan *gfx.Texture) {
 		r.loader.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAX_LEVEL, 0)
 
 		// Determine appropriate internal image format.
+		targetFormat := convertTexFormat(t.Format)
 		internalFormat := gl.RGBA
-		if !t.Uncompressed {
-			// We should ask the driver to convert the image to a compressed
-			// image format, if possible.
-			for _, format := range r.compressedTextureFormats {
-				if format == gl.COMPRESSED_RGBA {
-					internalFormat = format
-					break
-				}
+		for _, format := range r.compressedTextureFormats {
+			if format == targetFormat {
+				internalFormat = format
+				break
 			}
 		}
 
