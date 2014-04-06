@@ -145,6 +145,7 @@ func gfxLoop(w *chippy.Window, r gfx.Renderer) {
 			Source:    mbrot,
 			MinFilter: gfx.Nearest,
 			MagFilter: gfx.Nearest,
+			Format:    gfx.DXT1,
 		}
 		onLoad := make(chan *gfx.Texture, 1)
 		r.LoadTexture(tex, onLoad)
