@@ -9,6 +9,40 @@ import (
 	"sync"
 )
 
+// TexFormat specifies a single texture storage format.
+type TexFormat uint8
+
+const (
+	// RGBA is a standard 32-bit premultiplied alpha image format.
+	RGBA TexFormat = iota
+
+	// RGB is a standard 24-bit RGB image format with no alpha component.
+	RGB
+
+	// DXT1 is a DXT1 texture compression format in RGB form (i.e. fully
+	// opaque) each 4x4 block of pixels take up 64-bits of data, as such when
+	// compared to a standard 24-bit RGB format it provides a 6:1 compression
+	// ratio.
+	DXT1
+
+	// DXT1RGBA is a DXT1 texture compression format in RGBA form with 1 bit
+	// reserved for alpha (i.e. fully transparent or fully opaque per-pixel
+	// transparency).
+	DXT1RGBA
+
+	// DXT3 is a RGBA texture compression format with four bits per pixel
+	// reserved for alpha. Each 4x4 block of pixels take up 128-bits of data,
+	// as such when compared to a standard 32-bit RGBA format it provides a 4:1
+	// compression ratio. Color information stored in DXT3 is mostly the same
+	// as DXT1.
+	DXT3
+
+	// DXT5 is a RGBA format similar to DXT3 except it compresses the alpha
+	// chunk in a similar manner to DXT1's color storage. It provides the same
+	// 4:1 compression ratio as DXT3.
+	DXT5
+)
+
 // Downloadable represents a image that can be downloaded from the graphics
 // hardware into system memory (e.g. for taking a screen-shot).
 type Downloadable interface {
@@ -62,10 +96,12 @@ type Texture struct {
 	// to texture, unless downloaded).
 	Source image.Image
 
-	// If set to true then the renderer using this texture should try it's best
-	// to avoid texture compression related artifacts at the cost of increased
-	// memory consumption.
-	Uncompressed bool
+	// The texture format to use for storing this texture on the GPU, which may
+	// result in lossy conversions (e.g. RGB would lose the alpha channel, etc).
+	//
+	// If the format is not supported then the renderer may use an image format
+	// that is similar and is supported.
+	Format TexFormat
 
 	// The U and V wrap modes of this texture.
 	WrapU, WrapV TexWrap
@@ -92,7 +128,7 @@ func (t *Texture) Copy() *Texture {
 		t.KeepDataOnLoad,
 		t.Bounds,
 		nil, // Source image -- not copied.
-		t.Uncompressed,
+		t.Format,
 		t.WrapU,
 		t.WrapV,
 		t.BorderColor,
