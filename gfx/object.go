@@ -6,14 +6,33 @@ package gfx
 
 import "sync"
 
+// Destroyable defines a destroyable object. Once an object is destroyed it may
+// still be used, but typically doing so is not good and would e.g. involve
+// reloading the entire object and cause performance issues.
+//
+// Clients should invoke the Destroy() method when they are done utilizing the
+// object or else doing so will be left up to a runtime Finalizer.
+type Destroyable interface {
+	// Destroy destroys this object. Once destroyed the object can still be
+	// used but doing so is not advised for performance reasons (e.g. requires
+	// reloading the entire object).
+	//
+	// This method is safe to invoke from multiple goroutines concurrently.
+	Destroy()
+}
+
 // NativeObject represents a native graphics object, they are normally only
 // created by renderers.
 type NativeObject interface {
+	Destroyable
+
 	// If the GPU supports occlusion queries (see GPUInfo.OcclusionQuery) and
 	// OcclusionTest is set to true on the graphics object, then this method
 	// will return the number of samples that passed the depth and stencil
 	// testing phases the last time the object was drawn. If occlusion queries
 	// are not supported then -1 will be returned.
+	//
+	// This method is safe to invoke from multiple goroutines concurrently.
 	SampleCount() int
 }
 

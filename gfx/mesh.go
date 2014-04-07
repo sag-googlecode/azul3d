@@ -17,6 +17,10 @@ type TexCoordSet struct {
 	Changed bool
 }
 
+// NativeMesh represents the native object of a mesh, typically only renderers
+// create these.
+type NativeMesh Destroyable
+
 // Mesh represents a single mesh made up of several components. A mesh may or
 // may not be made up of indexed vertices, etc, depending on whether or not
 // len(m.Indices) == 0 holds true.
@@ -30,10 +34,10 @@ type TexCoordSet struct {
 type Mesh struct {
 	sync.RWMutex
 
-	// The native object of this mesh. The renderer using this mesh may assign
-	// anything to this interface. Typically clients will not use this field at
-	// all.
-	Native interface{}
+	// The native object of this mesh. Once loaded the renderer using this mesh
+	// must assign a value to this field. Typically clients should not assign
+	// values to this field at all.
+	NativeMesh
 
 	// Weather or not this mesh is currently loaded or not.
 	Loaded bool

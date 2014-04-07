@@ -11,9 +11,25 @@ import (
 
 type nilNativeObject struct{}
 
+func (n nilNativeObject) Destroy() {}
 func (n nilNativeObject) SampleCount() int {
 	return 0
 }
+
+type nilNativeTexture struct{}
+
+func (n nilNativeTexture) Destroy() {}
+func (n nilNativeTexture) Download(r image.Rectangle, complete chan image.Image) {
+	complete <- nil
+}
+
+type nilNativeMesh struct{}
+
+func (n nilNativeMesh) Destroy() {}
+
+type nilNativeShader struct{}
+
+func (n nilNativeShader) Destroy() {}
 
 type nilRenderer struct {
 	// The MSAA state.
@@ -46,7 +62,7 @@ func (n *nilRenderer) GPUInfo() GPUInfo {
 	}
 }
 func (n *nilRenderer) Download(r image.Rectangle, complete chan image.Image) {
-	complete <- image.NewRGBA(image.Rect(0, 0, 1, 1))
+	complete <- nil
 }
 func (n *nilRenderer) SetMSAA(msaa bool) {
 	n.msaa.Lock()
@@ -74,6 +90,7 @@ func (n *nilRenderer) LoadMesh(m *Mesh, done chan *Mesh) {
 	m.Lock()
 	m.Loaded = true
 	m.ClearData()
+	m.NativeMesh = nilNativeMesh{}
 	m.Unlock()
 	select {
 	case done <- m:
@@ -84,6 +101,7 @@ func (n *nilRenderer) LoadTexture(t *Texture, done chan *Texture) {
 	t.Lock()
 	t.Loaded = true
 	t.ClearData()
+	t.NativeTexture = nilNativeTexture{}
 	t.Unlock()
 	select {
 	case done <- t:
@@ -94,6 +112,7 @@ func (n *nilRenderer) LoadShader(s *Shader, done chan *Shader) {
 	s.Lock()
 	s.Loaded = true
 	s.ClearData()
+	s.NativeShader = nilNativeShader{}
 	s.Unlock()
 	select {
 	case done <- s:

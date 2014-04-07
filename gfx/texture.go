@@ -64,6 +64,7 @@ type Downloadable interface {
 // NativeTexture represents the native object of a *Texture, the renderer is
 // responsible for creating these and fulfilling the interface.
 type NativeTexture interface {
+	Destroyable
 	Downloadable
 }
 
@@ -75,8 +76,9 @@ type NativeTexture interface {
 type Texture struct {
 	sync.RWMutex
 
-	// The native object of this texture. The renderer using this texture will
-	// assign this at load time.
+	// The native object of this texture. Once loaded the renderer using this
+	// texture must assign a value to this field. Typically clients should not
+	// assign values to this field at all.
 	NativeTexture
 
 	// Weather or not this texture is currently loaded or not.

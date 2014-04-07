@@ -6,6 +6,10 @@ package gfx
 
 import "sync"
 
+// NativeShader represents the native object of a shader. Typically only
+// renderers will create these.
+type NativeShader Destroyable
+
 // Shader represents a single shader program.
 //
 // Clients are responsible for utilizing the RWMutex of the shader when using
@@ -13,10 +17,10 @@ import "sync"
 type Shader struct {
 	sync.RWMutex
 
-	// The native object of this shader. The renderer using this shader may
-	// assign anything to this interface. Typically clients will not use this
-	// field at all.
-	Native interface{}
+	// The native object of this shader. Once loaded (if no compiler error
+	// occured) then the renderer using this shader must assign a value to this
+	// field. Typically clients should not assign values to this field at all.
+	NativeShader
 
 	// Weather or not this shader is currently loaded or not.
 	Loaded bool
