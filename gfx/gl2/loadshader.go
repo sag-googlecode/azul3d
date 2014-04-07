@@ -16,6 +16,18 @@ import (
 type nativeShader struct {
 	program, vertex, fragment   uint32
 	attribLookup, uniformLookup map[string]int32
+	r                           *Renderer
+}
+
+func finalizeShader(n *nativeShader) {
+	n.r.shadersToFree.Lock()
+	n.r.shadersToFree.slice = append(n.r.shadersToFree.slice, n)
+	n.r.shadersToFree.Unlock()
+}
+
+// Implements gfx.Destroyable interface.
+func (n *nativeShader) Destroy() {
+	finalizeShader(n)
 }
 
 func (r *Renderer) freeShaders() {
@@ -167,15 +179,11 @@ func (r *Renderer) LoadShader(s *gfx.Shader, done chan *gfx.Shader) {
 		// Mark the shader as loaded if there were no errors.
 		if len(s.Error) == 0 {
 			s.Loaded = true
-			s.Native = native
+			s.NativeShader = native
 			s.ClearData()
 
 			// Attach a finalizer to the shader that will later free it.
-			runtime.SetFinalizer(s, func(f *gfx.Shader) {
-				r.shadersToFree.Lock()
-				r.shadersToFree.slice = append(r.shadersToFree.slice, f.Native.(*nativeShader))
-				r.shadersToFree.Unlock()
-			})
+			runtime.SetFinalizer(native, finalizeShader)
 		}
 
 		// Flush and execute OpenGL commands.

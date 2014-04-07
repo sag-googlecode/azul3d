@@ -77,6 +77,9 @@ func (n nativeObject) SampleCount() int {
 	return n.sampleCount
 }
 
+// Implements the gfx.Destroyable interface.
+func (n nativeObject) Destroy() {}
+
 func (n nativeObject) needRebuild(o *gfx.Object, c *gfx.Camera) bool {
 	if o.Transform != n.Transform {
 		return true
@@ -234,8 +237,8 @@ func (r *Renderer) Draw(rect image.Rectangle, o *gfx.Object, c *gfx.Camera) {
 		r.stateScissor(rect)
 
 		var ns *nativeShader
-		if o.Shader.Native != nil {
-			ns = o.Shader.Native.(*nativeShader)
+		if o.NativeShader != nil {
+			ns = o.NativeShader.(*nativeShader)
 		}
 
 		// Use the object's state.
@@ -466,7 +469,7 @@ func (r *Renderer) clearState(ns *nativeShader, obj *gfx.Object) {
 
 func (r *Renderer) drawMesh(ns *nativeShader, m *gfx.Mesh) {
 	// Grab the native mesh.
-	native := m.Native.(*nativeMesh)
+	native := m.NativeMesh.(*nativeMesh)
 
 	// Use vertices data.
 	location, ok := r.findAttribLocation(ns, "Vertex")

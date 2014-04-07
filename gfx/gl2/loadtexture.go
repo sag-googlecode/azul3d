@@ -18,6 +18,16 @@ type nativeTexture struct {
 	width, height int
 }
 
+func (n *nativeTexture) Destroy() {
+	finalizeTexture(n)
+}
+
+func finalizeTexture(n *nativeTexture) {
+	n.r.texturesToFree.Lock()
+	n.r.texturesToFree.slice = append(n.r.texturesToFree.slice, n.id)
+	n.r.texturesToFree.Unlock()
+}
+
 func (n *nativeTexture) Download(rect image.Rectangle, complete chan image.Image) {
 	if !n.r.glArbFramebufferObject {
 		// We don't have GL_ARB_framebuffer_object extensions, we can't do
@@ -279,11 +289,7 @@ func (r *Renderer) LoadTexture(t *gfx.Texture, done chan *gfx.Texture) {
 		t.ClearData()
 
 		// Attach a finalizer to the texture that will later free it.
-		runtime.SetFinalizer(t, func(t *gfx.Texture) {
-			r.texturesToFree.Lock()
-			r.texturesToFree.slice = append(r.texturesToFree.slice, t.NativeTexture.(*nativeTexture).id)
-			r.texturesToFree.Unlock()
-		})
+		runtime.SetFinalizer(native, finalizeTexture)
 
 		// Unlock, signal completion, and return.
 		t.Unlock()

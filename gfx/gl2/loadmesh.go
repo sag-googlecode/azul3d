@@ -19,6 +19,18 @@ type nativeMesh struct {
 	colors                      uint32
 	texCoords                   []uint32
 	verticesCount, indicesCount uint32
+	r                           *Renderer
+}
+
+func finalizeMesh(n *nativeMesh) {
+	n.r.meshesToFree.Lock()
+	n.r.meshesToFree.slice = append(n.r.meshesToFree.slice, n)
+	n.r.meshesToFree.Unlock()
+}
+
+// Implements gfx.Destroyable interface.
+func (n *nativeMesh) Destroy() {
+	finalizeMesh(n)
 }
 
 func (r *Renderer) createVBO() (vboId uint32) {
@@ -98,7 +110,7 @@ func (r *Renderer) LoadMesh(m *gfx.Mesh, done chan *gfx.Mesh) {
 		if !m.Loaded {
 			native = new(nativeMesh)
 		} else {
-			native = m.Native.(*nativeMesh)
+			native = m.NativeMesh.(*nativeMesh)
 		}
 
 		// Determine usage hint.
@@ -232,14 +244,10 @@ func (r *Renderer) LoadMesh(m *gfx.Mesh, done chan *gfx.Mesh) {
 		// and create a finalizer to free the native mesh later.
 		if !m.Loaded {
 			// Assign the native mesh.
-			m.Native = native
+			m.NativeMesh = native
 
 			// Attach a finalizer to the mesh that will later free it.
-			runtime.SetFinalizer(m, func(m *gfx.Mesh) {
-				r.meshesToFree.Lock()
-				r.meshesToFree.slice = append(r.meshesToFree.slice, m.Native.(*nativeMesh))
-				r.meshesToFree.Unlock()
-			})
+			runtime.SetFinalizer(native, finalizeMesh)
 		}
 
 		// Set the mesh to loaded, clear any data slices if they are not wanted.
