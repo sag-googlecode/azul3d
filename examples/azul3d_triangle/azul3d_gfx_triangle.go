@@ -55,7 +55,10 @@ func gfxLoop(w *chippy.Window, r gfx.Renderer) {
 	}
 
 	// Setup the camera to use a perspective projection.
-	camera.SetPersp(r.Bounds(), 75.0, 0.0001, 1000.0)
+	camFOV := 75.0
+	camNear := 0.0001
+	camFar := 1000.0
+	camera.SetPersp(r.Bounds(), camFOV, camNear, camFar)
 
 	// Move the camera -2 on the Y axis (back two units away from the triangle
 	// object).
@@ -135,7 +138,7 @@ func gfxLoop(w *chippy.Window, r gfx.Renderer) {
 				// Update the camera's projection matrix for the new width and
 				// height.
 				camera.Lock()
-				camera.SetPersp(r.Bounds(), 75.0, 0.0001, 1000.0)
+				camera.SetPersp(r.Bounds(), camFOV, camNear, camFar)
 				camera.Unlock()
 
 			case keyboard.TypedEvent:
@@ -170,12 +173,6 @@ func gfxLoop(w *chippy.Window, r gfx.Renderer) {
 	}()
 
 	for {
-		// Update the camera's projection matrix for the new width and
-		// height.
-		camera.Lock()
-		camera.SetPersp(r.Bounds(), 75.0, 0.0001, 1000.0)
-		camera.Unlock()
-
 		var v math.Vec2
 		// Depending on keyboard state, transform the triangle.
 		kb := w.Keyboard
