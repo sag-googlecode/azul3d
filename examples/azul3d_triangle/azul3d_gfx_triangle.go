@@ -49,6 +49,10 @@ void main()
 var (
 	// Whether or not we should print the number of samples the triangle drew.
 	printSamples bool
+
+	// Whether or not we should print if the triangle's center is within the
+	// camera's view.
+	printInView bool
 )
 
 // gfxLoop is responsible for drawing things to the window. This loop must be
@@ -149,6 +153,9 @@ func gfxLoop(w *chippy.Window, r gfx.Renderer) {
 			case keyboard.TypedEvent:
 				if ev.Rune == 's' {
 					printSamples = !printSamples
+
+				} else if ev.Rune == 'v' {
+					printInView = !printInView
 
 				} else if ev.Rune == 'm' {
 					// Toggle MSAA now.
@@ -276,6 +283,18 @@ func gfxLoop(w *chippy.Window, r gfx.Renderer) {
 			percentage := float64(pixels) / float64(bounds.Dx()*bounds.Dy())
 
 			fmt.Printf("Drew %v samples (%vpx, %f%% of window)\n", samples, pixels, percentage)
+		}
+
+		// Print if the triangle's center is in the view of the camera.
+		if printInView {
+			triangle.RLock()
+			tp := triangle.Transform.Pos
+			triangle.RUnlock()
+
+			camera.RLock()
+			proj, ok := camera.Project(tp)
+			fmt.Println("In view?", ok, proj)
+			camera.RUnlock()
 		}
 	}
 }
