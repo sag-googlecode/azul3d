@@ -46,6 +46,11 @@ void main()
 }
 `)
 
+var (
+	// Whether or not we should print the number of samples the triangle drew.
+	printSamples bool
+)
+
 // gfxLoop is responsible for drawing things to the window. This loop must be
 // independent of the Chippy main loop.
 func gfxLoop(w *chippy.Window, r gfx.Renderer) {
@@ -142,7 +147,10 @@ func gfxLoop(w *chippy.Window, r gfx.Renderer) {
 				camera.Unlock()
 
 			case keyboard.TypedEvent:
-				if ev.Rune == 'm' {
+				if ev.Rune == 's' {
+					printSamples = !printSamples
+
+				} else if ev.Rune == 'm' {
 					// Toggle MSAA now.
 					msaa := !r.MSAA()
 					r.SetMSAA(msaa)
@@ -256,7 +264,7 @@ func gfxLoop(w *chippy.Window, r gfx.Renderer) {
 
 		// Print the number of samples the triangle drew (only if the GPU
 		// supports occlusion queries).
-		if r.GPUInfo().OcclusionQuery {
+		if printSamples && r.GPUInfo().OcclusionQuery {
 			// The number of samples the triangle drew:
 			samples := triangle.SampleCount()
 
