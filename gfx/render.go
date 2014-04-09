@@ -73,6 +73,40 @@ func (c *Camera) SetPersp(view image.Rectangle, fov, near, far float64) {
 	c.Projection = ConvertMat4(m)
 }
 
+var (
+	// Get an matrix which will translate our matrix from ZUpRight to YUpRight
+	zUpRightToYUpRight = math.CoordSysZUpRight.ConvertMat4(math.CoordSysYUpRight)
+)
+
+// Project returns a 2D point in normalized device space coordinates given a 3D
+// point in the world.
+//
+// If ok=false is returned then the point is outside of the camera's view and
+// the returned point may not be meaningful.
+func (c *Camera) Project(p3 math.Vec3) (p2 math.Vec2, ok bool) {
+	cameraInv, _ := c.Object.Transform.Mat4.Inverse()
+	cameraInv = cameraInv.Mul(zUpRightToYUpRight)
+
+	projection := c.Projection.Mat4()
+	vp := cameraInv.Mul(projection)
+
+	p4 := math.Vec4{p3.X, p3.Y, p3.Z, 1.0}
+	p4 = p4.Transform(vp)
+	if p4.W == 0 {
+		p2 = math.Vec2Zero
+		ok = false
+		return
+	}
+
+	recipW := 1.0 / p4.W
+	p2 = math.Vec2{p4.X * recipW, p4.Y * recipW}
+
+	xValid := (p2.X >= -1) && (p2.X <= 1)
+	yValid := (p2.Y >= -1) && (p2.Y <= 1)
+	ok = (p4.W > 0) && xValid && yValid
+	return
+}
+
 // Precision represents the precision in bits of the color, depth, and stencil
 // buffers.
 type Precision struct {
