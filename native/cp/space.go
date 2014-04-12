@@ -281,8 +281,8 @@ func (s *Space) ContainsBody(body *Body) bool {
 }
 
 // Test if a constraint has been added to the space.
-func (s *Space) ContainsConstraint(body *Body) bool {
-	return goBool(C.cpSpaceContainsConstraint(s.c, body.c))
+func (s *Space) ContainsConstraint(constraint *Constraint) bool {
+	return goBool(C.cpSpaceContainsConstraint(s.c, constraint.c))
 }
 
 // Schedule a post-step callback to be called when space.Step() finishes.
