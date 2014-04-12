@@ -5,6 +5,7 @@
 package gfx
 
 import (
+	"azul3d.org/v1/clock"
 	"image"
 	"sync"
 )
@@ -37,6 +38,13 @@ type nilRenderer struct {
 		sync.RWMutex
 		enabled bool
 	}
+
+	// The graphics clock.
+	clock *clock.Clock
+}
+
+func (n *nilRenderer) Clock() *clock.Clock {
+	return n.clock
 }
 
 func (n *nilRenderer) Bounds() image.Rectangle {
@@ -84,7 +92,9 @@ func (n *nilRenderer) Draw(r image.Rectangle, o *Object, c *Camera) {
 	o.Unlock()
 }
 func (n *nilRenderer) QueryWait() {}
-func (n *nilRenderer) Render()    {}
+func (n *nilRenderer) Render() {
+	n.clock.Tick()
+}
 
 func (n *nilRenderer) LoadMesh(m *Mesh, done chan *Mesh) {
 	m.Lock()
@@ -128,5 +138,6 @@ func (n *nilRenderer) RenderToTexture(t *Texture) Canvas {
 func Nil() Renderer {
 	r := new(nilRenderer)
 	r.msaa.enabled = true
+	r.clock = clock.New()
 	return r
 }

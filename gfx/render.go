@@ -5,6 +5,7 @@
 package gfx
 
 import (
+	"azul3d.org/v1/clock"
 	"image"
 )
 
@@ -196,6 +197,11 @@ type GPUInfo struct {
 // All methods must be safe to call from multiple goroutines.
 type Renderer interface {
 	Canvas
+
+	// Clock should return the graphics clock object which monitors the time
+	// between frames, etc. The renderer is responsible for ticking it every
+	// time a frame is rendered.
+	Clock() *clock.Clock
 
 	// GPUInfo should return information about the graphics hardware.
 	GPUInfo() GPUInfo
