@@ -5,6 +5,7 @@
 package gl2
 
 import (
+	"azul3d.org/v1/clock"
 	"azul3d.org/v1/gfx"
 	"azul3d.org/v1/native/gl"
 	"errors"
@@ -39,6 +40,9 @@ type Renderer struct {
 
 	// render/loader context API.
 	render, loader *gl.Context
+
+	// The graphics clock.
+	clock *clock.Clock
 
 	// The bounds of the gfx.Drawable, must be updated whenever the window size
 	// changes.
@@ -120,6 +124,11 @@ type Renderer struct {
 
 	// Channel to wait for a Render() call to finish.
 	renderComplete chan struct{}
+}
+
+// Implements gfx.Renderer interface.
+func (r *Renderer) Clock() *clock.Clock {
+	return r.clock
 }
 
 // Implements gfx.Renderer interface.
@@ -256,6 +265,9 @@ func (r *Renderer) Render() {
 		// Wait for occlusion query results to come in.
 		r.queryWait()
 
+		// Tick the clock.
+		r.clock.Tick()
+
 		// signal render completion.
 		r.renderComplete <- struct{}{}
 		return true
@@ -371,6 +383,7 @@ func New() (*Renderer, error) {
 		LoaderExec:     make(chan func(), 1024),
 		renderComplete: make(chan struct{}, 8),
 		wantFree:       make(chan struct{}, 1),
+		clock:          clock.New(),
 	}
 
 	// MSAA is enabled by default.
