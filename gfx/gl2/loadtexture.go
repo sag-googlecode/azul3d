@@ -8,6 +8,7 @@ import (
 	"azul3d.org/v1/gfx"
 	"azul3d.org/v1/native/gl"
 	"image"
+	"image/draw"
 	"runtime"
 	"unsafe"
 )
@@ -260,8 +261,13 @@ func (r *Renderer) LoadTexture(t *gfx.Texture, done chan *gfx.Texture) {
 		}
 
 		// Upload the image.
-		rgba := t.Source.(*image.RGBA)
 		bounds := t.Source.Bounds()
+		rgba, ok := t.Source.(*image.RGBA)
+		if !ok {
+			// Convert the image to RGBA.
+			rgba = image.NewRGBA(image.Rect(0, 0, bounds.Dx(), bounds.Dy()))
+			draw.Draw(rgba, rgba.Bounds(), t.Source, bounds.Min, draw.Src)
+		}
 		r.loader.TexImage2D(
 			gl.TEXTURE_2D,
 			0,
