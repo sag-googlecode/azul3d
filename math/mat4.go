@@ -424,6 +424,15 @@ func (a Mat4) Inverse() (result Mat4, ok bool) {
 	return inv.Transposed(), true
 }
 
+// SetTranslation sets the translation components of the matrix to the given
+// vector and returns the result.
+func (a Mat4) SetTranslation(t Vec3) Mat4 {
+	a[3][0] = t.X
+	a[3][1] = t.Y
+	a[3][2] = t.Z
+	return a
+}
+
 // Translation returns the translation components of the matrix as a vector.
 func (a Mat4) Translation() Vec3 {
 	return Vec3{a[3][0], a[3][1], a[3][2]}
