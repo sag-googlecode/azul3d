@@ -109,6 +109,7 @@ func (r *Renderer) LoadMesh(m *gfx.Mesh, done chan *gfx.Mesh) {
 		var native *nativeMesh
 		if !m.Loaded {
 			native = new(nativeMesh)
+			native.r = r
 		} else {
 			native = m.NativeMesh.(*nativeMesh)
 		}

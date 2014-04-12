@@ -91,6 +91,7 @@ func (r *Renderer) LoadShader(s *gfx.Shader, done chan *gfx.Shader) {
 		native := &nativeShader{
 			attribLookup:  make(map[string]int32, 8),
 			uniformLookup: make(map[string]int32, 8),
+			r:             r,
 		}
 
 		// Handle the vertex shader now.
