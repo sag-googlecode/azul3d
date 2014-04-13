@@ -1073,7 +1073,7 @@ func (w *NativeWindow) handleEvent(ref *x11.GenericEvent, e interface{}) {
 			select {
 			case w.waitForMap <- true:
 				break
-			case <-time.After(5 * time.Second):
+			case <-time.After(1 * time.Second):
 				break
 			}
 		}()
