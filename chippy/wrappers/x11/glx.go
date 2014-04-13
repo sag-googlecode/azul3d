@@ -13,6 +13,22 @@ package x11
 
 #cgo LDFLAGS: -lX11 -lGL
 
+GLXContext chippy_glXCreateNewContext(void* p, Display *dpy, GLXFBConfig config, int render_type, GLXContext share_list, Bool direct);
+Bool chippy_glXMakeContextCurrent(void* p, Display *dpy, GLXDrawable draw, GLXDrawable read, GLXContext ctx);
+GLXWindow chippy_glXCreateWindow(void* p, Display *dpy, GLXFBConfig config, Window win, const int *attrib_list);
+void chippy_glXDestroyWindow(void* p, Display *dpy, GLXWindow win);
+void chippy_glXDestroyContext(void* p, Display *dpy, GLXContext ctx);
+Bool chippy_glXQueryVersion(void* p, Display *dpy, int *maj, int *min);
+void chippy_glXSwapBuffers(void* p, Display *dpy, GLXDrawable drawable);
+GLXFBConfig* chippy_glXGetFBConfigs(void* p, Display *dpy, int screen, int *nelements);
+const char* chippy_glXQueryExtensionsString(void* p, Display *dpy, int screen);
+int chippy_glXGetFBConfigAttrib(void* p, Display *dpy, GLXFBConfig config, int attribute, int *value);
+GLXContext chippy_glXGetCurrentContext(void* p);
+XVisualInfo* chippy_glXGetVisualFromFBConfig(void* p, Display *dpy, GLXFBConfig config);
+GLubyte* chippy_glGetString(void* p, GLenum v);
+
+// Extensions below here.
+
 GLXContext chippy_glXCreateContextAttribsARB(void* p, Display* dpy, GLXFBConfig config, GLXContext share, Bool direct, const int* attribs);
 void chippy_glXSwapIntervalEXT(void* p, Display* dpy, GLXDrawable d, int interval);
 int chippy_glXSwapIntervalMESA(void* p, int interval);
@@ -82,15 +98,22 @@ type (
 	GLXWindow   C.GLXWindow
 )
 
+var glXCreateNewContextPtr unsafe.Pointer
+
 func (d *Display) GLXCreateNewContext(config GLXFBConfig, renderType int, shareList GLXContext, direct bool) GLXContext {
+	if glXCreateNewContextPtr == nil {
+		glXCreateNewContextPtr = GLXGetProcAddressARB("glXCreateNewContext")
+	}
+
 	d.Lock()
 	defer d.Unlock()
 	cDirect := C.Bool(0)
 	if direct {
 		cDirect = 1
 	}
-	return GLXContext(C.glXCreateNewContext(
-		d.voidPtr(),
+	return GLXContext(C.chippy_glXCreateNewContext(
+		glXCreateNewContextPtr,
+		d.c,
 		C.GLXFBConfig(config),
 		C.int(renderType),
 		C.GLXContext(shareList),
@@ -98,62 +121,104 @@ func (d *Display) GLXCreateNewContext(config GLXFBConfig, renderType int, shareL
 	))
 }
 
+var glXDestroyContextPtr unsafe.Pointer
+
 func (d *Display) GLXDestroyContext(ctx GLXContext) {
+	if glXDestroyContextPtr == nil {
+		glXDestroyContextPtr = GLXGetProcAddressARB("glXDestroyContext")
+	}
+
 	d.Lock()
 	defer d.Unlock()
-	C.glXDestroyContext(
-		d.voidPtr(),
+	C.chippy_glXDestroyContext(
+		glXDestroyContextPtr,
+		d.c,
 		C.GLXContext(ctx),
 	)
 }
 
+var glXMakeContextCurrentPtr unsafe.Pointer
+
 func (d *Display) GLXMakeContextCurrent(draw, read GLXDrawable, ctx GLXContext) int {
+	if glXMakeContextCurrentPtr == nil {
+		glXMakeContextCurrentPtr = GLXGetProcAddressARB("glXMakeContextCurrent")
+	}
+
 	d.Lock()
 	defer d.Unlock()
-	return int(C.glXMakeContextCurrent(
-		d.voidPtr(),
+	return int(C.chippy_glXMakeContextCurrent(
+		glXMakeContextCurrentPtr,
+		d.c,
 		C.GLXDrawable(draw),
 		C.GLXDrawable(read),
 		C.GLXContext(ctx),
 	))
 }
 
+var glXSwapBuffersPtr unsafe.Pointer
+
 func (d *Display) GLXSwapBuffers(drawable GLXDrawable) {
+	if glXSwapBuffersPtr == nil {
+		glXSwapBuffersPtr = GLXGetProcAddressARB("glXSwapBuffers")
+	}
+
 	d.Lock()
 	defer d.Unlock()
-	C.glXSwapBuffers(
-		d.voidPtr(),
+	C.chippy_glXSwapBuffers(
+		glXSwapBuffersPtr,
+		d.c,
 		C.GLXDrawable(drawable),
 	)
 }
 
 type Int C.int
 
+var glXQueryVersionPtr unsafe.Pointer
+
 func (d *Display) GLXQueryVersion(maj, min *Int) bool {
+	if glXQueryVersionPtr == nil {
+		glXQueryVersionPtr = GLXGetProcAddressARB("glXQueryVersion")
+	}
+
 	d.Lock()
 	defer d.Unlock()
-	return C.glXQueryVersion(
-		d.voidPtr(),
+	return C.chippy_glXQueryVersion(
+		glXQueryVersionPtr,
+		d.c,
 		(*C.int)(unsafe.Pointer(maj)),
 		(*C.int)(unsafe.Pointer(min)),
 	) != 0
 }
 
+var glXQueryExtensionsStringPtr unsafe.Pointer
+
 func (d *Display) GLXQueryExtensionsString(screen int) string {
+	if glXQueryExtensionsStringPtr == nil {
+		glXQueryExtensionsStringPtr = GLXGetProcAddressARB("glXQueryExtensionsString")
+	}
+
 	d.Lock()
 	defer d.Unlock()
-	data := C.glXQueryExtensionsString(
-		d.voidPtr(),
+	data := C.chippy_glXQueryExtensionsString(
+		glXQueryExtensionsStringPtr,
+		d.c,
 		C.int(screen),
 	)
 	return C.GoString(data)
 }
 
+var glXGetFBConfigAttribPtr unsafe.Pointer
+
 func (d *Display) GLXGetFBConfigAttrib(config GLXFBConfig, attrib int) (value Int, ret int) {
+	if glXGetFBConfigAttribPtr == nil {
+		glXGetFBConfigAttribPtr = GLXGetProcAddressARB("glXGetFBConfigAttrib")
+	}
+
 	d.Lock()
 	defer d.Unlock()
-	ret = int(C.glXGetFBConfigAttrib(
-		d.voidPtr(),
+	ret = int(C.chippy_glXGetFBConfigAttrib(
+		glXGetFBConfigAttribPtr,
+		d.c,
 		C.GLXFBConfig(config),
 		C.int(attrib),
 		(*C.int)(unsafe.Pointer(&value)),
@@ -161,12 +226,19 @@ func (d *Display) GLXGetFBConfigAttrib(config GLXFBConfig, attrib int) (value In
 	return
 }
 
+var glXGetFBConfigsPtr unsafe.Pointer
+
 func (d *Display) GLXGetFBConfigs(screen int) (configs []GLXFBConfig) {
+	if glXGetFBConfigsPtr == nil {
+		glXGetFBConfigsPtr = GLXGetProcAddressARB("glXGetFBConfigs")
+	}
+
 	d.Lock()
 	defer d.Unlock()
 	var nConfigs C.int
-	cConfigs := C.glXGetFBConfigs(
-		d.voidPtr(),
+	cConfigs := C.chippy_glXGetFBConfigs(
+		glXGetFBConfigsPtr,
+		d.c,
 		C.int(screen),
 		&nConfigs,
 	)
@@ -177,42 +249,69 @@ func (d *Display) GLXGetFBConfigs(screen int) (configs []GLXFBConfig) {
 	return
 }
 
+var glXCreateWindowPtr unsafe.Pointer
+
 func (d *Display) GLXCreateWindow(config GLXFBConfig, win Window) GLXWindow {
+	if glXCreateWindowPtr == nil {
+		glXCreateWindowPtr = GLXGetProcAddressARB("glXCreateWindow")
+	}
+
 	d.Lock()
 	defer d.Unlock()
-	return GLXWindow(C.glXCreateWindow(
-		d.voidPtr(),
+	return GLXWindow(C.chippy_glXCreateWindow(
+		glXCreateWindowPtr,
+		d.c,
 		C.GLXFBConfig(config),
 		C.Window(win),
 		nil,
 	))
 }
 
+var glXDestroyWindowPtr unsafe.Pointer
+
 func (d *Display) GLXDestroyWindow(win GLXWindow) {
+	if glXDestroyWindowPtr == nil {
+		glXDestroyWindowPtr = GLXGetProcAddressARB("glXDestroyWindow")
+	}
+
 	d.Lock()
 	defer d.Unlock()
-	C.glXDestroyWindow(
-		d.voidPtr(),
+	C.chippy_glXDestroyWindow(
+		glXDestroyWindowPtr,
+		d.c,
 		C.GLXWindow(win),
 	)
 }
 
+var glXGetVisualFromFBConfigPtr unsafe.Pointer
+
 func (d *Display) GLXGetVisualFromFBConfig(config GLXFBConfig) *XVisualInfo {
+	if glXGetVisualFromFBConfigPtr == nil {
+		glXGetVisualFromFBConfigPtr = GLXGetProcAddressARB("glXGetVisualFromFBConfig")
+	}
+
 	d.Lock()
 	defer d.Unlock()
-	return (*XVisualInfo)(unsafe.Pointer(C.glXGetVisualFromFBConfig(
-		d.voidPtr(),
+	return (*XVisualInfo)(unsafe.Pointer(C.chippy_glXGetVisualFromFBConfig(
+		glXGetVisualFromFBConfigPtr,
+		d.c,
 		C.GLXFBConfig(config),
 	)))
 }
 
+var glXGetCurrentContextPtr unsafe.Pointer
+
 func GLXGetCurrentContext() GLXContext {
-	return GLXContext(C.glXGetCurrentContext())
+	if glXGetCurrentContextPtr == nil {
+		glXGetCurrentContextPtr = GLXGetProcAddressARB("glXGetCurrentContext")
+	}
+
+	return GLXContext(C.chippy_glXGetCurrentContext(
+		glXGetCurrentContextPtr,
+	))
 }
 
-func (d *Display) GLXGetProcAddressARB(p string) unsafe.Pointer {
-	d.Lock()
-	defer d.Unlock()
+func GLXGetProcAddressARB(p string) unsafe.Pointer {
 	cstr := C.CString(p)
 	defer C.free(unsafe.Pointer(cstr))
 	return unsafe.Pointer(C.glXGetProcAddressARB(
@@ -224,7 +323,7 @@ var glXCreateContextAttribsARBPtr unsafe.Pointer
 
 func (d *Display) GLXCreateContextAttribsARB(config GLXFBConfig, share GLXContext, direct bool, attribs *Int) GLXContext {
 	if glXCreateContextAttribsARBPtr == nil {
-		glXCreateContextAttribsARBPtr = d.GLXGetProcAddressARB("glXCreateContextAttribsARB")
+		glXCreateContextAttribsARBPtr = GLXGetProcAddressARB("glXCreateContextAttribsARB")
 	}
 
 	d.Lock()
@@ -235,7 +334,7 @@ func (d *Display) GLXCreateContextAttribsARB(config GLXFBConfig, share GLXContex
 	}
 	return GLXContext(C.chippy_glXCreateContextAttribsARB(
 		glXCreateContextAttribsARBPtr,
-		d.voidPtr(),
+		d.c,
 		C.GLXFBConfig(config),
 		C.GLXContext(share),
 		cDirect,
@@ -247,14 +346,14 @@ var glXSwapIntervalEXTPtr unsafe.Pointer
 
 func (d *Display) GLXSwapIntervalEXT(drawable GLXDrawable, interval int) {
 	if glXSwapIntervalEXTPtr == nil {
-		glXSwapIntervalEXTPtr = d.GLXGetProcAddressARB("glXSwapIntervalEXT")
+		glXSwapIntervalEXTPtr = GLXGetProcAddressARB("glXSwapIntervalEXT")
 	}
 
 	d.Lock()
 	defer d.Unlock()
 	C.chippy_glXSwapIntervalEXT(
 		glXSwapIntervalEXTPtr,
-		d.voidPtr(),
+		d.c,
 		C.GLXDrawable(drawable),
 		C.int(interval),
 	)
@@ -264,7 +363,7 @@ var glXSwapIntervalMESAPtr unsafe.Pointer
 
 func (d *Display) GLXSwapIntervalMESA(interval int) int {
 	if glXSwapIntervalMESAPtr == nil {
-		glXSwapIntervalMESAPtr = d.GLXGetProcAddressARB("glXSwapIntervalMESA")
+		glXSwapIntervalMESAPtr = GLXGetProcAddressARB("glXSwapIntervalMESA")
 	}
 
 	d.Lock()
@@ -281,7 +380,7 @@ var glXSwapIntervalSGIPtr unsafe.Pointer
 
 func (d *Display) GLXSwapIntervalSGI(interval int) int {
 	if glXSwapIntervalSGIPtr == nil {
-		glXSwapIntervalSGIPtr = d.GLXGetProcAddressARB("glXSwapIntervalSGI")
+		glXSwapIntervalSGIPtr = GLXGetProcAddressARB("glXSwapIntervalSGI")
 	}
 
 	d.Lock()
@@ -302,6 +401,16 @@ const (
 	GL_VERSION = 0x1F02
 )
 
+var glGetStringPtr unsafe.Pointer
+
 func GlGetString(name uint32) string {
-	return C.GoString((*C.char)(unsafe.Pointer(C.glGetString(C.GLenum(name)))))
+	if glGetStringPtr == nil {
+		glGetStringPtr = GLXGetProcAddressARB("glGetString")
+	}
+
+	ret := C.chippy_glGetString(
+		glGetStringPtr,
+		C.GLenum(name),
+	)
+	return C.GoString((*C.char)(unsafe.Pointer(ret)))
 }
