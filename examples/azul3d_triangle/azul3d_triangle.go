@@ -214,8 +214,8 @@ func gfxLoop(w *chippy.Window, r gfx.Renderer) {
 			v.Y += 1
 		}
 
-		dt := float64(r.Clock().Delta()) / float64(time.Second)
-		v = v.MulScalar(dt) // Movement relative to the frame rate.
+		// Apply movement relative to the frame rate.
+		v = v.MulScalar(r.Clock().Dt())
 
 		// Update the triangle's transformation matrix.
 		triangle.RLock()

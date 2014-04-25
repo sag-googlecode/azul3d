@@ -335,8 +335,7 @@ func gfxLoop(w *chippy.Window, r gfx.Renderer) {
 			}
 
 			// We will move the shape forward a small amount.
-			dt := float64(r.Clock().Delta()) / float64(time.Second)
-			v := math.Vec3{0, 0, 0.7 * dt}
+			v := math.Vec3{0, 0, 0.7 * r.Clock().Dt()}
 
 			// We don't want movement to take scale into account, all shapes
 			// move the same speed no matter how large or small.
