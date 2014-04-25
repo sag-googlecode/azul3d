@@ -7,7 +7,6 @@ package window
 
 import (
 	"azul3d.org/v1/chippy"
-	"azul3d.org/v1/clock"
 	"azul3d.org/v1/gfx"
 	"azul3d.org/v1/gfx/gl2"
 	"fmt"
@@ -72,9 +71,32 @@ func program(gfxLoop func(w *chippy.Window, r gfx.Renderer)) {
 	// Start the graphics rendering loop.
 	go gfxLoop(window, r)
 
-	cl := clock.New()
-	//cl.SetMaxFrameRate(0)
-	printFPS := time.Tick(1 * time.Second)
+	// Channel to signal shutdown to renderer and loader.
+	shutdown := make(chan bool, 2)
+
+	// Start event loop.
+	go func() {
+		cl := r.Clock()
+		printFPS := time.Tick(1 * time.Second)
+
+		for {
+			select {
+			case <-printFPS:
+				window.SetTitle(fmt.Sprintf("Azul3D %vFPS (%f Avg.)", cl.FrameRate(), cl.AverageFrameRate()))
+
+			case e := <-events:
+				switch ev := e.(type) {
+				case chippy.ResizedEvent:
+					r.UpdateBounds(image.Rect(0, 0, ev.Width, ev.Height))
+
+				case chippy.CloseEvent, chippy.DestroyedEvent:
+					shutdown <- true
+					shutdown <- true
+					return
+				}
+			}
+		}
+	}()
 
 	// Start loading goroutine.
 	go func() {
@@ -87,30 +109,23 @@ func program(gfxLoop func(w *chippy.Window, r gfx.Renderer)) {
 		defer window.GLMakeCurrent(nil)
 
 		for {
-			fn := <-r.LoaderExec
-			fn()
+			select {
+			case <-shutdown:
+				return
+			case fn := <-r.LoaderExec:
+				fn()
+			}
 		}
 	}()
 
 	// Enter rendering loop.
 	for {
 		select {
-		case <-printFPS:
-			window.SetTitle(fmt.Sprintf("Azul3D %vFPS (%f Avg.)", cl.FrameRate(), cl.AverageFrameRate()))
-
-		case e := <-events:
-			switch ev := e.(type) {
-			case chippy.ResizedEvent:
-				r.UpdateBounds(image.Rect(0, 0, ev.Width, ev.Height))
-			case chippy.CloseEvent, chippy.DestroyedEvent:
-				return
-			}
+		case <-shutdown:
+			return
 
 		case fn := <-r.RenderExec:
 			if renderedFrame := fn(); renderedFrame {
-				// Tell the clock a new frame has begun.
-				cl.Tick()
-
 				// Swap OpenGL buffers.
 				window.GLSwapBuffers()
 			}
