@@ -187,7 +187,6 @@ func (m *Mesh) GenerateBary() {
 			v = Vec3{0, 0, 1}
 		}
 		m.Bary = append(m.Bary, v)
-		panic("never here.")
 	}
 }
 
