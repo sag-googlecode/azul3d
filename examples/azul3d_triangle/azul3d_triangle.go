@@ -16,6 +16,7 @@ import (
 	"image/png"
 	"log"
 	"os"
+	"time"
 )
 
 var glslVert = []byte(`
@@ -213,8 +214,11 @@ func gfxLoop(w *chippy.Window, r gfx.Renderer) {
 			v.Y += 1
 		}
 
+		dt := float64(r.Clock().Delta()) / float64(time.Second)
+		v = v.MulScalar(dt) // Movement relative to the frame rate.
+
 		// Update the triangle's transformation matrix.
-		triangle.Lock()
+		triangle.RLock()
 		if kb.Down(keyboard.R) {
 			// Reset transformation.
 			oldParent := triangle.Transform.Parent()
@@ -228,7 +232,7 @@ func gfxLoop(w *chippy.Window, r gfx.Renderer) {
 				// Apply shearing on X/Z axis.
 				s = math.Vec3{v.Y, 0, v.X}
 			}
-			triangle.SetShear(triangle.Shear().Add(s.MulScalar(0.05)))
+			triangle.SetShear(triangle.Shear().Add(s.MulScalar(3)))
 
 		} else if kb.Down(keyboard.LeftAlt) {
 			// Apply scaling on X/Z axis.
@@ -237,7 +241,7 @@ func gfxLoop(w *chippy.Window, r gfx.Renderer) {
 				// Apply scaling on X/Y axis.
 				s = math.Vec3{v.X, v.Y, 0}
 			}
-			triangle.SetScale(triangle.Scale().Add(s.MulScalar(0.05)))
+			triangle.SetScale(triangle.Scale().Add(s.MulScalar(3)))
 
 		} else if kb.Down(keyboard.LeftCtrl) {
 			// Apply rotation on X/Z axis.
@@ -246,7 +250,7 @@ func gfxLoop(w *chippy.Window, r gfx.Renderer) {
 				// Apply rotation on X/Y axis.
 				r = math.Vec3{v.Y, v.X, 0}
 			}
-			triangle.SetRot(triangle.Rot().Add(r.MulScalar(3)))
+			triangle.SetRot(triangle.Rot().Add(r.MulScalar(90)))
 
 		} else {
 			// Apply movement on X/Z axis.
@@ -255,9 +259,9 @@ func gfxLoop(w *chippy.Window, r gfx.Renderer) {
 				// Apply movement on X/Y axis.
 				p = math.Vec3{v.X, v.Y, 0}
 			}
-			triangle.SetPos(triangle.Pos().Add(p.MulScalar(0.05)))
+			triangle.SetPos(triangle.Pos().Add(p.MulScalar(3)))
 		}
-		triangle.Unlock()
+		triangle.RUnlock()
 
 		// Clear the entire area (empty rectangle means "the whole area").
 		r.Clear(image.Rect(0, 0, 0, 0), gfx.Color{1, 1, 1, 1})
