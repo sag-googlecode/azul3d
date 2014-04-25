@@ -16,7 +16,6 @@ import (
 	"image/png"
 	"log"
 	"os"
-	"time"
 )
 
 var glslVert = []byte(`

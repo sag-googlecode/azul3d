@@ -200,10 +200,10 @@ func (c *Clock) Delta() time.Duration {
 }
 
 // Dt is short-hand for:
-//  dt := float64(r.Clock().Delta()) / float64(time.Second)
+//  dt := float64(c.Delta()) / float64(time.Second)
 // which is useful for applying movement over time.
 func (c *Clock) Dt() float64 {
-	dt := float64(r.Clock().Delta()) / float64(time.Second)
+	return float64(c.Delta()) / float64(time.Second)
 }
 
 // LastFrame returns the time at which the last frame began, in time since the program started.
