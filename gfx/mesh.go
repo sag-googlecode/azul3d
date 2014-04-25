@@ -4,7 +4,25 @@
 
 package gfx
 
-import "sync"
+import (
+	"azul3d.org/v1/math"
+	"sync"
+)
+
+// Spatial represents any object that can return it's axis-aligned bounding
+// box.
+type Spatial interface {
+	// Bounds returns the axis-aligned bounding box of this spatial object.
+	Bounds() math.Rect3
+}
+
+// Bounds is a simple datatype which implements the Spatial interface.
+type Bounds math.Rect3
+
+// Bounds implements the Spatial interface.
+func (b Bounds) Bounds() math.Rect3 {
+	return math.Rect3(b)
+}
 
 // TexCoordSet represents a single texture coordinate set for a mesh.
 type TexCoordSet struct {
@@ -54,7 +72,7 @@ type Mesh struct {
 	// AABB is the axis aligned bounding box of this mesh. There may not be one
 	// if AABB.Empty() == true, but one can be calculate using the
 	// CalculateBounds() method.
-	AABB AABB
+	AABB math.Rect3
 
 	// A slice of indices, if non-nil then this slice contains indices into
 	// each other slice (such as Vertices) and this is a indexed mesh.
@@ -125,31 +143,29 @@ func (m *Mesh) Copy() *Mesh {
 	return cpy
 }
 
+// Bounds implements the Spatial interface. It is thread-safe and performs
+// locking automatically. If the AABB of this mesh is empty then the bounds are
+// calculated.
+func (m *Mesh) Bounds() math.Rect3 {
+	m.Lock()
+	if m.AABB.Empty() {
+		m.CalculateBounds()
+	}
+	bounds := m.AABB
+	m.Unlock()
+	return bounds
+}
+
 // CalculateBounds calculates a new axis aligned bounding box for this mesh.
 //
 // The mesh's write lock must be held for this method to operate safely.
 func (m *Mesh) CalculateBounds() {
-	var bb AABB
+	var bb math.Rect3
 	if len(m.Vertices) > 0 {
 		for _, v32 := range m.Vertices {
 			v := v32.Vec3()
-			if v.X < bb.Min.X {
-				bb.Min.X = v.X
-			} else if v.X > bb.Max.X {
-				bb.Max.X = v.X
-			}
-
-			if v.Y < bb.Min.Y {
-				bb.Min.Y = v.Y
-			} else if v.Y > bb.Max.Y {
-				bb.Max.Y = v.Y
-			}
-
-			if v.Z < bb.Min.Z {
-				bb.Min.Z = v.Z
-			} else if v.Z > bb.Max.Z {
-				bb.Max.Z = v.Z
-			}
+			bb.Min = bb.Min.Min(v)
+			bb.Max = bb.Max.Max(v)
 		}
 	}
 	m.AABB = bb
