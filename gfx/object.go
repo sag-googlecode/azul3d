@@ -58,7 +58,7 @@ type Object struct {
 	State
 
 	// The transformation of the object.
-	Transform
+	*Transform
 
 	// The shader program to be used during rendering the object.
 	*Shader
@@ -109,6 +109,6 @@ func (o *Object) Compare(other *Object) bool {
 func NewObject() *Object {
 	return &Object{
 		State:     DefaultState,
-		Transform: DefaultTransform,
+		Transform: NewTransform(),
 	}
 }

@@ -13,13 +13,13 @@ import (
 
 func TestSortByDist(t *testing.T) {
 	a := NewObject()
-	a.Transform.Pos = math.Vec3{10, 10, 10}
+	a.Transform.SetPos(math.Vec3{10, 10, 10})
 
 	b := NewObject()
-	b.Transform.Pos = math.Vec3{-10, 2, 2}
+	b.Transform.SetPos(math.Vec3{-10, 2, 2})
 
 	c := NewObject()
-	c.Transform.Pos = math.Vec3{0, 6, 5}
+	c.Transform.SetPos(math.Vec3{0, 6, 5})
 
 	byDist := ByDist{
 		Objects: []*Object{a, b, c, a, b, c, b, c, a},
@@ -28,22 +28,22 @@ func TestSortByDist(t *testing.T) {
 	sort.Sort(byDist)
 
 	for i := 0; i < 3; i++ {
-		p := byDist.Objects[i].Transform.Pos
-		if p != a.Pos {
+		p := byDist.Objects[i].Transform.Pos()
+		if p != a.Pos() {
 			t.Fail()
 		}
 	}
 
 	for i := 3; i < 6; i++ {
-		p := byDist.Objects[i].Transform.Pos
-		if p != b.Pos {
+		p := byDist.Objects[i].Transform.Pos()
+		if p != b.Pos() {
 			t.Fail()
 		}
 	}
 
 	for i := 6; i < 9; i++ {
-		p := byDist.Objects[i].Transform.Pos
-		if p != c.Pos {
+		p := byDist.Objects[i].Transform.Pos()
+		if p != c.Pos() {
 			t.Fail()
 		}
 	}
@@ -64,11 +64,11 @@ func sortByDist(shifts, amount int, b *testing.B, standard bool) {
 	}
 
 	for _, o := range byDist.Objects {
-		o.Transform.Pos = math.Vec3{
+		o.Transform.SetPos(math.Vec3{
 			rand.Float64(),
 			rand.Float64(),
 			rand.Float64(),
-		}
+		})
 	}
 	b.StartTimer()
 
@@ -88,7 +88,7 @@ func sortByDist(shifts, amount int, b *testing.B, standard bool) {
 				rand.Float64() * 0.1,
 				rand.Float64() * 0.1,
 			}
-			o.Transform.Pos = o.Transform.Pos.Add(offset)
+			o.Transform.SetPos(o.Transform.Pos().Add(offset))
 		}
 		b.StartTimer()
 

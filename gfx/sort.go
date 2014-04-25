@@ -56,8 +56,8 @@ func (b ByDist) Less(i, j int) bool {
 	k.RUnlock()
 
 	// Calculate the distance from each object to the target position.
-	iDist := iTransform.Pos.Sub(b.Target).Length()
-	jDist := jTransform.Pos.Sub(b.Target).Length()
+	iDist := iTransform.Pos().Sub(b.Target).Length()
+	jDist := jTransform.Pos().Sub(b.Target).Length()
 
 	// If i is further away from j (greater value) then it should sort first.
 	return iDist > jDist

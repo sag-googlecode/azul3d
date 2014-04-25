@@ -76,7 +76,7 @@ func (c *Camera) SetPersp(view image.Rectangle, fov, near, far float64) {
 // If ok=false is returned then the point is outside of the camera's view and
 // the returned point may not be meaningful.
 func (c *Camera) Project(p3 math.Vec3) (p2 math.Vec2, ok bool) {
-	cameraInv, _ := c.Object.Transform.Mat4.Inverse()
+	cameraInv, _ := c.Object.Transform.Mat4().Inverse()
 	cameraInv = cameraInv.Mul(zUpRightToYUpRight)
 
 	projection := c.Projection.Mat4()
