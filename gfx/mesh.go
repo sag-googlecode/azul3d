@@ -101,6 +101,14 @@ type Mesh struct {
 	// and re-upload the data slice to the graphics hardware.
 	ColorsChanged bool
 
+	// A slice of barycentric coordinates for the mesh.
+	Bary []Vec3
+
+	// Whether or not the barycentric coordinates have changed since the last
+	// time the mesh was loaded. If set to true the renderer should take note
+	// and re-upload the data slice to the graphics hardware.
+	BaryChanged bool
+
 	// A slice of texture coordinate sets for the mesh, there may be
 	// multiple sets which directly relate to multiple textures on a
 	// object.
@@ -127,12 +135,15 @@ func (m *Mesh) Copy() *Mesh {
 		false, // VerticesChanged -- not copied.
 		make([]Color, len(m.Colors)),
 		false, // ColorsChanged -- not copied.
+		make([]Vec3, len(m.Bary)),
+		false, // BaryChanged -- not copied.
 		make([]TexCoordSet, len(m.TexCoords)),
 	}
 
 	copy(cpy.Indices, m.Indices)
 	copy(cpy.Vertices, m.Vertices)
 	copy(cpy.Colors, m.Colors)
+	copy(cpy.Bary, m.Bary)
 	for index, set := range m.TexCoords {
 		setCpy := TexCoordSet{
 			Slice: make([]TexCoord, len(set.Slice)),
@@ -156,6 +167,30 @@ func (m *Mesh) Bounds() math.Rect3 {
 	return bounds
 }
 
+// GenerateBary generates the barycentric coordinates for this mesh.
+//
+// The mesh's write lock must be held for this method to operate safely.
+func (m *Mesh) GenerateBary() {
+	var (
+		bci = -1
+		v   Vec3
+	)
+	for _ = range m.Vertices {
+		// Add barycentric coordinates.
+		bci++
+		switch bci % 3 {
+		case 0:
+			v = Vec3{1, 0, 0}
+		case 1:
+			v = Vec3{0, 1, 0}
+		case 2:
+			v = Vec3{0, 0, 1}
+		}
+		m.Bary = append(m.Bary, v)
+		panic("never here.")
+	}
+}
+
 // CalculateBounds calculates a new axis aligned bounding box for this mesh.
 //
 // The mesh's write lock must be held for this method to operate safely.
@@ -176,7 +211,7 @@ func (m *Mesh) CalculateBounds() {
 //
 // The mesh's read lock must be held for this method to operate safely.
 func (m *Mesh) HasChanged() bool {
-	if m.IndicesChanged || m.VerticesChanged || m.ColorsChanged {
+	if m.IndicesChanged || m.VerticesChanged || m.ColorsChanged || m.BaryChanged {
 		return true
 	}
 	for _, texCoordSet := range m.TexCoords {
@@ -196,6 +231,7 @@ func (m *Mesh) ClearData() {
 		m.Indices = nil
 		m.Vertices = nil
 		m.Colors = nil
+		m.Bary = nil
 		m.TexCoords = nil
 	}
 }
