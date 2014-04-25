@@ -54,10 +54,10 @@ func texCoordName(i int) string {
 type nativeObject struct {
 	// The graphics object's last-known transform, if they are not equal then
 	// the matrices must be recalculated.
-	Transform gfx.Transform
+	Transform math.Mat4
 
 	// The last-known camera transform and projection.
-	CameraTransform gfx.Transform
+	CameraTransform math.Mat4
 	Projection      gfx.Mat4
 
 	// Cached pre-calculated matrices to feed into shaders, this way we don't
@@ -81,10 +81,10 @@ func (n nativeObject) SampleCount() int {
 func (n nativeObject) Destroy() {}
 
 func (n nativeObject) needRebuild(o *gfx.Object, c *gfx.Camera) bool {
-	if o.Transform != n.Transform {
+	if !o.Transform.Mat4().Equals(n.Transform) {
 		return true
 	}
-	if c.Object.Transform != n.CameraTransform {
+	if !c.Object.Transform.Mat4().Equals(n.CameraTransform) {
 		return true
 	}
 	if c.Projection != n.Projection {
@@ -96,14 +96,14 @@ func (n nativeObject) needRebuild(o *gfx.Object, c *gfx.Camera) bool {
 func (n nativeObject) rebuild(o *gfx.Object, c *gfx.Camera) nativeObject {
 	// The "Model" matrix is the Object's transformation matrix, we feed it
 	// directly in.
-	n.model = gfx.ConvertMat4(o.Transform.Mat4)
+	n.model = gfx.ConvertMat4(o.Transform.Mat4())
 
 	// The "View" matrix is the coordinate system conversion, multiplied
 	// against the camera object's transformation matrix
 	view := zUpRightToYUpRight
 	if c != nil {
 		// Apply inverse of camera object transformation.
-		camInverse, _ := c.Object.Transform.Mat4.Inverse()
+		camInverse, _ := c.Object.Transform.Mat4().Inverse()
 		view = camInverse.Mul(view)
 	}
 	n.view = gfx.ConvertMat4(view)
@@ -116,7 +116,7 @@ func (n nativeObject) rebuild(o *gfx.Object, c *gfx.Camera) nativeObject {
 	n.projection = gfx.ConvertMat4(projection)
 
 	// The "MVP" matrix is Model * View * Projection matrix.
-	mvp := o.Transform.Mat4
+	mvp := o.Transform.Mat4()
 	mvp = mvp.Mul(view)
 	mvp = mvp.Mul(projection)
 	n.mvp = gfx.ConvertMat4(mvp)
