@@ -17,6 +17,7 @@ type nativeMesh struct {
 	indices                     uint32
 	vertices                    uint32
 	colors                      uint32
+	bary                        uint32
 	texCoords                   []uint32
 	verticesCount, indicesCount uint32
 	r                           *Renderer
@@ -74,6 +75,7 @@ func (r *Renderer) freeMeshes() {
 		r.loader.DeleteBuffers(1, &native.indices)
 		r.loader.DeleteBuffers(1, &native.vertices)
 		r.loader.DeleteBuffers(1, &native.colors)
+		r.loader.DeleteBuffers(1, &native.bary)
 
 		// Delete texture coords buffers.
 		if len(native.texCoords) > 0 {
@@ -187,6 +189,28 @@ func (r *Renderer) LoadMesh(m *gfx.Mesh, done chan *gfx.Mesh) {
 				)
 			}
 			m.ColorsChanged = false
+		}
+
+		// Update Bary VBO.
+		if !m.Loaded || m.BaryChanged {
+			if len(m.Bary) == 0 {
+				// Delete bary VBO.
+				r.deleteVBO(&native.bary)
+			} else {
+				if native.bary == 0 {
+					// Create bary VBO.
+					native.bary = r.createVBO()
+				}
+				// Update bary VBO.
+				r.updateVBO(
+					usageHint,
+					unsafe.Sizeof(m.Bary[0]),
+					len(m.Bary),
+					unsafe.Pointer(&m.Bary[0]),
+					native.bary,
+				)
+			}
+			m.BaryChanged = false
 		}
 
 		// Any texture coordinate sets that were removed should have their

@@ -491,6 +491,17 @@ func (r *Renderer) drawMesh(ns *nativeShader, m *gfx.Mesh) {
 		}
 	}
 
+	if native.bary != 0 {
+		// Use bary data.
+		location, ok = r.findAttribLocation(ns, "Bary")
+		if ok {
+			r.render.BindBuffer(gl.ARRAY_BUFFER, native.bary)
+			r.render.EnableVertexAttribArray(location)
+			defer r.render.DisableVertexAttribArray(location)
+			r.render.VertexAttribPointer(location, 3, gl.FLOAT, gl.GLBool(false), 0, nil)
+		}
+	}
+
 	// Use each texture coordinate set data.
 	for index, texCoords := range native.texCoords {
 		name := texCoordName(index)
