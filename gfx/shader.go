@@ -88,3 +88,11 @@ func (s *Shader) ClearData() {
 		s.Error = nil
 	}
 }
+
+// NewShader returns a new, initialized *Shader object with the given name.
+func NewShader(name string) *Shader {
+	return &Shader{
+		Name:   name,
+		Inputs: make(map[string]interface{}),
+	}
+}
