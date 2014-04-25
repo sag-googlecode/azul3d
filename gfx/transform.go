@@ -15,46 +15,51 @@ type Transformable interface {
 	Mat4() math.Mat4
 }
 
-type TransformSpace uint8
+// CoordSpace represents a single coordinate space conversion.
+//
+// World space is the top-most 'world' or 'global' space. A transform whose
+// parent is nil explicitly means the parent is the 'world'.
+//
+// Local space is the local space that this transform defines. Conceptually
+// you may think of a transform as positioning, scaling, shearing, etc it's
+// (local) space relative to it's parent.
+//
+// Parent space is the local space of any given transform's parent. If the
+// transform does not have a parent then parent space is identical to world
+// space.
+type CoordConv uint8
 
 const (
-	// World space is the top-most (world/global) space. A transform whose
-	// parent is nil implies that the parent is actually the world itself. All
-	// object's transform's are converted to world space for display.
-	WorldSpace TransformSpace = iota
+	// LocalToWorld converts from local space to world space.
+	LocalToWorld CoordConv = iota
 
-	// Local space is the space that the transform itself defines. It is
-	// positioned, rotated, scaled, etc according to the components of the
-	// transform.
-	//
-	// For example, the vertices of an object are in local space (i.e.
-	// converting a vertex from local to world space means that the transform's
-	// position, rotation, etc are included).
-	LocalSpace
+	// WorldToLocal converts from world space to local space.
+	WorldToLocal
+
+	// ParentToWorld converts from parent space to world space.
+	ParentToWorld
+
+	// WorldToParent converts from world space to parent space.
+	WorldToParent
 )
 
-// Transform represents a generic 3D transformation. It can be safely used from
-// multiple goroutines concurrently. It is built from various components such
-// as position, scale, and shear values and may use euler or quaternion
-// rotation. It supports a hierarchial tree system of transforms to create
-// complex transformations.
+// Transform represents a 3D transformation to a coordinate space. A transform
+// effectively defines the position, scale, shear, etc of the local space,
+// therefore it is sometimes said that a Transform is a coordinate space.
 //
-// Many 3D modeling packages and game engines use the terms 'world space' and
-// 'local space' but not consistently. We define them explicitly as follows:
-//  World Space:
-//      The top-most 'world' space. A transform whose parent is nil explicitly
-//      means the parent is the world. e.g. Each vertex of an object is
-//      converted to world space for display.
+// It can be safely used from multiple goroutines concurrently. It is built
+// from various components such as position, scale, and shear values and may
+// use euler or quaternion rotation. It supports a hierarchial tree system of
+// transforms to create complex transformations.
 //
-//  Local space:
-//      The space that the local transform defines. The space is positioned,
-//      rotated, scaled, etc relative to the parent. e.g. Each vertex of an
-//      object is in local space and is then converted to world space for
-//      display.
+// When in doubt about coordinate spaces it can be helpful to think about the
+// fact that each vertex of an object is considered to be in it's local space
+// and is then converted to world space for display.
 //
-// World space serves as a common factor across all transforms. Positions,
-// rotations, etc can all be converted from one transform's local space to
-// world space and back (thus allowing for relative movement, rotation, etc).
+// Since world space serves as the common factor among all transforms (i.e.
+// any value in any transform's local space can be converted to world space and
+// back) converting between world and local/parent space can be extremely
+// useful for e.g. relative movement/rotation to another object's transform.
 type Transform struct {
 	access sync.RWMutex
 
@@ -151,14 +156,14 @@ func (t *Transform) build() {
 	// Build the local-to-world transformation matrix.
 	ltw := built
 	if t.parent != nil {
-		ltw = ltw.Mul(t.parent.underLocalToWorld())
+		ltw = ltw.Mul(t.parent.Convert(LocalToWorld))
 	}
 	t.localToWorld = &ltw
 
 	// Build the world-to-local transformation matrix.
 	wtl, _ := built.Inverse()
 	if t.parent != nil {
-		parent := t.parent.worldToUnderLocal()
+		parent := t.parent.Convert(WorldToLocal)
 		wtl = wtl.Mul(parent)
 	}
 	t.worldToLocal = &wtl
@@ -167,62 +172,18 @@ func (t *Transform) build() {
 // Implements Transformable interface by simply returning the local-to-world
 // matrix.
 func (t *Transform) Mat4() math.Mat4 {
-	return t.LocalToWorld()
+	return t.Convert(LocalToWorld)
 }
 
-// LocalMat4 returns a matrix describing the local transformation. It is the
-// matrix that is built out of the components of this transform.
+// LocalMat4 returns a matrix describing the space that this transform defines.
+// It is the matrix that is built out of the components of this transform, it
+// does not include any parent transformation, etc.
 func (t *Transform) LocalMat4() math.Mat4 {
 	t.access.Lock()
 	t.build()
 	l := *t.built
 	t.access.Unlock()
 	return l
-}
-
-func (t *Transform) underLocalToWorld() math.Mat4 {
-	t.access.Lock()
-	t.build()
-	ltw := *t.localToWorld
-	t.access.Unlock()
-	return ltw
-}
-
-// LocalToWorld returns a matrix which converts from this transform's local
-// space into world space.
-func (t *Transform) LocalToWorld() math.Mat4 {
-	t.access.Lock()
-	t.build()
-	ltw := *t.localToWorld
-	if t.parent != nil {
-		// Undo local transform.
-		localInv, _ := (*t.built).Inverse()
-		ltw = localInv.Mul(ltw)
-	}
-	t.access.Unlock()
-	return ltw
-}
-
-func (t *Transform) worldToUnderLocal() math.Mat4 {
-	t.access.Lock()
-	t.build()
-	wtl := *t.worldToLocal
-	t.access.Unlock()
-	return wtl
-}
-
-// WorldToLocal returns a matrix which converts from world space to this
-// transform's local space.
-func (t *Transform) WorldToLocal() math.Mat4 {
-	t.access.Lock()
-	t.build()
-	wtl := *t.worldToLocal
-	if t.parent != nil {
-		// Undo local transform.
-		wtl = wtl.Mul(*t.built)
-	}
-	t.access.Unlock()
-	return wtl
 }
 
 // SetParent sets a parent transform for this transform to effectively inherit
@@ -437,33 +398,61 @@ func NewTransform() *Transform {
 	}
 }
 
-// PosToWorld converts the given position in this transform's local space to
-// world space.
-func (t *Transform) PosToWorld(p math.Vec3) math.Vec3 {
-	return p.TransformMat4(t.LocalToWorld())
+// Convert returns a matrix which performs the given coordinate space
+// conversion.
+func (t *Transform) Convert(c CoordConv) math.Mat4 {
+	switch c {
+	case LocalToWorld:
+		t.access.Lock()
+		t.build()
+		ltw := *t.localToWorld
+		t.access.Unlock()
+		return ltw
+
+	case WorldToLocal:
+		t.access.Lock()
+		t.build()
+		wtl := *t.worldToLocal
+		t.access.Unlock()
+		return wtl
+
+	case ParentToWorld:
+		t.access.Lock()
+		t.build()
+		ltw := *t.localToWorld
+		local := *t.built
+		t.access.Unlock()
+
+		// Reverse the local transform:
+		localInv, _ := local.Inverse()
+		return localInv.Mul(ltw)
+
+	case WorldToParent:
+		t.access.Lock()
+		t.build()
+		wtl := *t.worldToLocal
+		local := *t.built
+		t.access.Unlock()
+		return local.Mul(wtl)
+	}
+	panic("Convert(): invalid conversion")
 }
 
-// PosToLocal converts the given position in world space to this transform's
-// local space.
-func (t *Transform) PosToLocal(p math.Vec3) math.Vec3 {
-	return p.TransformMat4(t.WorldToLocal())
+// ConvertPos converts the given point, p, using the given coordinate space
+// conversion. For instance to convert a point in local space into world space:
+//  t.ConvertPos(p, LocalToWorld)
+func (t *Transform) ConvertPos(p math.Vec3, c CoordConv) math.Vec3 {
+	return p.TransformMat4(t.Convert(c))
 }
 
-func (t *Transform) rotConv(r math.Vec3, m math.Mat4) math.Vec3 {
+// ConvertRot converts the given rotation, r, using the given coordinate space
+// conversion. For instance to convert a rotation in local space into world
+// space:
+//  t.ConvertRot(p, LocalToWorld)
+func (t *Transform) ConvertRot(r math.Vec3, c CoordConv) math.Vec3 {
+	m := t.Convert(c)
 	q := math.QuatFromHpr(r.XyzToHpr().Radians(), math.CoordSysZUpRight)
 	m = q.ExtractToMat4().Mul(m)
 	q = math.QuatFromMat3(m.UpperMat3())
 	return q.Hpr(math.CoordSysZUpRight).HprToXyz().Degrees()
-}
-
-// RotToWorld converts the given euler rotation in this transform's local space
-// to world space.
-func (t *Transform) RotToWorld(r math.Vec3) math.Vec3 {
-	return t.rotConv(r, t.LocalToWorld())
-}
-
-// RotToLocal converts the given euler rotation in world space to this
-// transform's local space.
-func (t *Transform) RotToLocal(r math.Vec3) math.Vec3 {
-	return t.rotConv(r, t.WorldToLocal())
 }

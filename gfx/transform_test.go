@@ -39,8 +39,8 @@ func TestTransformRel(t *testing.T) {
 	c.SetPos(math.Vec3{10, 0, 5})
 	c.SetParent(b)
 
-	ltw := c.LocalToWorld()
-	want := math.Vec3{20, 5, 2}
+	ltw := c.Convert(LocalToWorld)
+	want := math.Vec3{30, 5, 7}
 	if !ltw.Translation().Equals(want) {
 		t.Log("local-to-world invalid")
 		t.Log("want (world)", want)
@@ -49,15 +49,23 @@ func TestTransformRel(t *testing.T) {
 		t.Fail()
 	}
 
-	wtl := c.WorldToLocal()
-	localPoint := math.Vec3{0, 0, 0}
-	worldPoint := math.Vec3{20, 5, 2}
-	if !worldPoint.TransformMat4(wtl).Equals(localPoint) {
+	wtl := c.Convert(WorldToLocal)
+	want = math.Vec3{-30, -5, -7}
+	if !wtl.Translation().Equals(want) {
 		t.Log("world-to-local invalid")
-		t.Log("have (world)", worldPoint)
-		t.Log("want (local)", localPoint)
-		t.Log("got (local)", worldPoint.TransformMat4(wtl))
+		t.Log("want (world)", want)
+		t.Log("got (world)", wtl.Translation())
 		t.Log(wtl)
+		t.Fail()
+	}
+
+	wtp := c.Convert(WorldToParent)
+	want = math.Vec3{-20, -5, -2}
+	if !wtp.Translation().Equals(want) {
+		t.Log("world-to-parent invalid")
+		t.Log("want (world)", want)
+		t.Log("got (world)", wtp.Translation())
+		t.Log(wtp)
 		t.Fail()
 	}
 }
@@ -70,8 +78,8 @@ func TestTransformPointToWorld(t *testing.T) {
 	b.SetPos(math.Vec3{-25, -35, -50})
 	b.SetParent(a)
 
-	p := b.PosToWorld(math.Vec3{50, 0, 0})
-	want := math.Vec3{50, 0, -50}
+	p := b.ConvertPos(math.Vec3{50, 0, 0}, LocalToWorld)
+	want := math.Vec3{25, -35, -100}
 	if !p.Equals(want) {
 		t.Log("got (world)", p)
 		t.Log("want (world)", want)
@@ -87,8 +95,8 @@ func TestTransformPointToLocal(t *testing.T) {
 	b.SetPos(math.Vec3{0, 0, -50})
 	b.SetParent(a)
 
-	p := b.PosToWorld(math.Vec3{50, 0, 0})
-	p = b.PosToLocal(p)
+	p := b.ConvertPos(math.Vec3{50, 0, 0}, LocalToWorld)
+	p = b.ConvertPos(p, WorldToLocal)
 	want := math.Vec3{50, 0, 0}
 	if !p.Equals(want) {
 		t.Log("got (local)", p)
@@ -105,8 +113,8 @@ func TestTransformRotToWorld(t *testing.T) {
 	b.SetRot(math.Vec3{45, 0, 45})
 	b.SetParent(a)
 
-	p := b.RotToWorld(math.Vec3{-45, 0, 0})
-	want := math.Vec3{-45, 0, 45}
+	p := b.ConvertRot(math.Vec3{-45, 0, 0}, LocalToWorld)
+	want := math.Vec3{0, 0, 90}
 	if !p.Equals(want) {
 		t.Log("got (world)", p)
 		t.Log("want (world)", want)
