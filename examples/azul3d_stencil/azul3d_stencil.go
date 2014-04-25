@@ -196,7 +196,7 @@ var shapes struct {
 // Tells if the shape is within twice the window's size or not. We use twice
 // the size to account for the largeness of the shape.
 func isDead(camera *gfx.Camera, shape *gfx.Object) bool {
-	worldPos := shape.PosToWorld(shape.Pos())
+	worldPos := shape.ConvertPos(shape.Pos(), gfx.LocalToWorld)
 	camera.RLock()
 	viewPos, _ := camera.Project(worldPos)
 	camera.RUnlock()
@@ -343,7 +343,7 @@ func gfxLoop(w *chippy.Window, r gfx.Renderer) {
 			v = v.Mul(math.Vec3One.Div(shape.Scale()))
 
 			// Convert the position to world space.
-			shape.SetPos(shape.PosToWorld(v))
+			shape.SetPos(shape.ConvertPos(v, gfx.LocalToWorld))
 
 			// Draw the shape.
 			r.Draw(image.Rect(0, 0, 0, 0), shape, c)
