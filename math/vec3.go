@@ -76,6 +76,18 @@ func (a Vec3) IsNaN() bool {
 	return math.IsNaN(a.X) || math.IsNaN(a.Y) || math.IsNaN(a.Z)
 }
 
+// Less tells if a is componentwise less than b:
+//  return a.X < b.X && a.Y < b.Y && a.Z < b.Z
+func (a Vec3) Less(b Vec3) bool {
+	return a.X < b.X && a.Y < b.Y && a.Z < b.Z
+}
+
+// Greater tells if a is componentwise greater than b:
+//  return a.X > b.X && a.Y > b.Y && a.Z > b.Z
+func (a Vec3) Greater(b Vec3) bool {
+	return a.X > b.X && a.Y > b.Y && a.Z > b.Z
+}
+
 // Clamp clamps each value in the vector to the range of [min, max] and returns
 // it.
 func (a Vec3) Clamp(min, max float64) Vec3 {

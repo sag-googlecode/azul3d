@@ -76,6 +76,18 @@ func (a Vec4) IsNaN() bool {
 	return math.IsNaN(a.X) || math.IsNaN(a.Y) || math.IsNaN(a.Z) || math.IsNaN(a.W)
 }
 
+// Less tells if a is componentwise less than b:
+//  return a.X < b.X && a.Y < b.Y
+func (a Vec4) Less(b Vec4) bool {
+	return a.X < b.X && a.Y < b.Y && a.Z < b.Z && a.W < b.W
+}
+
+// Greater tells if a is componentwise greater than b:
+//  return a.X > b.X && a.Y > b.Y
+func (a Vec4) Greater(b Vec4) bool {
+	return a.X > b.X && a.Y > b.Y && a.Z < b.Z && a.W < b.W
+}
+
 // Clamp clamps each value in the vector to the range of [min, max] and returns
 // it.
 func (a Vec4) Clamp(min, max float64) Vec4 {
