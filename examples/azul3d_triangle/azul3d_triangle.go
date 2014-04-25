@@ -71,10 +71,7 @@ func gfxLoop(w *chippy.Window, r gfx.Renderer) {
 
 	// Move the camera -2 on the Y axis (back two units away from the triangle
 	// object).
-	camera.Object.Pos.Y = -2
-
-	// Update the camera's transformation matrix.
-	camera.Transform = camera.Transform.Build()
+	camera.SetPos(math.Vec3{0, -2, 0})
 
 	// Create a simple shader.
 	shader := &gfx.Shader{
@@ -138,6 +135,18 @@ func gfxLoop(w *chippy.Window, r gfx.Renderer) {
 			},
 		},
 	}
+
+	// Transforms from different objects can be parented to one another to
+	// create complex transformations (in this case we rotate -45 degrees then
+	// +45 degrees which performs no rotation at all.
+	right := gfx.NewTransform()
+	right.SetRot(math.Vec3{0, 0, -45})
+
+	left := gfx.NewTransform()
+	left.SetRot(math.Vec3{0, 0, 45})
+	left.SetParent(right)
+
+	triangle.Transform.SetParent(left)
 
 	go func() {
 		event := w.Events()
@@ -208,7 +217,9 @@ func gfxLoop(w *chippy.Window, r gfx.Renderer) {
 		triangle.Lock()
 		if kb.Down(keyboard.R) {
 			// Reset transformation.
-			triangle.Transform = gfx.DefaultTransform
+			oldParent := triangle.Transform.Parent()
+			triangle.Transform.Reset()
+			triangle.Transform.SetParent(oldParent)
 
 		} else if kb.Down(keyboard.RightAlt) {
 			// Apply shearing on X/Y axis.
@@ -217,7 +228,7 @@ func gfxLoop(w *chippy.Window, r gfx.Renderer) {
 				// Apply shearing on X/Z axis.
 				s = math.Vec3{v.Y, 0, v.X}
 			}
-			triangle.Shear = triangle.Shear.Add(s.MulScalar(0.05))
+			triangle.SetShear(triangle.Shear().Add(s.MulScalar(0.05)))
 
 		} else if kb.Down(keyboard.LeftAlt) {
 			// Apply scaling on X/Z axis.
@@ -226,7 +237,7 @@ func gfxLoop(w *chippy.Window, r gfx.Renderer) {
 				// Apply scaling on X/Y axis.
 				s = math.Vec3{v.X, v.Y, 0}
 			}
-			triangle.Scale = triangle.Scale.Add(s.MulScalar(0.05))
+			triangle.SetScale(triangle.Scale().Add(s.MulScalar(0.05)))
 
 		} else if kb.Down(keyboard.LeftCtrl) {
 			// Apply rotation on X/Z axis.
@@ -235,7 +246,7 @@ func gfxLoop(w *chippy.Window, r gfx.Renderer) {
 				// Apply rotation on X/Y axis.
 				r = math.Vec3{v.Y, v.X, 0}
 			}
-			triangle.Rot = triangle.Rot.Add(r.MulScalar(3))
+			triangle.SetRot(triangle.Rot().Add(r.MulScalar(3)))
 
 		} else {
 			// Apply movement on X/Z axis.
@@ -244,11 +255,8 @@ func gfxLoop(w *chippy.Window, r gfx.Renderer) {
 				// Apply movement on X/Y axis.
 				p = math.Vec3{v.X, v.Y, 0}
 			}
-			triangle.Pos = triangle.Pos.Add(p.MulScalar(0.05))
+			triangle.SetPos(triangle.Pos().Add(p.MulScalar(0.05)))
 		}
-
-		// Update the triangle transformation matrix.
-		triangle.Transform = triangle.Transform.Build()
 		triangle.Unlock()
 
 		// Clear the entire area (empty rectangle means "the whole area").
@@ -288,7 +296,7 @@ func gfxLoop(w *chippy.Window, r gfx.Renderer) {
 		// Print if the triangle's center is in the view of the camera.
 		if printInView {
 			triangle.RLock()
-			tp := triangle.Transform.Pos
+			tp := triangle.Pos()
 			triangle.RUnlock()
 
 			camera.RLock()
