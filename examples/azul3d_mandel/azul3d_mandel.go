@@ -67,11 +67,9 @@ func gfxLoop(w *chippy.Window, r gfx.Renderer) {
 	glr.UpdateBounds(image.Rect(0, 0, 720, 480))
 
 	// Create a simple shader.
-	shader := &gfx.Shader{
-		Name:     "SimpleShader",
-		GLSLVert: glslVert,
-		GLSLFrag: glslFrag,
-	}
+	shader := gfx.NewShader("SimpleShader")
+	shader.GLSLVert = glslVert
+	shader.GLSLFrag = glslFrag
 
 	// Preload the shader (useful for seeing shader errors, if any).
 	onLoad := make(chan *gfx.Shader, 1)
