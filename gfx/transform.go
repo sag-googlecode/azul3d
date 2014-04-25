@@ -122,15 +122,13 @@ fail:
 // build builds and stores the transformation matrix from the components of
 // this transform.
 func (t *Transform) build() {
-	/*
-		if t.built != nil && (t.lastParent != nil && t.parent != nil && t.lastParent.Equals(t.parent)) {
-			// No update is required.
-			return
-		}
-		if t.parent != nil {
-			t.lastParent = t.parent.Copy()
-		}
-	*/
+	if t.built != nil && (t.lastParent != nil && t.parent != nil && t.lastParent.Equals(t.parent)) {
+		// No update is required.
+		return
+	}
+	if t.parent != nil {
+		t.lastParent = t.parent.Copy()
+	}
 
 	// Apply rotation
 	var hpr math.Vec3
@@ -372,7 +370,7 @@ func (t *Transform) SetShear(s math.Vec3) {
 	t.access.Lock()
 	if t.shear != s {
 		t.built = nil
-		t.pos = s
+		t.shear = s
 	}
 	t.access.Unlock()
 }
