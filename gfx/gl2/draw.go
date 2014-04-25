@@ -81,10 +81,10 @@ func (n nativeObject) SampleCount() int {
 func (n nativeObject) Destroy() {}
 
 func (n nativeObject) needRebuild(o *gfx.Object, c *gfx.Camera) bool {
-	if !o.Transform.Mat4().Equals(n.Transform) {
+	if o.Transform.Mat4() != n.Transform {
 		return true
 	}
-	if !c.Object.Transform.Mat4().Equals(n.CameraTransform) {
+	if c.Object.Transform.Mat4() != n.CameraTransform {
 		return true
 	}
 	if c.Projection != n.Projection {
