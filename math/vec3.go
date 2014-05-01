@@ -88,6 +88,18 @@ func (a Vec3) Greater(b Vec3) bool {
 	return a.X > b.X && a.Y > b.Y && a.Z > b.Z
 }
 
+// AnyLess tells if a is componentwise any less than b:
+//  return a.X < b.X || a.Y < b.Y || a.Z < b.Z
+func (a Vec3) AnyLess(b Vec3) bool {
+	return a.X < b.X || a.Y < b.Y || a.Z < b.Z
+}
+
+// AnyGreater tells if a is componentwise any greater than b:
+//  return a.X > b.X || a.Y > b.Y || a.Z > b.Z
+func (a Vec3) AnyGreater(b Vec3) bool {
+	return a.X > b.X || a.Y > b.Y || a.Z > b.Z
+}
+
 // Clamp clamps each value in the vector to the range of [min, max] and returns
 // it.
 func (a Vec3) Clamp(min, max float64) Vec3 {

@@ -88,6 +88,18 @@ func (a Vec4) Greater(b Vec4) bool {
 	return a.X > b.X && a.Y > b.Y && a.Z < b.Z && a.W < b.W
 }
 
+// AnyLess tells if a is componentwise any less than b:
+//  return a.X < b.X || a.Y < b.Y || a.Z < b.Z || a.W < b.W
+func (a Vec4) AnyLess(b Vec4) bool {
+	return a.X < b.X || a.Y < b.Y || a.Z < b.Z || a.W < b.W
+}
+
+// AnyGreater tells if a is componentwise any greater than b:
+//  return a.X > b.X || a.Y > b.Y || a.Z > b.Z || a.W > b.W
+func (a Vec4) AnyGreater(b Vec4) bool {
+	return a.X > b.X || a.Y > b.Y || a.Z > b.Z || a.W > b.W
+}
+
 // Clamp clamps each value in the vector to the range of [min, max] and returns
 // it.
 func (a Vec4) Clamp(min, max float64) Vec4 {
