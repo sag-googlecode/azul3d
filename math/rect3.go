@@ -110,9 +110,16 @@ func (r Rect3) Union(s Rect3) Rect3 {
 	return r
 }
 
-// Empty reports whether the rectangle contains no points.
+// Empty reports whether the rectangle contains no points using the default
+// epsilon for equality.
 func (r Rect3) Empty() bool {
-	return r.Min.X >= r.Max.X || r.Min.Y >= r.Max.Y || r.Min.Z >= r.Max.Z
+	return r.Min.Equals(r.Max) || r.Min.AnyGreater(r.Max)
+}
+
+// AlmostEmpty reports whether the rectangle contains no points using the
+// specified epsilon value.
+func (r Rect3) AlmostEmpty(epsilon float64) bool {
+	return r.Min.AlmostEquals(r.Max, epsilon) || r.Min.AnyGreater(r.Max)
 }
 
 // Equals reports whether r and s are equal using the default epsilon for
