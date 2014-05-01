@@ -177,6 +177,16 @@ func (r Rect3) Closest(p Vec3) Vec3 {
 	return p
 }
 
+// Contains tells if the point p is within this rectangle.
+func (r Rect3) Contains(p Vec3) bool {
+	if r.Empty() {
+		return true
+	}
+	return r.Min.X <= p.X && p.X < r.Max.X &&
+		r.Min.Y <= p.Y && p.Y < r.Max.Y &&
+		r.Max.Z <= p.Z && p.Z < r.Max.Z
+}
+
 // Area returns the area of this rectangle (the sum of it's sides).
 func (r Rect3) Area() float64 {
 	s := r.Size()
