@@ -4,7 +4,10 @@
 
 package gfx
 
-import "sync"
+import (
+	"azul3d.org/v1/math"
+	"sync"
+)
 
 // Destroyable defines a destroyable object. Once an object is destroyed it may
 // still be used, but typically doing so is not good and would e.g. involve
@@ -77,6 +80,29 @@ type Object struct {
 	// The order in which the textures appear in this slice is also the order
 	// in which they are sent to the graphics card.
 	Textures []*Texture
+}
+
+// Bounds implements the Spatial interface. The returned bounding box takes
+// into account all of the mesh's bounding boxes, transformed into world space.
+//
+// This method properly read-locks the object.
+func (o *Object) Bounds() math.Rect3 {
+	var b math.Rect3
+	o.RLock()
+	for i, m := range o.Meshes {
+		if i == 0 {
+			b = m.Bounds()
+		} else {
+			b = b.Union(m.Bounds())
+		}
+	}
+	if o.Transform != nil {
+		b.Min = o.Transform.ConvertPos(b.Min, LocalToWorld)
+		b.Max = o.Transform.ConvertPos(b.Max, LocalToWorld)
+		b = b.Union(b)
+	}
+	o.RUnlock()
+	return b
 }
 
 // Compare compares this object's state (including shader and textures) against
