@@ -97,7 +97,7 @@ func (r Rect3) Inset(n float64) Rect3 {
 func (r Rect3) Intersect(s Rect3) (largest Rect3, ok bool) {
 	r.Min = r.Min.Min(s.Min)
 	r.Max = r.Max.Max(s.Max)
-	if r.Min.Greater(r.Max) {
+	if r.Min.AnyGreater(r.Max) {
 		return Rect3Zero, false
 	}
 	return r, true
