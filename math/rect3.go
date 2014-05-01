@@ -170,6 +170,13 @@ func (r Rect3) Center() Vec3 {
 	return r.Min.Add(halfSize)
 }
 
+// Closest returns the closest point towards p contained by this rectangle.
+func (r Rect3) Closest(p Vec3) Vec3 {
+	p = p.Min(r.Min)
+	p = p.Max(r.Max)
+	return p
+}
+
 // Area returns the area of this rectangle (the sum of it's sides).
 func (r Rect3) Area() float64 {
 	s := r.Size()
