@@ -103,7 +103,7 @@ type Canvas interface {
 	//  len(o.Meshes) == 0
 	//  !o.Meshes[N].Loaded && len(o.Meshes[N].Vertices) == 0
 	//
-	// If the rectangle is empty the entire canvas is cleared.
+	// If the rectangle is empty the entire canvas is drawn to.
 	Draw(r image.Rectangle, o *Object, c *Camera)
 
 	// QueryWait blocks until all pending draw object's occlusion queries
