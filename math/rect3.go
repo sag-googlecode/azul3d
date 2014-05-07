@@ -172,8 +172,15 @@ func (r Rect3) Center() Vec3 {
 
 // Closest returns the closest point towards p contained by this rectangle.
 func (r Rect3) Closest(p Vec3) Vec3 {
-	p = p.Min(r.Min)
-	p = p.Max(r.Max)
+	p = p.Max(r.Min)
+	p = p.Min(r.Max)
+	return p
+}
+
+// Closest returns the closest point towards p contained by this rectangle.
+func (r Rect3) Furthest(p Vec3) Vec3 {
+	p = p.Min(r.Max)
+	p = p.Max(r.Min)
 	return p
 }
 
