@@ -58,12 +58,8 @@ var (
 // gfxLoop is responsible for drawing things to the window. This loop must be
 // independent of the Chippy main loop.
 func gfxLoop(w *chippy.Window, r gfx.Renderer) {
-	// Create a camera.
-	camera := &gfx.Camera{
-		Object: gfx.NewObject(),
-	}
-
-	// Setup the camera to use a perspective projection.
+	// Setup a camera to use a perspective projection.
+	camera := gfx.NewCamera()
 	camFOV := 75.0
 	camNear := 0.0001
 	camFar := 1000.0
