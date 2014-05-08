@@ -108,7 +108,7 @@ type Texture struct {
 	// The U and V wrap modes of this texture.
 	WrapU, WrapV TexWrap
 
-	// The color of the border when a wrap mode is set to WM_BORDER_COLOR.
+	// The color of the border when a wrap mode is set to BorderColor.
 	BorderColor Color
 
 	// The texture filtering used for minification and magnification of the
