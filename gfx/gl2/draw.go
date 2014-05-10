@@ -514,7 +514,7 @@ func (r *Renderer) drawMesh(ns *nativeShader, m *gfx.Mesh) {
 		}
 	}
 
-	if len(m.Indices) > 0 {
+	if native.indicesCount > 0 {
 		// Draw indexed mesh.
 		r.render.BindBuffer(gl.ELEMENT_ARRAY_BUFFER, native.indices)
 		r.render.DrawElements(gl.TRIANGLES, native.indicesCount, gl.UNSIGNED_INT, nil)
