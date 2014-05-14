@@ -13,24 +13,24 @@ package x11
 
 #cgo LDFLAGS: -lX11 -lGL
 
-GLXContext chippy_glXCreateNewContext(void* p, Display *dpy, GLXFBConfig config, int render_type, GLXContext share_list, Bool direct);
-Bool chippy_glXMakeContextCurrent(void* p, Display *dpy, GLXDrawable draw, GLXDrawable read, GLXContext ctx);
-GLXWindow chippy_glXCreateWindow(void* p, Display *dpy, GLXFBConfig config, Window win, const int *attrib_list);
-void chippy_glXDestroyWindow(void* p, Display *dpy, GLXWindow win);
-void chippy_glXDestroyContext(void* p, Display *dpy, GLXContext ctx);
-Bool chippy_glXQueryVersion(void* p, Display *dpy, int *maj, int *min);
-void chippy_glXSwapBuffers(void* p, Display *dpy, GLXDrawable drawable);
-GLXFBConfig* chippy_glXGetFBConfigs(void* p, Display *dpy, int screen, int *nelements);
-const char* chippy_glXQueryExtensionsString(void* p, Display *dpy, int screen);
-int chippy_glXGetFBConfigAttrib(void* p, Display *dpy, GLXFBConfig config, int attribute, int *value);
+GLXContext chippy_glXCreateNewContext(void* p, void* dpy, GLXFBConfig config, int render_type, GLXContext share_list, Bool direct);
+Bool chippy_glXMakeContextCurrent(void* p, void* dpy, GLXDrawable draw, GLXDrawable read, GLXContext ctx);
+GLXWindow chippy_glXCreateWindow(void* p, void* dpy, GLXFBConfig config, Window win, const int *attrib_list);
+void chippy_glXDestroyWindow(void* p, void* dpy, GLXWindow win);
+void chippy_glXDestroyContext(void* p, void* dpy, GLXContext ctx);
+Bool chippy_glXQueryVersion(void* p, void* dpy, int *maj, int *min);
+void chippy_glXSwapBuffers(void* p, void* dpy, GLXDrawable drawable);
+GLXFBConfig* chippy_glXGetFBConfigs(void* p, void* dpy, int screen, int *nelements);
+const char* chippy_glXQueryExtensionsString(void* p, void* dpy, int screen);
+int chippy_glXGetFBConfigAttrib(void* p, void* dpy, GLXFBConfig config, int attribute, int *value);
 GLXContext chippy_glXGetCurrentContext(void* p);
-XVisualInfo* chippy_glXGetVisualFromFBConfig(void* p, Display *dpy, GLXFBConfig config);
+XVisualInfo* chippy_glXGetVisualFromFBConfig(void* p, void* dpy, GLXFBConfig config);
 GLubyte* chippy_glGetString(void* p, GLenum v);
 
 // Extensions below here.
 
-GLXContext chippy_glXCreateContextAttribsARB(void* p, Display* dpy, GLXFBConfig config, GLXContext share, Bool direct, const int* attribs);
-void chippy_glXSwapIntervalEXT(void* p, Display* dpy, GLXDrawable d, int interval);
+GLXContext chippy_glXCreateContextAttribsARB(void* p, void* dpy, GLXFBConfig config, GLXContext share, Bool direct, const int* attribs);
+void chippy_glXSwapIntervalEXT(void* p, void* dpy, GLXDrawable d, int interval);
 int chippy_glXSwapIntervalMESA(void* p, int interval);
 int chippy_glXSwapIntervalSGI(void* p, int interval);
 */
@@ -113,7 +113,7 @@ func (d *Display) GLXCreateNewContext(config GLXFBConfig, renderType int, shareL
 	}
 	return GLXContext(C.chippy_glXCreateNewContext(
 		glXCreateNewContextPtr,
-		d.c,
+		d.ptr(),
 		C.GLXFBConfig(config),
 		C.int(renderType),
 		C.GLXContext(shareList),
@@ -132,7 +132,7 @@ func (d *Display) GLXDestroyContext(ctx GLXContext) {
 	defer d.Unlock()
 	C.chippy_glXDestroyContext(
 		glXDestroyContextPtr,
-		d.c,
+		d.ptr(),
 		C.GLXContext(ctx),
 	)
 }
@@ -148,7 +148,7 @@ func (d *Display) GLXMakeContextCurrent(draw, read GLXDrawable, ctx GLXContext) 
 	defer d.Unlock()
 	return int(C.chippy_glXMakeContextCurrent(
 		glXMakeContextCurrentPtr,
-		d.c,
+		d.ptr(),
 		C.GLXDrawable(draw),
 		C.GLXDrawable(read),
 		C.GLXContext(ctx),
@@ -166,7 +166,7 @@ func (d *Display) GLXSwapBuffers(drawable GLXDrawable) {
 	defer d.Unlock()
 	C.chippy_glXSwapBuffers(
 		glXSwapBuffersPtr,
-		d.c,
+		d.ptr(),
 		C.GLXDrawable(drawable),
 	)
 }
@@ -184,7 +184,7 @@ func (d *Display) GLXQueryVersion(maj, min *Int) bool {
 	defer d.Unlock()
 	return C.chippy_glXQueryVersion(
 		glXQueryVersionPtr,
-		d.c,
+		d.ptr(),
 		(*C.int)(unsafe.Pointer(maj)),
 		(*C.int)(unsafe.Pointer(min)),
 	) != 0
@@ -201,7 +201,7 @@ func (d *Display) GLXQueryExtensionsString(screen int) string {
 	defer d.Unlock()
 	data := C.chippy_glXQueryExtensionsString(
 		glXQueryExtensionsStringPtr,
-		d.c,
+		d.ptr(),
 		C.int(screen),
 	)
 	return C.GoString(data)
@@ -218,7 +218,7 @@ func (d *Display) GLXGetFBConfigAttrib(config GLXFBConfig, attrib int) (value In
 	defer d.Unlock()
 	ret = int(C.chippy_glXGetFBConfigAttrib(
 		glXGetFBConfigAttribPtr,
-		d.c,
+		d.ptr(),
 		C.GLXFBConfig(config),
 		C.int(attrib),
 		(*C.int)(unsafe.Pointer(&value)),
@@ -238,7 +238,7 @@ func (d *Display) GLXGetFBConfigs(screen int) (configs []GLXFBConfig) {
 	var nConfigs C.int
 	cConfigs := C.chippy_glXGetFBConfigs(
 		glXGetFBConfigsPtr,
-		d.c,
+		d.ptr(),
 		C.int(screen),
 		&nConfigs,
 	)
@@ -260,7 +260,7 @@ func (d *Display) GLXCreateWindow(config GLXFBConfig, win Window) GLXWindow {
 	defer d.Unlock()
 	return GLXWindow(C.chippy_glXCreateWindow(
 		glXCreateWindowPtr,
-		d.c,
+		d.ptr(),
 		C.GLXFBConfig(config),
 		C.Window(win),
 		nil,
@@ -278,7 +278,7 @@ func (d *Display) GLXDestroyWindow(win GLXWindow) {
 	defer d.Unlock()
 	C.chippy_glXDestroyWindow(
 		glXDestroyWindowPtr,
-		d.c,
+		d.ptr(),
 		C.GLXWindow(win),
 	)
 }
@@ -294,7 +294,7 @@ func (d *Display) GLXGetVisualFromFBConfig(config GLXFBConfig) *XVisualInfo {
 	defer d.Unlock()
 	return (*XVisualInfo)(unsafe.Pointer(C.chippy_glXGetVisualFromFBConfig(
 		glXGetVisualFromFBConfigPtr,
-		d.c,
+		d.ptr(),
 		C.GLXFBConfig(config),
 	)))
 }
@@ -334,7 +334,7 @@ func (d *Display) GLXCreateContextAttribsARB(config GLXFBConfig, share GLXContex
 	}
 	return GLXContext(C.chippy_glXCreateContextAttribsARB(
 		glXCreateContextAttribsARBPtr,
-		d.c,
+		d.ptr(),
 		C.GLXFBConfig(config),
 		C.GLXContext(share),
 		cDirect,
@@ -353,7 +353,7 @@ func (d *Display) GLXSwapIntervalEXT(drawable GLXDrawable, interval int) {
 	defer d.Unlock()
 	C.chippy_glXSwapIntervalEXT(
 		glXSwapIntervalEXTPtr,
-		d.c,
+		d.ptr(),
 		C.GLXDrawable(drawable),
 		C.int(interval),
 	)

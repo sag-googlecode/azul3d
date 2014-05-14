@@ -8,63 +8,63 @@
 #include "_cgo_export.h"
 
 typedef GLXContext (*chippy_p_glXCreateNewContext) (Display *dpy, GLXFBConfig config, int render_type, GLXContext share_list, Bool direct);
-GLXContext chippy_glXCreateNewContext(void* p, Display *dpy, GLXFBConfig config, int render_type, GLXContext share_list, Bool direct) {
+GLXContext chippy_glXCreateNewContext(void* p, void* dpy, GLXFBConfig config, int render_type, GLXContext share_list, Bool direct) {
 	chippy_p_glXCreateNewContext fn = (chippy_p_glXCreateNewContext)p;
-	return fn(dpy, config, render_type, share_list, direct);
+	return fn((Display*)dpy, config, render_type, share_list, direct);
 }
 
 typedef Bool (*chippy_p_glXMakeContextCurrent) (Display *dpy, GLXDrawable draw, GLXDrawable read, GLXContext ctx);
-Bool chippy_glXMakeContextCurrent(void* p, Display *dpy, GLXDrawable draw, GLXDrawable read, GLXContext ctx) {
+Bool chippy_glXMakeContextCurrent(void* p, void* dpy, GLXDrawable draw, GLXDrawable read, GLXContext ctx) {
 	chippy_p_glXMakeContextCurrent fn = (chippy_p_glXMakeContextCurrent)p;
-	return fn(dpy, draw, read, ctx);
+	return fn((Display*)dpy, draw, read, ctx);
 }
 
 typedef GLXWindow (*chippy_p_glXCreateWindow) (Display *dpy, GLXFBConfig config, Window win, const int *attrib_list);
-GLXWindow chippy_glXCreateWindow(void* p, Display *dpy, GLXFBConfig config, Window win, const int *attrib_list) {
+GLXWindow chippy_glXCreateWindow(void* p, void* dpy, GLXFBConfig config, Window win, const int *attrib_list) {
 	chippy_p_glXCreateWindow fn = (chippy_p_glXCreateWindow)p;
-	return fn(dpy, config, win, attrib_list);
+	return fn((Display*)dpy, config, win, attrib_list);
 }
 
 typedef void (*chippy_p_glXDestroyWindow) (Display *dpy, GLXWindow win);
-void chippy_glXDestroyWindow(void* p, Display *dpy, GLXWindow win) {
+void chippy_glXDestroyWindow(void* p, void* dpy, GLXWindow win) {
 	chippy_p_glXDestroyWindow fn = (chippy_p_glXDestroyWindow)p;
-	fn(dpy, win);
+	fn((Display*)dpy, win);
 }
 
 typedef void (*chippy_p_glXDestroyContext) (Display *dpy, GLXContext ctx);
-void chippy_glXDestroyContext(void* p, Display *dpy, GLXContext ctx) {
+void chippy_glXDestroyContext(void* p, void* dpy, GLXContext ctx) {
 	chippy_p_glXDestroyContext fn = (chippy_p_glXDestroyContext)p;
-	fn(dpy, ctx);
+	fn((Display*)dpy, ctx);
 }
 
 typedef Bool (*chippy_p_glXQueryVersion) (Display *dpy, int *maj, int *min);
-Bool chippy_glXQueryVersion(void* p, Display *dpy, int *maj, int *min) {
+Bool chippy_glXQueryVersion(void* p, void* dpy, int *maj, int *min) {
 	chippy_p_glXQueryVersion fn = (chippy_p_glXQueryVersion)p;
-	return fn(dpy, maj, min);
+	return fn((Display*)dpy, maj, min);
 }
 
 typedef void (*chippy_p_glXSwapBuffers) (Display *dpy, GLXDrawable drawable);
-void chippy_glXSwapBuffers(void* p, Display *dpy, GLXDrawable drawable) {
+void chippy_glXSwapBuffers(void* p, void* dpy, GLXDrawable drawable) {
 	chippy_p_glXSwapBuffers fn = (chippy_p_glXSwapBuffers)p;
-	fn(dpy, drawable);
+	fn((Display*)dpy, drawable);
 }
 
 typedef GLXFBConfig* (*chippy_p_glXGetFBConfigs) (Display *dpy, int screen, int *nelements);
-GLXFBConfig* chippy_glXGetFBConfigs(void* p, Display *dpy, int screen, int *nelements) {
+GLXFBConfig* chippy_glXGetFBConfigs(void* p, void* dpy, int screen, int *nelements) {
 	chippy_p_glXGetFBConfigs fn = (chippy_p_glXGetFBConfigs)p;
-	return fn(dpy, screen, nelements);
+	return fn((Display*)dpy, screen, nelements);
 }
 
 typedef const char* (*chippy_p_glXQueryExtensionsString) (Display *dpy, int screen);
-const char* chippy_glXQueryExtensionsString(void* p, Display *dpy, int screen) {
+const char* chippy_glXQueryExtensionsString(void* p, void* dpy, int screen) {
 	chippy_p_glXQueryExtensionsString fn = (chippy_p_glXQueryExtensionsString)p;
-	return fn(dpy, screen);
+	return fn((Display*)dpy, screen);
 }
 
 typedef int (*chippy_p_glXGetFBConfigAttrib) (Display *dpy, GLXFBConfig config, int attribute, int *value);
-int chippy_glXGetFBConfigAttrib(void* p, Display *dpy, GLXFBConfig config, int attribute, int *value) {
+int chippy_glXGetFBConfigAttrib(void* p, void* dpy, GLXFBConfig config, int attribute, int *value) {
 	chippy_p_glXGetFBConfigAttrib fn = (chippy_p_glXGetFBConfigAttrib)p;
-	return fn(dpy, config, attribute, value);
+	return fn((Display*)dpy, config, attribute, value);
 }
 
 typedef GLXContext (*chippy_p_glXGetCurrentContext) (void);
@@ -74,9 +74,9 @@ GLXContext chippy_glXGetCurrentContext(void* p) {
 }
 
 typedef XVisualInfo* (*chippy_p_glXGetVisualFromFBConfig) (Display *dpy, GLXFBConfig config);
-XVisualInfo* chippy_glXGetVisualFromFBConfig(void* p, Display *dpy, GLXFBConfig config) {
+XVisualInfo* chippy_glXGetVisualFromFBConfig(void* p, void* dpy, GLXFBConfig config) {
 	chippy_p_glXGetVisualFromFBConfig fn = (chippy_p_glXGetVisualFromFBConfig)p;
-	return fn(dpy, config);
+	return fn((Display*)dpy, config);
 }
 
 typedef GLubyte* (*chippy_p_glGetString) (GLenum v);
@@ -91,13 +91,13 @@ GLubyte* chippy_glGetString(void* p, GLenum v) {
 typedef GLXContext (*chippy_p_glXCreateContextAttribsARB) (Display* dpy, GLXFBConfig config, GLXContext share, Bool direct, const int* attribs);
 GLXContext chippy_glXCreateContextAttribsARB(void* p, Display* dpy, GLXFBConfig config, GLXContext share, Bool direct, const int* attribs) {
 	chippy_p_glXCreateContextAttribsARB fn = (chippy_p_glXCreateContextAttribsARB)p;
-	return fn(dpy, config, share, direct, attribs);
+	return fn((Display*)dpy, config, share, direct, attribs);
 }
 
 typedef void (*chippy_p_glXSwapIntervalEXT) (Display* dpy, GLXDrawable d, int interval);
 void chippy_glXSwapIntervalEXT(void* p, Display* dpy, GLXDrawable d, int interval) {
 	chippy_p_glXSwapIntervalEXT fn = (chippy_p_glXSwapIntervalEXT)p;
-	fn(dpy, d, interval);
+	fn((Display*)dpy, d, interval);
 }
 
 typedef int (*chippy_p_glXSwapIntervalMESA) (int interval);

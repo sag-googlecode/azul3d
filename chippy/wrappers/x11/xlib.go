@@ -266,6 +266,10 @@ type Display struct {
 	c *C.Display
 }
 
+func (d *Display) ptr() unsafe.Pointer {
+	return unsafe.Pointer(d.c)
+}
+
 func (d *Display) voidPtr() *[0]byte {
 	return (*[0]byte)(unsafe.Pointer(d.c))
 }
