@@ -252,3 +252,29 @@ func (c CoordSys) ConvertMat4(to CoordSys) Mat4 {
 	}
 	panic(fmt.Sprintf("ConvertMat4(): Invalid coordinate system %d / %d", c, to))
 }
+
+// SphereToCart converts the Vec2{inclination, azimuth} point on a sphere of
+// the given radius to cartesian coordinates and returns it.
+//
+// It is implemented according to:
+//  http://en.wikipedia.org/wiki/Spherical_coordinate_system#Cartesian_coordinates
+func SphereToCart(r float64, p Vec2) Vec3 {
+	return Vec3{
+		X: r * math.Sin(p.X) * math.Cos(p.Y),
+		Y: r * math.Sin(p.X) * math.Sin(p.Y),
+		Z: r * math.Cos(p.X),
+	}
+}
+
+// CartToSphere converts the point in cartesian coordinate space, p, into
+// spherical coordinates in the form of Vec3{radiys, inclination, azimuth} and
+// returns it.
+//
+// It is implemented according to:
+//  http://en.wikipedia.org/wiki/Spherical_coordinate_system#Cartesian_coordinates
+func CartToSphere(p Vec3) Vec3 {
+	r := p.Length()
+	i := math.Acos(p.Z / r)
+	a := math.Atan(p.Y / p.X)
+	return Vec3{r, i, a}
+}
