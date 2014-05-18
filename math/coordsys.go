@@ -5,6 +5,7 @@
 package math
 
 import (
+	"math"
 	"fmt"
 )
 
