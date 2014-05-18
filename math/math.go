@@ -9,17 +9,21 @@ import "math"
 // The default epsilon value used for floating point comparisons.
 const EPSILON = 1.0E-8
 
-// AlmostEqual tells if the two floating point values a and b are considered
-// equal within the specified epsilon value.
-func AlmostEqual(a, b, epsilon float64) bool {
-	if math.Abs(a-b) < epsilon {
+// AlmostEqual tells if the two floating point values x and y are considered
+// equal within the specified absolute==relative tolerence value.
+//
+// The method of comparison used is that described at:
+//  http://realtimecollisiondetection.net/blog/?p=89
+func AlmostEqual(x, y, absTol float64) bool {
+	if math.Abs(x-y) <= absTol*math.Max(1.0, math.Max(math.Abs(x), math.Abs(y))) {
 		return true
 	}
 	return false
 }
 
 // Equal tells if the two floating point values a and b are considered equal
-// within the default EPSILON value.
+// within the default EPSILON comparison value. It is short-handed for:
+//  AlmostEqual(a, b, EPSILON)
 func Equal(a, b float64) bool {
 	return AlmostEqual(a, b, EPSILON)
 }
