@@ -317,7 +317,7 @@ func (c *Clock) Reset() {
 //
 // 1. It's start time set to the current time (via Clock.Reset).
 //
-// 2. It's maximum frame rate set to 330 (Note: This is good practice because not all computers
+// 2. It's maximum frame rate set to 75 (Note: This is good practice because not all computers
 // have working support for high resolution clocks, by setting an maximum frame rate, you ensure
 // that you will never get Clock.Delta() values equal to zero.)
 //
@@ -325,7 +325,7 @@ func (c *Clock) Reset() {
 func New() *Clock {
 	c := new(Clock)
 	c.Reset()
-	c.SetMaxFrameRate(330)
+	c.SetMaxFrameRate(75)
 	c.SetAverageFrameRateSamples(120)
 	return c
 }
