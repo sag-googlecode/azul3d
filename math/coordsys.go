@@ -5,8 +5,8 @@
 package math
 
 import (
-	"math"
 	"fmt"
+	"math"
 )
 
 // CoordSys represents an specific coordinate system.
