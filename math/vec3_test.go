@@ -55,3 +55,11 @@ func TestVec3Div(t *testing.T) {
 		t.Fail()
 	}
 }
+
+func BenchmarkVec3Equals(b *testing.B) {
+	x := Vec3{1, 3, 3}
+	y := Vec3{1.33, 3.33, 3.33}
+	for n := 0; n < b.N; n++ {
+		x.Equals(y)
+	}
+}
