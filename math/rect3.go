@@ -92,8 +92,12 @@ func (r Rect3) Inset(n float64) Rect3 {
 	return r
 }
 
-// Intersect returns the largest rectangle contained by both r and s. If the
-// two rectangles do not overlap then Rect3Zero, and ok=false will be returned.
+// Intersect intersects the two rectangles and returns the largest rectangle
+// that is contained by both r and s. If the two rectangles do not overlap then
+// Rect3Zero, ok=false will be returned.
+//
+// For simple boolean tests, one should instead use the Overlaps method (as it
+// is equivilent and faster).
 func (r Rect3) Intersect(s Rect3) (largest Rect3, ok bool) {
 	r.Min = r.Min.Min(s.Min)
 	r.Max = r.Max.Max(s.Max)
@@ -101,6 +105,13 @@ func (r Rect3) Intersect(s Rect3) (largest Rect3, ok bool) {
 		return Rect3Zero, false
 	}
 	return r, true
+}
+
+// Overlaps reports whether r and s have a non-empty intersection. It is
+// functionally equivilent to, but faster than:
+//  _, overlaps := r.Intersect(s)
+func (r Rect3) Overlaps(s Rect3) bool {
+	return r.Min.Less(s.Max) && s.Min.Less(r.Max)
 }
 
 // Union returns the smallest rectangle that contains both r and s.
@@ -132,11 +143,6 @@ func (r Rect3) Equals(s Rect3) bool {
 // epsilon value.
 func (r Rect3) AlmostEquals(s Rect3, epsilon float64) bool {
 	return r.Min.AlmostEquals(s.Min, epsilon) && r.Max.AlmostEquals(s.Max, epsilon)
-}
-
-// Overlaps reports whether r and s have a non-empty intersection.
-func (r Rect3) Overlaps(s Rect3) bool {
-	return r.Min.Less(s.Max) && s.Min.Less(r.Max)
 }
 
 // In reports whether every point in r is in s.
