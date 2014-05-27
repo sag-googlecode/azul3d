@@ -948,7 +948,6 @@ February 6, 2014
 === the "resize" package (Apache v2.0 license) ================================
 ===============================================================================
 ALL FILES IN THE FOLDER(S) LISTED BELOW:
-  - thirdparty/resize
   - chippy/thirdparty/resize
 ARE LICENSED UNDER A SEPERATE LICENSE AS FOLLOWS:
 
@@ -977,7 +976,7 @@ limitations under the License.
 === the "Vera" fonts (Bitstream Vera Fonts Copyright) =========================
 ===============================================================================
 ALL FILES IN THE FOLDER(S) LISTED BELOW:
-  - assets/fonts/vera/
+  - native/freetype/vera/
 ARE LICENSED UNDER A SEPERATE LICENSE AS FOLLOWS:
 
 
