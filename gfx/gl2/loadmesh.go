@@ -92,6 +92,7 @@ func (r *Renderer) freeMeshes() {
 	r.meshesToFree.Unlock()
 }
 
+// Implements gfx.Renderer interface.
 func (r *Renderer) LoadMesh(m *gfx.Mesh, done chan *gfx.Mesh) {
 	// Lock the mesh until we are done loading it.
 	m.Lock()

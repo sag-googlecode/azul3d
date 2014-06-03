@@ -12,6 +12,7 @@ import (
 	"image"
 	"runtime"
 	"sync"
+	"io"
 )
 
 // Used when attempting to create an OpenGL 2.0 renderer in a lesser OpenGL context.
@@ -102,6 +103,12 @@ type Renderer struct {
 		faceCulling                                                                      gfx.FaceCullMode
 		program                                                                          uint32
 		shader                                                                           *gfx.Shader
+	}
+
+	// Structure used to manage the debug output stream.
+	debug struct {
+		sync.RWMutex
+		W io.Writer
 	}
 
 	// Structure used to manage pending occlusion queries.
@@ -327,6 +334,9 @@ func (r *Renderer) performClearStencil(rect image.Rectangle, stencil int) {
 	r.render.Clear(uint32(gl.STENCIL_BUFFER_BIT))
 }
 
+// UpdateBounds updates the effective bounding rectangle of this renderer. It
+// must be called whenever the OpenGL canvas size should change (e.g. on window
+// resize).
 func (r *Renderer) UpdateBounds(bounds image.Rectangle) {
 	r.bounds.Lock()
 	r.bounds.rect = bounds
@@ -377,6 +387,18 @@ func (r *Renderer) clearGlobalState() {
 	}
 }
 
+// SetDebugOutput sets the writer, w, to write debug output to. It will mostly
+// contain just shader debug information, but other information may be written
+// in the future as well.
+func (r *Renderer) SetDebugOutput(w io.Writer) {
+	r.debug.RLock()
+	r.debug.W = w
+	r.debug.RUnlock()
+}
+
+// New returns a new OpenGL 2 based graphics renderer. If any error is returned
+// then a nil renderer is also returned. This function must be called only when
+// an OpenGL 2 context is active.
 func New() (*Renderer, error) {
 	r := &Renderer{
 		RenderExec:     make(chan func() bool, 1024),

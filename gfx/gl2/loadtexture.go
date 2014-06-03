@@ -84,6 +84,7 @@ func (n *nativeTexture) Download(rect image.Rectangle, complete chan image.Image
 	}
 }
 
+// Implements gfx.Renderer interface.
 func (r *Renderer) RenderToTexture(t *gfx.Texture) gfx.Canvas {
 	return r
 }
@@ -108,6 +109,7 @@ func verticalFlip(img *image.RGBA) {
 	}
 }
 
+// Implements gfx.Downloadable interface.
 func (r *Renderer) Download(rect image.Rectangle, complete chan image.Image) {
 	r.RenderExec <- func() bool {
 		bounds := r.Bounds()
@@ -221,6 +223,7 @@ func convertTexFormat(f gfx.TexFormat) int32 {
 	panic("unknown format")
 }
 
+// Implements gfx.Renderer interface.
 func (r *Renderer) LoadTexture(t *gfx.Texture, done chan *gfx.Texture) {
 	// Lock the texture until we are done loading it.
 	t.Lock()

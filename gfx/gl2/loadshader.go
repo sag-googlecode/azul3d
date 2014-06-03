@@ -55,6 +55,7 @@ func (r *Renderer) freeShaders() {
 	r.shadersToFree.Unlock()
 }
 
+// Implements gfx.Renderer interface.
 func (r *Renderer) LoadShader(s *gfx.Shader, done chan *gfx.Shader) {
 	// Lock the shader until we are done loading it.
 	s.Lock()
@@ -99,6 +100,13 @@ func (r *Renderer) LoadShader(s *gfx.Shader, done chan *gfx.Shader) {
 			// No source code in vertex shader (some drivers will crash in
 			// this case).
 			s.Error = append(s.Error, []byte(s.Name+" | Vertex shader with no source code.\n")...)
+
+			// Log the error.
+			r.debug.RLock()
+			if r.debug.W != nil {
+				fmt.Fprintf(r.debug.W, "%s | Vertex shader with no source code.\n", s.Name)
+			}
+			r.debug.RUnlock()
 		} else {
 			// Compile vertex shader.
 			native.vertex = r.loader.CreateShader(gl.VERTEX_SHADER)
@@ -117,6 +125,14 @@ func (r *Renderer) LoadShader(s *gfx.Shader, done chan *gfx.Shader) {
 				// Append the errors.
 				s.Error = append(s.Error, []byte(s.Name+" | Vertex shader errors:\n")...)
 				s.Error = append(s.Error, log...)
+
+				// Log the errors.
+				r.debug.RLock()
+				if r.debug.W != nil {
+					fmt.Fprintf(r.debug.W, "%s | Vertex shader errors:\n", s.Name)
+					fmt.Fprintf(r.debug.W, string(log))
+				}
+				r.debug.RUnlock()
 			}
 		}
 
@@ -125,6 +141,13 @@ func (r *Renderer) LoadShader(s *gfx.Shader, done chan *gfx.Shader) {
 			// No source code in fragment shader (some drivers will crash in
 			// this case).
 			s.Error = append(s.Error, []byte(s.Name+" | Fragment shader with no source code.\n")...)
+
+			// Log the error.
+			r.debug.RLock()
+			if r.debug.W != nil {
+				fmt.Fprintf(r.debug.W, "%s | Fragment shader with no source code.\n", s.Name)
+			}
+			r.debug.RUnlock()
 		} else {
 			// Compile fragment shader.
 			native.fragment = r.loader.CreateShader(gl.FRAGMENT_SHADER)
@@ -143,6 +166,14 @@ func (r *Renderer) LoadShader(s *gfx.Shader, done chan *gfx.Shader) {
 				// Append the errors.
 				s.Error = append(s.Error, []byte(s.Name+" | Fragment shader errors:\n")...)
 				s.Error = append(s.Error, log...)
+
+				// Log the errors.
+				r.debug.RLock()
+				if r.debug.W != nil {
+					fmt.Fprintf(r.debug.W, "%s | Fragment shader errors:\n", s.Name)
+					fmt.Fprintf(r.debug.W, string(log))
+				}
+				r.debug.RUnlock()
 			}
 		}
 
@@ -174,6 +205,14 @@ func (r *Renderer) LoadShader(s *gfx.Shader, done chan *gfx.Shader) {
 				// Append the errors.
 				s.Error = append(s.Error, []byte(s.Name+" | Linker errors:\n")...)
 				s.Error = append(s.Error, log...)
+
+				// Log the errors.
+				r.debug.RLock()
+				if r.debug.W != nil {
+					fmt.Fprintf(r.debug.W, "%s | Linker errors:\n", s.Name)
+					fmt.Fprintf(r.debug.W, string(log))
+				}
+				r.debug.RUnlock()
 			}
 		}
 
