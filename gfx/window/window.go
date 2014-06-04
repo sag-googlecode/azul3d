@@ -68,6 +68,9 @@ func program(gfxLoop func(w *chippy.Window, r gfx.Renderer)) {
 		log.Fatal(err)
 	}
 
+	// Write renderer debug output (shader errors, etc) to stdout.
+	r.SetDebugOutput(os.Stdout)
+
 	// Start the graphics rendering loop.
 	go gfxLoop(window, r)
 
