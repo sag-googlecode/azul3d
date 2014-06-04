@@ -62,6 +62,10 @@ func (r *GoRect) Paint(p *qml.Painter) {
 			os.Exit(1)
 		}
 
+
+		// Write renderer debug output (shader errors, etc) to stdout.
+		renderer.SetDebugOutput(os.Stdout)
+
 		// Start the graphics rendering loop.
 		go gfxLoop(renderer)
 	}

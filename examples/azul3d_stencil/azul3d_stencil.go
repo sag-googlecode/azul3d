@@ -11,7 +11,6 @@ import (
 	"azul3d.org/v1/gfx/gl2"
 	"azul3d.org/v1/gfx/window"
 	"azul3d.org/v1/math"
-	"fmt"
 	"image"
 	_ "image/jpeg"
 	"log"
@@ -286,20 +285,6 @@ func gfxLoop(w *chippy.Window, r gfx.Renderer) {
 	shader := gfx.NewShader("SimpleShader")
 	shader.GLSLVert = glslVert
 	shader.GLSLFrag = glslFrag
-
-	// Preload the shader (useful for seeing shader errors, if any).
-	onLoad := make(chan *gfx.Shader, 1)
-	r.LoadShader(shader, onLoad)
-	go func() {
-		<-onLoad
-		shader.RLock()
-		if shader.Loaded {
-			fmt.Println("Shader loaded")
-		} else {
-			fmt.Println(string(shader.Error))
-		}
-		shader.RUnlock()
-	}()
 
 	// Create the background.
 	bgPicture := createPicture(r, "src/azul3d.org/v1/assets/textures/yi_han_cheol.jpg")

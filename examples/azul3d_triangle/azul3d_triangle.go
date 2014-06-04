@@ -74,20 +74,6 @@ func gfxLoop(w *chippy.Window, r gfx.Renderer) {
 	shader.GLSLVert = glslVert
 	shader.GLSLFrag = glslFrag
 
-	// Preload the shader (useful for seeing shader errors, if any).
-	onLoad := make(chan *gfx.Shader, 1)
-	r.LoadShader(shader, onLoad)
-	go func() {
-		<-onLoad
-		shader.RLock()
-		if shader.Loaded {
-			fmt.Println("Shader loaded")
-		} else {
-			fmt.Println(string(shader.Error))
-		}
-		shader.RUnlock()
-	}()
-
 	// Create a triangle object.
 	triangle := gfx.NewObject()
 	triangle.Shader = shader

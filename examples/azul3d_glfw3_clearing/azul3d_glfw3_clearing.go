@@ -70,6 +70,9 @@ func main() {
 		panic(err)
 	}
 
+	// Write renderer debug output (shader errors, etc) to stdout.
+	r.SetDebugOutput(os.Stdout)
+
 	// Whenever the window is resized, inform the renderer that it's bounds
 	// have changed.
 	window.SetSizeCallback(func(w *glfw3.Window, width, height int) {
