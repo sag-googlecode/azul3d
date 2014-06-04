@@ -12,20 +12,21 @@ import (
 	"sync"
 )
 
-// Destroy callbacks here, these callbacks are called when the user calls
-// Destroy()
-type callback struct {
-	callback func()
-}
+var destroyCallbacks []*func()
 
-var destroyCallbacks []*callback
-
-func addDestroyCallback(c *callback) {
-	removeDestroyCallback(c) // In case it's already in
+// addDestroyCallback adds the given function as a destroyer. Each destroy
+// callback is called in the order it was added when chippy.Exit() is called,
+// and before backend_Destroy is called.
+func addDestroyCallback(c *func()) {
+	removeDestroyCallback(c) // In case it's already been added
 	destroyCallbacks = append(destroyCallbacks, c)
 }
 
-func removeDestroyCallback(c *callback) {
+// removeDestroyCallback removes the previously added destroy callback, c. Only
+// exactly identical pointers can be removed, so take care to not write code
+// like:
+//  removeDestroyCallback(&c)
+func removeDestroyCallback(c *func()) {
 	for i := 0; i < len(destroyCallbacks); i++ {
 		if destroyCallbacks[i] == c {
 			// Remove it
@@ -143,13 +144,13 @@ func Exit() {
 		// Firstly, we call each destroy callback, chippyAccess is explicitly unlocked here
 		globalLock.Unlock()
 		for _, callback := range destroyCallbacks {
-			callback.callback()
+			(*callback)()
 		}
 		globalLock.Lock()
 		backend_Destroy()
 		isInit = false
 		initError = nil
-		destroyCallbacks = []*callback{}
+		destroyCallbacks = []*func(){}
 	}
 
 	mainLoopFrames <- func() bool {

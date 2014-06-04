@@ -48,7 +48,6 @@ func (w *NativeWindow) GLConfigs() (configs []*GLConfig) {
 		}
 		config.xVisual = x11.VisualId(vi.Visualid())
 		config.xVisualDepth = uint8(vi.Depth())
-		x11.XFree(unsafe.Pointer(vi))
 
 		doubleBuffer, err := glxDisplay.GLXGetFBConfigAttrib(glxConfig, x11.GLX_DOUBLEBUFFER)
 		if err == 0 {
@@ -132,6 +131,7 @@ func (w *NativeWindow) GLConfigs() (configs []*GLConfig) {
 			config.Accelerated = caveat != x11.GLX_SLOW_CONFIG
 		}
 
+		x11.XFree(unsafe.Pointer(vi))
 		configs = append(configs, config)
 	}
 	return
@@ -168,10 +168,17 @@ func (w *NativeWindow) GLSetConfig(config *GLConfig) {
 }
 
 func (w *NativeWindow) GLConfig() *GLConfig {
+	w.access.RLock()
+	defer w.access.RUnlock()
 	return w.glConfig
 }
 
 func (w *NativeWindow) GLCreateContext(glVersionMajor, glVersionMinor uint, flags GLContextFlags, share GLContext) (GLContext, error) {
+	w.access.Lock()
+	defer w.access.Unlock()
+	if w.xWindow == 0 {
+		panic("Window is destroyed!")
+	}
 	if w.glConfig == nil {
 		panic("Must call GLSetConfig() before GLCreateContext()!")
 	}
@@ -273,10 +280,17 @@ func (w *NativeWindow) GLCreateContext(glVersionMajor, glVersionMinor uint, flag
 		return nil, ErrGLVersionNotSupported
 	}
 
+	cb := func() {
+		w.GLDestroyContext(c)
+	}
+	addDestroyCallback(&cb)
+
 	return c, nil
 }
 
 func (w *NativeWindow) GLDestroyContext(c GLContext) {
+	w.access.Lock()
+	defer w.access.Unlock()
 	wc := c.(*X11GLContext)
 	wc.panicUnlessValid()
 	if !wc.destroyed {
@@ -286,6 +300,12 @@ func (w *NativeWindow) GLDestroyContext(c GLContext) {
 }
 
 func (w *NativeWindow) GLMakeCurrent(c GLContext) {
+	w.access.Lock()
+	defer w.access.Unlock()
+	if w.xWindow == 0 {
+		return
+	}
+
 	var glxContext x11.GLXContext
 	var glxWindow x11.GLXDrawable
 	if c != nil {
@@ -301,10 +321,9 @@ func (w *NativeWindow) GLMakeCurrent(c GLContext) {
 }
 
 func (w *NativeWindow) GLSwapBuffers() {
-	if w.r.Destroyed() {
-		return
-	}
-	if w.glConfig.DoubleBuffered == false {
+	w.access.Lock()
+	defer w.access.Unlock()
+	if w.xWindow == 0 || w.glConfig.DoubleBuffered == false {
 		return
 	}
 
@@ -327,7 +346,9 @@ func (w *NativeWindow) GLSetVerticalSync(mode VSyncMode) {
 	if !mode.Valid() {
 		panic("Invalid vertical sync constant specified.")
 	}
-	if w.r.Destroyed() {
+	w.access.Lock()
+	defer w.access.Unlock()
+	if w.xWindow == 0 {
 		return
 	}
 	w.glVSyncMode = mode

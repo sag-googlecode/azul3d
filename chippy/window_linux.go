@@ -479,7 +479,7 @@ func (w *NativeWindow) open(screen *Screen) (err error) {
 
 func (w *NativeWindow) doRebuildWindow() (err error) {
 	if w.r.Opened() {
-		w.destroy()
+		w.doDestroy()
 	}
 	w.clearLastCursorPosition()
 	screen := w.r.Screen()
@@ -2015,13 +2015,20 @@ func (w *NativeWindow) notify() {
 	xConnection.Flush()
 }
 
-func (w *NativeWindow) destroy() {
+func (w *NativeWindow) doDestroy() {
 	xWindowLookupAccess.Lock()
 	delete(xWindowLookup, w.xWindow)
 	xWindowLookupAccess.Unlock()
 	xConnection.DestroyWindow(w.xWindow)
 	xConnection.FreeGC(w.xGC)
 	xConnection.Flush()
+	w.xWindow = 0
+}
+
+func (w *NativeWindow) destroy() {
+	w.access.Lock()
+	w.doDestroy()
+	w.access.Unlock()
 }
 
 func newNativeWindow(real *Window) *NativeWindow {
