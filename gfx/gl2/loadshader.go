@@ -9,6 +9,7 @@ import (
 	"azul3d.org/v1/native/gl"
 	"runtime"
 	"strings"
+	"fmt"
 )
 
 // nativeShader is stored inside the *Shader.Native interface and stores GLSL
@@ -71,22 +72,28 @@ func (r *Renderer) LoadShader(s *gfx.Shader, done chan *gfx.Shader) {
 	}
 
 	f := func() {
-		shaderCompilerLog := func(s uint32) []byte {
-			var ok int32
+		shaderCompilerLog := func(s uint32) (log []byte, compiled bool) {
+			var(
+				ok, logSize int32
+			)
 			r.loader.GetShaderiv(s, gl.COMPILE_STATUS, &ok)
 			r.loader.Execute()
-			if ok == 0 {
-				// Shader compiler error
-				var logSize int32
-				r.loader.GetShaderiv(s, gl.INFO_LOG_LENGTH, &logSize)
-				r.loader.Execute()
 
-				log := make([]byte, logSize)
+			// Shader compiler error
+			r.loader.GetShaderiv(s, gl.INFO_LOG_LENGTH, &logSize)
+			r.loader.Execute()
+
+			if logSize > 0 {
+				log = make([]byte, logSize)
 				r.loader.GetShaderInfoLog(s, uint32(logSize), nil, &log[0])
 				r.loader.Execute()
-				return log
+
+				// Strip null-termination byte.
+				if log[len(log)-1] == 0 {
+					log = log[:len(log)-1]
+				}
 			}
-			return nil
+			return log, ok == 1
 		}
 
 		native := &nativeShader{
@@ -117,18 +124,20 @@ func (r *Renderer) LoadShader(s *gfx.Shader, done chan *gfx.Shader) {
 			r.loader.Execute()
 
 			// Check if the shader compiled or not.
-			log := shaderCompilerLog(native.vertex)
-			if log != nil {
+			log, compiled := shaderCompilerLog(native.vertex)
+			if !compiled {
 				// Just for sanity.
 				native.vertex = 0
 
 				// Append the errors.
 				s.Error = append(s.Error, []byte(s.Name+" | Vertex shader errors:\n")...)
 				s.Error = append(s.Error, log...)
-
-				// Log the errors.
+			}
+			if len(log) > 0 {
+				// Send the compiler log to the debug writer.
 				r.debug.RLock()
 				if r.debug.W != nil {
+					fmt.Fprintf(r.debug.W, "%d LEN %q\n", len(log), string(log))
 					fmt.Fprintf(r.debug.W, "%s | Vertex shader errors:\n", s.Name)
 					fmt.Fprintf(r.debug.W, string(log))
 				}
@@ -158,16 +167,17 @@ func (r *Renderer) LoadShader(s *gfx.Shader, done chan *gfx.Shader) {
 			r.loader.Execute()
 
 			// Check if the shader compiled or not.
-			log := shaderCompilerLog(native.fragment)
-			if log != nil {
+			log, compiled := shaderCompilerLog(native.fragment)
+			if !compiled {
 				// Just for sanity.
 				native.fragment = 0
 
 				// Append the errors.
 				s.Error = append(s.Error, []byte(s.Name+" | Fragment shader errors:\n")...)
 				s.Error = append(s.Error, log...)
-
-				// Log the errors.
+			}
+			if len(log) > 0 {
+				// Send the compiler log to the debug writer.
 				r.debug.RLock()
 				if r.debug.W != nil {
 					fmt.Fprintf(r.debug.W, "%s | Fragment shader errors:\n", s.Name)
@@ -185,28 +195,39 @@ func (r *Renderer) LoadShader(s *gfx.Shader, done chan *gfx.Shader) {
 			r.loader.AttachShader(native.program, native.fragment)
 			r.loader.LinkProgram(native.program)
 
+			// Grab the linker's log.
+			var(
+				logSize int32
+				log []byte
+			)
+			r.loader.GetProgramiv(native.program, gl.INFO_LOG_LENGTH, &logSize)
+			r.loader.Execute()
+
+			if logSize > 0 {
+				log = make([]byte, logSize)
+				r.loader.GetProgramInfoLog(native.program, uint32(logSize), nil, &log[0])
+				r.loader.Execute()
+
+				// Strip null-termination byte.
+				if log[len(log)-1] == 0 {
+					log = log[:len(log)-1]
+				}
+			}
+
 			// Check for linker errors.
 			var ok int32
 			r.loader.GetProgramiv(native.program, gl.LINK_STATUS, &ok)
 			r.loader.Execute()
 			if ok == 0 {
-				// Program linker error
-				var logSize int32
-				r.loader.GetProgramiv(native.program, gl.INFO_LOG_LENGTH, &logSize)
-				r.loader.Execute()
-
-				log := make([]byte, logSize)
-				r.loader.GetProgramInfoLog(native.program, uint32(logSize), nil, &log[0])
-				r.loader.Execute()
-
 				// Just for sanity.
 				native.program = 0
 
 				// Append the errors.
 				s.Error = append(s.Error, []byte(s.Name+" | Linker errors:\n")...)
 				s.Error = append(s.Error, log...)
-
-				// Log the errors.
+			}
+			if len(log) > 0 {
+				// Send the linker log to the debug writer.
 				r.debug.RLock()
 				if r.debug.W != nil {
 					fmt.Fprintf(r.debug.W, "%s | Linker errors:\n", s.Name)
