@@ -8,6 +8,7 @@ import (
 	"azul3d.org/v1/chippy/wrappers/x11"
 	"errors"
 	"unsafe"
+	"runtime"
 )
 
 type X11GLContext struct {

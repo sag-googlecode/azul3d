@@ -8,7 +8,7 @@
 #include "_cgo_export.h"
 
 typedef GLXContext (*chippy_p_glXCreateNewContext) (Display *dpy, GLXFBConfig config, int render_type, GLXContext share_list, Bool direct);
-GLXContext chippy_glXCreateNewContext(void* p, void* dpy, GLXFBConfig config, int render_type, GLXContext share_list, Bool direct) {
+GLXContext chippy_glXCreateNewContext(void* p, void* dpy, void* config, int render_type, GLXContext share_list, Bool direct) {
 	chippy_p_glXCreateNewContext fn = (chippy_p_glXCreateNewContext)p;
 	return fn((Display*)dpy, config, render_type, share_list, direct);
 }
@@ -20,7 +20,7 @@ Bool chippy_glXMakeContextCurrent(void* p, void* dpy, GLXDrawable draw, GLXDrawa
 }
 
 typedef GLXWindow (*chippy_p_glXCreateWindow) (Display *dpy, GLXFBConfig config, Window win, const int *attrib_list);
-GLXWindow chippy_glXCreateWindow(void* p, void* dpy, GLXFBConfig config, Window win, const int *attrib_list) {
+GLXWindow chippy_glXCreateWindow(void* p, void* dpy, void* config, Window win, const int *attrib_list) {
 	chippy_p_glXCreateWindow fn = (chippy_p_glXCreateWindow)p;
 	return fn((Display*)dpy, config, win, attrib_list);
 }
@@ -50,7 +50,7 @@ void chippy_glXSwapBuffers(void* p, void* dpy, GLXDrawable drawable) {
 }
 
 typedef GLXFBConfig* (*chippy_p_glXGetFBConfigs) (Display *dpy, int screen, int *nelements);
-GLXFBConfig* chippy_glXGetFBConfigs(void* p, void* dpy, int screen, int *nelements) {
+void* chippy_glXGetFBConfigs(void* p, void* dpy, int screen, int *nelements) {
 	chippy_p_glXGetFBConfigs fn = (chippy_p_glXGetFBConfigs)p;
 	return fn((Display*)dpy, screen, nelements);
 }
@@ -62,7 +62,7 @@ const char* chippy_glXQueryExtensionsString(void* p, void* dpy, int screen) {
 }
 
 typedef int (*chippy_p_glXGetFBConfigAttrib) (Display *dpy, GLXFBConfig config, int attribute, int *value);
-int chippy_glXGetFBConfigAttrib(void* p, void* dpy, GLXFBConfig config, int attribute, int *value) {
+int chippy_glXGetFBConfigAttrib(void* p, void* dpy, void* config, int attribute, int *value) {
 	chippy_p_glXGetFBConfigAttrib fn = (chippy_p_glXGetFBConfigAttrib)p;
 	return fn((Display*)dpy, config, attribute, value);
 }
@@ -74,7 +74,7 @@ GLXContext chippy_glXGetCurrentContext(void* p) {
 }
 
 typedef XVisualInfo* (*chippy_p_glXGetVisualFromFBConfig) (Display *dpy, GLXFBConfig config);
-XVisualInfo* chippy_glXGetVisualFromFBConfig(void* p, void* dpy, GLXFBConfig config) {
+XVisualInfo* chippy_glXGetVisualFromFBConfig(void* p, void* dpy, void* config) {
 	chippy_p_glXGetVisualFromFBConfig fn = (chippy_p_glXGetVisualFromFBConfig)p;
 	return fn((Display*)dpy, config);
 }
@@ -89,7 +89,7 @@ GLubyte* chippy_glGetString(void* p, GLenum v) {
 // Extensions below here.
 
 typedef GLXContext (*chippy_p_glXCreateContextAttribsARB) (Display* dpy, GLXFBConfig config, GLXContext share, Bool direct, const int* attribs);
-GLXContext chippy_glXCreateContextAttribsARB(void* p, Display* dpy, GLXFBConfig config, GLXContext share, Bool direct, const int* attribs) {
+GLXContext chippy_glXCreateContextAttribsARB(void* p, Display* dpy, void* config, GLXContext share, Bool direct, const int* attribs) {
 	chippy_p_glXCreateContextAttribsARB fn = (chippy_p_glXCreateContextAttribsARB)p;
 	return fn((Display*)dpy, config, share, direct, attribs);
 }
