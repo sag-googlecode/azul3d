@@ -8,7 +8,6 @@ import (
 	"azul3d.org/v1/gfx"
 	"azul3d.org/v1/native/gl"
 	"image"
-	"log"
 )
 
 // Set this to true to disable state guarding (i.e. avoiding useless OpenGL
@@ -465,7 +464,6 @@ func (s *graphicsState) stateScissor(ctx *gl.Context, bounds, rect image.Rectang
 		// Store the new scissor rectangle.
 		s.scissor = rect
 		x, y, width, height := convertRect(rect, bounds)
-		log.Println("glScissor()", x, y, width, height)
 		ctx.Scissor(x, y, width, height)
 	}
 }
@@ -493,7 +491,6 @@ func (s *graphicsState) stateClearDepth(ctx *gl.Context, depth float64) {
 
 func (s *graphicsState) stateClearStencil(ctx *gl.Context, stencil int) {
 	if noStateGuard || s.clearStencil != stencil {
-		log.Println("glClearStencil", s.clearStencil, stencil, int32(stencil))
 		s.clearStencil = stencil
 		ctx.ClearStencil(int32(stencil))
 	}
@@ -649,7 +646,6 @@ func (s *graphicsState) stateDepthWrite(ctx *gl.Context, enabled bool) {
 func (s *graphicsState) stateStencilTest(ctx *gl.Context, stencilTest bool) {
 	if noStateGuard || s.stencilTest != stencilTest {
 		s.stencilTest = stencilTest
-		log.Println("glStencilTest", stencilTest)
 		if stencilTest {
 			ctx.Enable(gl.STENCIL_TEST)
 		} else {
