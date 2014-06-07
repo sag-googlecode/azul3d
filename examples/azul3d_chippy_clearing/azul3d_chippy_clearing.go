@@ -87,7 +87,6 @@ func program() {
 		log.Fatal(err)
 	}
 
-
 	// Write renderer debug output (shader errors, etc) to stdout.
 	r.SetDebugOutput(os.Stdout)
 

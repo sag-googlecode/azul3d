@@ -11,7 +11,7 @@ import (
 	"azul3d.org/v1/gfx"
 	"azul3d.org/v1/gfx/gl2"
 	"fmt"
-	"github.com/niemeyer/qml"
+	"gopkg.in/qml.v0"
 	"image"
 	"os"
 	"time"
