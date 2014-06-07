@@ -24,6 +24,7 @@ func gfxLoop(w *chippy.Window, r gfx.Renderer) {
 	fmt.Println("OcclusionQuery =", gpu.OcclusionQuery)
 	fmt.Println("OcclusionQueryBits =", gpu.OcclusionQueryBits)
 	fmt.Println("MaxTextureSize =", gpu.MaxTextureSize)
+	fmt.Println("NPOT Textures =", gpu.NPOT)
 	fmt.Println("AlphaToCoverage =", gpu.AlphaToCoverage)
 	fmt.Println("GLSLMaxVaryingFloats =", gpu.GLSLMaxVaryingFloats)
 	fmt.Println("GLSLMaxVertexInputs =", gpu.GLSLMaxVertexInputs)
