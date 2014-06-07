@@ -10,9 +10,9 @@ import (
 	"azul3d.org/v1/native/gl"
 	"errors"
 	"image"
+	"io"
 	"runtime"
 	"sync"
-	"io"
 )
 
 // Used when attempting to create an OpenGL 2.0 renderer in a lesser OpenGL context.

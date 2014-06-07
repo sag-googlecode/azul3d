@@ -7,9 +7,9 @@ package gl2
 import (
 	"azul3d.org/v1/gfx"
 	"azul3d.org/v1/native/gl"
+	"fmt"
 	"runtime"
 	"strings"
-	"fmt"
 )
 
 // nativeShader is stored inside the *Shader.Native interface and stores GLSL
@@ -73,7 +73,7 @@ func (r *Renderer) LoadShader(s *gfx.Shader, done chan *gfx.Shader) {
 
 	f := func() {
 		shaderCompilerLog := func(s uint32) (log []byte, compiled bool) {
-			var(
+			var (
 				ok, logSize int32
 			)
 			r.loader.GetShaderiv(s, gl.COMPILE_STATUS, &ok)
@@ -196,9 +196,9 @@ func (r *Renderer) LoadShader(s *gfx.Shader, done chan *gfx.Shader) {
 			r.loader.LinkProgram(native.program)
 
 			// Grab the linker's log.
-			var(
+			var (
 				logSize int32
-				log []byte
+				log     []byte
 			)
 			r.loader.GetProgramiv(native.program, gl.INFO_LOG_LENGTH, &logSize)
 			r.loader.Execute()
