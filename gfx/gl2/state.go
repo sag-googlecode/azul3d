@@ -12,7 +12,7 @@ import (
 
 // Set this to true to disable state guarding (i.e. avoiding useless OpenGL
 // state calls). This is useful for debugging the state guard code.
-const noStateGuard = true
+const noStateGuard = false
 
 func unconvertFaceCull(fc int32) gfx.FaceCullMode {
 	switch fc {
