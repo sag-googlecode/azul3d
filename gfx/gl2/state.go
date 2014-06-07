@@ -8,7 +8,24 @@ import (
 	"azul3d.org/v1/gfx"
 	"azul3d.org/v1/native/gl"
 	"image"
+	"log"
 )
+
+// Set this to true to disable state guarding (i.e. avoiding useless OpenGL
+// state calls). This is useful for debugging the state guard code.
+const noStateGuard = true
+
+func unconvertFaceCull(fc int32) gfx.FaceCullMode {
+	switch fc {
+	case gl.FRONT:
+		return gfx.FrontFaceCulling
+	case gl.BACK:
+		return gfx.BackFaceCulling
+	case gl.FRONT_AND_BACK:
+		return gfx.NoFaceCulling
+	}
+	panic("failed to convert")
+}
 
 func convertStencilOp(o gfx.StencilOp) int32 {
 	switch o {
@@ -32,6 +49,28 @@ func convertStencilOp(o gfx.StencilOp) int32 {
 	panic("failed to convert")
 }
 
+func unconvertStencilOp(o int32) gfx.StencilOp {
+	switch o {
+	case gl.KEEP:
+		return gfx.SKeep
+	case gl.ZERO:
+		return gfx.SZero
+	case gl.REPLACE:
+		return gfx.SReplace
+	case gl.INCR:
+		return gfx.SIncr
+	case gl.INCR_WRAP:
+		return gfx.SIncrWrap
+	case gl.DECR:
+		return gfx.SDecr
+	case gl.DECR_WRAP:
+		return gfx.SDecrWrap
+	case gl.INVERT:
+		return gfx.SInvert
+	}
+	panic("failed to convert")
+}
+
 func convertCmp(c gfx.Cmp) int32 {
 	switch c {
 	case gfx.Always:
@@ -50,6 +89,28 @@ func convertCmp(c gfx.Cmp) int32 {
 		return gl.EQUAL
 	case gfx.NotEqual:
 		return gl.NOTEQUAL
+	}
+	panic("failed to convert")
+}
+
+func unconvertCmp(c int32) gfx.Cmp {
+	switch c {
+	case gl.ALWAYS:
+		return gfx.Always
+	case gl.NEVER:
+		return gfx.Never
+	case gl.LESS:
+		return gfx.Less
+	case gl.LEQUAL:
+		return gfx.LessOrEqual
+	case gl.GREATER:
+		return gfx.Greater
+	case gl.GEQUAL:
+		return gfx.GreaterOrEqual
+	case gl.EQUAL:
+		return gfx.Equal
+	case gl.NOTEQUAL:
+		return gfx.NotEqual
 	}
 	panic("failed to convert")
 }
@@ -90,6 +151,42 @@ func convertBlendOp(o gfx.BlendOp) int32 {
 	panic("failed to convert")
 }
 
+func unconvertBlendOp(o int32) gfx.BlendOp {
+	switch o {
+	case gl.ZERO:
+		return gfx.BZero
+	case gl.ONE:
+		return gfx.BOne
+	case gl.SRC_COLOR:
+		return gfx.BSrcColor
+	case gl.ONE_MINUS_SRC_COLOR:
+		return gfx.BOneMinusSrcColor
+	case gl.DST_COLOR:
+		return gfx.BDstColor
+	case gl.ONE_MINUS_DST_COLOR:
+		return gfx.BOneMinusDstColor
+	case gl.SRC_ALPHA:
+		return gfx.BSrcAlpha
+	case gl.ONE_MINUS_SRC_ALPHA:
+		return gfx.BOneMinusSrcAlpha
+	case gl.DST_ALPHA:
+		return gfx.BDstAlpha
+	case gl.ONE_MINUS_DST_ALPHA:
+		return gfx.BOneMinusDstAlpha
+	case gl.CONSTANT_COLOR:
+		return gfx.BConstantColor
+	case gl.ONE_MINUS_CONSTANT_COLOR:
+		return gfx.BOneMinusConstantColor
+	case gl.CONSTANT_ALPHA:
+		return gfx.BConstantAlpha
+	case gl.ONE_MINUS_CONSTANT_ALPHA:
+		return gfx.BOneMinusConstantAlpha
+	case gl.SRC_ALPHA_SATURATE:
+		return gfx.BSrcAlphaSaturate
+	}
+	panic("failed to convert")
+}
+
 func convertBlendEq(eq gfx.BlendEq) int32 {
 	switch eq {
 	case gfx.BAdd:
@@ -98,6 +195,18 @@ func convertBlendEq(eq gfx.BlendEq) int32 {
 		return gl.FUNC_SUBTRACT
 	case gfx.BReverseSub:
 		return gl.FUNC_REVERSE_SUBTRACT
+	}
+	panic("failed to convert")
+}
+
+func unconvertBlendEq(eq int32) gfx.BlendEq {
+	switch eq {
+	case gl.FUNC_ADD:
+		return gfx.BAdd
+	case gl.FUNC_SUBTRACT:
+		return gfx.BSub
+	case gl.FUNC_REVERSE_SUBTRACT:
+		return gfx.BReverseSub
 	}
 	panic("failed to convert")
 }
@@ -111,6 +220,16 @@ func convertRect(rect, bounds image.Rectangle) (x, y int32, width, height uint32
 	x = int32(rect.Min.X)
 	width = uint32(rect.Dx())
 	return
+}
+
+func unconvertRect(bounds image.Rectangle, x, y, width, height int32) (rect image.Rectangle) {
+	// We must unflip the Y axis because image.Rectangle uses top-left as
+	// the origin but OpenGL uses bottom-left as the origin.
+	x0 := int(x)
+	x1 := int(x + width)
+	y0 := bounds.Dy() - int(y+height)
+	y1 := y0 + int(height)
+	return image.Rect(x0, y0, x1, y1)
 }
 
 var glDefaultStencil = gfx.StencilState{
@@ -131,33 +250,208 @@ var glDefaultBlend = gfx.BlendState{
 	AlphaEq:  gfx.BAdd,
 }
 
-func (r *Renderer) clearLastState() {
-	// Ensure that these values match up with the default OpenGL state values.
-	r.stateColorWrite(true, true, true, true)
-	r.stateDithering(true)
-	r.stateStencilTest(false)
-	r.stateStencilOp(glDefaultStencil, glDefaultStencil)
-	r.stateStencilFunc(glDefaultStencil, glDefaultStencil)
-	r.stateStencilMask(0xFFFF, 0xFFFF)
-	r.stateDepthFunc(gfx.Less)
-	r.stateDepthTest(false)
-	r.stateDepthWrite(true)
-	r.stateFaceCulling(gfx.NoFaceCulling)
-	r.stateProgram(0)
-	r.stateBlend(false)
-	r.stateBlendColor(glDefaultBlend.Color)
-	r.stateBlendFuncSeparate(glDefaultBlend)
-	r.stateBlendEquationSeparate(glDefaultBlend)
-	r.stateAlphaToCoverage(false)
-	r.stateClearColor(gfx.Color{0.0, 0.0, 0.0, 0.0})
-	r.stateClearDepth(1.0)
-	r.stateClearStencil(0)
+// Please ensure these values match the default OpenGL state values listed in
+// the OpenGL documentation.
+var defaultGraphicsState = &graphicsState{
+	image.Rect(0, 0, 0, 0),        // scissor - Whole screen
+	gfx.Color{0.0, 0.0, 0.0, 0.0}, // clear color
+	glDefaultBlend.Color,          // blend color
+	1.0,                           // clear depth
+	0,                             // clear stencil
+	[4]bool{true, true, true, true}, // color write
+	gfx.Less,                        // depth func
+	glDefaultBlend,                  // blend func seperate
+	glDefaultBlend,                  // blend equation seperate
+	glDefaultStencil,                // stencil op front
+	glDefaultStencil,                // stencil op back
+	glDefaultStencil,                // stencil func front
+	glDefaultStencil,                // stencil func back
+	0xFFFF,                          // stencil mask front
+	0xFFFF,                          // stencil mask back
+	true,                            // dithering
+	false,                           // depth test
+	true,                            // depth write
+	false,                           // stencil test
+	false,                           // blend
+	false,                           // alpha to coverage
+	gfx.NoFaceCulling,               // face culling
+	0,                               // program
 }
 
-func (r *Renderer) stateScissor(rect image.Rectangle) {
+// Queries the existing OpenGL graphics state and returns it.
+func queryExistingState(ctx *gl.Context, gpuInfo *gfx.GPUInfo, bounds image.Rectangle) *graphicsState {
+	var (
+		GL_BLEND_COLOR int32 = 0x8005 // gl.xml spec file missing this.
+
+		scissor                      [4]int32
+		clearColor, blendColor       gfx.Color
+		clearDepth                   float64
+		clearStencil                 int32
+		colorWrite                   [4]uint8
+		depthFunc                    int32
+		blendDstRGB, blendSrcRGB     int32
+		blendDstAlpha, blendSrcAlpha int32
+		blendEqRGB, blendEqAlpha     int32
+
+		stencilFrontWriteMask, stencilFrontReadMask, stencilFrontRef,
+		stencilFrontOpFail, stencilFrontOpDepthFail, stencilFrontOpDepthPass,
+		stencilFrontCmp int32
+
+		stencilBackWriteMask, stencilBackReadMask, stencilBackRef,
+		stencilBackOpFail, stencilBackOpDepthFail, stencilBackOpDepthPass,
+		stencilBackCmp int32
+
+		dithering, depthTest, depthWrite, stencilTest, blend,
+		alphaToCoverage uint8
+		faceCullMode int32
+	)
+	ctx.GetIntegerv(gl.SCISSOR_BOX, &scissor[0])
+	ctx.GetFloatv(gl.COLOR_CLEAR_VALUE, &clearColor.R)
+	ctx.GetFloatv(GL_BLEND_COLOR, &blendColor.R)
+	ctx.GetDoublev(gl.DEPTH_CLEAR_VALUE, &clearDepth)
+	ctx.GetIntegerv(gl.STENCIL_CLEAR_VALUE, &clearStencil)
+	ctx.GetBooleanv(gl.COLOR_WRITEMASK, &colorWrite[0])
+	ctx.GetIntegerv(gl.DEPTH_FUNC, &depthFunc)
+	ctx.GetIntegerv(gl.BLEND_DST_RGB, &blendDstRGB)
+	ctx.GetIntegerv(gl.BLEND_SRC_RGB, &blendSrcRGB)
+	ctx.GetIntegerv(gl.BLEND_DST_ALPHA, &blendDstAlpha)
+	ctx.GetIntegerv(gl.BLEND_SRC_ALPHA, &blendSrcAlpha)
+	ctx.GetIntegerv(gl.BLEND_EQUATION_RGB, &blendEqRGB)
+	ctx.GetIntegerv(gl.BLEND_EQUATION_ALPHA, &blendEqAlpha)
+	ctx.GetIntegerv(gl.BLEND_EQUATION_RGB, &blendEqRGB)
+	ctx.GetIntegerv(gl.BLEND_EQUATION_ALPHA, &blendEqAlpha)
+
+	ctx.GetIntegerv(gl.STENCIL_FAIL, &stencilFrontOpFail)
+	ctx.GetIntegerv(gl.STENCIL_PASS_DEPTH_FAIL, &stencilFrontOpDepthFail)
+	ctx.GetIntegerv(gl.STENCIL_PASS_DEPTH_PASS, &stencilFrontOpDepthPass)
+	ctx.GetIntegerv(gl.STENCIL_WRITEMASK, &stencilFrontWriteMask)
+	ctx.GetIntegerv(gl.STENCIL_VALUE_MASK, &stencilFrontReadMask)
+	ctx.GetIntegerv(gl.STENCIL_REF, &stencilFrontRef)
+	ctx.GetIntegerv(gl.STENCIL_FUNC, &stencilFrontCmp)
+
+	ctx.GetIntegerv(gl.STENCIL_BACK_FAIL, &stencilBackOpFail)
+	ctx.GetIntegerv(gl.STENCIL_BACK_PASS_DEPTH_FAIL, &stencilBackOpDepthFail)
+	ctx.GetIntegerv(gl.STENCIL_BACK_PASS_DEPTH_PASS, &stencilBackOpDepthPass)
+	ctx.GetIntegerv(gl.STENCIL_BACK_WRITEMASK, &stencilBackWriteMask)
+	ctx.GetIntegerv(gl.STENCIL_BACK_VALUE_MASK, &stencilBackReadMask)
+	ctx.GetIntegerv(gl.STENCIL_BACK_REF, &stencilBackRef)
+	ctx.GetIntegerv(gl.STENCIL_BACK_FUNC, &stencilBackCmp)
+
+	ctx.GetBooleanv(gl.DITHER, &dithering)
+	ctx.GetBooleanv(gl.DEPTH_TEST, &depthTest)
+	ctx.GetBooleanv(gl.DEPTH_WRITEMASK, &depthWrite)
+	ctx.GetBooleanv(gl.STENCIL_WRITEMASK, &stencilTest)
+	ctx.GetBooleanv(gl.BLEND, &blend)
+	if gpuInfo.AlphaToCoverage {
+		ctx.GetBooleanv(gl.SAMPLE_ALPHA_TO_COVERAGE, &alphaToCoverage)
+	}
+
+	ctx.GetIntegerv(gl.CULL_FACE_MODE, &faceCullMode)
+	ctx.Execute()
+
+	return &graphicsState{
+		scissor:      unconvertRect(bounds, scissor[0], scissor[1], scissor[2], scissor[3]),
+		clearColor:   clearColor,
+		blendColor:   blendColor,
+		clearDepth:   clearDepth,
+		clearStencil: int(clearStencil),
+		colorWrite:   [4]bool{gl.Bool(colorWrite[0]), gl.Bool(colorWrite[1]), gl.Bool(colorWrite[2]), gl.Bool(colorWrite[3])},
+		depthFunc:    unconvertCmp(depthFunc),
+		blendFuncSeparate: gfx.BlendState{
+			DstRGB:   unconvertBlendOp(blendDstRGB),
+			SrcRGB:   unconvertBlendOp(blendSrcRGB),
+			DstAlpha: unconvertBlendOp(blendDstAlpha),
+			SrcAlpha: unconvertBlendOp(blendSrcAlpha),
+		},
+		blendEquationSeparate: gfx.BlendState{
+			RGBEq:   unconvertBlendEq(blendEqRGB),
+			AlphaEq: unconvertBlendEq(blendEqAlpha),
+		},
+		stencilOpFront: gfx.StencilState{
+			Fail:      unconvertStencilOp(stencilFrontOpFail),
+			DepthFail: unconvertStencilOp(stencilFrontOpDepthFail),
+			DepthPass: unconvertStencilOp(stencilFrontOpDepthPass),
+		},
+		stencilOpBack: gfx.StencilState{
+			Fail:      unconvertStencilOp(stencilBackOpFail),
+			DepthFail: unconvertStencilOp(stencilBackOpDepthFail),
+			DepthPass: unconvertStencilOp(stencilBackOpDepthPass),
+		},
+		stencilFuncFront: gfx.StencilState{
+			Cmp:       unconvertCmp(stencilFrontCmp),
+			Reference: uint(stencilFrontRef),
+			ReadMask:  uint(stencilFrontReadMask),
+		},
+		stencilFuncBack: gfx.StencilState{
+			Cmp:       unconvertCmp(stencilBackCmp),
+			Reference: uint(stencilBackRef),
+			ReadMask:  uint(stencilBackReadMask),
+		},
+		stencilMaskFront: uint(stencilFrontWriteMask),
+		stencilMaskBack:  uint(stencilBackWriteMask),
+		dithering:        gl.Bool(dithering),
+		depthTest:        gl.Bool(depthTest),
+		depthWrite:       gl.Bool(depthWrite),
+		stencilTest:      gl.Bool(stencilTest),
+		blend:            gl.Bool(blend),
+		alphaToCoverage:  gl.Bool(alphaToCoverage),
+		faceCulling:      unconvertFaceCull(faceCullMode),
+	}
+
+	/*
+		program                                                                          uint32
+	*/
+}
+
+// Structure for various previously set render states, used to avoid uselessly
+// setting OpenGL state twice and keeping state between frames if needed for
+// interoperability with, e.g. QT5's renderer.
+type graphicsState struct {
+	scissor                                                               image.Rectangle
+	clearColor, blendColor                                                gfx.Color
+	clearDepth                                                            float64
+	clearStencil                                                          int
+	colorWrite                                                            [4]bool
+	depthFunc                                                             gfx.Cmp
+	blendFuncSeparate, blendEquationSeparate                              gfx.BlendState
+	stencilOpFront, stencilOpBack, stencilFuncFront, stencilFuncBack      gfx.StencilState
+	stencilMaskFront, stencilMaskBack                                     uint
+	dithering, depthTest, depthWrite, stencilTest, blend, alphaToCoverage bool
+	faceCulling                                                           gfx.FaceCullMode
+	program                                                               uint32
+}
+
+// loads the graphics state, g, making OpenGL calls as neccesarry to components
+// that differ between the states s and r.
+//
+// bounds is the renderer's bounds (e.g. r.Bounds()) to pass into stateScissor().
+func (s *graphicsState) load(ctx *gl.Context, gpuInfo *gfx.GPUInfo, bounds image.Rectangle, g *graphicsState) {
+	s.stateScissor(ctx, bounds, g.scissor)
+	s.stateClearColor(ctx, g.clearColor)
+	s.stateBlendColor(ctx, g.blendColor)
+	s.stateClearDepth(ctx, g.clearDepth)
+	s.stateClearStencil(ctx, g.clearStencil)
+	s.stateColorWrite(ctx, g.colorWrite[0], g.colorWrite[1], g.colorWrite[2], g.colorWrite[3])
+	s.stateDepthFunc(ctx, g.depthFunc)
+	s.stateBlendFuncSeparate(ctx, g.blendFuncSeparate)
+	s.stateBlendEquationSeparate(ctx, g.blendEquationSeparate)
+	s.stateStencilOp(ctx, g.stencilOpFront, g.stencilOpBack)
+	s.stateStencilFunc(ctx, g.stencilFuncFront, g.stencilFuncBack)
+	s.stateStencilMask(ctx, g.stencilMaskFront, g.stencilMaskBack)
+	s.stateDithering(ctx, g.dithering)
+	s.stateDepthTest(ctx, g.depthTest)
+	s.stateDepthWrite(ctx, g.depthWrite)
+	s.stateStencilTest(ctx, g.stencilTest)
+	s.stateBlend(ctx, g.blend)
+	s.stateAlphaToCoverage(ctx, gpuInfo, g.alphaToCoverage)
+	s.stateFaceCulling(ctx, g.faceCulling)
+	s.stateProgram(ctx, g.program)
+}
+
+// bounds is the renderer's bounds (e.g. r.Bounds()).
+func (s *graphicsState) stateScissor(ctx *gl.Context, bounds, rect image.Rectangle) {
 	// Only if the (final) scissor rectangle has changed do we need to make the
 	// OpenGL call.
-	bounds := r.Bounds()
 
 	// If the rectangle is empty use the entire area.
 	if rect.Empty() {
@@ -167,19 +461,49 @@ func (r *Renderer) stateScissor(rect image.Rectangle) {
 		rect = bounds.Intersect(rect)
 	}
 
-	if r.last.scissor != rect {
+	if noStateGuard || s.scissor != rect {
 		// Store the new scissor rectangle.
-		r.last.scissor = rect
+		s.scissor = rect
 		x, y, width, height := convertRect(rect, bounds)
-		r.render.Scissor(x, y, width, height)
+		log.Println("glScissor()", x, y, width, height)
+		ctx.Scissor(x, y, width, height)
 	}
 }
 
-func (r *Renderer) stateColorWrite(cr, g, b, a bool) {
-	cw := [4]bool{cr, g, b, a}
-	if r.last.colorWrite != cw {
-		r.last.colorWrite = cw
-		r.render.ColorMask(
+func (s *graphicsState) stateClearColor(ctx *gl.Context, color gfx.Color) {
+	if noStateGuard || s.clearColor != color {
+		s.clearColor = color
+		ctx.ClearColor(color.R, color.G, color.B, color.A)
+	}
+}
+
+func (s *graphicsState) stateBlendColor(ctx *gl.Context, c gfx.Color) {
+	if noStateGuard || s.blendColor != c {
+		s.blendColor = c
+		ctx.BlendColor(c.R, c.G, c.B, c.A)
+	}
+}
+
+func (s *graphicsState) stateClearDepth(ctx *gl.Context, depth float64) {
+	if noStateGuard || s.clearDepth != depth {
+		s.clearDepth = depth
+		ctx.ClearDepth(depth)
+	}
+}
+
+func (s *graphicsState) stateClearStencil(ctx *gl.Context, stencil int) {
+	if noStateGuard || s.clearStencil != stencil {
+		log.Println("glClearStencil", s.clearStencil, stencil, int32(stencil))
+		s.clearStencil = stencil
+		ctx.ClearStencil(int32(stencil))
+	}
+}
+
+func (s *graphicsState) stateColorWrite(ctx *gl.Context, cr, g, b, a bool) {
+	cw := [4]bool{cr, g, b, a} // FIXME
+	if noStateGuard || s.colorWrite != cw {
+		s.colorWrite = cw
+		ctx.ColorMask(
 			gl.GLBool(cr),
 			gl.GLBool(g),
 			gl.GLBool(b),
@@ -188,48 +512,55 @@ func (r *Renderer) stateColorWrite(cr, g, b, a bool) {
 	}
 }
 
-func (r *Renderer) stateDithering(enabled bool) {
-	if r.last.dithering != enabled {
-		r.last.dithering = enabled
-		if enabled {
-			r.render.Enable(gl.DITHER)
-		} else {
-			r.render.Disable(gl.DITHER)
-		}
+func (s *graphicsState) stateDepthFunc(ctx *gl.Context, df gfx.Cmp) {
+	if noStateGuard || s.depthFunc != df {
+		s.depthFunc = df
+		ctx.DepthFunc(convertCmp(df))
 	}
 }
 
-func (r *Renderer) stateStencilTest(stencilTest bool) {
-	if r.last.stencilTest != stencilTest {
-		r.last.stencilTest = stencilTest
-		if stencilTest {
-			r.render.Enable(gl.STENCIL_TEST)
-		} else {
-			r.render.Disable(gl.STENCIL_TEST)
-		}
+func (s *graphicsState) stateBlendFuncSeparate(ctx *gl.Context, bs gfx.BlendState) {
+	if noStateGuard || s.blendFuncSeparate != bs {
+		s.blendFuncSeparate = bs
+		ctx.BlendFuncSeparate(
+			convertBlendOp(bs.SrcRGB),
+			convertBlendOp(bs.DstRGB),
+			convertBlendOp(bs.SrcAlpha),
+			convertBlendOp(bs.SrcAlpha),
+		)
 	}
 }
 
-func (r *Renderer) stateStencilOp(front, back gfx.StencilState) {
-	if r.last.stencilOpFront != front || r.last.stencilOpBack != back {
-		r.last.stencilOpFront = front
-		r.last.stencilOpBack = back
+func (s *graphicsState) stateBlendEquationSeparate(ctx *gl.Context, bs gfx.BlendState) {
+	if noStateGuard || s.blendEquationSeparate != bs {
+		s.blendEquationSeparate = bs
+		ctx.BlendEquationSeparate(
+			convertBlendEq(bs.RGBEq),
+			convertBlendEq(bs.AlphaEq),
+		)
+	}
+}
+
+func (s *graphicsState) stateStencilOp(ctx *gl.Context, front, back gfx.StencilState) {
+	if noStateGuard || s.stencilOpFront != front || s.stencilOpBack != back {
+		s.stencilOpFront = front
+		s.stencilOpBack = back
 		if front == back {
 			// We can save a few calls.
-			r.render.StencilOpSeparate(
+			ctx.StencilOpSeparate(
 				gl.FRONT_AND_BACK,
 				convertStencilOp(front.Fail),
 				convertStencilOp(front.DepthFail),
 				convertStencilOp(front.DepthPass),
 			)
 		} else {
-			r.render.StencilOpSeparate(
+			ctx.StencilOpSeparate(
 				gl.FRONT,
 				convertStencilOp(front.Fail),
 				convertStencilOp(front.DepthFail),
 				convertStencilOp(front.DepthPass),
 			)
-			r.render.StencilOpSeparate(
+			ctx.StencilOpSeparate(
 				gl.BACK,
 				convertStencilOp(back.Fail),
 				convertStencilOp(back.DepthFail),
@@ -239,26 +570,26 @@ func (r *Renderer) stateStencilOp(front, back gfx.StencilState) {
 	}
 }
 
-func (r *Renderer) stateStencilFunc(front, back gfx.StencilState) {
-	if r.last.stencilFuncFront != front || r.last.stencilFuncBack != back {
-		r.last.stencilFuncFront = front
-		r.last.stencilFuncBack = back
+func (s *graphicsState) stateStencilFunc(ctx *gl.Context, front, back gfx.StencilState) {
+	if noStateGuard || s.stencilFuncFront != front || s.stencilFuncBack != back {
+		s.stencilFuncFront = front
+		s.stencilFuncBack = back
 		if front == back {
 			// We can save a few calls.
-			r.render.StencilFuncSeparate(
+			ctx.StencilFuncSeparate(
 				gl.FRONT_AND_BACK,
 				convertCmp(front.Cmp),
 				int32(front.Reference),
 				uint32(front.ReadMask),
 			)
 		} else {
-			r.render.StencilFuncSeparate(
+			ctx.StencilFuncSeparate(
 				gl.FRONT,
 				convertCmp(front.Cmp),
 				int32(front.Reference),
 				uint32(front.ReadMask),
 			)
-			r.render.StencilFuncSeparate(
+			ctx.StencilFuncSeparate(
 				gl.BACK,
 				convertCmp(back.Cmp),
 				int32(back.Reference),
@@ -268,142 +599,108 @@ func (r *Renderer) stateStencilFunc(front, back gfx.StencilState) {
 	}
 }
 
-func (r *Renderer) stateStencilMask(front, back uint) {
-	if r.last.stencilMaskFront != front || r.last.stencilMaskBack != back {
-		r.last.stencilMaskFront = front
-		r.last.stencilMaskBack = back
+func (s *graphicsState) stateStencilMask(ctx *gl.Context, front, back uint) {
+	if noStateGuard || s.stencilMaskFront != front || s.stencilMaskBack != back {
+		s.stencilMaskFront = front
+		s.stencilMaskBack = back
 		if front == back {
 			// We can save a call.
-			r.render.StencilMaskSeparate(gl.FRONT_AND_BACK, uint32(front))
+			ctx.StencilMaskSeparate(gl.FRONT_AND_BACK, uint32(front))
 		} else {
-			r.render.StencilMaskSeparate(gl.FRONT, uint32(front))
-			r.render.StencilMaskSeparate(gl.BACK, uint32(back))
+			ctx.StencilMaskSeparate(gl.FRONT, uint32(front))
+			ctx.StencilMaskSeparate(gl.BACK, uint32(back))
 		}
 	}
 }
 
-func (r *Renderer) stateDepthFunc(df gfx.Cmp) {
-	if r.last.depthFunc != df {
-		r.last.depthFunc = df
-		r.render.DepthFunc(convertCmp(df))
-	}
-}
-
-func (r *Renderer) stateDepthTest(enabled bool) {
-	if r.last.depthTest != enabled {
-		r.last.depthTest = enabled
+func (s *graphicsState) stateDithering(ctx *gl.Context, enabled bool) {
+	if noStateGuard || s.dithering != enabled {
+		s.dithering = enabled
 		if enabled {
-			r.render.Enable(gl.DEPTH_TEST)
+			ctx.Enable(gl.DITHER)
 		} else {
-			r.render.Disable(gl.DEPTH_TEST)
+			ctx.Disable(gl.DITHER)
 		}
 	}
 }
 
-func (r *Renderer) stateDepthWrite(enabled bool) {
-	if r.last.depthWrite != enabled {
-		r.last.depthWrite = enabled
+func (s *graphicsState) stateDepthTest(ctx *gl.Context, enabled bool) {
+	if noStateGuard || s.depthTest != enabled {
+		s.depthTest = enabled
 		if enabled {
-			r.render.DepthMask(gl.GLBool(true))
+			ctx.Enable(gl.DEPTH_TEST)
 		} else {
-			r.render.DepthMask(gl.GLBool(false))
+			ctx.Disable(gl.DEPTH_TEST)
 		}
 	}
 }
 
-func (r *Renderer) stateFaceCulling(m gfx.FaceCullMode) {
-	if r.last.faceCulling != m {
-		r.last.faceCulling = m
-		switch m {
-		case gfx.BackFaceCulling:
-			r.render.Enable(gl.CULL_FACE)
-			r.render.CullFace(gl.BACK)
-		case gfx.FrontFaceCulling:
-			r.render.Enable(gl.CULL_FACE)
-			r.render.CullFace(gl.FRONT)
-		default:
-			r.render.Disable(gl.CULL_FACE)
+func (s *graphicsState) stateDepthWrite(ctx *gl.Context, enabled bool) {
+	if noStateGuard || s.depthWrite != enabled {
+		s.depthWrite = enabled
+		if enabled {
+			ctx.DepthMask(gl.GLBool(true))
+		} else {
+			ctx.DepthMask(gl.GLBool(false))
 		}
 	}
 }
 
-func (r *Renderer) stateProgram(p uint32) {
-	if r.last.program != p {
-		r.last.program = p
-		r.render.UseProgram(p)
+func (s *graphicsState) stateStencilTest(ctx *gl.Context, stencilTest bool) {
+	if noStateGuard || s.stencilTest != stencilTest {
+		s.stencilTest = stencilTest
+		log.Println("glStencilTest", stencilTest)
+		if stencilTest {
+			ctx.Enable(gl.STENCIL_TEST)
+		} else {
+			ctx.Disable(gl.STENCIL_TEST)
+		}
 	}
 }
 
-func (r *Renderer) stateBlend(blend bool) {
-	if r.last.blend != blend {
-		r.last.blend = blend
+func (s *graphicsState) stateBlend(ctx *gl.Context, blend bool) {
+	if noStateGuard || s.blend != blend {
+		s.blend = blend
 		if blend {
-			r.render.Enable(gl.BLEND)
+			ctx.Enable(gl.BLEND)
 		} else {
-			r.render.Disable(gl.BLEND)
+			ctx.Disable(gl.BLEND)
 		}
 	}
 }
 
-func (r *Renderer) stateBlendColor(c gfx.Color) {
-	if r.last.blendColor != c {
-		r.last.blendColor = c
-		r.render.BlendColor(c.R, c.G, c.B, c.A)
-	}
-}
-
-func (r *Renderer) stateBlendFuncSeparate(s gfx.BlendState) {
-	if r.last.blendFuncSeparate != s {
-		r.last.blendFuncSeparate = s
-		r.render.BlendFuncSeparate(
-			convertBlendOp(s.SrcRGB),
-			convertBlendOp(s.DstRGB),
-			convertBlendOp(s.SrcAlpha),
-			convertBlendOp(s.SrcAlpha),
-		)
-	}
-}
-
-func (r *Renderer) stateBlendEquationSeparate(s gfx.BlendState) {
-	if r.last.blendEquationSeparate != s {
-		r.last.blendEquationSeparate = s
-		r.render.BlendEquationSeparate(
-			convertBlendEq(s.RGBEq),
-			convertBlendEq(s.AlphaEq),
-		)
-	}
-}
-
-func (r *Renderer) stateAlphaToCoverage(alphaToCoverage bool) {
-	if r.last.alphaToCoverage != alphaToCoverage {
-		r.last.alphaToCoverage = alphaToCoverage
-		if r.gpuInfo.AlphaToCoverage {
+func (s *graphicsState) stateAlphaToCoverage(ctx *gl.Context, gpuInfo *gfx.GPUInfo, alphaToCoverage bool) {
+	if noStateGuard || s.alphaToCoverage != alphaToCoverage {
+		s.alphaToCoverage = alphaToCoverage
+		if gpuInfo.AlphaToCoverage {
 			if alphaToCoverage {
-				r.render.Enable(gl.SAMPLE_ALPHA_TO_COVERAGE)
+				ctx.Enable(gl.SAMPLE_ALPHA_TO_COVERAGE)
 			} else {
-				r.render.Disable(gl.SAMPLE_ALPHA_TO_COVERAGE)
+				ctx.Disable(gl.SAMPLE_ALPHA_TO_COVERAGE)
 			}
 		}
 	}
 }
 
-func (r *Renderer) stateClearColor(color gfx.Color) {
-	if r.last.clearColor != color {
-		r.last.clearColor = color
-		r.render.ClearColor(color.R, color.G, color.B, color.A)
+func (s *graphicsState) stateFaceCulling(ctx *gl.Context, m gfx.FaceCullMode) {
+	if noStateGuard || s.faceCulling != m {
+		s.faceCulling = m
+		switch m {
+		case gfx.BackFaceCulling:
+			ctx.Enable(gl.CULL_FACE)
+			ctx.CullFace(gl.BACK)
+		case gfx.FrontFaceCulling:
+			ctx.Enable(gl.CULL_FACE)
+			ctx.CullFace(gl.FRONT)
+		default:
+			ctx.Disable(gl.CULL_FACE)
+		}
 	}
 }
 
-func (r *Renderer) stateClearDepth(depth float64) {
-	if r.last.clearDepth != depth {
-		r.last.clearDepth = depth
-		r.render.ClearDepth(depth)
-	}
-}
-
-func (r *Renderer) stateClearStencil(stencil int) {
-	if r.last.clearStencil != stencil {
-		r.last.clearStencil = stencil
-		r.render.ClearStencil(int32(stencil))
+func (s *graphicsState) stateProgram(ctx *gl.Context, p uint32) {
+	if noStateGuard || s.program != p {
+		s.program = p
+		ctx.UseProgram(p)
 	}
 }

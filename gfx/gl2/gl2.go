@@ -39,6 +39,13 @@ type Renderer struct {
 	RenderExec chan func() bool
 	LoaderExec chan func()
 
+	// Whether or not the existing graphics state should be kept between
+	// frames. If set to true before rendering a frame the renderer will ask
+	// OpenGL for the existing state, the frame will be rendered, and the old
+	// OpenGL state restored. This is particularly useful when the renderer
+	// must interoperate with other renderers (e.g. QT5).
+	keepState bool
+
 	// render/loader context API.
 	render, loader *gl.Context
 
@@ -87,23 +94,9 @@ type Renderer struct {
 		slice []uint32
 	}
 
-	// Structure for various previously set render states, mostly to avoid
-	// useless OpenGL calls.
-	last struct {
-		scissor                                                                          image.Rectangle
-		clearColor, blendColor                                                           gfx.Color
-		clearDepth                                                                       float64
-		clearStencil                                                                     int
-		colorWrite                                                                       [4]bool
-		depthFunc                                                                        gfx.Cmp
-		blendFuncSeparate, blendEquationSeparate                                         gfx.BlendState
-		stencilOpFront, stencilOpBack, stencilFuncFront, stencilFuncBack                 gfx.StencilState
-		stencilMaskFront, stencilMaskBack                                                uint
-		texturing, dithering, depthTest, depthWrite, stencilTest, blend, alphaToCoverage bool
-		faceCulling                                                                      gfx.FaceCullMode
-		program                                                                          uint32
-		shader                                                                           *gfx.Shader
-	}
+	*graphicsState
+	prevGraphicsState *graphicsState
+	lastShader        *gfx.Shader
 
 	// Structure used to manage the debug output stream.
 	debug struct {
@@ -310,9 +303,9 @@ func (r *Renderer) MSAA() (msaa bool) {
 func (r *Renderer) performClear(rect image.Rectangle, bg gfx.Color) {
 	r.setGlobalState()
 
-	// Only if the clear color has changed do we need to make the OpenGL call.
-	r.stateScissor(rect)
-	r.stateClearColor(bg)
+	// Perform clearing.
+	r.stateScissor(r.render, r.Bounds(), rect)
+	r.stateClearColor(r.render, bg)
 	r.render.Clear(uint32(gl.COLOR_BUFFER_BIT))
 }
 
@@ -320,8 +313,8 @@ func (r *Renderer) performClearDepth(rect image.Rectangle, depth float64) {
 	r.setGlobalState()
 
 	// Perform clearing.
-	r.stateScissor(rect)
-	r.stateClearDepth(depth)
+	r.stateScissor(r.render, r.Bounds(), rect)
+	r.stateClearDepth(r.render, depth)
 	r.render.Clear(uint32(gl.DEPTH_BUFFER_BIT))
 }
 
@@ -329,8 +322,8 @@ func (r *Renderer) performClearStencil(rect image.Rectangle, stencil int) {
 	r.setGlobalState()
 
 	// Perform clearing.
-	r.stateScissor(rect)
-	r.stateClearStencil(stencil)
+	r.stateScissor(r.render, r.Bounds(), rect)
+	r.stateClearStencil(r.render, stencil)
 	r.render.Clear(uint32(gl.STENCIL_BUFFER_BIT))
 }
 
@@ -346,6 +339,18 @@ func (r *Renderer) UpdateBounds(bounds image.Rectangle) {
 func (r *Renderer) setGlobalState() {
 	if !r.stateSetForFrame {
 		r.stateSetForFrame = true
+
+		if r.keepState {
+			// We want to maintain state between frames for cooperation with
+			// another renderer. Store the existing graphics state now so that
+			// we can restore it after the frame is rendered.
+			r.prevGraphicsState = queryExistingState(r.render, &r.gpuInfo, r.Bounds())
+
+			// Since the existing state is also not what we think it is, we
+			// must update our state now.
+			cpy := *r.prevGraphicsState
+			r.graphicsState = &cpy
+		}
 
 		// Update viewport bounds.
 		r.bounds.Lock()
@@ -372,10 +377,17 @@ func (r *Renderer) clearGlobalState() {
 		r.stateSetForFrame = false
 
 		// Clear last used state.
-		r.clearLastState()
+		oldState := defaultGraphicsState
+		if r.keepState {
+			// We want to maintain state between frames for cooperation with
+			// another renderer. Use the graphics state that was active when
+			// the frame started then.
+			oldState = r.prevGraphicsState
+		}
+		r.graphicsState.load(r.render, &r.gpuInfo, r.Bounds(), oldState)
 
 		// Reset last shader so that uniforms are loaded again next frame.
-		r.last.shader = nil
+		r.lastShader = nil
 
 		// Disable scissor testing.
 		r.render.Disable(gl.SCISSOR_TEST)
@@ -399,10 +411,18 @@ func (r *Renderer) SetDebugOutput(w io.Writer) {
 // New returns a new OpenGL 2 based graphics renderer. If any error is returned
 // then a nil renderer is also returned. This function must be called only when
 // an OpenGL 2 context is active.
-func New() (*Renderer, error) {
+//
+// keepState specifies whether or not the existing graphics state should be
+// maintained between frames. If set to true then before rendering a frame the
+// graphics state will be saved, the frame rendered, and the old graphics state
+// restored again. This is particularly useful when the renderer must cooperate
+// with another renderer (e.g. QT5). Do not turn it on needlessly though as it
+// does come with a performance cost.
+func New(keepState bool) (*Renderer, error) {
 	r := &Renderer{
 		RenderExec:     make(chan func() bool, 1024),
 		LoaderExec:     make(chan func(), 1024),
+		keepState:      keepState,
 		renderComplete: make(chan struct{}, 8),
 		wantFree:       make(chan struct{}, 1),
 		clock:          clock.New(),
@@ -488,8 +508,15 @@ func New() (*Renderer, error) {
 	r.render.Execute()
 	r.bounds.rect = image.Rect(0, 0, int(viewport[2]), int(viewport[3]))
 
+	if keepState {
+		// Load the existing graphics state.
+		r.graphicsState = queryExistingState(r.render, &r.gpuInfo, r.bounds.rect)
+	} else {
+		r.graphicsState = defaultGraphicsState
+	}
+
 	// Update scissor rectangle.
-	r.stateScissor(r.bounds.rect)
+	r.stateScissor(r.render, r.bounds.rect, r.bounds.rect)
 
 	// Grab the number of texture compression formats.
 	var numFormats int32

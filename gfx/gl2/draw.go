@@ -234,7 +234,7 @@ func (r *Renderer) Draw(rect image.Rectangle, o *gfx.Object, c *gfx.Camera) {
 		r.setGlobalState()
 
 		// Update the scissor region (effects drawing).
-		r.stateScissor(rect)
+		r.stateScissor(r.render, r.Bounds(), rect)
 
 		var ns *nativeShader
 		if o.NativeShader != nil {
@@ -367,23 +367,23 @@ func (r *Renderer) endQuery(o *gfx.Object, n nativeObject) nativeObject {
 
 func (r *Renderer) useState(ns *nativeShader, obj *gfx.Object, c *gfx.Camera) {
 	// Use object state.
-	r.stateColorWrite(obj.WriteRed, obj.WriteGreen, obj.WriteBlue, obj.WriteAlpha)
-	r.stateDithering(obj.Dithering)
-	r.stateStencilTest(obj.StencilTest)
-	r.stateStencilOp(obj.StencilFront, obj.StencilBack)
-	r.stateStencilFunc(obj.StencilFront, obj.StencilBack)
-	r.stateStencilMask(obj.StencilFront.WriteMask, obj.StencilBack.WriteMask)
-	r.stateDepthFunc(obj.DepthCmp)
-	r.stateDepthTest(obj.DepthTest)
-	r.stateDepthWrite(obj.DepthWrite)
-	r.stateFaceCulling(obj.FaceCulling)
+	r.stateColorWrite(r.render, obj.WriteRed, obj.WriteGreen, obj.WriteBlue, obj.WriteAlpha)
+	r.stateDithering(r.render, obj.Dithering)
+	r.stateStencilTest(r.render, obj.StencilTest)
+	r.stateStencilOp(r.render, obj.StencilFront, obj.StencilBack)
+	r.stateStencilFunc(r.render, obj.StencilFront, obj.StencilBack)
+	r.stateStencilMask(r.render, obj.StencilFront.WriteMask, obj.StencilBack.WriteMask)
+	r.stateDepthFunc(r.render, obj.DepthCmp)
+	r.stateDepthTest(r.render, obj.DepthTest)
+	r.stateDepthWrite(r.render, obj.DepthWrite)
+	r.stateFaceCulling(r.render, obj.FaceCulling)
 
 	// Begin using the shader.
 	shader := obj.Shader
-	if r.last.shader != shader {
-		r.last.shader = shader
+	if r.lastShader != shader {
+		r.lastShader = shader
 
-		r.stateProgram(ns.program)
+		r.stateProgram(r.render, ns.program)
 
 		// Update shader inputs.
 		for name := range shader.Inputs {
@@ -407,12 +407,12 @@ func (r *Renderer) useState(ns *nativeShader, obj *gfx.Object, c *gfx.Camera) {
 	r.updateUniform(ns, "MVP", nativeObj.mvp)
 
 	// Set alpha mode.
-	r.stateAlphaToCoverage(obj.AlphaMode == gfx.AlphaToCoverage)
-	r.stateBlend(obj.AlphaMode == gfx.AlphaBlend)
+	r.stateAlphaToCoverage(r.render, &r.gpuInfo, obj.AlphaMode == gfx.AlphaToCoverage)
+	r.stateBlend(r.render, obj.AlphaMode == gfx.AlphaBlend)
 	if obj.AlphaMode == gfx.AlphaBlend {
-		r.stateBlendColor(obj.Blend.Color)
-		r.stateBlendFuncSeparate(obj.Blend)
-		r.stateBlendEquationSeparate(obj.Blend)
+		r.stateBlendColor(r.render, obj.Blend.Color)
+		r.stateBlendFuncSeparate(r.render, obj.Blend)
+		r.stateBlendEquationSeparate(r.render, obj.Blend)
 	}
 
 	switch obj.AlphaMode {
