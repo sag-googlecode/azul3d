@@ -303,6 +303,9 @@ func (r *Renderer) MSAA() (msaa bool) {
 func (r *Renderer) performClear(rect image.Rectangle, bg gfx.Color) {
 	r.setGlobalState()
 
+	// Color write mask effects the glClear call below.
+	r.stateColorWrite(r.render, true, true, true, true)
+
 	// Perform clearing.
 	r.stateScissor(r.render, r.Bounds(), rect)
 	r.stateClearColor(r.render, bg)
@@ -312,6 +315,9 @@ func (r *Renderer) performClear(rect image.Rectangle, bg gfx.Color) {
 func (r *Renderer) performClearDepth(rect image.Rectangle, depth float64) {
 	r.setGlobalState()
 
+	// Depth write mask effects the glClear call below.
+	r.stateDepthWrite(r.render, true)
+
 	// Perform clearing.
 	r.stateScissor(r.render, r.Bounds(), rect)
 	r.stateClearDepth(r.render, depth)
@@ -320,6 +326,9 @@ func (r *Renderer) performClearDepth(rect image.Rectangle, depth float64) {
 
 func (r *Renderer) performClearStencil(rect image.Rectangle, stencil int) {
 	r.setGlobalState()
+
+	// Stencil mask effects the glClear call below.
+	r.stateStencilMask(r.render, 0xFFFF, 0xFFFF)
 
 	// Perform clearing.
 	r.stateScissor(r.render, r.Bounds(), rect)
