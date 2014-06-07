@@ -7,7 +7,6 @@
 package main
 
 import (
-	"azul3d.org/v1/clock"
 	"azul3d.org/v1/gfx"
 	"azul3d.org/v1/gfx/gl2"
 	"fmt"
@@ -26,7 +25,7 @@ func main() {
 
 var (
 	renderer *gl2.Renderer
-	cl       *clock.Clock
+	printFPS = time.Tick(1 * time.Second)
 )
 
 type GoRect struct {
@@ -37,6 +36,13 @@ type GoRect struct {
 // independent of the QML draw loop.
 func gfxLoop(r gfx.Renderer) {
 	for {
+		select{
+		case <-printFPS:
+			cl := r.Clock()
+			fmt.Printf("%v FPS (%v Avg.)\n", cl.FrameRate(), int(cl.AverageFrameRate()))
+		default:
+		}
+
 		// Clear the entire area (empty rectangle means "the whole area").
 		r.Clear(image.Rect(0, 0, 0, 0), gfx.Color{1, 1, 1, 1})
 
@@ -56,12 +62,11 @@ func (r *GoRect) Paint(p *qml.Painter) {
 	if renderer == nil {
 		// Initialize renderer.
 		var err error
-		renderer, err = gl2.New()
+		renderer, err = gl2.New(true)
 		if err != nil {
 			fmt.Println(err)
 			os.Exit(1)
 		}
-
 
 		// Write renderer debug output (shader errors, etc) to stdout.
 		renderer.SetDebugOutput(os.Stdout)
@@ -79,9 +84,6 @@ func (r *GoRect) Paint(p *qml.Painter) {
 		select {
 		case fn := <-renderer.RenderExec:
 			if renderedFrame := fn(); renderedFrame {
-				// Tell the clock a new frame has begun.
-				cl.Tick()
-
 				// Request that QML give us another frame later.
 				r.Call("update")
 				return
@@ -94,16 +96,6 @@ func (r *GoRect) Paint(p *qml.Painter) {
 }
 
 func run() error {
-	cl = clock.New()
-	cl.SetMaxFrameRate(0)
-	printFPS := time.Tick(1 * time.Second)
-	go func() {
-		for {
-			<-printFPS
-			fmt.Printf("%v FPS (%v Avg.)\n", cl.FrameRate(), int(cl.AverageFrameRate()))
-		}
-	}()
-
 	qml.Init(nil)
 
 	qml.RegisterTypes("GoExtensions", 1, 0, []qml.TypeSpec{{

@@ -82,7 +82,7 @@ func program() {
 	//window.GLSetVerticalSync(chippy.NoVerticalSync)
 
 	// Create the renderer.
-	r, err := gl2.New()
+	r, err := gl2.New(false)
 	if err != nil {
 		log.Fatal(err)
 	}
