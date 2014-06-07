@@ -1713,6 +1713,7 @@ const (
 	VERTEX_BINDING_STRIDE                                      int32  = 0x82D8
 	MAX_VERTEX_ATTRIB_RELATIVE_OFFSET                          int32  = 0x82D9
 	MAX_VERTEX_ATTRIB_BINDINGS                                 int32  = 0x82DA
+	VERTEX_BINDING_BUFFER                                      int32  = 0x8F4F
 	DISPLAY_LIST                                               int32  = 0x82E7
 	MAX_VERTEX_ATTRIB_STRIDE                                   int32  = 0x82E5
 	PRIMITIVE_RESTART_FOR_PATCHES_SUPPORTED                    int32  = 0x8221

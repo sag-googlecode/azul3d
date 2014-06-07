@@ -361,6 +361,74 @@ typedef void (GLAPIENTRY* PFNGLINVALIDATESUBFRAMEBUFFERPROC) (GLenum, GLsizei, G
 typedef void (GLAPIENTRY* PFNGLTEXSTORAGE2DPROC) (GLenum, GLsizei, GLenum, GLsizei, GLsizei);
 typedef void (GLAPIENTRY* PFNGLTEXSTORAGE3DPROC) (GLenum, GLsizei, GLenum, GLsizei, GLsizei, GLsizei);
 typedef void (GLAPIENTRY* PFNGLGETINTERNALFORMATIVPROC) (GLenum, GLenum, GLenum, GLsizei, GLint*);
+typedef void (GLAPIENTRY* PFNGLDISPATCHCOMPUTEPROC) (GLuint, GLuint, GLuint);
+typedef void (GLAPIENTRY* PFNGLDISPATCHCOMPUTEINDIRECTPROC) (GLintptr);
+typedef void (GLAPIENTRY* PFNGLDRAWARRAYSINDIRECTPROC) (GLenum, void*);
+typedef void (GLAPIENTRY* PFNGLDRAWELEMENTSINDIRECTPROC) (GLenum, GLenum, void*);
+typedef void (GLAPIENTRY* PFNGLFRAMEBUFFERPARAMETERIPROC) (GLenum, GLenum, GLint);
+typedef void (GLAPIENTRY* PFNGLGETFRAMEBUFFERPARAMETERIVPROC) (GLenum, GLenum, GLint*);
+typedef void (GLAPIENTRY* PFNGLGETPROGRAMINTERFACEIVPROC) (GLuint, GLenum, GLenum, GLint*);
+typedef GLuint (GLAPIENTRY* PFNGLGETPROGRAMRESOURCEINDEXPROC) (GLuint, GLenum, GLchar*);
+typedef void (GLAPIENTRY* PFNGLGETPROGRAMRESOURCENAMEPROC) (GLuint, GLenum, GLuint, GLsizei, GLsizei*, GLchar*);
+typedef void (GLAPIENTRY* PFNGLGETPROGRAMRESOURCEIVPROC) (GLuint, GLenum, GLuint, GLsizei, GLenum*, GLsizei, GLsizei*, GLint*);
+typedef GLint (GLAPIENTRY* PFNGLGETPROGRAMRESOURCELOCATIONPROC) (GLuint, GLenum, GLchar*);
+typedef void (GLAPIENTRY* PFNGLUSEPROGRAMSTAGESPROC) (GLuint, GLbitfield, GLuint);
+typedef void (GLAPIENTRY* PFNGLACTIVESHADERPROGRAMPROC) (GLuint, GLuint);
+typedef GLuint (GLAPIENTRY* PFNGLCREATESHADERPROGRAMVPROC) (GLenum, GLsizei, GLchar**);
+typedef void (GLAPIENTRY* PFNGLBINDPROGRAMPIPELINEPROC) (GLuint);
+typedef void (GLAPIENTRY* PFNGLDELETEPROGRAMPIPELINESPROC) (GLsizei, GLuint*);
+typedef void (GLAPIENTRY* PFNGLGENPROGRAMPIPELINESPROC) (GLsizei, GLuint*);
+typedef GLboolean (GLAPIENTRY* PFNGLISPROGRAMPIPELINEPROC) (GLuint);
+typedef void (GLAPIENTRY* PFNGLGETPROGRAMPIPELINEIVPROC) (GLuint, GLenum, GLint*);
+typedef void (GLAPIENTRY* PFNGLPROGRAMUNIFORM1IPROC) (GLuint, GLint, GLint);
+typedef void (GLAPIENTRY* PFNGLPROGRAMUNIFORM2IPROC) (GLuint, GLint, GLint, GLint);
+typedef void (GLAPIENTRY* PFNGLPROGRAMUNIFORM3IPROC) (GLuint, GLint, GLint, GLint, GLint);
+typedef void (GLAPIENTRY* PFNGLPROGRAMUNIFORM4IPROC) (GLuint, GLint, GLint, GLint, GLint, GLint);
+typedef void (GLAPIENTRY* PFNGLPROGRAMUNIFORM1UIPROC) (GLuint, GLint, GLuint);
+typedef void (GLAPIENTRY* PFNGLPROGRAMUNIFORM2UIPROC) (GLuint, GLint, GLuint, GLuint);
+typedef void (GLAPIENTRY* PFNGLPROGRAMUNIFORM3UIPROC) (GLuint, GLint, GLuint, GLuint, GLuint);
+typedef void (GLAPIENTRY* PFNGLPROGRAMUNIFORM4UIPROC) (GLuint, GLint, GLuint, GLuint, GLuint, GLuint);
+typedef void (GLAPIENTRY* PFNGLPROGRAMUNIFORM1FPROC) (GLuint, GLint, GLfloat);
+typedef void (GLAPIENTRY* PFNGLPROGRAMUNIFORM2FPROC) (GLuint, GLint, GLfloat, GLfloat);
+typedef void (GLAPIENTRY* PFNGLPROGRAMUNIFORM3FPROC) (GLuint, GLint, GLfloat, GLfloat, GLfloat);
+typedef void (GLAPIENTRY* PFNGLPROGRAMUNIFORM4FPROC) (GLuint, GLint, GLfloat, GLfloat, GLfloat, GLfloat);
+typedef void (GLAPIENTRY* PFNGLPROGRAMUNIFORM1IVPROC) (GLuint, GLint, GLsizei, GLint*);
+typedef void (GLAPIENTRY* PFNGLPROGRAMUNIFORM2IVPROC) (GLuint, GLint, GLsizei, GLint*);
+typedef void (GLAPIENTRY* PFNGLPROGRAMUNIFORM3IVPROC) (GLuint, GLint, GLsizei, GLint*);
+typedef void (GLAPIENTRY* PFNGLPROGRAMUNIFORM4IVPROC) (GLuint, GLint, GLsizei, GLint*);
+typedef void (GLAPIENTRY* PFNGLPROGRAMUNIFORM1UIVPROC) (GLuint, GLint, GLsizei, GLuint*);
+typedef void (GLAPIENTRY* PFNGLPROGRAMUNIFORM2UIVPROC) (GLuint, GLint, GLsizei, GLuint*);
+typedef void (GLAPIENTRY* PFNGLPROGRAMUNIFORM3UIVPROC) (GLuint, GLint, GLsizei, GLuint*);
+typedef void (GLAPIENTRY* PFNGLPROGRAMUNIFORM4UIVPROC) (GLuint, GLint, GLsizei, GLuint*);
+typedef void (GLAPIENTRY* PFNGLPROGRAMUNIFORM1FVPROC) (GLuint, GLint, GLsizei, GLfloat*);
+typedef void (GLAPIENTRY* PFNGLPROGRAMUNIFORM2FVPROC) (GLuint, GLint, GLsizei, GLfloat*);
+typedef void (GLAPIENTRY* PFNGLPROGRAMUNIFORM3FVPROC) (GLuint, GLint, GLsizei, GLfloat*);
+typedef void (GLAPIENTRY* PFNGLPROGRAMUNIFORM4FVPROC) (GLuint, GLint, GLsizei, GLfloat*);
+typedef void (GLAPIENTRY* PFNGLPROGRAMUNIFORMMATRIX2FVPROC) (GLuint, GLint, GLsizei, GLboolean, GLfloat*);
+typedef void (GLAPIENTRY* PFNGLPROGRAMUNIFORMMATRIX3FVPROC) (GLuint, GLint, GLsizei, GLboolean, GLfloat*);
+typedef void (GLAPIENTRY* PFNGLPROGRAMUNIFORMMATRIX4FVPROC) (GLuint, GLint, GLsizei, GLboolean, GLfloat*);
+typedef void (GLAPIENTRY* PFNGLPROGRAMUNIFORMMATRIX2X3FVPROC) (GLuint, GLint, GLsizei, GLboolean, GLfloat*);
+typedef void (GLAPIENTRY* PFNGLPROGRAMUNIFORMMATRIX3X2FVPROC) (GLuint, GLint, GLsizei, GLboolean, GLfloat*);
+typedef void (GLAPIENTRY* PFNGLPROGRAMUNIFORMMATRIX2X4FVPROC) (GLuint, GLint, GLsizei, GLboolean, GLfloat*);
+typedef void (GLAPIENTRY* PFNGLPROGRAMUNIFORMMATRIX4X2FVPROC) (GLuint, GLint, GLsizei, GLboolean, GLfloat*);
+typedef void (GLAPIENTRY* PFNGLPROGRAMUNIFORMMATRIX3X4FVPROC) (GLuint, GLint, GLsizei, GLboolean, GLfloat*);
+typedef void (GLAPIENTRY* PFNGLPROGRAMUNIFORMMATRIX4X3FVPROC) (GLuint, GLint, GLsizei, GLboolean, GLfloat*);
+typedef void (GLAPIENTRY* PFNGLVALIDATEPROGRAMPIPELINEPROC) (GLuint);
+typedef void (GLAPIENTRY* PFNGLGETPROGRAMPIPELINEINFOLOGPROC) (GLuint, GLsizei, GLsizei*, GLchar*);
+typedef void (GLAPIENTRY* PFNGLBINDIMAGETEXTUREPROC) (GLuint, GLuint, GLint, GLboolean, GLint, GLenum, GLenum);
+typedef void (GLAPIENTRY* PFNGLGETBOOLEANI_VPROC) (GLenum, GLuint, GLboolean*);
+typedef void (GLAPIENTRY* PFNGLMEMORYBARRIERPROC) (GLbitfield);
+typedef void (GLAPIENTRY* PFNGLMEMORYBARRIERBYREGIONPROC) (GLbitfield);
+typedef void (GLAPIENTRY* PFNGLTEXSTORAGE2DMULTISAMPLEPROC) (GLenum, GLsizei, GLenum, GLsizei, GLsizei, GLboolean);
+typedef void (GLAPIENTRY* PFNGLGETMULTISAMPLEFVPROC) (GLenum, GLuint, GLfloat*);
+typedef void (GLAPIENTRY* PFNGLSAMPLEMASKIPROC) (GLuint, GLbitfield);
+typedef void (GLAPIENTRY* PFNGLGETTEXLEVELPARAMETERIVPROC) (GLenum, GLint, GLenum, GLint*);
+typedef void (GLAPIENTRY* PFNGLGETTEXLEVELPARAMETERFVPROC) (GLenum, GLint, GLenum, GLfloat*);
+typedef void (GLAPIENTRY* PFNGLBINDVERTEXBUFFERPROC) (GLuint, GLuint, GLintptr, GLsizei);
+typedef void (GLAPIENTRY* PFNGLVERTEXATTRIBFORMATPROC) (GLuint, GLint, GLenum, GLboolean, GLuint);
+typedef void (GLAPIENTRY* PFNGLVERTEXATTRIBIFORMATPROC) (GLuint, GLint, GLenum, GLuint);
+typedef void (GLAPIENTRY* PFNGLVERTEXATTRIBBINDINGPROC) (GLuint, GLuint);
+typedef void (GLAPIENTRY* PFNGLVERTEXBINDINGDIVISORPROC) (GLuint, GLuint);
 
 
 // gl_wrap_context holds the loaded function pointers for a given OpenGL
@@ -613,6 +681,74 @@ typedef struct {
 	PFNGLTEXSTORAGE2DPROC glTexStorage2DProc;
 	PFNGLTEXSTORAGE3DPROC glTexStorage3DProc;
 	PFNGLGETINTERNALFORMATIVPROC glGetInternalformativProc;
+	PFNGLDISPATCHCOMPUTEPROC glDispatchComputeProc;
+	PFNGLDISPATCHCOMPUTEINDIRECTPROC glDispatchComputeIndirectProc;
+	PFNGLDRAWARRAYSINDIRECTPROC glDrawArraysIndirectProc;
+	PFNGLDRAWELEMENTSINDIRECTPROC glDrawElementsIndirectProc;
+	PFNGLFRAMEBUFFERPARAMETERIPROC glFramebufferParameteriProc;
+	PFNGLGETFRAMEBUFFERPARAMETERIVPROC glGetFramebufferParameterivProc;
+	PFNGLGETPROGRAMINTERFACEIVPROC glGetProgramInterfaceivProc;
+	PFNGLGETPROGRAMRESOURCEINDEXPROC glGetProgramResourceIndexProc;
+	PFNGLGETPROGRAMRESOURCENAMEPROC glGetProgramResourceNameProc;
+	PFNGLGETPROGRAMRESOURCEIVPROC glGetProgramResourceivProc;
+	PFNGLGETPROGRAMRESOURCELOCATIONPROC glGetProgramResourceLocationProc;
+	PFNGLUSEPROGRAMSTAGESPROC glUseProgramStagesProc;
+	PFNGLACTIVESHADERPROGRAMPROC glActiveShaderProgramProc;
+	PFNGLCREATESHADERPROGRAMVPROC glCreateShaderProgramvProc;
+	PFNGLBINDPROGRAMPIPELINEPROC glBindProgramPipelineProc;
+	PFNGLDELETEPROGRAMPIPELINESPROC glDeleteProgramPipelinesProc;
+	PFNGLGENPROGRAMPIPELINESPROC glGenProgramPipelinesProc;
+	PFNGLISPROGRAMPIPELINEPROC glIsProgramPipelineProc;
+	PFNGLGETPROGRAMPIPELINEIVPROC glGetProgramPipelineivProc;
+	PFNGLPROGRAMUNIFORM1IPROC glProgramUniform1iProc;
+	PFNGLPROGRAMUNIFORM2IPROC glProgramUniform2iProc;
+	PFNGLPROGRAMUNIFORM3IPROC glProgramUniform3iProc;
+	PFNGLPROGRAMUNIFORM4IPROC glProgramUniform4iProc;
+	PFNGLPROGRAMUNIFORM1UIPROC glProgramUniform1uiProc;
+	PFNGLPROGRAMUNIFORM2UIPROC glProgramUniform2uiProc;
+	PFNGLPROGRAMUNIFORM3UIPROC glProgramUniform3uiProc;
+	PFNGLPROGRAMUNIFORM4UIPROC glProgramUniform4uiProc;
+	PFNGLPROGRAMUNIFORM1FPROC glProgramUniform1fProc;
+	PFNGLPROGRAMUNIFORM2FPROC glProgramUniform2fProc;
+	PFNGLPROGRAMUNIFORM3FPROC glProgramUniform3fProc;
+	PFNGLPROGRAMUNIFORM4FPROC glProgramUniform4fProc;
+	PFNGLPROGRAMUNIFORM1IVPROC glProgramUniform1ivProc;
+	PFNGLPROGRAMUNIFORM2IVPROC glProgramUniform2ivProc;
+	PFNGLPROGRAMUNIFORM3IVPROC glProgramUniform3ivProc;
+	PFNGLPROGRAMUNIFORM4IVPROC glProgramUniform4ivProc;
+	PFNGLPROGRAMUNIFORM1UIVPROC glProgramUniform1uivProc;
+	PFNGLPROGRAMUNIFORM2UIVPROC glProgramUniform2uivProc;
+	PFNGLPROGRAMUNIFORM3UIVPROC glProgramUniform3uivProc;
+	PFNGLPROGRAMUNIFORM4UIVPROC glProgramUniform4uivProc;
+	PFNGLPROGRAMUNIFORM1FVPROC glProgramUniform1fvProc;
+	PFNGLPROGRAMUNIFORM2FVPROC glProgramUniform2fvProc;
+	PFNGLPROGRAMUNIFORM3FVPROC glProgramUniform3fvProc;
+	PFNGLPROGRAMUNIFORM4FVPROC glProgramUniform4fvProc;
+	PFNGLPROGRAMUNIFORMMATRIX2FVPROC glProgramUniformMatrix2fvProc;
+	PFNGLPROGRAMUNIFORMMATRIX3FVPROC glProgramUniformMatrix3fvProc;
+	PFNGLPROGRAMUNIFORMMATRIX4FVPROC glProgramUniformMatrix4fvProc;
+	PFNGLPROGRAMUNIFORMMATRIX2X3FVPROC glProgramUniformMatrix2x3fvProc;
+	PFNGLPROGRAMUNIFORMMATRIX3X2FVPROC glProgramUniformMatrix3x2fvProc;
+	PFNGLPROGRAMUNIFORMMATRIX2X4FVPROC glProgramUniformMatrix2x4fvProc;
+	PFNGLPROGRAMUNIFORMMATRIX4X2FVPROC glProgramUniformMatrix4x2fvProc;
+	PFNGLPROGRAMUNIFORMMATRIX3X4FVPROC glProgramUniformMatrix3x4fvProc;
+	PFNGLPROGRAMUNIFORMMATRIX4X3FVPROC glProgramUniformMatrix4x3fvProc;
+	PFNGLVALIDATEPROGRAMPIPELINEPROC glValidateProgramPipelineProc;
+	PFNGLGETPROGRAMPIPELINEINFOLOGPROC glGetProgramPipelineInfoLogProc;
+	PFNGLBINDIMAGETEXTUREPROC glBindImageTextureProc;
+	PFNGLGETBOOLEANI_VPROC glGetBooleani_vProc;
+	PFNGLMEMORYBARRIERPROC glMemoryBarrierProc;
+	PFNGLMEMORYBARRIERBYREGIONPROC glMemoryBarrierByRegionProc;
+	PFNGLTEXSTORAGE2DMULTISAMPLEPROC glTexStorage2DMultisampleProc;
+	PFNGLGETMULTISAMPLEFVPROC glGetMultisamplefvProc;
+	PFNGLSAMPLEMASKIPROC glSampleMaskiProc;
+	PFNGLGETTEXLEVELPARAMETERIVPROC glGetTexLevelParameterivProc;
+	PFNGLGETTEXLEVELPARAMETERFVPROC glGetTexLevelParameterfvProc;
+	PFNGLBINDVERTEXBUFFERPROC glBindVertexBufferProc;
+	PFNGLVERTEXATTRIBFORMATPROC glVertexAttribFormatProc;
+	PFNGLVERTEXATTRIBIFORMATPROC glVertexAttribIFormatProc;
+	PFNGLVERTEXATTRIBBINDINGPROC glVertexAttribBindingProc;
+	PFNGLVERTEXBINDINGDIVISORPROC glVertexBindingDivisorProc;
 
 } gl_wrap_context;
 
@@ -863,6 +999,74 @@ inline void gl_wrap_context_glInvalidateSubFramebuffer(gl_wrap_context* ctx, GLe
 inline void gl_wrap_context_glTexStorage2D(gl_wrap_context* ctx, GLenum target, GLsizei levels, GLenum internalformat, GLsizei width, GLsizei height);
 inline void gl_wrap_context_glTexStorage3D(gl_wrap_context* ctx, GLenum target, GLsizei levels, GLenum internalformat, GLsizei width, GLsizei height, GLsizei depth);
 inline void gl_wrap_context_glGetInternalformativ(gl_wrap_context* ctx, GLenum target, GLenum internalformat, GLenum pname, GLsizei bufSize, GLint* params);
+inline void gl_wrap_context_glDispatchCompute(gl_wrap_context* ctx, GLuint num_groups_x, GLuint num_groups_y, GLuint num_groups_z);
+inline void gl_wrap_context_glDispatchComputeIndirect(gl_wrap_context* ctx, GLintptr indirect);
+inline void gl_wrap_context_glDrawArraysIndirect(gl_wrap_context* ctx, GLenum mode, void* indirect);
+inline void gl_wrap_context_glDrawElementsIndirect(gl_wrap_context* ctx, GLenum mode, GLenum type, void* indirect);
+inline void gl_wrap_context_glFramebufferParameteri(gl_wrap_context* ctx, GLenum target, GLenum pname, GLint param);
+inline void gl_wrap_context_glGetFramebufferParameteriv(gl_wrap_context* ctx, GLenum target, GLenum pname, GLint* params);
+inline void gl_wrap_context_glGetProgramInterfaceiv(gl_wrap_context* ctx, GLuint program, GLenum programInterface, GLenum pname, GLint* params);
+inline GLuint gl_wrap_context_glGetProgramResourceIndex(gl_wrap_context* ctx, GLuint program, GLenum programInterface, GLchar* name);
+inline void gl_wrap_context_glGetProgramResourceName(gl_wrap_context* ctx, GLuint program, GLenum programInterface, GLuint index, GLsizei bufSize, GLsizei* length, GLchar* name);
+inline void gl_wrap_context_glGetProgramResourceiv(gl_wrap_context* ctx, GLuint program, GLenum programInterface, GLuint index, GLsizei propCount, GLenum* props, GLsizei bufSize, GLsizei* length, GLint* params);
+inline GLint gl_wrap_context_glGetProgramResourceLocation(gl_wrap_context* ctx, GLuint program, GLenum programInterface, GLchar* name);
+inline void gl_wrap_context_glUseProgramStages(gl_wrap_context* ctx, GLuint pipeline, GLbitfield stages, GLuint program);
+inline void gl_wrap_context_glActiveShaderProgram(gl_wrap_context* ctx, GLuint pipeline, GLuint program);
+inline GLuint gl_wrap_context_glCreateShaderProgramv(gl_wrap_context* ctx, GLenum type, GLsizei count, GLchar** strings);
+inline void gl_wrap_context_glBindProgramPipeline(gl_wrap_context* ctx, GLuint pipeline);
+inline void gl_wrap_context_glDeleteProgramPipelines(gl_wrap_context* ctx, GLsizei n, GLuint* pipelines);
+inline void gl_wrap_context_glGenProgramPipelines(gl_wrap_context* ctx, GLsizei n, GLuint* pipelines);
+inline GLboolean gl_wrap_context_glIsProgramPipeline(gl_wrap_context* ctx, GLuint pipeline);
+inline void gl_wrap_context_glGetProgramPipelineiv(gl_wrap_context* ctx, GLuint pipeline, GLenum pname, GLint* params);
+inline void gl_wrap_context_glProgramUniform1i(gl_wrap_context* ctx, GLuint program, GLint location, GLint v0);
+inline void gl_wrap_context_glProgramUniform2i(gl_wrap_context* ctx, GLuint program, GLint location, GLint v0, GLint v1);
+inline void gl_wrap_context_glProgramUniform3i(gl_wrap_context* ctx, GLuint program, GLint location, GLint v0, GLint v1, GLint v2);
+inline void gl_wrap_context_glProgramUniform4i(gl_wrap_context* ctx, GLuint program, GLint location, GLint v0, GLint v1, GLint v2, GLint v3);
+inline void gl_wrap_context_glProgramUniform1ui(gl_wrap_context* ctx, GLuint program, GLint location, GLuint v0);
+inline void gl_wrap_context_glProgramUniform2ui(gl_wrap_context* ctx, GLuint program, GLint location, GLuint v0, GLuint v1);
+inline void gl_wrap_context_glProgramUniform3ui(gl_wrap_context* ctx, GLuint program, GLint location, GLuint v0, GLuint v1, GLuint v2);
+inline void gl_wrap_context_glProgramUniform4ui(gl_wrap_context* ctx, GLuint program, GLint location, GLuint v0, GLuint v1, GLuint v2, GLuint v3);
+inline void gl_wrap_context_glProgramUniform1f(gl_wrap_context* ctx, GLuint program, GLint location, GLfloat v0);
+inline void gl_wrap_context_glProgramUniform2f(gl_wrap_context* ctx, GLuint program, GLint location, GLfloat v0, GLfloat v1);
+inline void gl_wrap_context_glProgramUniform3f(gl_wrap_context* ctx, GLuint program, GLint location, GLfloat v0, GLfloat v1, GLfloat v2);
+inline void gl_wrap_context_glProgramUniform4f(gl_wrap_context* ctx, GLuint program, GLint location, GLfloat v0, GLfloat v1, GLfloat v2, GLfloat v3);
+inline void gl_wrap_context_glProgramUniform1iv(gl_wrap_context* ctx, GLuint program, GLint location, GLsizei count, GLint* value);
+inline void gl_wrap_context_glProgramUniform2iv(gl_wrap_context* ctx, GLuint program, GLint location, GLsizei count, GLint* value);
+inline void gl_wrap_context_glProgramUniform3iv(gl_wrap_context* ctx, GLuint program, GLint location, GLsizei count, GLint* value);
+inline void gl_wrap_context_glProgramUniform4iv(gl_wrap_context* ctx, GLuint program, GLint location, GLsizei count, GLint* value);
+inline void gl_wrap_context_glProgramUniform1uiv(gl_wrap_context* ctx, GLuint program, GLint location, GLsizei count, GLuint* value);
+inline void gl_wrap_context_glProgramUniform2uiv(gl_wrap_context* ctx, GLuint program, GLint location, GLsizei count, GLuint* value);
+inline void gl_wrap_context_glProgramUniform3uiv(gl_wrap_context* ctx, GLuint program, GLint location, GLsizei count, GLuint* value);
+inline void gl_wrap_context_glProgramUniform4uiv(gl_wrap_context* ctx, GLuint program, GLint location, GLsizei count, GLuint* value);
+inline void gl_wrap_context_glProgramUniform1fv(gl_wrap_context* ctx, GLuint program, GLint location, GLsizei count, GLfloat* value);
+inline void gl_wrap_context_glProgramUniform2fv(gl_wrap_context* ctx, GLuint program, GLint location, GLsizei count, GLfloat* value);
+inline void gl_wrap_context_glProgramUniform3fv(gl_wrap_context* ctx, GLuint program, GLint location, GLsizei count, GLfloat* value);
+inline void gl_wrap_context_glProgramUniform4fv(gl_wrap_context* ctx, GLuint program, GLint location, GLsizei count, GLfloat* value);
+inline void gl_wrap_context_glProgramUniformMatrix2fv(gl_wrap_context* ctx, GLuint program, GLint location, GLsizei count, GLboolean transpose, GLfloat* value);
+inline void gl_wrap_context_glProgramUniformMatrix3fv(gl_wrap_context* ctx, GLuint program, GLint location, GLsizei count, GLboolean transpose, GLfloat* value);
+inline void gl_wrap_context_glProgramUniformMatrix4fv(gl_wrap_context* ctx, GLuint program, GLint location, GLsizei count, GLboolean transpose, GLfloat* value);
+inline void gl_wrap_context_glProgramUniformMatrix2x3fv(gl_wrap_context* ctx, GLuint program, GLint location, GLsizei count, GLboolean transpose, GLfloat* value);
+inline void gl_wrap_context_glProgramUniformMatrix3x2fv(gl_wrap_context* ctx, GLuint program, GLint location, GLsizei count, GLboolean transpose, GLfloat* value);
+inline void gl_wrap_context_glProgramUniformMatrix2x4fv(gl_wrap_context* ctx, GLuint program, GLint location, GLsizei count, GLboolean transpose, GLfloat* value);
+inline void gl_wrap_context_glProgramUniformMatrix4x2fv(gl_wrap_context* ctx, GLuint program, GLint location, GLsizei count, GLboolean transpose, GLfloat* value);
+inline void gl_wrap_context_glProgramUniformMatrix3x4fv(gl_wrap_context* ctx, GLuint program, GLint location, GLsizei count, GLboolean transpose, GLfloat* value);
+inline void gl_wrap_context_glProgramUniformMatrix4x3fv(gl_wrap_context* ctx, GLuint program, GLint location, GLsizei count, GLboolean transpose, GLfloat* value);
+inline void gl_wrap_context_glValidateProgramPipeline(gl_wrap_context* ctx, GLuint pipeline);
+inline void gl_wrap_context_glGetProgramPipelineInfoLog(gl_wrap_context* ctx, GLuint pipeline, GLsizei bufSize, GLsizei* length, GLchar* infoLog);
+inline void gl_wrap_context_glBindImageTexture(gl_wrap_context* ctx, GLuint unit, GLuint texture, GLint level, GLboolean layered, GLint layer, GLenum access, GLenum format);
+inline void gl_wrap_context_glGetBooleani_v(gl_wrap_context* ctx, GLenum target, GLuint index, GLboolean* data);
+inline void gl_wrap_context_glMemoryBarrier(gl_wrap_context* ctx, GLbitfield barriers);
+inline void gl_wrap_context_glMemoryBarrierByRegion(gl_wrap_context* ctx, GLbitfield barriers);
+inline void gl_wrap_context_glTexStorage2DMultisample(gl_wrap_context* ctx, GLenum target, GLsizei samples, GLenum internalformat, GLsizei width, GLsizei height, GLboolean fixedsamplelocations);
+inline void gl_wrap_context_glGetMultisamplefv(gl_wrap_context* ctx, GLenum pname, GLuint index, GLfloat* val);
+inline void gl_wrap_context_glSampleMaski(gl_wrap_context* ctx, GLuint maskNumber, GLbitfield mask);
+inline void gl_wrap_context_glGetTexLevelParameteriv(gl_wrap_context* ctx, GLenum target, GLint level, GLenum pname, GLint* params);
+inline void gl_wrap_context_glGetTexLevelParameterfv(gl_wrap_context* ctx, GLenum target, GLint level, GLenum pname, GLfloat* params);
+inline void gl_wrap_context_glBindVertexBuffer(gl_wrap_context* ctx, GLuint bindingindex, GLuint buffer, GLintptr offset, GLsizei stride);
+inline void gl_wrap_context_glVertexAttribFormat(gl_wrap_context* ctx, GLuint attribindex, GLint size, GLenum type, GLboolean normalized, GLuint relativeoffset);
+inline void gl_wrap_context_glVertexAttribIFormat(gl_wrap_context* ctx, GLuint attribindex, GLint size, GLenum type, GLuint relativeoffset);
+inline void gl_wrap_context_glVertexAttribBinding(gl_wrap_context* ctx, GLuint attribindex, GLuint bindingindex);
+inline void gl_wrap_context_glVertexBindingDivisor(gl_wrap_context* ctx, GLuint bindingindex, GLuint divisor);
 
 
 // Argument struct definitions for batch function handlers.
@@ -2254,6 +2458,444 @@ typedef struct {
 	GLsizei bufSize;
 	GLint* params;
 } gl_wrap_handler_glGetInternalformativ_args;
+
+typedef struct {
+	GLuint num_groups_x;
+	GLuint num_groups_y;
+	GLuint num_groups_z;
+} gl_wrap_handler_glDispatchCompute_args;
+
+typedef struct {
+	GLintptr indirect;
+} gl_wrap_handler_glDispatchComputeIndirect_args;
+
+typedef struct {
+	GLenum mode;
+	void* indirect;
+} gl_wrap_handler_glDrawArraysIndirect_args;
+
+typedef struct {
+	GLenum mode;
+	GLenum type;
+	void* indirect;
+} gl_wrap_handler_glDrawElementsIndirect_args;
+
+typedef struct {
+	GLenum target;
+	GLenum pname;
+	GLint param;
+} gl_wrap_handler_glFramebufferParameteri_args;
+
+typedef struct {
+	GLenum target;
+	GLenum pname;
+	GLint* params;
+} gl_wrap_handler_glGetFramebufferParameteriv_args;
+
+typedef struct {
+	GLuint program;
+	GLenum programInterface;
+	GLenum pname;
+	GLint* params;
+} gl_wrap_handler_glGetProgramInterfaceiv_args;
+
+typedef struct {
+	GLuint program;
+	GLenum programInterface;
+	GLuint index;
+	GLsizei bufSize;
+	GLsizei* length;
+	GLchar* name;
+} gl_wrap_handler_glGetProgramResourceName_args;
+
+typedef struct {
+	GLuint program;
+	GLenum programInterface;
+	GLuint index;
+	GLsizei propCount;
+	GLenum* props;
+	GLsizei bufSize;
+	GLsizei* length;
+	GLint* params;
+} gl_wrap_handler_glGetProgramResourceiv_args;
+
+typedef struct {
+	GLuint pipeline;
+	GLbitfield stages;
+	GLuint program;
+} gl_wrap_handler_glUseProgramStages_args;
+
+typedef struct {
+	GLuint pipeline;
+	GLuint program;
+} gl_wrap_handler_glActiveShaderProgram_args;
+
+typedef struct {
+	GLuint pipeline;
+} gl_wrap_handler_glBindProgramPipeline_args;
+
+typedef struct {
+	GLsizei n;
+	GLuint* pipelines;
+} gl_wrap_handler_glDeleteProgramPipelines_args;
+
+typedef struct {
+	GLsizei n;
+	GLuint* pipelines;
+} gl_wrap_handler_glGenProgramPipelines_args;
+
+typedef struct {
+	GLuint pipeline;
+	GLenum pname;
+	GLint* params;
+} gl_wrap_handler_glGetProgramPipelineiv_args;
+
+typedef struct {
+	GLuint program;
+	GLint location;
+	GLint v0;
+} gl_wrap_handler_glProgramUniform1i_args;
+
+typedef struct {
+	GLuint program;
+	GLint location;
+	GLint v0;
+	GLint v1;
+} gl_wrap_handler_glProgramUniform2i_args;
+
+typedef struct {
+	GLuint program;
+	GLint location;
+	GLint v0;
+	GLint v1;
+	GLint v2;
+} gl_wrap_handler_glProgramUniform3i_args;
+
+typedef struct {
+	GLuint program;
+	GLint location;
+	GLint v0;
+	GLint v1;
+	GLint v2;
+	GLint v3;
+} gl_wrap_handler_glProgramUniform4i_args;
+
+typedef struct {
+	GLuint program;
+	GLint location;
+	GLuint v0;
+} gl_wrap_handler_glProgramUniform1ui_args;
+
+typedef struct {
+	GLuint program;
+	GLint location;
+	GLuint v0;
+	GLuint v1;
+} gl_wrap_handler_glProgramUniform2ui_args;
+
+typedef struct {
+	GLuint program;
+	GLint location;
+	GLuint v0;
+	GLuint v1;
+	GLuint v2;
+} gl_wrap_handler_glProgramUniform3ui_args;
+
+typedef struct {
+	GLuint program;
+	GLint location;
+	GLuint v0;
+	GLuint v1;
+	GLuint v2;
+	GLuint v3;
+} gl_wrap_handler_glProgramUniform4ui_args;
+
+typedef struct {
+	GLuint program;
+	GLint location;
+	GLfloat v0;
+} gl_wrap_handler_glProgramUniform1f_args;
+
+typedef struct {
+	GLuint program;
+	GLint location;
+	GLfloat v0;
+	GLfloat v1;
+} gl_wrap_handler_glProgramUniform2f_args;
+
+typedef struct {
+	GLuint program;
+	GLint location;
+	GLfloat v0;
+	GLfloat v1;
+	GLfloat v2;
+} gl_wrap_handler_glProgramUniform3f_args;
+
+typedef struct {
+	GLuint program;
+	GLint location;
+	GLfloat v0;
+	GLfloat v1;
+	GLfloat v2;
+	GLfloat v3;
+} gl_wrap_handler_glProgramUniform4f_args;
+
+typedef struct {
+	GLuint program;
+	GLint location;
+	GLsizei count;
+	GLint* value;
+} gl_wrap_handler_glProgramUniform1iv_args;
+
+typedef struct {
+	GLuint program;
+	GLint location;
+	GLsizei count;
+	GLint* value;
+} gl_wrap_handler_glProgramUniform2iv_args;
+
+typedef struct {
+	GLuint program;
+	GLint location;
+	GLsizei count;
+	GLint* value;
+} gl_wrap_handler_glProgramUniform3iv_args;
+
+typedef struct {
+	GLuint program;
+	GLint location;
+	GLsizei count;
+	GLint* value;
+} gl_wrap_handler_glProgramUniform4iv_args;
+
+typedef struct {
+	GLuint program;
+	GLint location;
+	GLsizei count;
+	GLuint* value;
+} gl_wrap_handler_glProgramUniform1uiv_args;
+
+typedef struct {
+	GLuint program;
+	GLint location;
+	GLsizei count;
+	GLuint* value;
+} gl_wrap_handler_glProgramUniform2uiv_args;
+
+typedef struct {
+	GLuint program;
+	GLint location;
+	GLsizei count;
+	GLuint* value;
+} gl_wrap_handler_glProgramUniform3uiv_args;
+
+typedef struct {
+	GLuint program;
+	GLint location;
+	GLsizei count;
+	GLuint* value;
+} gl_wrap_handler_glProgramUniform4uiv_args;
+
+typedef struct {
+	GLuint program;
+	GLint location;
+	GLsizei count;
+	GLfloat* value;
+} gl_wrap_handler_glProgramUniform1fv_args;
+
+typedef struct {
+	GLuint program;
+	GLint location;
+	GLsizei count;
+	GLfloat* value;
+} gl_wrap_handler_glProgramUniform2fv_args;
+
+typedef struct {
+	GLuint program;
+	GLint location;
+	GLsizei count;
+	GLfloat* value;
+} gl_wrap_handler_glProgramUniform3fv_args;
+
+typedef struct {
+	GLuint program;
+	GLint location;
+	GLsizei count;
+	GLfloat* value;
+} gl_wrap_handler_glProgramUniform4fv_args;
+
+typedef struct {
+	GLuint program;
+	GLint location;
+	GLsizei count;
+	GLboolean transpose;
+	GLfloat* value;
+} gl_wrap_handler_glProgramUniformMatrix2fv_args;
+
+typedef struct {
+	GLuint program;
+	GLint location;
+	GLsizei count;
+	GLboolean transpose;
+	GLfloat* value;
+} gl_wrap_handler_glProgramUniformMatrix3fv_args;
+
+typedef struct {
+	GLuint program;
+	GLint location;
+	GLsizei count;
+	GLboolean transpose;
+	GLfloat* value;
+} gl_wrap_handler_glProgramUniformMatrix4fv_args;
+
+typedef struct {
+	GLuint program;
+	GLint location;
+	GLsizei count;
+	GLboolean transpose;
+	GLfloat* value;
+} gl_wrap_handler_glProgramUniformMatrix2x3fv_args;
+
+typedef struct {
+	GLuint program;
+	GLint location;
+	GLsizei count;
+	GLboolean transpose;
+	GLfloat* value;
+} gl_wrap_handler_glProgramUniformMatrix3x2fv_args;
+
+typedef struct {
+	GLuint program;
+	GLint location;
+	GLsizei count;
+	GLboolean transpose;
+	GLfloat* value;
+} gl_wrap_handler_glProgramUniformMatrix2x4fv_args;
+
+typedef struct {
+	GLuint program;
+	GLint location;
+	GLsizei count;
+	GLboolean transpose;
+	GLfloat* value;
+} gl_wrap_handler_glProgramUniformMatrix4x2fv_args;
+
+typedef struct {
+	GLuint program;
+	GLint location;
+	GLsizei count;
+	GLboolean transpose;
+	GLfloat* value;
+} gl_wrap_handler_glProgramUniformMatrix3x4fv_args;
+
+typedef struct {
+	GLuint program;
+	GLint location;
+	GLsizei count;
+	GLboolean transpose;
+	GLfloat* value;
+} gl_wrap_handler_glProgramUniformMatrix4x3fv_args;
+
+typedef struct {
+	GLuint pipeline;
+} gl_wrap_handler_glValidateProgramPipeline_args;
+
+typedef struct {
+	GLuint pipeline;
+	GLsizei bufSize;
+	GLsizei* length;
+	GLchar* infoLog;
+} gl_wrap_handler_glGetProgramPipelineInfoLog_args;
+
+typedef struct {
+	GLuint unit;
+	GLuint texture;
+	GLint level;
+	GLboolean layered;
+	GLint layer;
+	GLenum access;
+	GLenum format;
+} gl_wrap_handler_glBindImageTexture_args;
+
+typedef struct {
+	GLenum target;
+	GLuint index;
+	GLboolean* data;
+} gl_wrap_handler_glGetBooleani_v_args;
+
+typedef struct {
+	GLbitfield barriers;
+} gl_wrap_handler_glMemoryBarrier_args;
+
+typedef struct {
+	GLbitfield barriers;
+} gl_wrap_handler_glMemoryBarrierByRegion_args;
+
+typedef struct {
+	GLenum target;
+	GLsizei samples;
+	GLenum internalformat;
+	GLsizei width;
+	GLsizei height;
+	GLboolean fixedsamplelocations;
+} gl_wrap_handler_glTexStorage2DMultisample_args;
+
+typedef struct {
+	GLenum pname;
+	GLuint index;
+	GLfloat* val;
+} gl_wrap_handler_glGetMultisamplefv_args;
+
+typedef struct {
+	GLuint maskNumber;
+	GLbitfield mask;
+} gl_wrap_handler_glSampleMaski_args;
+
+typedef struct {
+	GLenum target;
+	GLint level;
+	GLenum pname;
+	GLint* params;
+} gl_wrap_handler_glGetTexLevelParameteriv_args;
+
+typedef struct {
+	GLenum target;
+	GLint level;
+	GLenum pname;
+	GLfloat* params;
+} gl_wrap_handler_glGetTexLevelParameterfv_args;
+
+typedef struct {
+	GLuint bindingindex;
+	GLuint buffer;
+	GLintptr offset;
+	GLsizei stride;
+} gl_wrap_handler_glBindVertexBuffer_args;
+
+typedef struct {
+	GLuint attribindex;
+	GLint size;
+	GLenum type;
+	GLboolean normalized;
+	GLuint relativeoffset;
+} gl_wrap_handler_glVertexAttribFormat_args;
+
+typedef struct {
+	GLuint attribindex;
+	GLint size;
+	GLenum type;
+	GLuint relativeoffset;
+} gl_wrap_handler_glVertexAttribIFormat_args;
+
+typedef struct {
+	GLuint attribindex;
+	GLuint bindingindex;
+} gl_wrap_handler_glVertexAttribBinding_args;
+
+typedef struct {
+	GLuint bindingindex;
+	GLuint divisor;
+} gl_wrap_handler_glVertexBindingDivisor_args;
 
 
 

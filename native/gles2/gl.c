@@ -1549,6 +1549,414 @@ void gl_wrap_context_glGetInternalformativ(gl_wrap_context* ctx, GLenum target, 
 	}
 	ctx->glGetInternalformativProc(target, internalformat, pname, bufSize, params);
 };
+void gl_wrap_context_glDispatchCompute(gl_wrap_context* ctx, GLuint num_groups_x, GLuint num_groups_y, GLuint num_groups_z) {
+	if(ctx->glDispatchComputeProc == NULL) {
+		ctx->glDispatchComputeProc = (PFNGLDISPATCHCOMPUTEPROC)gl_wrap_get_pointer("glDispatchCompute");
+	}
+	ctx->glDispatchComputeProc(num_groups_x, num_groups_y, num_groups_z);
+};
+void gl_wrap_context_glDispatchComputeIndirect(gl_wrap_context* ctx, GLintptr indirect) {
+	if(ctx->glDispatchComputeIndirectProc == NULL) {
+		ctx->glDispatchComputeIndirectProc = (PFNGLDISPATCHCOMPUTEINDIRECTPROC)gl_wrap_get_pointer("glDispatchComputeIndirect");
+	}
+	ctx->glDispatchComputeIndirectProc(indirect);
+};
+void gl_wrap_context_glDrawArraysIndirect(gl_wrap_context* ctx, GLenum mode, void* indirect) {
+	if(ctx->glDrawArraysIndirectProc == NULL) {
+		ctx->glDrawArraysIndirectProc = (PFNGLDRAWARRAYSINDIRECTPROC)gl_wrap_get_pointer("glDrawArraysIndirect");
+	}
+	ctx->glDrawArraysIndirectProc(mode, indirect);
+};
+void gl_wrap_context_glDrawElementsIndirect(gl_wrap_context* ctx, GLenum mode, GLenum type, void* indirect) {
+	if(ctx->glDrawElementsIndirectProc == NULL) {
+		ctx->glDrawElementsIndirectProc = (PFNGLDRAWELEMENTSINDIRECTPROC)gl_wrap_get_pointer("glDrawElementsIndirect");
+	}
+	ctx->glDrawElementsIndirectProc(mode, type, indirect);
+};
+void gl_wrap_context_glFramebufferParameteri(gl_wrap_context* ctx, GLenum target, GLenum pname, GLint param) {
+	if(ctx->glFramebufferParameteriProc == NULL) {
+		ctx->glFramebufferParameteriProc = (PFNGLFRAMEBUFFERPARAMETERIPROC)gl_wrap_get_pointer("glFramebufferParameteri");
+	}
+	ctx->glFramebufferParameteriProc(target, pname, param);
+};
+void gl_wrap_context_glGetFramebufferParameteriv(gl_wrap_context* ctx, GLenum target, GLenum pname, GLint* params) {
+	if(ctx->glGetFramebufferParameterivProc == NULL) {
+		ctx->glGetFramebufferParameterivProc = (PFNGLGETFRAMEBUFFERPARAMETERIVPROC)gl_wrap_get_pointer("glGetFramebufferParameteriv");
+	}
+	ctx->glGetFramebufferParameterivProc(target, pname, params);
+};
+void gl_wrap_context_glGetProgramInterfaceiv(gl_wrap_context* ctx, GLuint program, GLenum programInterface, GLenum pname, GLint* params) {
+	if(ctx->glGetProgramInterfaceivProc == NULL) {
+		ctx->glGetProgramInterfaceivProc = (PFNGLGETPROGRAMINTERFACEIVPROC)gl_wrap_get_pointer("glGetProgramInterfaceiv");
+	}
+	ctx->glGetProgramInterfaceivProc(program, programInterface, pname, params);
+};
+GLuint gl_wrap_context_glGetProgramResourceIndex(gl_wrap_context* ctx, GLuint program, GLenum programInterface, GLchar* name) {
+	if(ctx->glGetProgramResourceIndexProc == NULL) {
+		ctx->glGetProgramResourceIndexProc = (PFNGLGETPROGRAMRESOURCEINDEXPROC)gl_wrap_get_pointer("glGetProgramResourceIndex");
+	}
+	return ctx->glGetProgramResourceIndexProc(program, programInterface, name);
+};
+void gl_wrap_context_glGetProgramResourceName(gl_wrap_context* ctx, GLuint program, GLenum programInterface, GLuint index, GLsizei bufSize, GLsizei* length, GLchar* name) {
+	if(ctx->glGetProgramResourceNameProc == NULL) {
+		ctx->glGetProgramResourceNameProc = (PFNGLGETPROGRAMRESOURCENAMEPROC)gl_wrap_get_pointer("glGetProgramResourceName");
+	}
+	ctx->glGetProgramResourceNameProc(program, programInterface, index, bufSize, length, name);
+};
+void gl_wrap_context_glGetProgramResourceiv(gl_wrap_context* ctx, GLuint program, GLenum programInterface, GLuint index, GLsizei propCount, GLenum* props, GLsizei bufSize, GLsizei* length, GLint* params) {
+	if(ctx->glGetProgramResourceivProc == NULL) {
+		ctx->glGetProgramResourceivProc = (PFNGLGETPROGRAMRESOURCEIVPROC)gl_wrap_get_pointer("glGetProgramResourceiv");
+	}
+	ctx->glGetProgramResourceivProc(program, programInterface, index, propCount, props, bufSize, length, params);
+};
+GLint gl_wrap_context_glGetProgramResourceLocation(gl_wrap_context* ctx, GLuint program, GLenum programInterface, GLchar* name) {
+	if(ctx->glGetProgramResourceLocationProc == NULL) {
+		ctx->glGetProgramResourceLocationProc = (PFNGLGETPROGRAMRESOURCELOCATIONPROC)gl_wrap_get_pointer("glGetProgramResourceLocation");
+	}
+	return ctx->glGetProgramResourceLocationProc(program, programInterface, name);
+};
+void gl_wrap_context_glUseProgramStages(gl_wrap_context* ctx, GLuint pipeline, GLbitfield stages, GLuint program) {
+	if(ctx->glUseProgramStagesProc == NULL) {
+		ctx->glUseProgramStagesProc = (PFNGLUSEPROGRAMSTAGESPROC)gl_wrap_get_pointer("glUseProgramStages");
+	}
+	ctx->glUseProgramStagesProc(pipeline, stages, program);
+};
+void gl_wrap_context_glActiveShaderProgram(gl_wrap_context* ctx, GLuint pipeline, GLuint program) {
+	if(ctx->glActiveShaderProgramProc == NULL) {
+		ctx->glActiveShaderProgramProc = (PFNGLACTIVESHADERPROGRAMPROC)gl_wrap_get_pointer("glActiveShaderProgram");
+	}
+	ctx->glActiveShaderProgramProc(pipeline, program);
+};
+GLuint gl_wrap_context_glCreateShaderProgramv(gl_wrap_context* ctx, GLenum type, GLsizei count, GLchar** strings) {
+	if(ctx->glCreateShaderProgramvProc == NULL) {
+		ctx->glCreateShaderProgramvProc = (PFNGLCREATESHADERPROGRAMVPROC)gl_wrap_get_pointer("glCreateShaderProgramv");
+	}
+	return ctx->glCreateShaderProgramvProc(type, count, strings);
+};
+void gl_wrap_context_glBindProgramPipeline(gl_wrap_context* ctx, GLuint pipeline) {
+	if(ctx->glBindProgramPipelineProc == NULL) {
+		ctx->glBindProgramPipelineProc = (PFNGLBINDPROGRAMPIPELINEPROC)gl_wrap_get_pointer("glBindProgramPipeline");
+	}
+	ctx->glBindProgramPipelineProc(pipeline);
+};
+void gl_wrap_context_glDeleteProgramPipelines(gl_wrap_context* ctx, GLsizei n, GLuint* pipelines) {
+	if(ctx->glDeleteProgramPipelinesProc == NULL) {
+		ctx->glDeleteProgramPipelinesProc = (PFNGLDELETEPROGRAMPIPELINESPROC)gl_wrap_get_pointer("glDeleteProgramPipelines");
+	}
+	ctx->glDeleteProgramPipelinesProc(n, pipelines);
+};
+void gl_wrap_context_glGenProgramPipelines(gl_wrap_context* ctx, GLsizei n, GLuint* pipelines) {
+	if(ctx->glGenProgramPipelinesProc == NULL) {
+		ctx->glGenProgramPipelinesProc = (PFNGLGENPROGRAMPIPELINESPROC)gl_wrap_get_pointer("glGenProgramPipelines");
+	}
+	ctx->glGenProgramPipelinesProc(n, pipelines);
+};
+GLboolean gl_wrap_context_glIsProgramPipeline(gl_wrap_context* ctx, GLuint pipeline) {
+	if(ctx->glIsProgramPipelineProc == NULL) {
+		ctx->glIsProgramPipelineProc = (PFNGLISPROGRAMPIPELINEPROC)gl_wrap_get_pointer("glIsProgramPipeline");
+	}
+	return ctx->glIsProgramPipelineProc(pipeline);
+};
+void gl_wrap_context_glGetProgramPipelineiv(gl_wrap_context* ctx, GLuint pipeline, GLenum pname, GLint* params) {
+	if(ctx->glGetProgramPipelineivProc == NULL) {
+		ctx->glGetProgramPipelineivProc = (PFNGLGETPROGRAMPIPELINEIVPROC)gl_wrap_get_pointer("glGetProgramPipelineiv");
+	}
+	ctx->glGetProgramPipelineivProc(pipeline, pname, params);
+};
+void gl_wrap_context_glProgramUniform1i(gl_wrap_context* ctx, GLuint program, GLint location, GLint v0) {
+	if(ctx->glProgramUniform1iProc == NULL) {
+		ctx->glProgramUniform1iProc = (PFNGLPROGRAMUNIFORM1IPROC)gl_wrap_get_pointer("glProgramUniform1i");
+	}
+	ctx->glProgramUniform1iProc(program, location, v0);
+};
+void gl_wrap_context_glProgramUniform2i(gl_wrap_context* ctx, GLuint program, GLint location, GLint v0, GLint v1) {
+	if(ctx->glProgramUniform2iProc == NULL) {
+		ctx->glProgramUniform2iProc = (PFNGLPROGRAMUNIFORM2IPROC)gl_wrap_get_pointer("glProgramUniform2i");
+	}
+	ctx->glProgramUniform2iProc(program, location, v0, v1);
+};
+void gl_wrap_context_glProgramUniform3i(gl_wrap_context* ctx, GLuint program, GLint location, GLint v0, GLint v1, GLint v2) {
+	if(ctx->glProgramUniform3iProc == NULL) {
+		ctx->glProgramUniform3iProc = (PFNGLPROGRAMUNIFORM3IPROC)gl_wrap_get_pointer("glProgramUniform3i");
+	}
+	ctx->glProgramUniform3iProc(program, location, v0, v1, v2);
+};
+void gl_wrap_context_glProgramUniform4i(gl_wrap_context* ctx, GLuint program, GLint location, GLint v0, GLint v1, GLint v2, GLint v3) {
+	if(ctx->glProgramUniform4iProc == NULL) {
+		ctx->glProgramUniform4iProc = (PFNGLPROGRAMUNIFORM4IPROC)gl_wrap_get_pointer("glProgramUniform4i");
+	}
+	ctx->glProgramUniform4iProc(program, location, v0, v1, v2, v3);
+};
+void gl_wrap_context_glProgramUniform1ui(gl_wrap_context* ctx, GLuint program, GLint location, GLuint v0) {
+	if(ctx->glProgramUniform1uiProc == NULL) {
+		ctx->glProgramUniform1uiProc = (PFNGLPROGRAMUNIFORM1UIPROC)gl_wrap_get_pointer("glProgramUniform1ui");
+	}
+	ctx->glProgramUniform1uiProc(program, location, v0);
+};
+void gl_wrap_context_glProgramUniform2ui(gl_wrap_context* ctx, GLuint program, GLint location, GLuint v0, GLuint v1) {
+	if(ctx->glProgramUniform2uiProc == NULL) {
+		ctx->glProgramUniform2uiProc = (PFNGLPROGRAMUNIFORM2UIPROC)gl_wrap_get_pointer("glProgramUniform2ui");
+	}
+	ctx->glProgramUniform2uiProc(program, location, v0, v1);
+};
+void gl_wrap_context_glProgramUniform3ui(gl_wrap_context* ctx, GLuint program, GLint location, GLuint v0, GLuint v1, GLuint v2) {
+	if(ctx->glProgramUniform3uiProc == NULL) {
+		ctx->glProgramUniform3uiProc = (PFNGLPROGRAMUNIFORM3UIPROC)gl_wrap_get_pointer("glProgramUniform3ui");
+	}
+	ctx->glProgramUniform3uiProc(program, location, v0, v1, v2);
+};
+void gl_wrap_context_glProgramUniform4ui(gl_wrap_context* ctx, GLuint program, GLint location, GLuint v0, GLuint v1, GLuint v2, GLuint v3) {
+	if(ctx->glProgramUniform4uiProc == NULL) {
+		ctx->glProgramUniform4uiProc = (PFNGLPROGRAMUNIFORM4UIPROC)gl_wrap_get_pointer("glProgramUniform4ui");
+	}
+	ctx->glProgramUniform4uiProc(program, location, v0, v1, v2, v3);
+};
+void gl_wrap_context_glProgramUniform1f(gl_wrap_context* ctx, GLuint program, GLint location, GLfloat v0) {
+	if(ctx->glProgramUniform1fProc == NULL) {
+		ctx->glProgramUniform1fProc = (PFNGLPROGRAMUNIFORM1FPROC)gl_wrap_get_pointer("glProgramUniform1f");
+	}
+	ctx->glProgramUniform1fProc(program, location, v0);
+};
+void gl_wrap_context_glProgramUniform2f(gl_wrap_context* ctx, GLuint program, GLint location, GLfloat v0, GLfloat v1) {
+	if(ctx->glProgramUniform2fProc == NULL) {
+		ctx->glProgramUniform2fProc = (PFNGLPROGRAMUNIFORM2FPROC)gl_wrap_get_pointer("glProgramUniform2f");
+	}
+	ctx->glProgramUniform2fProc(program, location, v0, v1);
+};
+void gl_wrap_context_glProgramUniform3f(gl_wrap_context* ctx, GLuint program, GLint location, GLfloat v0, GLfloat v1, GLfloat v2) {
+	if(ctx->glProgramUniform3fProc == NULL) {
+		ctx->glProgramUniform3fProc = (PFNGLPROGRAMUNIFORM3FPROC)gl_wrap_get_pointer("glProgramUniform3f");
+	}
+	ctx->glProgramUniform3fProc(program, location, v0, v1, v2);
+};
+void gl_wrap_context_glProgramUniform4f(gl_wrap_context* ctx, GLuint program, GLint location, GLfloat v0, GLfloat v1, GLfloat v2, GLfloat v3) {
+	if(ctx->glProgramUniform4fProc == NULL) {
+		ctx->glProgramUniform4fProc = (PFNGLPROGRAMUNIFORM4FPROC)gl_wrap_get_pointer("glProgramUniform4f");
+	}
+	ctx->glProgramUniform4fProc(program, location, v0, v1, v2, v3);
+};
+void gl_wrap_context_glProgramUniform1iv(gl_wrap_context* ctx, GLuint program, GLint location, GLsizei count, GLint* value) {
+	if(ctx->glProgramUniform1ivProc == NULL) {
+		ctx->glProgramUniform1ivProc = (PFNGLPROGRAMUNIFORM1IVPROC)gl_wrap_get_pointer("glProgramUniform1iv");
+	}
+	ctx->glProgramUniform1ivProc(program, location, count, value);
+};
+void gl_wrap_context_glProgramUniform2iv(gl_wrap_context* ctx, GLuint program, GLint location, GLsizei count, GLint* value) {
+	if(ctx->glProgramUniform2ivProc == NULL) {
+		ctx->glProgramUniform2ivProc = (PFNGLPROGRAMUNIFORM2IVPROC)gl_wrap_get_pointer("glProgramUniform2iv");
+	}
+	ctx->glProgramUniform2ivProc(program, location, count, value);
+};
+void gl_wrap_context_glProgramUniform3iv(gl_wrap_context* ctx, GLuint program, GLint location, GLsizei count, GLint* value) {
+	if(ctx->glProgramUniform3ivProc == NULL) {
+		ctx->glProgramUniform3ivProc = (PFNGLPROGRAMUNIFORM3IVPROC)gl_wrap_get_pointer("glProgramUniform3iv");
+	}
+	ctx->glProgramUniform3ivProc(program, location, count, value);
+};
+void gl_wrap_context_glProgramUniform4iv(gl_wrap_context* ctx, GLuint program, GLint location, GLsizei count, GLint* value) {
+	if(ctx->glProgramUniform4ivProc == NULL) {
+		ctx->glProgramUniform4ivProc = (PFNGLPROGRAMUNIFORM4IVPROC)gl_wrap_get_pointer("glProgramUniform4iv");
+	}
+	ctx->glProgramUniform4ivProc(program, location, count, value);
+};
+void gl_wrap_context_glProgramUniform1uiv(gl_wrap_context* ctx, GLuint program, GLint location, GLsizei count, GLuint* value) {
+	if(ctx->glProgramUniform1uivProc == NULL) {
+		ctx->glProgramUniform1uivProc = (PFNGLPROGRAMUNIFORM1UIVPROC)gl_wrap_get_pointer("glProgramUniform1uiv");
+	}
+	ctx->glProgramUniform1uivProc(program, location, count, value);
+};
+void gl_wrap_context_glProgramUniform2uiv(gl_wrap_context* ctx, GLuint program, GLint location, GLsizei count, GLuint* value) {
+	if(ctx->glProgramUniform2uivProc == NULL) {
+		ctx->glProgramUniform2uivProc = (PFNGLPROGRAMUNIFORM2UIVPROC)gl_wrap_get_pointer("glProgramUniform2uiv");
+	}
+	ctx->glProgramUniform2uivProc(program, location, count, value);
+};
+void gl_wrap_context_glProgramUniform3uiv(gl_wrap_context* ctx, GLuint program, GLint location, GLsizei count, GLuint* value) {
+	if(ctx->glProgramUniform3uivProc == NULL) {
+		ctx->glProgramUniform3uivProc = (PFNGLPROGRAMUNIFORM3UIVPROC)gl_wrap_get_pointer("glProgramUniform3uiv");
+	}
+	ctx->glProgramUniform3uivProc(program, location, count, value);
+};
+void gl_wrap_context_glProgramUniform4uiv(gl_wrap_context* ctx, GLuint program, GLint location, GLsizei count, GLuint* value) {
+	if(ctx->glProgramUniform4uivProc == NULL) {
+		ctx->glProgramUniform4uivProc = (PFNGLPROGRAMUNIFORM4UIVPROC)gl_wrap_get_pointer("glProgramUniform4uiv");
+	}
+	ctx->glProgramUniform4uivProc(program, location, count, value);
+};
+void gl_wrap_context_glProgramUniform1fv(gl_wrap_context* ctx, GLuint program, GLint location, GLsizei count, GLfloat* value) {
+	if(ctx->glProgramUniform1fvProc == NULL) {
+		ctx->glProgramUniform1fvProc = (PFNGLPROGRAMUNIFORM1FVPROC)gl_wrap_get_pointer("glProgramUniform1fv");
+	}
+	ctx->glProgramUniform1fvProc(program, location, count, value);
+};
+void gl_wrap_context_glProgramUniform2fv(gl_wrap_context* ctx, GLuint program, GLint location, GLsizei count, GLfloat* value) {
+	if(ctx->glProgramUniform2fvProc == NULL) {
+		ctx->glProgramUniform2fvProc = (PFNGLPROGRAMUNIFORM2FVPROC)gl_wrap_get_pointer("glProgramUniform2fv");
+	}
+	ctx->glProgramUniform2fvProc(program, location, count, value);
+};
+void gl_wrap_context_glProgramUniform3fv(gl_wrap_context* ctx, GLuint program, GLint location, GLsizei count, GLfloat* value) {
+	if(ctx->glProgramUniform3fvProc == NULL) {
+		ctx->glProgramUniform3fvProc = (PFNGLPROGRAMUNIFORM3FVPROC)gl_wrap_get_pointer("glProgramUniform3fv");
+	}
+	ctx->glProgramUniform3fvProc(program, location, count, value);
+};
+void gl_wrap_context_glProgramUniform4fv(gl_wrap_context* ctx, GLuint program, GLint location, GLsizei count, GLfloat* value) {
+	if(ctx->glProgramUniform4fvProc == NULL) {
+		ctx->glProgramUniform4fvProc = (PFNGLPROGRAMUNIFORM4FVPROC)gl_wrap_get_pointer("glProgramUniform4fv");
+	}
+	ctx->glProgramUniform4fvProc(program, location, count, value);
+};
+void gl_wrap_context_glProgramUniformMatrix2fv(gl_wrap_context* ctx, GLuint program, GLint location, GLsizei count, GLboolean transpose, GLfloat* value) {
+	if(ctx->glProgramUniformMatrix2fvProc == NULL) {
+		ctx->glProgramUniformMatrix2fvProc = (PFNGLPROGRAMUNIFORMMATRIX2FVPROC)gl_wrap_get_pointer("glProgramUniformMatrix2fv");
+	}
+	ctx->glProgramUniformMatrix2fvProc(program, location, count, transpose, value);
+};
+void gl_wrap_context_glProgramUniformMatrix3fv(gl_wrap_context* ctx, GLuint program, GLint location, GLsizei count, GLboolean transpose, GLfloat* value) {
+	if(ctx->glProgramUniformMatrix3fvProc == NULL) {
+		ctx->glProgramUniformMatrix3fvProc = (PFNGLPROGRAMUNIFORMMATRIX3FVPROC)gl_wrap_get_pointer("glProgramUniformMatrix3fv");
+	}
+	ctx->glProgramUniformMatrix3fvProc(program, location, count, transpose, value);
+};
+void gl_wrap_context_glProgramUniformMatrix4fv(gl_wrap_context* ctx, GLuint program, GLint location, GLsizei count, GLboolean transpose, GLfloat* value) {
+	if(ctx->glProgramUniformMatrix4fvProc == NULL) {
+		ctx->glProgramUniformMatrix4fvProc = (PFNGLPROGRAMUNIFORMMATRIX4FVPROC)gl_wrap_get_pointer("glProgramUniformMatrix4fv");
+	}
+	ctx->glProgramUniformMatrix4fvProc(program, location, count, transpose, value);
+};
+void gl_wrap_context_glProgramUniformMatrix2x3fv(gl_wrap_context* ctx, GLuint program, GLint location, GLsizei count, GLboolean transpose, GLfloat* value) {
+	if(ctx->glProgramUniformMatrix2x3fvProc == NULL) {
+		ctx->glProgramUniformMatrix2x3fvProc = (PFNGLPROGRAMUNIFORMMATRIX2X3FVPROC)gl_wrap_get_pointer("glProgramUniformMatrix2x3fv");
+	}
+	ctx->glProgramUniformMatrix2x3fvProc(program, location, count, transpose, value);
+};
+void gl_wrap_context_glProgramUniformMatrix3x2fv(gl_wrap_context* ctx, GLuint program, GLint location, GLsizei count, GLboolean transpose, GLfloat* value) {
+	if(ctx->glProgramUniformMatrix3x2fvProc == NULL) {
+		ctx->glProgramUniformMatrix3x2fvProc = (PFNGLPROGRAMUNIFORMMATRIX3X2FVPROC)gl_wrap_get_pointer("glProgramUniformMatrix3x2fv");
+	}
+	ctx->glProgramUniformMatrix3x2fvProc(program, location, count, transpose, value);
+};
+void gl_wrap_context_glProgramUniformMatrix2x4fv(gl_wrap_context* ctx, GLuint program, GLint location, GLsizei count, GLboolean transpose, GLfloat* value) {
+	if(ctx->glProgramUniformMatrix2x4fvProc == NULL) {
+		ctx->glProgramUniformMatrix2x4fvProc = (PFNGLPROGRAMUNIFORMMATRIX2X4FVPROC)gl_wrap_get_pointer("glProgramUniformMatrix2x4fv");
+	}
+	ctx->glProgramUniformMatrix2x4fvProc(program, location, count, transpose, value);
+};
+void gl_wrap_context_glProgramUniformMatrix4x2fv(gl_wrap_context* ctx, GLuint program, GLint location, GLsizei count, GLboolean transpose, GLfloat* value) {
+	if(ctx->glProgramUniformMatrix4x2fvProc == NULL) {
+		ctx->glProgramUniformMatrix4x2fvProc = (PFNGLPROGRAMUNIFORMMATRIX4X2FVPROC)gl_wrap_get_pointer("glProgramUniformMatrix4x2fv");
+	}
+	ctx->glProgramUniformMatrix4x2fvProc(program, location, count, transpose, value);
+};
+void gl_wrap_context_glProgramUniformMatrix3x4fv(gl_wrap_context* ctx, GLuint program, GLint location, GLsizei count, GLboolean transpose, GLfloat* value) {
+	if(ctx->glProgramUniformMatrix3x4fvProc == NULL) {
+		ctx->glProgramUniformMatrix3x4fvProc = (PFNGLPROGRAMUNIFORMMATRIX3X4FVPROC)gl_wrap_get_pointer("glProgramUniformMatrix3x4fv");
+	}
+	ctx->glProgramUniformMatrix3x4fvProc(program, location, count, transpose, value);
+};
+void gl_wrap_context_glProgramUniformMatrix4x3fv(gl_wrap_context* ctx, GLuint program, GLint location, GLsizei count, GLboolean transpose, GLfloat* value) {
+	if(ctx->glProgramUniformMatrix4x3fvProc == NULL) {
+		ctx->glProgramUniformMatrix4x3fvProc = (PFNGLPROGRAMUNIFORMMATRIX4X3FVPROC)gl_wrap_get_pointer("glProgramUniformMatrix4x3fv");
+	}
+	ctx->glProgramUniformMatrix4x3fvProc(program, location, count, transpose, value);
+};
+void gl_wrap_context_glValidateProgramPipeline(gl_wrap_context* ctx, GLuint pipeline) {
+	if(ctx->glValidateProgramPipelineProc == NULL) {
+		ctx->glValidateProgramPipelineProc = (PFNGLVALIDATEPROGRAMPIPELINEPROC)gl_wrap_get_pointer("glValidateProgramPipeline");
+	}
+	ctx->glValidateProgramPipelineProc(pipeline);
+};
+void gl_wrap_context_glGetProgramPipelineInfoLog(gl_wrap_context* ctx, GLuint pipeline, GLsizei bufSize, GLsizei* length, GLchar* infoLog) {
+	if(ctx->glGetProgramPipelineInfoLogProc == NULL) {
+		ctx->glGetProgramPipelineInfoLogProc = (PFNGLGETPROGRAMPIPELINEINFOLOGPROC)gl_wrap_get_pointer("glGetProgramPipelineInfoLog");
+	}
+	ctx->glGetProgramPipelineInfoLogProc(pipeline, bufSize, length, infoLog);
+};
+void gl_wrap_context_glBindImageTexture(gl_wrap_context* ctx, GLuint unit, GLuint texture, GLint level, GLboolean layered, GLint layer, GLenum access, GLenum format) {
+	if(ctx->glBindImageTextureProc == NULL) {
+		ctx->glBindImageTextureProc = (PFNGLBINDIMAGETEXTUREPROC)gl_wrap_get_pointer("glBindImageTexture");
+	}
+	ctx->glBindImageTextureProc(unit, texture, level, layered, layer, access, format);
+};
+void gl_wrap_context_glGetBooleani_v(gl_wrap_context* ctx, GLenum target, GLuint index, GLboolean* data) {
+	if(ctx->glGetBooleani_vProc == NULL) {
+		ctx->glGetBooleani_vProc = (PFNGLGETBOOLEANI_VPROC)gl_wrap_get_pointer("glGetBooleani_v");
+	}
+	ctx->glGetBooleani_vProc(target, index, data);
+};
+void gl_wrap_context_glMemoryBarrier(gl_wrap_context* ctx, GLbitfield barriers) {
+	if(ctx->glMemoryBarrierProc == NULL) {
+		ctx->glMemoryBarrierProc = (PFNGLMEMORYBARRIERPROC)gl_wrap_get_pointer("glMemoryBarrier");
+	}
+	ctx->glMemoryBarrierProc(barriers);
+};
+void gl_wrap_context_glMemoryBarrierByRegion(gl_wrap_context* ctx, GLbitfield barriers) {
+	if(ctx->glMemoryBarrierByRegionProc == NULL) {
+		ctx->glMemoryBarrierByRegionProc = (PFNGLMEMORYBARRIERBYREGIONPROC)gl_wrap_get_pointer("glMemoryBarrierByRegion");
+	}
+	ctx->glMemoryBarrierByRegionProc(barriers);
+};
+void gl_wrap_context_glTexStorage2DMultisample(gl_wrap_context* ctx, GLenum target, GLsizei samples, GLenum internalformat, GLsizei width, GLsizei height, GLboolean fixedsamplelocations) {
+	if(ctx->glTexStorage2DMultisampleProc == NULL) {
+		ctx->glTexStorage2DMultisampleProc = (PFNGLTEXSTORAGE2DMULTISAMPLEPROC)gl_wrap_get_pointer("glTexStorage2DMultisample");
+	}
+	ctx->glTexStorage2DMultisampleProc(target, samples, internalformat, width, height, fixedsamplelocations);
+};
+void gl_wrap_context_glGetMultisamplefv(gl_wrap_context* ctx, GLenum pname, GLuint index, GLfloat* val) {
+	if(ctx->glGetMultisamplefvProc == NULL) {
+		ctx->glGetMultisamplefvProc = (PFNGLGETMULTISAMPLEFVPROC)gl_wrap_get_pointer("glGetMultisamplefv");
+	}
+	ctx->glGetMultisamplefvProc(pname, index, val);
+};
+void gl_wrap_context_glSampleMaski(gl_wrap_context* ctx, GLuint maskNumber, GLbitfield mask) {
+	if(ctx->glSampleMaskiProc == NULL) {
+		ctx->glSampleMaskiProc = (PFNGLSAMPLEMASKIPROC)gl_wrap_get_pointer("glSampleMaski");
+	}
+	ctx->glSampleMaskiProc(maskNumber, mask);
+};
+void gl_wrap_context_glGetTexLevelParameteriv(gl_wrap_context* ctx, GLenum target, GLint level, GLenum pname, GLint* params) {
+	if(ctx->glGetTexLevelParameterivProc == NULL) {
+		ctx->glGetTexLevelParameterivProc = (PFNGLGETTEXLEVELPARAMETERIVPROC)gl_wrap_get_pointer("glGetTexLevelParameteriv");
+	}
+	ctx->glGetTexLevelParameterivProc(target, level, pname, params);
+};
+void gl_wrap_context_glGetTexLevelParameterfv(gl_wrap_context* ctx, GLenum target, GLint level, GLenum pname, GLfloat* params) {
+	if(ctx->glGetTexLevelParameterfvProc == NULL) {
+		ctx->glGetTexLevelParameterfvProc = (PFNGLGETTEXLEVELPARAMETERFVPROC)gl_wrap_get_pointer("glGetTexLevelParameterfv");
+	}
+	ctx->glGetTexLevelParameterfvProc(target, level, pname, params);
+};
+void gl_wrap_context_glBindVertexBuffer(gl_wrap_context* ctx, GLuint bindingindex, GLuint buffer, GLintptr offset, GLsizei stride) {
+	if(ctx->glBindVertexBufferProc == NULL) {
+		ctx->glBindVertexBufferProc = (PFNGLBINDVERTEXBUFFERPROC)gl_wrap_get_pointer("glBindVertexBuffer");
+	}
+	ctx->glBindVertexBufferProc(bindingindex, buffer, offset, stride);
+};
+void gl_wrap_context_glVertexAttribFormat(gl_wrap_context* ctx, GLuint attribindex, GLint size, GLenum type, GLboolean normalized, GLuint relativeoffset) {
+	if(ctx->glVertexAttribFormatProc == NULL) {
+		ctx->glVertexAttribFormatProc = (PFNGLVERTEXATTRIBFORMATPROC)gl_wrap_get_pointer("glVertexAttribFormat");
+	}
+	ctx->glVertexAttribFormatProc(attribindex, size, type, normalized, relativeoffset);
+};
+void gl_wrap_context_glVertexAttribIFormat(gl_wrap_context* ctx, GLuint attribindex, GLint size, GLenum type, GLuint relativeoffset) {
+	if(ctx->glVertexAttribIFormatProc == NULL) {
+		ctx->glVertexAttribIFormatProc = (PFNGLVERTEXATTRIBIFORMATPROC)gl_wrap_get_pointer("glVertexAttribIFormat");
+	}
+	ctx->glVertexAttribIFormatProc(attribindex, size, type, relativeoffset);
+};
+void gl_wrap_context_glVertexAttribBinding(gl_wrap_context* ctx, GLuint attribindex, GLuint bindingindex) {
+	if(ctx->glVertexAttribBindingProc == NULL) {
+		ctx->glVertexAttribBindingProc = (PFNGLVERTEXATTRIBBINDINGPROC)gl_wrap_get_pointer("glVertexAttribBinding");
+	}
+	ctx->glVertexAttribBindingProc(attribindex, bindingindex);
+};
+void gl_wrap_context_glVertexBindingDivisor(gl_wrap_context* ctx, GLuint bindingindex, GLuint divisor) {
+	if(ctx->glVertexBindingDivisorProc == NULL) {
+		ctx->glVertexBindingDivisorProc = (PFNGLVERTEXBINDINGDIVISORPROC)gl_wrap_get_pointer("glVertexBindingDivisor");
+	}
+	ctx->glVertexBindingDivisorProc(bindingindex, divisor);
+};
 
 
 
@@ -2671,6 +3079,326 @@ inline void gl_wrap_handler_glGetInternalformativ(gl_wrap_context* ctx, void* ar
 	gl_wrap_context_glGetInternalformativ(ctx, args.target, args.internalformat, args.pname, args.bufSize, args.params);
 }
 
+inline void gl_wrap_handler_glDispatchCompute(gl_wrap_context* ctx, void* argsPtr) {
+	gl_wrap_handler_glDispatchCompute_args args = *(gl_wrap_handler_glDispatchCompute_args*)argsPtr;
+	gl_wrap_context_glDispatchCompute(ctx, args.num_groups_x, args.num_groups_y, args.num_groups_z);
+}
+
+inline void gl_wrap_handler_glDispatchComputeIndirect(gl_wrap_context* ctx, void* argsPtr) {
+	gl_wrap_handler_glDispatchComputeIndirect_args args = *(gl_wrap_handler_glDispatchComputeIndirect_args*)argsPtr;
+	gl_wrap_context_glDispatchComputeIndirect(ctx, args.indirect);
+}
+
+inline void gl_wrap_handler_glDrawArraysIndirect(gl_wrap_context* ctx, void* argsPtr) {
+	gl_wrap_handler_glDrawArraysIndirect_args args = *(gl_wrap_handler_glDrawArraysIndirect_args*)argsPtr;
+	gl_wrap_context_glDrawArraysIndirect(ctx, args.mode, args.indirect);
+}
+
+inline void gl_wrap_handler_glDrawElementsIndirect(gl_wrap_context* ctx, void* argsPtr) {
+	gl_wrap_handler_glDrawElementsIndirect_args args = *(gl_wrap_handler_glDrawElementsIndirect_args*)argsPtr;
+	gl_wrap_context_glDrawElementsIndirect(ctx, args.mode, args.type, args.indirect);
+}
+
+inline void gl_wrap_handler_glFramebufferParameteri(gl_wrap_context* ctx, void* argsPtr) {
+	gl_wrap_handler_glFramebufferParameteri_args args = *(gl_wrap_handler_glFramebufferParameteri_args*)argsPtr;
+	gl_wrap_context_glFramebufferParameteri(ctx, args.target, args.pname, args.param);
+}
+
+inline void gl_wrap_handler_glGetFramebufferParameteriv(gl_wrap_context* ctx, void* argsPtr) {
+	gl_wrap_handler_glGetFramebufferParameteriv_args args = *(gl_wrap_handler_glGetFramebufferParameteriv_args*)argsPtr;
+	gl_wrap_context_glGetFramebufferParameteriv(ctx, args.target, args.pname, args.params);
+}
+
+inline void gl_wrap_handler_glGetProgramInterfaceiv(gl_wrap_context* ctx, void* argsPtr) {
+	gl_wrap_handler_glGetProgramInterfaceiv_args args = *(gl_wrap_handler_glGetProgramInterfaceiv_args*)argsPtr;
+	gl_wrap_context_glGetProgramInterfaceiv(ctx, args.program, args.programInterface, args.pname, args.params);
+}
+
+inline void gl_wrap_handler_glGetProgramResourceName(gl_wrap_context* ctx, void* argsPtr) {
+	gl_wrap_handler_glGetProgramResourceName_args args = *(gl_wrap_handler_glGetProgramResourceName_args*)argsPtr;
+	gl_wrap_context_glGetProgramResourceName(ctx, args.program, args.programInterface, args.index, args.bufSize, args.length, args.name);
+}
+
+inline void gl_wrap_handler_glGetProgramResourceiv(gl_wrap_context* ctx, void* argsPtr) {
+	gl_wrap_handler_glGetProgramResourceiv_args args = *(gl_wrap_handler_glGetProgramResourceiv_args*)argsPtr;
+	gl_wrap_context_glGetProgramResourceiv(ctx, args.program, args.programInterface, args.index, args.propCount, args.props, args.bufSize, args.length, args.params);
+}
+
+inline void gl_wrap_handler_glUseProgramStages(gl_wrap_context* ctx, void* argsPtr) {
+	gl_wrap_handler_glUseProgramStages_args args = *(gl_wrap_handler_glUseProgramStages_args*)argsPtr;
+	gl_wrap_context_glUseProgramStages(ctx, args.pipeline, args.stages, args.program);
+}
+
+inline void gl_wrap_handler_glActiveShaderProgram(gl_wrap_context* ctx, void* argsPtr) {
+	gl_wrap_handler_glActiveShaderProgram_args args = *(gl_wrap_handler_glActiveShaderProgram_args*)argsPtr;
+	gl_wrap_context_glActiveShaderProgram(ctx, args.pipeline, args.program);
+}
+
+inline void gl_wrap_handler_glBindProgramPipeline(gl_wrap_context* ctx, void* argsPtr) {
+	gl_wrap_handler_glBindProgramPipeline_args args = *(gl_wrap_handler_glBindProgramPipeline_args*)argsPtr;
+	gl_wrap_context_glBindProgramPipeline(ctx, args.pipeline);
+}
+
+inline void gl_wrap_handler_glDeleteProgramPipelines(gl_wrap_context* ctx, void* argsPtr) {
+	gl_wrap_handler_glDeleteProgramPipelines_args args = *(gl_wrap_handler_glDeleteProgramPipelines_args*)argsPtr;
+	gl_wrap_context_glDeleteProgramPipelines(ctx, args.n, args.pipelines);
+}
+
+inline void gl_wrap_handler_glGenProgramPipelines(gl_wrap_context* ctx, void* argsPtr) {
+	gl_wrap_handler_glGenProgramPipelines_args args = *(gl_wrap_handler_glGenProgramPipelines_args*)argsPtr;
+	gl_wrap_context_glGenProgramPipelines(ctx, args.n, args.pipelines);
+}
+
+inline void gl_wrap_handler_glGetProgramPipelineiv(gl_wrap_context* ctx, void* argsPtr) {
+	gl_wrap_handler_glGetProgramPipelineiv_args args = *(gl_wrap_handler_glGetProgramPipelineiv_args*)argsPtr;
+	gl_wrap_context_glGetProgramPipelineiv(ctx, args.pipeline, args.pname, args.params);
+}
+
+inline void gl_wrap_handler_glProgramUniform1i(gl_wrap_context* ctx, void* argsPtr) {
+	gl_wrap_handler_glProgramUniform1i_args args = *(gl_wrap_handler_glProgramUniform1i_args*)argsPtr;
+	gl_wrap_context_glProgramUniform1i(ctx, args.program, args.location, args.v0);
+}
+
+inline void gl_wrap_handler_glProgramUniform2i(gl_wrap_context* ctx, void* argsPtr) {
+	gl_wrap_handler_glProgramUniform2i_args args = *(gl_wrap_handler_glProgramUniform2i_args*)argsPtr;
+	gl_wrap_context_glProgramUniform2i(ctx, args.program, args.location, args.v0, args.v1);
+}
+
+inline void gl_wrap_handler_glProgramUniform3i(gl_wrap_context* ctx, void* argsPtr) {
+	gl_wrap_handler_glProgramUniform3i_args args = *(gl_wrap_handler_glProgramUniform3i_args*)argsPtr;
+	gl_wrap_context_glProgramUniform3i(ctx, args.program, args.location, args.v0, args.v1, args.v2);
+}
+
+inline void gl_wrap_handler_glProgramUniform4i(gl_wrap_context* ctx, void* argsPtr) {
+	gl_wrap_handler_glProgramUniform4i_args args = *(gl_wrap_handler_glProgramUniform4i_args*)argsPtr;
+	gl_wrap_context_glProgramUniform4i(ctx, args.program, args.location, args.v0, args.v1, args.v2, args.v3);
+}
+
+inline void gl_wrap_handler_glProgramUniform1ui(gl_wrap_context* ctx, void* argsPtr) {
+	gl_wrap_handler_glProgramUniform1ui_args args = *(gl_wrap_handler_glProgramUniform1ui_args*)argsPtr;
+	gl_wrap_context_glProgramUniform1ui(ctx, args.program, args.location, args.v0);
+}
+
+inline void gl_wrap_handler_glProgramUniform2ui(gl_wrap_context* ctx, void* argsPtr) {
+	gl_wrap_handler_glProgramUniform2ui_args args = *(gl_wrap_handler_glProgramUniform2ui_args*)argsPtr;
+	gl_wrap_context_glProgramUniform2ui(ctx, args.program, args.location, args.v0, args.v1);
+}
+
+inline void gl_wrap_handler_glProgramUniform3ui(gl_wrap_context* ctx, void* argsPtr) {
+	gl_wrap_handler_glProgramUniform3ui_args args = *(gl_wrap_handler_glProgramUniform3ui_args*)argsPtr;
+	gl_wrap_context_glProgramUniform3ui(ctx, args.program, args.location, args.v0, args.v1, args.v2);
+}
+
+inline void gl_wrap_handler_glProgramUniform4ui(gl_wrap_context* ctx, void* argsPtr) {
+	gl_wrap_handler_glProgramUniform4ui_args args = *(gl_wrap_handler_glProgramUniform4ui_args*)argsPtr;
+	gl_wrap_context_glProgramUniform4ui(ctx, args.program, args.location, args.v0, args.v1, args.v2, args.v3);
+}
+
+inline void gl_wrap_handler_glProgramUniform1f(gl_wrap_context* ctx, void* argsPtr) {
+	gl_wrap_handler_glProgramUniform1f_args args = *(gl_wrap_handler_glProgramUniform1f_args*)argsPtr;
+	gl_wrap_context_glProgramUniform1f(ctx, args.program, args.location, args.v0);
+}
+
+inline void gl_wrap_handler_glProgramUniform2f(gl_wrap_context* ctx, void* argsPtr) {
+	gl_wrap_handler_glProgramUniform2f_args args = *(gl_wrap_handler_glProgramUniform2f_args*)argsPtr;
+	gl_wrap_context_glProgramUniform2f(ctx, args.program, args.location, args.v0, args.v1);
+}
+
+inline void gl_wrap_handler_glProgramUniform3f(gl_wrap_context* ctx, void* argsPtr) {
+	gl_wrap_handler_glProgramUniform3f_args args = *(gl_wrap_handler_glProgramUniform3f_args*)argsPtr;
+	gl_wrap_context_glProgramUniform3f(ctx, args.program, args.location, args.v0, args.v1, args.v2);
+}
+
+inline void gl_wrap_handler_glProgramUniform4f(gl_wrap_context* ctx, void* argsPtr) {
+	gl_wrap_handler_glProgramUniform4f_args args = *(gl_wrap_handler_glProgramUniform4f_args*)argsPtr;
+	gl_wrap_context_glProgramUniform4f(ctx, args.program, args.location, args.v0, args.v1, args.v2, args.v3);
+}
+
+inline void gl_wrap_handler_glProgramUniform1iv(gl_wrap_context* ctx, void* argsPtr) {
+	gl_wrap_handler_glProgramUniform1iv_args args = *(gl_wrap_handler_glProgramUniform1iv_args*)argsPtr;
+	gl_wrap_context_glProgramUniform1iv(ctx, args.program, args.location, args.count, args.value);
+}
+
+inline void gl_wrap_handler_glProgramUniform2iv(gl_wrap_context* ctx, void* argsPtr) {
+	gl_wrap_handler_glProgramUniform2iv_args args = *(gl_wrap_handler_glProgramUniform2iv_args*)argsPtr;
+	gl_wrap_context_glProgramUniform2iv(ctx, args.program, args.location, args.count, args.value);
+}
+
+inline void gl_wrap_handler_glProgramUniform3iv(gl_wrap_context* ctx, void* argsPtr) {
+	gl_wrap_handler_glProgramUniform3iv_args args = *(gl_wrap_handler_glProgramUniform3iv_args*)argsPtr;
+	gl_wrap_context_glProgramUniform3iv(ctx, args.program, args.location, args.count, args.value);
+}
+
+inline void gl_wrap_handler_glProgramUniform4iv(gl_wrap_context* ctx, void* argsPtr) {
+	gl_wrap_handler_glProgramUniform4iv_args args = *(gl_wrap_handler_glProgramUniform4iv_args*)argsPtr;
+	gl_wrap_context_glProgramUniform4iv(ctx, args.program, args.location, args.count, args.value);
+}
+
+inline void gl_wrap_handler_glProgramUniform1uiv(gl_wrap_context* ctx, void* argsPtr) {
+	gl_wrap_handler_glProgramUniform1uiv_args args = *(gl_wrap_handler_glProgramUniform1uiv_args*)argsPtr;
+	gl_wrap_context_glProgramUniform1uiv(ctx, args.program, args.location, args.count, args.value);
+}
+
+inline void gl_wrap_handler_glProgramUniform2uiv(gl_wrap_context* ctx, void* argsPtr) {
+	gl_wrap_handler_glProgramUniform2uiv_args args = *(gl_wrap_handler_glProgramUniform2uiv_args*)argsPtr;
+	gl_wrap_context_glProgramUniform2uiv(ctx, args.program, args.location, args.count, args.value);
+}
+
+inline void gl_wrap_handler_glProgramUniform3uiv(gl_wrap_context* ctx, void* argsPtr) {
+	gl_wrap_handler_glProgramUniform3uiv_args args = *(gl_wrap_handler_glProgramUniform3uiv_args*)argsPtr;
+	gl_wrap_context_glProgramUniform3uiv(ctx, args.program, args.location, args.count, args.value);
+}
+
+inline void gl_wrap_handler_glProgramUniform4uiv(gl_wrap_context* ctx, void* argsPtr) {
+	gl_wrap_handler_glProgramUniform4uiv_args args = *(gl_wrap_handler_glProgramUniform4uiv_args*)argsPtr;
+	gl_wrap_context_glProgramUniform4uiv(ctx, args.program, args.location, args.count, args.value);
+}
+
+inline void gl_wrap_handler_glProgramUniform1fv(gl_wrap_context* ctx, void* argsPtr) {
+	gl_wrap_handler_glProgramUniform1fv_args args = *(gl_wrap_handler_glProgramUniform1fv_args*)argsPtr;
+	gl_wrap_context_glProgramUniform1fv(ctx, args.program, args.location, args.count, args.value);
+}
+
+inline void gl_wrap_handler_glProgramUniform2fv(gl_wrap_context* ctx, void* argsPtr) {
+	gl_wrap_handler_glProgramUniform2fv_args args = *(gl_wrap_handler_glProgramUniform2fv_args*)argsPtr;
+	gl_wrap_context_glProgramUniform2fv(ctx, args.program, args.location, args.count, args.value);
+}
+
+inline void gl_wrap_handler_glProgramUniform3fv(gl_wrap_context* ctx, void* argsPtr) {
+	gl_wrap_handler_glProgramUniform3fv_args args = *(gl_wrap_handler_glProgramUniform3fv_args*)argsPtr;
+	gl_wrap_context_glProgramUniform3fv(ctx, args.program, args.location, args.count, args.value);
+}
+
+inline void gl_wrap_handler_glProgramUniform4fv(gl_wrap_context* ctx, void* argsPtr) {
+	gl_wrap_handler_glProgramUniform4fv_args args = *(gl_wrap_handler_glProgramUniform4fv_args*)argsPtr;
+	gl_wrap_context_glProgramUniform4fv(ctx, args.program, args.location, args.count, args.value);
+}
+
+inline void gl_wrap_handler_glProgramUniformMatrix2fv(gl_wrap_context* ctx, void* argsPtr) {
+	gl_wrap_handler_glProgramUniformMatrix2fv_args args = *(gl_wrap_handler_glProgramUniformMatrix2fv_args*)argsPtr;
+	gl_wrap_context_glProgramUniformMatrix2fv(ctx, args.program, args.location, args.count, args.transpose, args.value);
+}
+
+inline void gl_wrap_handler_glProgramUniformMatrix3fv(gl_wrap_context* ctx, void* argsPtr) {
+	gl_wrap_handler_glProgramUniformMatrix3fv_args args = *(gl_wrap_handler_glProgramUniformMatrix3fv_args*)argsPtr;
+	gl_wrap_context_glProgramUniformMatrix3fv(ctx, args.program, args.location, args.count, args.transpose, args.value);
+}
+
+inline void gl_wrap_handler_glProgramUniformMatrix4fv(gl_wrap_context* ctx, void* argsPtr) {
+	gl_wrap_handler_glProgramUniformMatrix4fv_args args = *(gl_wrap_handler_glProgramUniformMatrix4fv_args*)argsPtr;
+	gl_wrap_context_glProgramUniformMatrix4fv(ctx, args.program, args.location, args.count, args.transpose, args.value);
+}
+
+inline void gl_wrap_handler_glProgramUniformMatrix2x3fv(gl_wrap_context* ctx, void* argsPtr) {
+	gl_wrap_handler_glProgramUniformMatrix2x3fv_args args = *(gl_wrap_handler_glProgramUniformMatrix2x3fv_args*)argsPtr;
+	gl_wrap_context_glProgramUniformMatrix2x3fv(ctx, args.program, args.location, args.count, args.transpose, args.value);
+}
+
+inline void gl_wrap_handler_glProgramUniformMatrix3x2fv(gl_wrap_context* ctx, void* argsPtr) {
+	gl_wrap_handler_glProgramUniformMatrix3x2fv_args args = *(gl_wrap_handler_glProgramUniformMatrix3x2fv_args*)argsPtr;
+	gl_wrap_context_glProgramUniformMatrix3x2fv(ctx, args.program, args.location, args.count, args.transpose, args.value);
+}
+
+inline void gl_wrap_handler_glProgramUniformMatrix2x4fv(gl_wrap_context* ctx, void* argsPtr) {
+	gl_wrap_handler_glProgramUniformMatrix2x4fv_args args = *(gl_wrap_handler_glProgramUniformMatrix2x4fv_args*)argsPtr;
+	gl_wrap_context_glProgramUniformMatrix2x4fv(ctx, args.program, args.location, args.count, args.transpose, args.value);
+}
+
+inline void gl_wrap_handler_glProgramUniformMatrix4x2fv(gl_wrap_context* ctx, void* argsPtr) {
+	gl_wrap_handler_glProgramUniformMatrix4x2fv_args args = *(gl_wrap_handler_glProgramUniformMatrix4x2fv_args*)argsPtr;
+	gl_wrap_context_glProgramUniformMatrix4x2fv(ctx, args.program, args.location, args.count, args.transpose, args.value);
+}
+
+inline void gl_wrap_handler_glProgramUniformMatrix3x4fv(gl_wrap_context* ctx, void* argsPtr) {
+	gl_wrap_handler_glProgramUniformMatrix3x4fv_args args = *(gl_wrap_handler_glProgramUniformMatrix3x4fv_args*)argsPtr;
+	gl_wrap_context_glProgramUniformMatrix3x4fv(ctx, args.program, args.location, args.count, args.transpose, args.value);
+}
+
+inline void gl_wrap_handler_glProgramUniformMatrix4x3fv(gl_wrap_context* ctx, void* argsPtr) {
+	gl_wrap_handler_glProgramUniformMatrix4x3fv_args args = *(gl_wrap_handler_glProgramUniformMatrix4x3fv_args*)argsPtr;
+	gl_wrap_context_glProgramUniformMatrix4x3fv(ctx, args.program, args.location, args.count, args.transpose, args.value);
+}
+
+inline void gl_wrap_handler_glValidateProgramPipeline(gl_wrap_context* ctx, void* argsPtr) {
+	gl_wrap_handler_glValidateProgramPipeline_args args = *(gl_wrap_handler_glValidateProgramPipeline_args*)argsPtr;
+	gl_wrap_context_glValidateProgramPipeline(ctx, args.pipeline);
+}
+
+inline void gl_wrap_handler_glGetProgramPipelineInfoLog(gl_wrap_context* ctx, void* argsPtr) {
+	gl_wrap_handler_glGetProgramPipelineInfoLog_args args = *(gl_wrap_handler_glGetProgramPipelineInfoLog_args*)argsPtr;
+	gl_wrap_context_glGetProgramPipelineInfoLog(ctx, args.pipeline, args.bufSize, args.length, args.infoLog);
+}
+
+inline void gl_wrap_handler_glBindImageTexture(gl_wrap_context* ctx, void* argsPtr) {
+	gl_wrap_handler_glBindImageTexture_args args = *(gl_wrap_handler_glBindImageTexture_args*)argsPtr;
+	gl_wrap_context_glBindImageTexture(ctx, args.unit, args.texture, args.level, args.layered, args.layer, args.access, args.format);
+}
+
+inline void gl_wrap_handler_glGetBooleani_v(gl_wrap_context* ctx, void* argsPtr) {
+	gl_wrap_handler_glGetBooleani_v_args args = *(gl_wrap_handler_glGetBooleani_v_args*)argsPtr;
+	gl_wrap_context_glGetBooleani_v(ctx, args.target, args.index, args.data);
+}
+
+inline void gl_wrap_handler_glMemoryBarrier(gl_wrap_context* ctx, void* argsPtr) {
+	gl_wrap_handler_glMemoryBarrier_args args = *(gl_wrap_handler_glMemoryBarrier_args*)argsPtr;
+	gl_wrap_context_glMemoryBarrier(ctx, args.barriers);
+}
+
+inline void gl_wrap_handler_glMemoryBarrierByRegion(gl_wrap_context* ctx, void* argsPtr) {
+	gl_wrap_handler_glMemoryBarrierByRegion_args args = *(gl_wrap_handler_glMemoryBarrierByRegion_args*)argsPtr;
+	gl_wrap_context_glMemoryBarrierByRegion(ctx, args.barriers);
+}
+
+inline void gl_wrap_handler_glTexStorage2DMultisample(gl_wrap_context* ctx, void* argsPtr) {
+	gl_wrap_handler_glTexStorage2DMultisample_args args = *(gl_wrap_handler_glTexStorage2DMultisample_args*)argsPtr;
+	gl_wrap_context_glTexStorage2DMultisample(ctx, args.target, args.samples, args.internalformat, args.width, args.height, args.fixedsamplelocations);
+}
+
+inline void gl_wrap_handler_glGetMultisamplefv(gl_wrap_context* ctx, void* argsPtr) {
+	gl_wrap_handler_glGetMultisamplefv_args args = *(gl_wrap_handler_glGetMultisamplefv_args*)argsPtr;
+	gl_wrap_context_glGetMultisamplefv(ctx, args.pname, args.index, args.val);
+}
+
+inline void gl_wrap_handler_glSampleMaski(gl_wrap_context* ctx, void* argsPtr) {
+	gl_wrap_handler_glSampleMaski_args args = *(gl_wrap_handler_glSampleMaski_args*)argsPtr;
+	gl_wrap_context_glSampleMaski(ctx, args.maskNumber, args.mask);
+}
+
+inline void gl_wrap_handler_glGetTexLevelParameteriv(gl_wrap_context* ctx, void* argsPtr) {
+	gl_wrap_handler_glGetTexLevelParameteriv_args args = *(gl_wrap_handler_glGetTexLevelParameteriv_args*)argsPtr;
+	gl_wrap_context_glGetTexLevelParameteriv(ctx, args.target, args.level, args.pname, args.params);
+}
+
+inline void gl_wrap_handler_glGetTexLevelParameterfv(gl_wrap_context* ctx, void* argsPtr) {
+	gl_wrap_handler_glGetTexLevelParameterfv_args args = *(gl_wrap_handler_glGetTexLevelParameterfv_args*)argsPtr;
+	gl_wrap_context_glGetTexLevelParameterfv(ctx, args.target, args.level, args.pname, args.params);
+}
+
+inline void gl_wrap_handler_glBindVertexBuffer(gl_wrap_context* ctx, void* argsPtr) {
+	gl_wrap_handler_glBindVertexBuffer_args args = *(gl_wrap_handler_glBindVertexBuffer_args*)argsPtr;
+	gl_wrap_context_glBindVertexBuffer(ctx, args.bindingindex, args.buffer, args.offset, args.stride);
+}
+
+inline void gl_wrap_handler_glVertexAttribFormat(gl_wrap_context* ctx, void* argsPtr) {
+	gl_wrap_handler_glVertexAttribFormat_args args = *(gl_wrap_handler_glVertexAttribFormat_args*)argsPtr;
+	gl_wrap_context_glVertexAttribFormat(ctx, args.attribindex, args.size, args.type, args.normalized, args.relativeoffset);
+}
+
+inline void gl_wrap_handler_glVertexAttribIFormat(gl_wrap_context* ctx, void* argsPtr) {
+	gl_wrap_handler_glVertexAttribIFormat_args args = *(gl_wrap_handler_glVertexAttribIFormat_args*)argsPtr;
+	gl_wrap_context_glVertexAttribIFormat(ctx, args.attribindex, args.size, args.type, args.relativeoffset);
+}
+
+inline void gl_wrap_handler_glVertexAttribBinding(gl_wrap_context* ctx, void* argsPtr) {
+	gl_wrap_handler_glVertexAttribBinding_args args = *(gl_wrap_handler_glVertexAttribBinding_args*)argsPtr;
+	gl_wrap_context_glVertexAttribBinding(ctx, args.attribindex, args.bindingindex);
+}
+
+inline void gl_wrap_handler_glVertexBindingDivisor(gl_wrap_context* ctx, void* argsPtr) {
+	gl_wrap_handler_glVertexBindingDivisor_args args = *(gl_wrap_handler_glVertexBindingDivisor_args*)argsPtr;
+	gl_wrap_context_glVertexBindingDivisor(ctx, args.bindingindex, args.divisor);
+}
+
 // This is the jump table used for executing each batched OpenGL function
 // without doing a large (approx. 1k cases) and costly switch statement.
 gl_wrap_jump_handler gl_wrap_jump_table[] = {
@@ -2895,6 +3623,70 @@ gl_wrap_jump_handler gl_wrap_jump_table[] = {
 	gl_wrap_handler_glTexStorage2D,
 	gl_wrap_handler_glTexStorage3D,
 	gl_wrap_handler_glGetInternalformativ,
+	gl_wrap_handler_glDispatchCompute,
+	gl_wrap_handler_glDispatchComputeIndirect,
+	gl_wrap_handler_glDrawArraysIndirect,
+	gl_wrap_handler_glDrawElementsIndirect,
+	gl_wrap_handler_glFramebufferParameteri,
+	gl_wrap_handler_glGetFramebufferParameteriv,
+	gl_wrap_handler_glGetProgramInterfaceiv,
+	gl_wrap_handler_glGetProgramResourceName,
+	gl_wrap_handler_glGetProgramResourceiv,
+	gl_wrap_handler_glUseProgramStages,
+	gl_wrap_handler_glActiveShaderProgram,
+	gl_wrap_handler_glBindProgramPipeline,
+	gl_wrap_handler_glDeleteProgramPipelines,
+	gl_wrap_handler_glGenProgramPipelines,
+	gl_wrap_handler_glGetProgramPipelineiv,
+	gl_wrap_handler_glProgramUniform1i,
+	gl_wrap_handler_glProgramUniform2i,
+	gl_wrap_handler_glProgramUniform3i,
+	gl_wrap_handler_glProgramUniform4i,
+	gl_wrap_handler_glProgramUniform1ui,
+	gl_wrap_handler_glProgramUniform2ui,
+	gl_wrap_handler_glProgramUniform3ui,
+	gl_wrap_handler_glProgramUniform4ui,
+	gl_wrap_handler_glProgramUniform1f,
+	gl_wrap_handler_glProgramUniform2f,
+	gl_wrap_handler_glProgramUniform3f,
+	gl_wrap_handler_glProgramUniform4f,
+	gl_wrap_handler_glProgramUniform1iv,
+	gl_wrap_handler_glProgramUniform2iv,
+	gl_wrap_handler_glProgramUniform3iv,
+	gl_wrap_handler_glProgramUniform4iv,
+	gl_wrap_handler_glProgramUniform1uiv,
+	gl_wrap_handler_glProgramUniform2uiv,
+	gl_wrap_handler_glProgramUniform3uiv,
+	gl_wrap_handler_glProgramUniform4uiv,
+	gl_wrap_handler_glProgramUniform1fv,
+	gl_wrap_handler_glProgramUniform2fv,
+	gl_wrap_handler_glProgramUniform3fv,
+	gl_wrap_handler_glProgramUniform4fv,
+	gl_wrap_handler_glProgramUniformMatrix2fv,
+	gl_wrap_handler_glProgramUniformMatrix3fv,
+	gl_wrap_handler_glProgramUniformMatrix4fv,
+	gl_wrap_handler_glProgramUniformMatrix2x3fv,
+	gl_wrap_handler_glProgramUniformMatrix3x2fv,
+	gl_wrap_handler_glProgramUniformMatrix2x4fv,
+	gl_wrap_handler_glProgramUniformMatrix4x2fv,
+	gl_wrap_handler_glProgramUniformMatrix3x4fv,
+	gl_wrap_handler_glProgramUniformMatrix4x3fv,
+	gl_wrap_handler_glValidateProgramPipeline,
+	gl_wrap_handler_glGetProgramPipelineInfoLog,
+	gl_wrap_handler_glBindImageTexture,
+	gl_wrap_handler_glGetBooleani_v,
+	gl_wrap_handler_glMemoryBarrier,
+	gl_wrap_handler_glMemoryBarrierByRegion,
+	gl_wrap_handler_glTexStorage2DMultisample,
+	gl_wrap_handler_glGetMultisamplefv,
+	gl_wrap_handler_glSampleMaski,
+	gl_wrap_handler_glGetTexLevelParameteriv,
+	gl_wrap_handler_glGetTexLevelParameterfv,
+	gl_wrap_handler_glBindVertexBuffer,
+	gl_wrap_handler_glVertexAttribFormat,
+	gl_wrap_handler_glVertexAttribIFormat,
+	gl_wrap_handler_glVertexAttribBinding,
+	gl_wrap_handler_glVertexBindingDivisor,
 };
 
 // Executes the functions in a batch for a given context.
