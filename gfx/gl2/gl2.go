@@ -510,6 +510,7 @@ func New(keepState bool) (*Renderer, error) {
 	r.gpuInfo.GLSLMajor, r.gpuInfo.GLSLMinor, _ = r.render.ShaderVersion()
 	r.gpuInfo.OcclusionQuery = r.glArbOcclusionQuery && occlusionQueryBits > 0
 	r.gpuInfo.OcclusionQueryBits = int(occlusionQueryBits)
+	r.gpuInfo.NPOT = r.render.Extension("GL_ARB_texture_non_power_of_two")
 
 	// Grab the current renderer bounds (opengl viewport).
 	var viewport [4]int32

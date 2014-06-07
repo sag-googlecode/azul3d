@@ -7,8 +7,10 @@ package gl2
 import (
 	"azul3d.org/v1/gfx"
 	"azul3d.org/v1/native/gl"
+	"azul3d.org/v1/resize"
 	"image"
 	"image/draw"
+	"math"
 	"runtime"
 	"unsafe"
 )
@@ -107,6 +109,44 @@ func verticalFlip(img *image.RGBA) {
 		// Copy saved bottom row to top row.
 		copy(topRow, rowCpy)
 	}
+}
+
+func nearestPOT(k int) int {
+	// See:
+	//
+	// http://en.wikipedia.org/wiki/Power_of_two#Algorithm_to_convert_any_number_into_nearest_power_of_two_numbers
+	return int(math.Pow(2, math.Ceil(math.Log(float64(k))/math.Log(2))))
+}
+
+func prepareImage(npot bool, img image.Image) *image.RGBA {
+	bounds := img.Bounds()
+
+	if !npot {
+		// Convert the image to a power-of-two size if it's not already.
+		x, y := bounds.Dx(), bounds.Dy()
+		potX, potY := nearestPOT(x), nearestPOT(y)
+		if x != potX || y != potY {
+			if potX < x && potY < y {
+				// Resample is faster but only works for scaling down.
+				img = resize.Resample(img, bounds, potX, potY)
+			} else {
+				// Resize works in all cases.
+				img = resize.Resize(img, bounds, potX, potY)
+			}
+		}
+
+		// Update known bounds.
+		bounds = img.Bounds()
+	}
+
+	// Currently, images must be RGBA format. Convert now if needed.
+	rgba, ok := img.(*image.RGBA)
+	if !ok {
+		// Convert the image to RGBA.
+		rgba = image.NewRGBA(image.Rect(0, 0, bounds.Dx(), bounds.Dy()))
+		draw.Draw(rgba, rgba.Bounds(), img, bounds.Min, draw.Src)
+	}
+	return rgba
 }
 
 // Implements gfx.Downloadable interface.
@@ -264,13 +304,8 @@ func (r *Renderer) LoadTexture(t *gfx.Texture, done chan *gfx.Texture) {
 		}
 
 		// Upload the image.
-		bounds := t.Source.Bounds()
-		rgba, ok := t.Source.(*image.RGBA)
-		if !ok {
-			// Convert the image to RGBA.
-			rgba = image.NewRGBA(image.Rect(0, 0, bounds.Dx(), bounds.Dy()))
-			draw.Draw(rgba, rgba.Bounds(), t.Source, bounds.Min, draw.Src)
-		}
+		src := prepareImage(r.gpuInfo.NPOT, t.Source)
+		bounds := src.Bounds()
 		r.loader.TexImage2D(
 			gl.TEXTURE_2D,
 			0,
@@ -280,7 +315,7 @@ func (r *Renderer) LoadTexture(t *gfx.Texture, done chan *gfx.Texture) {
 			0,
 			gl.RGBA,
 			gl.UNSIGNED_BYTE,
-			unsafe.Pointer(&rgba.Pix[0]),
+			unsafe.Pointer(&src.Pix[0]),
 		)
 		native.width = bounds.Dx()
 		native.height = bounds.Dy()

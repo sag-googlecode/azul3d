@@ -163,6 +163,18 @@ type GPUInfo struct {
 	//  Intel Open Source Technology Center
 	Vendor string
 
+	// Whether or not the graphics hardware supports Non Power Of Two texture
+	// sizes.
+	//
+	// If true, then textures may be any arbitrary size (while keeping in mind
+	// this often incurs a performance cost, and does not work well with
+	// compression or mipmapping).
+	//
+	// If false, then texture dimensions must be a power of two (e.g. 32x64,
+	// 512x512, etc) or else the texture will be resized by the renderer to the
+	// nearest power-of-two.
+	NPOT bool
+
 	// Major and minor versions of the OpenGL version in use, or -1 if not
 	// available. For example:
 	//  3, 0 (for OpenGL 3.0)
