@@ -53,11 +53,6 @@
 //
 // Linux-X11 FAQ
 //
-// What development files are needed?
-//  libxcb (including xcb-xkb and xcb-icccm components).
-//  libX11
-//  libGLX
-//
 // What X extensions are needed?
 //  GLX 1.4 (required, for OpenGL tasks, 1.4 is needed for multisampling)
 //  XRandR 1.2 (optional, used for screen-mode switching, etc)
