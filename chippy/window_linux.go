@@ -436,7 +436,8 @@ type NativeWindow struct {
 
 	r *Window
 
-	xWindow x11.Window
+	xWindowAccess sync.RWMutex
+	xWindow       x11.Window
 
 	waitForMap, waitForUnmap, waitForFrameExtents, waitForMotifHints,
 	waitForNetWmAllowedActions chan bool
@@ -487,11 +488,15 @@ func (w *NativeWindow) doRebuildWindow() (err error) {
 	x, y := w.r.Position()
 
 	xScreen := xConnection.ScreenOfDisplay(screen.NativeScreen.xScreen)
-	w.xWindow = xConnection.GenerateId()
+
+	xWindow := xConnection.GenerateId()
+	w.xWindowAccess.Lock()
+	w.xWindow = xWindow
+	w.xWindowAccess.Unlock()
 
 	// For event management
 	xWindowLookupAccess.Lock()
-	xWindowLookup[w.xWindow] = w
+	xWindowLookup[xWindow] = w
 	xWindowLookupAccess.Unlock()
 
 	var eventMask uint32
@@ -556,7 +561,7 @@ func (w *NativeWindow) doRebuildWindow() (err error) {
 	// Unity seem to ignore initial placement requests.
 	tmpErr = xConnection.RequestCheck(xConnection.CreateWindowChecked(
 		w.xDepth,
-		w.xWindow,
+		xWindow,
 		xScreen.Root,
 		int16(x), int16(y),
 		uint16(width), uint16(height),
@@ -577,7 +582,7 @@ func (w *NativeWindow) doRebuildWindow() (err error) {
 	w.xGC = x11.GContext(xConnection.GenerateId())
 	tmpErr = xConnection.RequestCheck(xConnection.CreateGCChecked(
 		w.xGC,
-		x11.Drawable(w.xWindow),
+		x11.Drawable(xWindow),
 		gmask,
 		&gvalues[0],
 	))
@@ -602,7 +607,7 @@ func (w *NativeWindow) doRebuildWindow() (err error) {
 
 	// Since our window is not mapped (and may never be) we can ask the WM to
 	// guess the window extents.
-	xConnection.SendClientMessage(w.xWindow, xScreen.Root, aNetRequestFrameExtents, 0, nil)
+	xConnection.SendClientMessage(xWindow, xScreen.Root, aNetRequestFrameExtents, 0, nil)
 	xConnection.Flush()
 
 	var cExtents []int32
@@ -683,7 +688,7 @@ func (w *NativeWindow) doRebuildWindow() (err error) {
 		// We accept WM_DELETE_WINDOW messages.
 		xConnection.ChangeProperty(
 			x11.PROP_MODE_REPLACE,
-			w.xWindow,
+			xWindow,
 			aWmProtocols,
 			x11.ATOM_ATOM,
 			32,
@@ -693,6 +698,13 @@ func (w *NativeWindow) doRebuildWindow() (err error) {
 	}
 
 	return
+}
+
+func (w *NativeWindow) getXWindow() x11.Window {
+	w.xWindowAccess.RLock()
+	xWindow := w.xWindow
+	w.xWindowAccess.RUnlock()
+	return xWindow
 }
 
 func (w *NativeWindow) doFindProperVisual() {
@@ -1112,7 +1124,7 @@ func (w *NativeWindow) handleEvent(ref *x11.GenericEvent, e interface{}) {
 func (w *NativeWindow) fetchExtents() {
 	_, ptr, ptrLen, err := xConnection.GetProperty(
 		false, // delete
-		w.xWindow,
+		w.getXWindow(),
 		aNetFrameExtents,
 		x11.ATOM_CARDINAL,
 		0,              // offset
@@ -1168,7 +1180,7 @@ func (w *NativeWindow) doConfigurePosition(windowX, windowY int) {
 	windowY -= top
 
 	values := []uint32{uint32(windowX), uint32(windowY)}
-	xConnection.ConfigureWindow(w.xWindow, x11.CONFIG_WINDOW_X|x11.CONFIG_WINDOW_Y, values)
+	xConnection.ConfigureWindow(w.getXWindow(), x11.CONFIG_WINDOW_X|x11.CONFIG_WINDOW_Y, values)
 }
 
 func (w *NativeWindow) configureSize(width, height int) {
@@ -1182,8 +1194,10 @@ func (w *NativeWindow) doConfigureSize(width, height int) {
 	// We don't need to adjust width/height by window extents, because X
 	// specifies width/height as proper *client area* size.
 
+	xWindow := w.getXWindow()
+
 	values := []uint32{uint32(width), uint32(height)}
-	xConnection.ConfigureWindow(w.xWindow, x11.CONFIG_WINDOW_WIDTH|x11.CONFIG_WINDOW_HEIGHT, values)
+	xConnection.ConfigureWindow(xWindow, x11.CONFIG_WINDOW_WIDTH|x11.CONFIG_WINDOW_HEIGHT, values)
 
 	// For ICCCM complient WM's
 	hints := new(x11.SizeHints)
@@ -1225,7 +1239,7 @@ func (w *NativeWindow) doConfigureSize(width, height int) {
 		hints.MaxAspectDen = x11.Int32(fHeight)
 	}
 
-	xConnection.SetWmSizeHints(w.xWindow, hints)
+	xConnection.SetWmSizeHints(xWindow, hints)
 }
 
 func (w *NativeWindow) PixelClear(rect image.Rectangle) {
@@ -1311,7 +1325,7 @@ func (w *NativeWindow) PixelBlit(x, y uint, img *image.RGBA) {
 	)
 
 	nativeImage := xConnection.ImageNative(x11Image, true)
-	xConnection.ImagePut(x11.Drawable(w.xWindow), w.xGC, nativeImage, int16(x), int16(y), 0)
+	xConnection.ImagePut(x11.Drawable(w.getXWindow()), w.xGC, nativeImage, int16(x), int16(y), 0)
 }
 
 func (w *NativeWindow) setTitle(title string) {
@@ -1323,6 +1337,8 @@ func (w *NativeWindow) setTitle(title string) {
 
 func (w *NativeWindow) doSetTitle(title string) {
 	defer xConnection.Flush()
+
+	xWindow := w.getXWindow()
 
 	if len(title) == 0 {
 		// Some WM's don't like empty title strings, so we can just use a space..
@@ -1336,7 +1352,7 @@ func (w *NativeWindow) doSetTitle(title string) {
 	// titles.
 	xConnection.ChangeProperty(
 		x11.PROP_MODE_REPLACE,
-		w.xWindow,
+		xWindow,
 		aNetWmName,
 		aUtf8String,
 		8, uint32(len(title)),
@@ -1347,7 +1363,7 @@ func (w *NativeWindow) doSetTitle(title string) {
 	// or ASCII encoding, I don't know. Most WM's are EWMH compliant though.
 	xConnection.ChangeProperty(
 		x11.PROP_MODE_REPLACE,
-		w.xWindow,
+		xWindow,
 		x11.ATOM_WM_NAME,
 		x11.ATOM_STRING,
 		8, uint32(len(title)),
@@ -1371,6 +1387,8 @@ func (w *NativeWindow) doSetVisible(visible bool) {
 	// sizes *after* being mapped. We try to get the absolute best of both
 	// worlds by sending the position requests twice.
 
+	xWindow := w.getXWindow()
+
 	if visible {
 		// Set the window position and size, before the window is mapped.
 		windowX, windowY := w.r.Position()
@@ -1384,7 +1402,7 @@ func (w *NativeWindow) doSetVisible(visible bool) {
 		w.doUpdateNetWmIcon()
 
 		// Map the window.
-		xConnection.MapWindow(w.xWindow)
+		xConnection.MapWindow(xWindow)
 
 		// Now set the window position and size, after it has been mapped.
 		w.doConfigurePosition(windowX, windowY)
@@ -1432,7 +1450,7 @@ func (w *NativeWindow) doSetVisible(visible bool) {
 		w.can.sendSizeEvents = false
 		w.can.Unlock()
 
-		err := xConnection.RequestCheck(xConnection.UnmapWindow(w.xWindow))
+		err := xConnection.RequestCheck(xConnection.UnmapWindow(xWindow))
 		if err != nil {
 			logger().Println("UnmapWindow", err)
 		}
@@ -1469,7 +1487,7 @@ func (w *NativeWindow) doUpdateMotifWMHints(decorated bool) {
 
 	err := xConnection.RequestCheck(xConnection.ChangePropertyChecked(
 		x11.PROP_MODE_REPLACE,
-		w.xWindow,
+		w.getXWindow(),
 		aMotifWmHints,
 		aMotifWmHints,
 		8, uint32(unsafe.Sizeof(*hints)),
@@ -1549,13 +1567,14 @@ func (w *NativeWindow) setCursorGrabbed(grabbed bool) {
 
 func (w *NativeWindow) doSetCursorGrabbed(grabbed, restorePosition bool) {
 	if grabbed {
+		xWindow := w.getXWindow()
 		cookie := xConnection.GrabPointer(
 			1,                   // boolean owner events
-			w.xWindow,           // grab events
+			xWindow,             // grab events
 			0,                   // event mask (0 because owner events is on)
 			x11.GRAB_MODE_ASYNC, // pointer mode
 			x11.GRAB_MODE_ASYNC, // keyboard mode
-			w.xWindow,           // confine to
+			xWindow,             // confine to
 			0,
 			x11.TIME_CURRENT_TIME,
 		)
@@ -1608,7 +1627,7 @@ func (w *NativeWindow) warpPointer(x, y int) {
 	w.last.cursorX = x
 	w.last.cursorY = y
 	w.last.Unlock()
-	xConnection.WarpPointer(0, w.xWindow, 0, 0, 0, 0, int16(x), int16(y))
+	xConnection.WarpPointer(0, w.getXWindow(), 0, 0, 0, 0, int16(x), int16(y))
 	xConnection.Flush()
 }
 
@@ -1633,7 +1652,7 @@ func (w *NativeWindow) doSetCursor(cursor *Cursor) {
 	}
 
 	// Set the cursor
-	xConnection.ChangeWindowAttributes(w.xWindow, x11.CW_CURSOR, (*uint32)(unsafe.Pointer(&x11Cursor)))
+	xConnection.ChangeWindowAttributes(w.getXWindow(), x11.CW_CURSOR, (*uint32)(unsafe.Pointer(&x11Cursor)))
 	xConnection.Flush()
 }
 
@@ -1819,7 +1838,7 @@ func (w *NativeWindow) doSetMinimized(minimized bool) {
 		cme := new(x11.ClientMessageEvent)
 		cme.ResponseType = x11.CLIENT_MESSAGE
 		cme.Format = 32
-		cme.Window = w.xWindow
+		cme.Window = w.getXWindow()
 		cme.Type = aWmChangeState
 		cme.Data = *(*[20]byte)(unsafe.Pointer(&atoms[0]))
 		xConnection.SendEvent(
@@ -1910,7 +1929,7 @@ func (w *NativeWindow) doUpdateNetWmIcon() {
 
 	xConnection.ChangeProperty(
 		x11.PROP_MODE_REPLACE,
-		w.xWindow,
+		w.getXWindow(),
 		aNetWmIcon,
 		x11.ATOM_CARDINAL,
 		32,
@@ -1954,7 +1973,7 @@ func (w *NativeWindow) doUpdateNetWmState() {
 	}
 	xConnection.ChangeProperty(
 		x11.PROP_MODE_REPLACE,
-		w.xWindow,
+		w.getXWindow(),
 		aNetWmState,
 		x11.ATOM_ATOM,
 		32,
@@ -1983,7 +2002,7 @@ func (w *NativeWindow) netWMState(set bool, prop x11.Atom) {
 	cme := new(x11.ClientMessageEvent)
 	cme.ResponseType = x11.CLIENT_MESSAGE
 	cme.Format = 32
-	cme.Window = w.xWindow
+	cme.Window = w.getXWindow()
 	cme.Type = aNetWmState
 	cme.Data = *(*[20]byte)(unsafe.Pointer(&atoms[0]))
 	xConnection.SendEvent(
@@ -2016,13 +2035,17 @@ func (w *NativeWindow) notify() {
 }
 
 func (w *NativeWindow) doDestroy() {
+	w.xWindowAccess.Lock()
+	xWindow := w.xWindow
+	w.xWindow = 0
+	w.xWindowAccess.Unlock()
+
 	xWindowLookupAccess.Lock()
-	delete(xWindowLookup, w.xWindow)
+	delete(xWindowLookup, xWindow)
 	xWindowLookupAccess.Unlock()
-	xConnection.DestroyWindow(w.xWindow)
+	xConnection.DestroyWindow(xWindow)
 	xConnection.FreeGC(w.xGC)
 	xConnection.Flush()
-	w.xWindow = 0
 }
 
 func (w *NativeWindow) destroy() {

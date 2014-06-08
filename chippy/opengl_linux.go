@@ -176,7 +176,8 @@ func (w *NativeWindow) GLConfig() *GLConfig {
 func (w *NativeWindow) GLCreateContext(glVersionMajor, glVersionMinor uint, flags GLContextFlags, share GLContext) (GLContext, error) {
 	w.access.Lock()
 	defer w.access.Unlock()
-	if w.xWindow == 0 {
+	xWindow := w.getXWindow()
+	if xWindow == 0 {
 		panic("Window is destroyed!")
 	}
 	if w.glConfig == nil {
@@ -271,7 +272,7 @@ func (w *NativeWindow) GLCreateContext(glVersionMajor, glVersionMinor uint, flag
 		}
 	}
 
-	glxDisplay.GLXMakeContextCurrent(x11.GLXDrawable(w.xWindow), x11.GLXDrawable(w.xWindow), c.glxContext)
+	glxDisplay.GLXMakeContextCurrent(x11.GLXDrawable(xWindow), x11.GLXDrawable(xWindow), c.glxContext)
 	defer glxDisplay.GLXMakeContextCurrent(0, 0, nil)
 
 	ver := x11.GlGetString(x11.GL_VERSION)
@@ -302,7 +303,8 @@ func (w *NativeWindow) GLDestroyContext(c GLContext) {
 func (w *NativeWindow) GLMakeCurrent(c GLContext) {
 	w.access.Lock()
 	defer w.access.Unlock()
-	if w.xWindow == 0 {
+	xWindow := w.getXWindow()
+	if xWindow == 0 {
 		return
 	}
 
@@ -313,7 +315,7 @@ func (w *NativeWindow) GLMakeCurrent(c GLContext) {
 		wc.panicUnlessValid()
 		wc.panicIfDestroyed()
 		glxContext = wc.glxContext
-		glxWindow = x11.GLXDrawable(w.xWindow)
+		glxWindow = x11.GLXDrawable(xWindow)
 	}
 	if glxDisplay.GLXMakeContextCurrent(glxWindow, glxWindow, glxContext) == 0 {
 		logger().Println("glXMakeContextCurrent() failed!")
@@ -323,11 +325,12 @@ func (w *NativeWindow) GLMakeCurrent(c GLContext) {
 func (w *NativeWindow) GLSwapBuffers() {
 	w.access.Lock()
 	defer w.access.Unlock()
-	if w.xWindow == 0 || w.glConfig.DoubleBuffered == false {
+	xWindow := w.getXWindow()
+	if xWindow == 0 || w.glConfig.DoubleBuffered == false {
 		return
 	}
 
-	glxDisplay.GLXSwapBuffers(x11.GLXDrawable(w.xWindow))
+	glxDisplay.GLXSwapBuffers(x11.GLXDrawable(xWindow))
 }
 
 func (w *NativeWindow) GLVerticalSync() VSyncMode {
@@ -348,7 +351,8 @@ func (w *NativeWindow) GLSetVerticalSync(mode VSyncMode) {
 	}
 	w.access.Lock()
 	defer w.access.Unlock()
-	if w.xWindow == 0 {
+	xWindow := w.getXWindow()
+	if xWindow == 0 {
 		return
 	}
 	w.glVSyncMode = mode
@@ -383,7 +387,7 @@ func (w *NativeWindow) GLSetVerticalSync(mode VSyncMode) {
 		v = -1
 	}
 	if glxSwapControlEXT {
-		glxDisplay.GLXSwapIntervalEXT(x11.GLXDrawable(w.xWindow), v)
+		glxDisplay.GLXSwapIntervalEXT(x11.GLXDrawable(xWindow), v)
 	} else if glxSwapControlMESA {
 		if mode == AdaptiveVerticalSync {
 			logger().Println("GLSetVerticalSync(): Driver does not support adaptive vsync; using regular vsync.")
