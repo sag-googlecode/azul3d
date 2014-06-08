@@ -613,9 +613,9 @@ func (w *NativeWindow) doRebuildWindow() (err error) {
 	haveCExtents := len(cExtents) == 4
 	haveCExtentsButZero := haveCExtents && cExtents[0] == 0 && cExtents[1] == 0 && cExtents[2] == 0 && cExtents[3] == 0
 	if haveCExtents && !haveCExtentsButZero {
-		w.extentsAccess.RLock()
+		w.extentsAccess.Lock()
 		w.extents = cExtents
-		w.extentsAccess.RUnlock()
+		w.extentsAccess.Unlock()
 	} else {
 		// Wait a bit to see if we can get _NET_REQUEST_FRAME_EXTENTS to respond.
 		select {
