@@ -58,6 +58,10 @@ type Downloadable interface {
 	// to the previously uploaded source image of a texture, for instance if
 	// texture compression was used it may suffer from compression artifacts,
 	// etc.
+	//
+	// Only a texture created from render-to-texture is guaranteed to succeed,
+	// others may not (esp. compressed textures). Most renderers support
+	// downloading RGB/A textures and sometimes depth/alpha ones.
 	Download(r image.Rectangle, complete chan image.Image)
 }
 
