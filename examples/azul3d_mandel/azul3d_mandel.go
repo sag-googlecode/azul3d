@@ -21,15 +21,6 @@ import (
 	"os"
 )
 
-import _ "net/http/pprof"
-import "net/http"
-
-func init() {
-	go func() {
-		fmt.Println(http.ListenAndServe(":6060", nil))
-	}()
-}
-
 var glslVert = []byte(`
 #version 120
 
@@ -124,12 +115,12 @@ func gfxLoop(w *chippy.Window, r gfx.Renderer) {
 			}
 		}
 
-		// Create new texture and ask the renderer to load it.
+		// Create new texture and ask the renderer to load it. We don't use DXT
+		// compression because those textures cannot be downloaded.
 		tex := &gfx.Texture{
 			Source:    mbrot,
 			MinFilter: gfx.Nearest,
 			MagFilter: gfx.Nearest,
-			Format:    gfx.DXT1,
 		}
 		onLoad := make(chan *gfx.Texture, 1)
 		r.LoadTexture(tex, onLoad)
@@ -188,17 +179,20 @@ func gfxLoop(w *chippy.Window, r gfx.Renderer) {
 					card.RUnlock()
 
 					img := <-complete // Wait for download to complete.
-
-					// Save to png.
-					f, err := os.Create("mandel.png")
-					if err != nil {
-						log.Fatal(err)
+					if img == nil {
+						fmt.Println("Failed to download texture.")
+					} else {
+						// Save to png.
+						f, err := os.Create("mandel.png")
+						if err != nil {
+							log.Fatal(err)
+						}
+						err = png.Encode(f, img)
+						if err != nil {
+							log.Fatal(err)
+						}
+						fmt.Println("Wrote texture to mandel.png")
 					}
-					err = png.Encode(f, img)
-					if err != nil {
-						log.Fatal(err)
-					}
-					fmt.Println("Wrote texture to mandel.png")
 				}
 			}
 
