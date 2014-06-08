@@ -9,10 +9,10 @@ import (
 	"sync"
 )
 
-// Transformable represents a generic interface to any object that can return a
-// transformation matrix.
+// Transformable represents a generic interface to any object that can return
+// it's transformation.
 type Transformable interface {
-	Mat4() math.Mat4
+	Transform() *Transform
 }
 
 // CoordSpace represents a single coordinate space conversion.
@@ -64,7 +64,7 @@ type Transform struct {
 	access sync.RWMutex
 
 	// The parent transform, or nil if there is none.
-	parent     *Transform
+	parent     Transformable
 	lastParent *Transform
 
 	// A pointer to the built (i.e. cached) transformation matrix or nil if a
@@ -127,12 +127,17 @@ fail:
 // build builds and stores the transformation matrix from the components of
 // this transform.
 func (t *Transform) build() {
-	if t.built != nil && (t.lastParent != nil && t.parent != nil && t.lastParent.Equals(t.parent)) {
+	var parent *Transform
+	if t.parent != nil {
+		parent = t.parent.Transform()
+	}
+
+	if t.built != nil && (t.lastParent != nil && parent != nil && t.lastParent.Equals(parent)) {
 		// No update is required.
 		return
 	}
-	if t.parent != nil {
-		t.lastParent = t.parent.Copy()
+	if parent != nil {
+		t.lastParent = parent.Copy()
 	}
 
 	// Apply rotation
@@ -155,22 +160,27 @@ func (t *Transform) build() {
 
 	// Build the local-to-world transformation matrix.
 	ltw := built
-	if t.parent != nil {
-		ltw = ltw.Mul(t.parent.Convert(LocalToWorld))
+	if parent != nil {
+		ltw = ltw.Mul(parent.Convert(LocalToWorld))
 	}
 	t.localToWorld = &ltw
 
 	// Build the world-to-local transformation matrix.
 	wtl, _ := built.Inverse()
-	if t.parent != nil {
-		parent := t.parent.Convert(WorldToLocal)
-		wtl = wtl.Mul(parent)
+	if parent != nil {
+		parentToWorld := parent.Convert(WorldToLocal)
+		wtl = wtl.Mul(parentToWorld)
 	}
 	t.worldToLocal = &wtl
 }
 
-// Implements Transformable interface by simply returning the local-to-world
-// matrix.
+// Implements Transformable interface by simply returning t.
+func (t *Transform) Transform() *Transform {
+	return t
+}
+
+// Mat4 is short-hand for:
+//  return t.Convert(LocalToWorld)
 func (t *Transform) Mat4() math.Mat4 {
 	return t.Convert(LocalToWorld)
 }
@@ -191,7 +201,7 @@ func (t *Transform) LocalMat4() math.Mat4 {
 //
 // e.g. setting the parent of a camera's transform to the player's transform
 // makes it such that the camera follows the player.
-func (t *Transform) SetParent(p *Transform) {
+func (t *Transform) SetParent(p Transformable) {
 	t.access.Lock()
 	if t.parent != p {
 		t.built = nil
@@ -201,7 +211,7 @@ func (t *Transform) SetParent(p *Transform) {
 }
 
 // Parent returns the parent of this transform, as previously set.
-func (t *Transform) Parent() *Transform {
+func (t *Transform) Parent() Transformable {
 	t.access.RLock()
 	p := t.parent
 	t.access.RUnlock()
