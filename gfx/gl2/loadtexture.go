@@ -8,6 +8,7 @@ import (
 	"azul3d.org/v1/gfx"
 	"azul3d.org/v1/native/gl"
 	"azul3d.org/v1/resize"
+	"fmt"
 	"image"
 	"image/draw"
 	"math"
@@ -16,9 +17,10 @@ import (
 )
 
 type nativeTexture struct {
-	r             *Renderer
-	id            uint32
-	width, height int
+	r              *Renderer
+	id             uint32
+	internalFormat int32
+	width, height  int
 }
 
 func (n *nativeTexture) Destroy() {
@@ -31,10 +33,31 @@ func finalizeTexture(n *nativeTexture) {
 	n.r.texturesToFree.Unlock()
 }
 
+func fbErrorString(err int32) string {
+	switch err {
+	case gl.FRAMEBUFFER_INCOMPLETE_ATTACHMENT:
+		return "GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT"
+	case 36057: //gl.FRAMEBUFFER_INCOMPLETE_DIMENSIONS:
+		return "GL_FRAMEBUFFER_INCOMPLETE_DIMENSIONS"
+	case gl.FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT:
+		return "GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT"
+	case gl.FRAMEBUFFER_UNSUPPORTED:
+		return "GL_FRAMEBUFFER_UNSUPPORTED"
+	}
+	return fmt.Sprintf("%d", err)
+}
+
 func (n *nativeTexture) Download(rect image.Rectangle, complete chan image.Image) {
 	if !n.r.glArbFramebufferObject {
 		// We don't have GL_ARB_framebuffer_object extensions, we can't do
 		// this at all.
+		n.r.logf("Download(): GL_ARB_framebuffer_object not supported; returning nil\n")
+		complete <- nil
+		return
+	}
+
+	if n.internalFormat != gl.RGBA {
+		n.r.logf("Download(): invalid (non-RGBA) texture format; returning nil\n")
 		complete <- nil
 		return
 	}
@@ -45,6 +68,11 @@ func (n *nativeTexture) Download(rect image.Rectangle, complete chan image.Image
 		n.r.loader.GenFramebuffers(1, &fbo)
 		n.r.loader.Execute()
 		n.r.loader.BindFramebuffer(gl.FRAMEBUFFER, fbo)
+
+		n.r.loader.BindTexture(gl.TEXTURE_2D, n.id)
+		n.r.loader.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR)
+		n.r.loader.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR)
+		n.r.loader.BindTexture(gl.TEXTURE_2D, 0)
 
 		// Attach the texture to the FBO.
 		n.r.loader.FramebufferTexture2D(
@@ -62,6 +90,14 @@ func (n *nativeTexture) Download(rect image.Rectangle, complete chan image.Image
 		} else {
 			// Intersect the rectangle with the texture's bounds.
 			rect = bounds.Intersect(rect)
+		}
+
+		status := n.r.loader.CheckFramebufferStatus(gl.FRAMEBUFFER)
+		if status != gl.FRAMEBUFFER_COMPLETE {
+			// Log the error.
+			n.r.logf("Download(): glCheckFramebufferStatus() failed! Status == %s.\n", fbErrorString(status))
+			complete <- nil
+			return
 		}
 
 		// Read texture pixels.
@@ -302,6 +338,7 @@ func (r *Renderer) LoadTexture(t *gfx.Texture, done chan *gfx.Texture) {
 				break
 			}
 		}
+		native.internalFormat = internalFormat
 
 		// Upload the image.
 		src := prepareImage(r.gpuInfo.NPOT, t.Source)
