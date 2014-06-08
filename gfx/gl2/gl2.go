@@ -9,6 +9,7 @@ import (
 	"azul3d.org/v1/gfx"
 	"azul3d.org/v1/native/gl"
 	"errors"
+	"fmt"
 	"image"
 	"io"
 	"runtime"
@@ -406,6 +407,15 @@ func (r *Renderer) clearGlobalState() {
 			r.render.Disable(gl.MULTISAMPLE)
 		}
 	}
+}
+
+func (r *Renderer) logf(format string, args ...interface{}) {
+	// Log the error.
+	r.debug.RLock()
+	if r.debug.W != nil {
+		fmt.Fprintf(r.debug.W, format, args...)
+	}
+	r.debug.RUnlock()
 }
 
 // SetDebugOutput sets the writer, w, to write debug output to. It will mostly
