@@ -147,6 +147,9 @@ func (r Rect3) AlmostEquals(s Rect3, epsilon float64) bool {
 
 // In reports whether every point in r is in s.
 func (r Rect3) In(s Rect3) bool {
+	if !r.Overlaps(s) {
+		return false
+	}
 	if r.Empty() {
 		return true
 	}
