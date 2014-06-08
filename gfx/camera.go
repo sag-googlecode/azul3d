@@ -85,20 +85,7 @@ func (c *Camera) Project(p3 math.Vec3) (p2 math.Vec2, ok bool) {
 	projection := c.Projection.Mat4()
 	vp := cameraInv.Mul(projection)
 
-	p4 := math.Vec4{p3.X, p3.Y, p3.Z, 1.0}
-	p4 = p4.Transform(vp)
-	if p4.W == 0 {
-		p2 = math.Vec2Zero
-		ok = false
-		return
-	}
-
-	recipW := 1.0 / p4.W
-	p2 = math.Vec2{p4.X * recipW, p4.Y * recipW}
-
-	xValid := (p2.X >= -1) && (p2.X <= 1)
-	yValid := (p2.Y >= -1) && (p2.Y <= 1)
-	ok = (p4.W > 0) && xValid && yValid
+	p2, ok = vp.Project(p3)
 	return
 }
 

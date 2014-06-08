@@ -446,6 +446,29 @@ func (a Mat4) IsNaN() bool {
 		math.IsNaN(a[3][0]) || math.IsNaN(a[3][1]) || math.IsNaN(a[3][2]) || math.IsNaN(a[3][3])
 }
 
+// Project returns a 2D point in the range -1 to +1 given a 3D point also in
+// the frustum matrix a's coordinate space.
+//
+// If ok=false is returned then the point is outside of the frustum matrix a,
+// and the returned point may not be meaningful.
+func (a Mat4) Project(p3 Vec3) (p2 Vec2, ok bool) {
+	p4 := Vec4{p3.X, p3.Y, p3.Z, 1.0}
+	p4 = p4.Transform(a)
+	if p4.W == 0 {
+		p2 = Vec2Zero
+		ok = false
+		return
+	}
+
+	recipW := 1.0 / p4.W
+	p2 = Vec2{p4.X * recipW, p4.Y * recipW}
+
+	xValid := (p2.X >= -1) && (p2.X <= 1)
+	yValid := (p2.Y >= -1) && (p2.Y <= 1)
+	ok = (p4.W > 0) && xValid && yValid
+	return
+}
+
 // Mat4FromAxisAngle returns a rotation matrix that will rotate by the given
 // angle in radians counterclockwise about the indicated axis.
 func Mat4FromAxisAngle(axis Vec3, angle float64, cs CoordSys) Mat4 {
