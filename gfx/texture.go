@@ -148,3 +148,44 @@ func (t *Texture) ClearData() {
 		t.Source = nil
 	}
 }
+
+// Reset resets this texture to it's default (NewTexture) state.
+//
+// The textures's write lock must be held for this method to operate safely.
+func (t *Texture) Reset() {
+	t.NativeTexture = nil
+	t.Loaded = false
+	t.KeepDataOnLoad = false
+	t.Bounds = image.Rectangle{}
+	t.Source = nil
+	t.Format = 0
+	t.WrapU = 0
+	t.WrapV = 0
+	t.BorderColor = Color{}
+	t.MinFilter = 0
+	t.MagFilter = 0
+}
+
+// Destroy destroys this texture for use by other callees to NewTexture. You
+// must not use it after calling this method. This makes an implicit call to
+// t.NativeTexture.Destroy.
+//
+// The texture's write lock must be held for this method to operate safely.
+func (t *Texture) Destroy() {
+	if t.NativeTexture != nil {
+		t.NativeTexture.Destroy()
+	}
+	t.Reset()
+	texturePool.Put(t)
+}
+
+var texturePool = sync.Pool{
+	New: func() interface{} {
+		return &Texture{}
+	},
+}
+
+// NewTexture returns a new, initialized *Texture object.
+func NewTexture() *Texture {
+	return texturePool.Get().(*Texture)
+}

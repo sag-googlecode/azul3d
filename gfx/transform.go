@@ -390,14 +390,6 @@ func (t *Transform) Copy() *Transform {
 	return cpy
 }
 
-// NewTransform returns a new *Transform with the default values (a uniform
-// scale of one).
-func NewTransform() *Transform {
-	return &Transform{
-		scale: math.Vec3One,
-	}
-}
-
 // Convert returns a matrix which performs the given coordinate space
 // conversion.
 func (t *Transform) Convert(c CoordConv) math.Mat4 {
@@ -455,4 +447,25 @@ func (t *Transform) ConvertRot(r math.Vec3, c CoordConv) math.Vec3 {
 	m = q.ExtractToMat4().Mul(m)
 	q = math.QuatFromMat3(m.UpperMat3())
 	return q.Hpr(math.CoordSysZUpRight).HprToXyz().Degrees()
+}
+
+// Destroy destroys this transform for use by other callees to NewTransform.
+// You must not use it after calling this method.
+func (t *Transform) Destroy() {
+	t.Reset()
+	transformPool.Put(t)
+}
+
+var transformPool = sync.Pool{
+	New: func() interface{} {
+		return &Transform{
+			scale: math.Vec3One,
+		}
+	},
+}
+
+// NewTransform returns a new *Transform with the default values (a uniform
+// scale of one).
+func NewTransform() *Transform {
+	return transformPool.Get().(*Transform)
 }

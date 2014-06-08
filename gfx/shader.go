@@ -89,10 +89,46 @@ func (s *Shader) ClearData() {
 	}
 }
 
+// Reset resets this shader to it's default (NewShader) state.
+//
+// The shader's write lock must be held for this method to operate safely.
+func (s *Shader) Reset() {
+	s.NativeShader = nil
+	s.Loaded = false
+	s.KeepDataOnLoad = false
+	s.Name = ""
+	s.GLSLVert = s.GLSLVert[:0]
+	s.GLSLFrag = s.GLSLFrag[:0]
+	for k := range s.Inputs {
+		delete(s.Inputs, k)
+	}
+	s.Error = s.Error[:0]
+}
+
+// Destroy destroys this shader for use by other callees to NewShader. You must
+// not use it after calling this method. This makes an implicit call to
+// s.NativeShader.Destroy.
+//
+// The shader's write lock must be held for this method to operate safely.
+func (s *Shader) Destroy() {
+	if s.NativeShader != nil {
+		s.NativeShader.Destroy()
+	}
+	s.Reset()
+	shaderPool.Put(s)
+}
+
+var shaderPool = sync.Pool{
+	New: func() interface{} {
+		return &Shader{
+			Inputs: make(map[string]interface{}),
+		}
+	},
+}
+
 // NewShader returns a new, initialized *Shader object with the given name.
 func NewShader(name string) *Shader {
-	return &Shader{
-		Name:   name,
-		Inputs: make(map[string]interface{}),
-	}
+	s := shaderPool.Get().(*Shader)
+	s.Name = name
+	return s
 }

@@ -108,6 +108,8 @@ func (o *Object) Bounds() math.Rect3 {
 // Compare compares this object's state (including shader and textures) against
 // the other one and determines if it should sort before the other one for
 // state sorting purposes.
+//
+// The object's read lock must be held for this method to operate safely.
 func (o *Object) Compare(other *Object) bool {
 	if o == other {
 		return true
@@ -129,12 +131,73 @@ func (o *Object) Compare(other *Object) bool {
 	return o.State.Compare(other.State)
 }
 
+// Copy returns a new copy of this Object. Explicitily not copied is the native
+// object. The transform is copied via it's Copy() method. The shader is only
+// copied by pointer.
+//
+// The object's read lock must be held for this method to operate safely.
+func (o *Object) Copy() *Object {
+	cpy := &Object{
+		OcclusionTest: o.OcclusionTest,
+		State:         o.State,
+		Transform:     o.Transform.Copy(),
+		Shader:        o.Shader,
+		Meshes:        make([]*Mesh, len(o.Meshes)),
+		Textures:      make([]*Texture, len(o.Textures)),
+	}
+	copy(cpy.Meshes, o.Meshes)
+	copy(cpy.Textures, o.Textures)
+	return cpy
+}
+
+// Reset resets this object to it's default (NewObject) state.
+//
+// The object's write lock must be held for this method to operate safely.
+func (o *Object) Reset() {
+	o.NativeObject = nil
+	o.OcclusionTest = false
+	o.State = DefaultState
+	o.Transform = NewTransform()
+	o.Shader = nil
+
+	// Nil out each mesh pointer.
+	for i := 0; i < len(o.Meshes); i++ {
+		o.Meshes[i] = nil
+	}
+	o.Meshes = o.Meshes[:0]
+
+	// Nil out each texture pointer.
+	for i := 0; i < len(o.Textures); i++ {
+		o.Textures[i] = nil
+	}
+	o.Textures = o.Textures[:0]
+}
+
+// Destroy destroys this object for use by other callees to NewObject. You must
+// not use it after calling this method. This makes an implicit call to
+// o.NativeObject.Destroy.
+//
+// The object's write lock must be held for this method to operate safely.
+func (o *Object) Destroy() {
+	if o.NativeObject != nil {
+		o.NativeObject.Destroy()
+	}
+	o.Reset()
+	objPool.Put(o)
+}
+
+var objPool = sync.Pool{
+	New: func() interface{} {
+		return &Object{
+			State:     DefaultState,
+			Transform: NewTransform(),
+		}
+	},
+}
+
 // NewObject creates and returns a new object with:
 //  o.State == DefaultState
 //  o.Transform == DefaultTransform
 func NewObject() *Object {
-	return &Object{
-		State:     DefaultState,
-		Transform: NewTransform(),
-	}
+	return objPool.Get().(*Object)
 }

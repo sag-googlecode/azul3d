@@ -234,3 +234,52 @@ func (m *Mesh) ClearData() {
 		m.TexCoords = nil
 	}
 }
+
+// Reset resets this mesh to it's default (NewMesh) state.
+//
+// The mesh's write lock must be held for this method to operate safely.
+func (m *Mesh) Reset() {
+	m.NativeMesh = nil
+	m.Loaded = false
+	m.KeepDataOnLoad = false
+	m.Dynamic = false
+	m.AABB = math.Rect3Zero
+	m.Indices = m.Indices[:0]
+	m.IndicesChanged = false
+	m.Vertices = m.Vertices[:0]
+	m.VerticesChanged = false
+	m.Colors = m.Colors[:0]
+	m.ColorsChanged = false
+	m.Bary = m.Bary[:0]
+	m.BaryChanged = false
+	for _, tcs := range m.TexCoords {
+		tcs.Slice = nil
+		tcs.Changed = false
+	}
+	m.TexCoords = m.TexCoords[:0]
+}
+
+// Destroy destroys this mesh for use by other callees to NewMesh. You must not
+// use it after calling this method. This makes an implicit call to
+// m.NativeMesh.Destroy.
+//
+// The mesh's write lock must be held for this method to operate safely.
+func (m *Mesh) Destroy() {
+	if m.NativeMesh != nil {
+		m.NativeMesh.Destroy()
+	}
+	m.Reset()
+	meshPool.Put(m)
+}
+
+var meshPool = sync.Pool{
+	New: func() interface{} {
+		return &Mesh{}
+	},
+}
+
+// NewMesh returns a new *Mesh, for effeciency it may be a re-used one (see the
+// Destroy method) whose slices have zero-lengths.
+func NewMesh() *Mesh {
+	return meshPool.Get().(*Mesh)
+}

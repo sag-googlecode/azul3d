@@ -7,6 +7,7 @@ package gfx
 import (
 	"azul3d.org/v1/math"
 	"image"
+	"sync"
 )
 
 var (
@@ -38,7 +39,7 @@ type Camera struct {
 // is set up may use this method's source as a reference (e.g. to change the
 // center point, which this method sets at the bottom-left).
 //
-// Write access is required for this method to operate safely.
+// The camera's write lock must be held for this method to operate safely.
 func (c *Camera) SetOrtho(view image.Rectangle, near, far float64) {
 	w := float64(view.Dx())
 	w = float64(int((w / 2.0)) * 2)
@@ -63,7 +64,7 @@ func (c *Camera) SetOrtho(view image.Rectangle, near, far float64) {
 // is set up may use this method's source as a reference (e.g. to change the
 // center point, which this method sets at the center).
 //
-// Write access is required for this method to operate safely.
+// The camera's write lock must be held for this method to operate safely.
 func (c *Camera) SetPersp(view image.Rectangle, fov, near, far float64) {
 	aspectRatio := float64(view.Dx()) / float64(view.Dy())
 	m := math.Mat4Perspective(fov, aspectRatio, near, far)
@@ -75,6 +76,8 @@ func (c *Camera) SetPersp(view image.Rectangle, fov, near, far float64) {
 //
 // If ok=false is returned then the point is outside of the camera's view and
 // the returned point may not be meaningful.
+//
+// The camera's read lock must be held for this method to operate safely.
 func (c *Camera) Project(p3 math.Vec3) (p2 math.Vec2, ok bool) {
 	cameraInv, _ := c.Object.Transform.Mat4().Inverse()
 	cameraInv = cameraInv.Mul(zUpRightToYUpRight)
@@ -99,10 +102,45 @@ func (c *Camera) Project(p3 math.Vec3) (p2 math.Vec2, ok bool) {
 	return
 }
 
+// Copy returns a new copy of this Camera.
+//
+// The camera's read lock must be held for this method to operate safely.
+func (c *Camera) Copy() *Camera {
+	return &Camera{
+		Object:     c.Object.Copy(),
+		Projection: c.Projection,
+	}
+}
+
+// Reset resets this camera to it's default (NewCamera) state.
+//
+// The camera's write lock must be held for this method to operate safely.
+func (c *Camera) Reset() {
+	c.Object.Reset()
+	c.Projection = ConvertMat4(math.Mat4Identity)
+}
+
+// Destroy destroys this camera for use by other callees to NewCamera. You must
+// not use it after calling this method. This makes an implicit call to
+// c.Object.Destroy.
+//
+// The camera's write lock must be held for this method to operate safely.
+func (c *Camera) Destroy() {
+	c.Object.Destroy()
+	c.Reset()
+	camPool.Put(c)
+}
+
+var camPool = sync.Pool{
+	New: func() interface{} {
+		return &Camera{
+			NewObject(),
+			ConvertMat4(math.Mat4Identity),
+		}
+	},
+}
+
 // NewCamera returns a new *Camera with the default values.
 func NewCamera() *Camera {
-	return &Camera{
-		NewObject(),
-		ConvertMat4(math.Mat4Identity),
-	}
+	return camPool.Get().(*Camera)
 }
