@@ -82,7 +82,7 @@ type Object struct {
 	Textures []*Texture
 }
 
-// Bounds implements the Spatial interface. The returned bounding box takes
+// Bounds implements the Boundable interface. The returned bounding box takes
 // into account all of the mesh's bounding boxes, transformed into world space.
 //
 // This method properly read-locks the object.

@@ -9,17 +9,17 @@ import (
 	"sync"
 )
 
-// Spatial represents any object that can return it's axis-aligned bounding
+// Boundable represents any object that can return it's axis-aligned bounding
 // box.
-type Spatial interface {
-	// Bounds returns the axis-aligned bounding box of this spatial object.
+type Boundable interface {
+	// Bounds returns the axis-aligned bounding box of this boundable object.
 	Bounds() math.Rect3
 }
 
-// Bounds is a simple datatype which implements the Spatial interface.
+// Bounds is a simple datatype which implements the Boundable interface.
 type Bounds math.Rect3
 
-// Bounds implements the Spatial interface.
+// Bounds implements the Boundable interface.
 func (b Bounds) Bounds() math.Rect3 {
 	return math.Rect3(b)
 }
@@ -154,7 +154,7 @@ func (m *Mesh) Copy() *Mesh {
 	return cpy
 }
 
-// Bounds implements the Spatial interface. It is thread-safe and performs
+// Bounds implements the Boundable interface. It is thread-safe and performs
 // locking automatically. If the AABB of this mesh is empty then the bounds are
 // calculated.
 func (m *Mesh) Bounds() math.Rect3 {
