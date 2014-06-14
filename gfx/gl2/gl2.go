@@ -305,7 +305,7 @@ func (r *Renderer) performClear(rect image.Rectangle, bg gfx.Color) {
 	r.setGlobalState()
 
 	// Color write mask effects the glClear call below.
-	r.stateColorWrite(r.render, true, true, true, true)
+	r.stateColorWrite(r.render, [4]bool{true, true, true, true})
 
 	// Perform clearing.
 	r.stateScissor(r.render, r.Bounds(), rect)

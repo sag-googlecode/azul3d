@@ -430,7 +430,7 @@ func (s *graphicsState) load(ctx *gl.Context, gpuInfo *gfx.GPUInfo, bounds image
 	s.stateBlendColor(ctx, g.blendColor)
 	s.stateClearDepth(ctx, g.clearDepth)
 	s.stateClearStencil(ctx, g.clearStencil)
-	s.stateColorWrite(ctx, g.colorWrite[0], g.colorWrite[1], g.colorWrite[2], g.colorWrite[3])
+	s.stateColorWrite(ctx, g.colorWrite)
 	s.stateDepthFunc(ctx, g.depthFunc)
 	s.stateBlendFuncSeparate(ctx, g.blendFuncSeparate)
 	s.stateBlendEquationSeparate(ctx, g.blendEquationSeparate)
@@ -496,15 +496,14 @@ func (s *graphicsState) stateClearStencil(ctx *gl.Context, stencil int) {
 	}
 }
 
-func (s *graphicsState) stateColorWrite(ctx *gl.Context, cr, g, b, a bool) {
-	cw := [4]bool{cr, g, b, a} // FIXME
+func (s *graphicsState) stateColorWrite(ctx *gl.Context, cw [4]bool) {
 	if noStateGuard || s.colorWrite != cw {
 		s.colorWrite = cw
 		ctx.ColorMask(
-			gl.GLBool(cr),
-			gl.GLBool(g),
-			gl.GLBool(b),
-			gl.GLBool(a),
+			gl.GLBool(cw[0]),
+			gl.GLBool(cw[1]),
+			gl.GLBool(cw[2]),
+			gl.GLBool(cw[3]),
 		)
 	}
 }
