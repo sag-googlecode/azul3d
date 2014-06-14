@@ -15,6 +15,7 @@ import "C"
 
 import (
 	"reflect"
+	"runtime"
 	"unicode/utf8"
 	"unsafe"
 )
@@ -74,7 +75,9 @@ func (c *Connection) XkbX11KeymapNewFromDevice(context *XkbContext, deviceId int
 	if km.c == nil {
 		return nil
 	}
-	// TODO: set finalizer
+	runtime.SetFinalizer(km, func(tmp *XkbKeymap) {
+		C.free(unsafe.Pointer(tmp.c))
+	})
 	return km
 }
 
@@ -91,7 +94,9 @@ func XkbContextNew(flags XkbContextFlags) *XkbContext {
 	if c.c == nil {
 		return nil
 	}
-	// TODO: set finalizer
+	runtime.SetFinalizer(c, func(tmp *XkbContext) {
+		C.free(unsafe.Pointer(tmp.c))
+	})
 	return c
 }
 
@@ -162,7 +167,9 @@ func (c *Connection) XkbX11StateNewFromDevice(keymap *XkbKeymap, deviceId int32)
 	if s.c == nil {
 		return nil
 	}
-	// TODO: set finalizer
+	runtime.SetFinalizer(s, func(tmp *XkbState) {
+		C.free(unsafe.Pointer(tmp.c))
+	})
 	return s
 }
 
