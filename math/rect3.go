@@ -175,7 +175,7 @@ func (r Rect3) Canon() Rect3 {
 
 // Center returns the center point of this rectangle.
 func (r Rect3) Center() Vec3 {
-	halfSize := r.Size().DivScalar(2.0)
+	halfSize := r.Size().MulScalar(0.5)
 	return r.Min.Add(halfSize)
 }
 
