@@ -65,7 +65,7 @@ type Transform struct {
 
 	// The parent transform, or nil if there is none.
 	parent     Transformable
-	lastParent *Transform
+	lastParent *math.Mat4
 
 	// A pointer to the built (i.e. cached) transformation matrix or nil if a
 	// rebuild is required.
@@ -132,12 +132,13 @@ func (t *Transform) build() {
 		parent = t.parent.Transform()
 	}
 
-	if t.built != nil && (t.lastParent != nil && parent != nil && t.lastParent.Equals(parent)) {
+	if t.built != nil && (t.lastParent != nil && parent != nil && t.lastParent.Equals(parent.Mat4())) {
 		// No update is required.
 		return
 	}
 	if parent != nil {
-		t.lastParent = parent.Copy()
+		parentMat := parent.Mat4()
+		t.lastParent = &parentMat
 	}
 
 	// Apply rotation
