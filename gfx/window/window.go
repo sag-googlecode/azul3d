@@ -23,6 +23,7 @@ func program(gfxLoop func(w *chippy.Window, r gfx.Renderer)) {
 	window := chippy.NewWindow()
 	window.SetTitle("Azul3D")
 	screen := chippy.DefaultScreen()
+	window.SetSize(720, 480)
 	window.SetPositionCenter(screen)
 
 	events := window.Events()
