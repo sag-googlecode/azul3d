@@ -193,6 +193,49 @@ func (r Rect3) Furthest(p Vec3) Vec3 {
 	return p
 }
 
+// SqDistToPoint returns the squared distance between the point p and the
+// rectangle r. It is functionally equivilent to (but faster than):
+//  dist2 := r.Closest(p).Sub(p).LengthSq()
+func (r Rect3) SqDistToPoint(p Vec3) float64 {
+	// Real-Time Collision Detection, 5.1.3.1:
+	//  Distance of Point to AABB
+
+	sqDist := 0.0
+
+	// For each axis count any excess distance outside the rectangle's extents.
+	v := p.X
+	min := r.Min.X
+	max := r.Max.X
+	if v < min {
+		sqDist += (min - v) * (min - v)
+	}
+	if v > max {
+		sqDist += (v - max) * (v - max)
+	}
+
+	v = p.Y
+	min = r.Min.Y
+	max = r.Max.Y
+	if v < min {
+		sqDist += (min - v) * (min - v)
+	}
+	if v > max {
+		sqDist += (v - max) * (v - max)
+	}
+
+	v = p.Z
+	min = r.Min.Z
+	max = r.Max.Z
+	if v < min {
+		sqDist += (min - v) * (min - v)
+	}
+	if v > max {
+		sqDist += (v - max) * (v - max)
+	}
+
+	return sqDist
+}
+
 // Contains tells if the point p is within this rectangle.
 func (r Rect3) Contains(p Vec3) bool {
 	if r.Empty() {
