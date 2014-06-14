@@ -265,5 +265,10 @@ func (r Rect3) Area() float64 {
 	return s.X + s.X + s.Y + s.Y + s.Z + s.Z
 }
 
+// InSphere reports whether the rectangle r is completely inside the sphere s.
+func (r Rect3) InSphere(s Sphere) bool {
+	return s.Contains(r.Min) && s.Contains(r.Max)
+}
+
 // Rect3Zero is the zero rectangle.
 var Rect3Zero = Rect3{}
