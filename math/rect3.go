@@ -27,21 +27,6 @@ func (r Rect3) String() string {
 	return fmt.Sprintf("Rect3(%v, %v)", r.Min, r.Max)
 }
 
-// Dx returns r's width.
-func (r Rect3) Dx() float64 {
-	return r.Max.X - r.Min.X
-}
-
-// Dy returns r's depth.
-func (r Rect3) Dy() float64 {
-	return r.Max.Y - r.Min.Y
-}
-
-// Dz returns r's height.
-func (r Rect3) Dz() float64 {
-	return r.Max.Z - r.Min.Z
-}
-
 // Size returns a vector whose X, Y, and Z components directly relate to the
 // width, depth, and height of this rectangle.
 func (r Rect3) Size() Vec3 {
@@ -68,21 +53,22 @@ func (r Rect3) Sub(p Vec3) Rect3 {
 // of r's dimensions is less than 2*n then an empty rectangle near the center
 // of r will be returned.
 func (r Rect3) Inset(n float64) Rect3 {
-	if r.Dx() < 2*n {
+	sz := r.Size()
+	if sz.X < 2*n {
 		r.Min.X = (r.Min.X + r.Max.X) / 2.0
 		r.Max.X = r.Min.X
 	} else {
 		r.Min.X += n
 		r.Max.X -= n
 	}
-	if r.Dy() < 2*n {
+	if sz.Y < 2*n {
 		r.Min.Y = (r.Min.Y + r.Max.Y) / 2.0
 		r.Max.Y = r.Min.Y
 	} else {
 		r.Min.Y += n
 		r.Max.Y -= n
 	}
-	if r.Dz() < 2*n {
+	if sz.Z < 2*n {
 		r.Min.Z = (r.Min.Z + r.Max.Z) / 2.0
 		r.Max.Z = r.Min.Z
 	} else {
