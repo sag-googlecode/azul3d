@@ -203,6 +203,33 @@ func (r Rect3) Contains(p Vec3) bool {
 		r.Max.Z <= p.Z && p.Z < r.Max.Z
 }
 
+// Corners returns an array of the eight corner points of this 3D rectangle.
+// The corners are returned in the order of left to right, back to front,
+// bottom to top:
+//  left,  back,  bottom
+//  right, back,  bottom
+//  left,  front, bottom
+//  right, front, bottom
+//  left,  back,  top
+//  right, back,  top
+//  left,  front, top
+//  right, front, top
+func (r Rect3) Corners() [8]Vec3 {
+	min := r.Min
+	max := r.Max
+	return [8]Vec3{
+		Vec3{min.X, min.Y, min.Z}, // left, back, bottom
+		Vec3{max.X, min.Y, min.Z}, // right, back, bottom
+		Vec3{min.X, max.Y, min.Z}, // left, front, bottom
+		Vec3{max.X, max.Y, min.Z}, // right, front, bottom
+
+		Vec3{min.X, min.Y, max.Z}, // left, back, top
+		Vec3{max.X, min.Y, max.Z}, // right, back, top
+		Vec3{min.X, max.Y, max.Z}, // left, front, top
+		Vec3{max.X, max.Y, max.Z}, // right, front, top
+	}
+}
+
 // Area returns the area of this rectangle (the sum of it's sides).
 func (r Rect3) Area() float64 {
 	s := r.Size()
