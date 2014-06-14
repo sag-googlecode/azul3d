@@ -21,10 +21,10 @@ func gfxLoop(w *chippy.Window, r gfx.Renderer) {
 
 		// Clear a few rectangles on the window using different background
 		// colors.
-		r.Clear(image.Rect(0, 100, 640, 380), gfx.Color{0, 1, 0, 1})
-		r.Clear(image.Rect(100, 100, 540, 380), gfx.Color{1, 0, 0, 1})
-		r.Clear(image.Rect(100, 200, 540, 280), gfx.Color{0, 0.5, 0.5, 1})
-		r.Clear(image.Rect(200, 200, 440, 280), gfx.Color{1, 1, 0, 1})
+		r.Clear(image.Rect(0, 100, 720, 380), gfx.Color{0, 1, 0, 1})
+		r.Clear(image.Rect(100, 100, 620, 380), gfx.Color{1, 0, 0, 1})
+		r.Clear(image.Rect(100, 200, 620, 280), gfx.Color{0, 0.5, 0.5, 1})
+		r.Clear(image.Rect(200, 200, 520, 280), gfx.Color{1, 1, 0, 1})
 
 		// Render the whole frame.
 		r.Render()

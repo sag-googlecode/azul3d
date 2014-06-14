@@ -8,7 +8,6 @@ package main
 import (
 	"azul3d.org/v1/chippy"
 	"azul3d.org/v1/gfx"
-	"azul3d.org/v1/gfx/gl2"
 	"azul3d.org/v1/gfx/window"
 	"azul3d.org/v1/keyboard"
 	"azul3d.org/v1/mouse"
@@ -52,11 +51,6 @@ void main()
 // gfxLoop is responsible for drawing things to the window. This loop must be
 // independent of the Chippy main loop.
 func gfxLoop(w *chippy.Window, r gfx.Renderer) {
-	w.SetSize(720, 480)
-	w.SetPositionCenter(chippy.DefaultScreen())
-	glr := r.(*gl2.Renderer)
-	glr.UpdateBounds(image.Rect(0, 0, 720, 480))
-
 	// Create a simple shader.
 	shader := gfx.NewShader("SimpleShader")
 	shader.GLSLVert = glslVert
