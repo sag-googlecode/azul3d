@@ -186,7 +186,7 @@ func (r Rect3) Closest(p Vec3) Vec3 {
 	return p
 }
 
-// Closest returns the furthest point away from p contained by this rectangle.
+// Furthest returns the furthest point away from p contained by this rectangle.
 func (r Rect3) Furthest(p Vec3) Vec3 {
 	p = p.Min(r.Max)
 	p = p.Max(r.Min)
