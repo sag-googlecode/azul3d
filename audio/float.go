@@ -33,6 +33,11 @@ func (p F32Samples) Slice(low, high int) Buffer {
 	return p[low:high]
 }
 
+// Implements Buffer interface.
+func (p F32Samples) Make(length, capacity int) Buffer {
+	return make(F32Samples, length, capacity)
+}
+
 type (
 	// F64 represents an 64-bit floating-point linear audio sample in the range
 	// of -1 to +1.
@@ -60,4 +65,9 @@ func (p F64Samples) Set(i int, s F64) {
 // Implements Buffer interface.
 func (p F64Samples) Slice(low, high int) Buffer {
 	return p[low:high]
+}
+
+// Implements Buffer interface.
+func (p F64Samples) Make(length, capacity int) Buffer {
+	return make(F64Samples, length, capacity)
 }

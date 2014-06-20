@@ -55,6 +55,11 @@ func (p PCM8Samples) Slice(low, high int) Buffer {
 	return p[low:high]
 }
 
+// Implements Buffer interface.
+func (p PCM8Samples) Make(length, capacity int) Buffer {
+	return make(PCM8Samples, length, capacity)
+}
+
 type (
 	// PCM16 represents an signed 16-bit linear PCM audio sample.
 	PCM16 int16
@@ -93,6 +98,11 @@ func (p PCM16Samples) Slice(low, high int) Buffer {
 	return p[low:high]
 }
 
+// Implements Buffer interface.
+func (p PCM16Samples) Make(length, capacity int) Buffer {
+	return make(PCM16Samples, length, capacity)
+}
+
 type (
 	// PCM32 represents an signed 32-bit linear PCM audio sample.
 	PCM32 int32
@@ -129,4 +139,9 @@ func (p PCM32Samples) Set(i int, s F64) {
 // Implements Buffer interface.
 func (p PCM32Samples) Slice(low, high int) Buffer {
 	return p[low:high]
+}
+
+// Implements Buffer interface.
+func (p PCM32Samples) Make(length, capacity int) Buffer {
+	return make(PCM32Samples, length, capacity)
 }

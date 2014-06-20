@@ -38,6 +38,11 @@ func (p ALawSamples) Slice(low, high int) Buffer {
 	return p[low:high]
 }
 
+// Implements Buffer interface.
+func (p ALawSamples) Make(length, capacity int) Buffer {
+	return make(ALawSamples, length, capacity)
+}
+
 const (
 	alawCBias = 0x84
 	alawCClip = 32635

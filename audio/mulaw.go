@@ -38,6 +38,11 @@ func (p MuLawSamples) Slice(low, high int) Buffer {
 	return p[low:high]
 }
 
+// Implements Buffer interface.
+func (p MuLawSamples) Make(length, capacity int) Buffer {
+	return make(MuLawSamples, length, capacity)
+}
+
 const (
 	muLawCBias = 0x84
 	muLawCClip = 32635
