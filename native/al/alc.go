@@ -198,26 +198,34 @@ func (d *Device) AlcGetEnumValue(name string) int32 {
 	return ret
 }
 
-func AlcGetString(d *Device, param int32) string {
+func AlcGetRawString(d *Device, param int32) uintptr {
 	var cdevice *C.ALCdevice
 	if d != nil {
 		cdevice = d.c
 	}
-	var ret string
+	var ret uintptr
 	dispatch(func() {
-		cstr := C.goal_alcGetString(p_alcGetString, cdevice, C.ALCenum(param))
-		ret = C.GoString((*C.char)(unsafe.Pointer(cstr)))
+		ret = uintptr(unsafe.Pointer(C.goal_alcGetString(p_alcGetString, cdevice, C.ALCenum(param))))
+	})
+	return ret
+}
+
+func AlcGetString(d *Device, param int32) string {
+	raw := AlcGetRawString(d, param)
+	return C.GoString((*C.char)(unsafe.Pointer(raw)))
+}
+
+func (d *Device) AlcGetRawString(param int32) uintptr {
+	var ret uintptr
+	d.alcDispatch(func() {
+		ret = uintptr(unsafe.Pointer(C.goal_alcGetString(p_alcGetString, d.c, C.ALCenum(param))))
 	})
 	return ret
 }
 
 func (d *Device) AlcGetString(param int32) string {
-	var ret string
-	d.alcDispatch(func() {
-		cstr := C.goal_alcGetString(p_alcGetString, d.c, C.ALCenum(param))
-		ret = C.GoString((*C.char)(unsafe.Pointer(cstr)))
-	})
-	return ret
+	raw := d.AlcGetRawString(param)
+	return C.GoString((*C.char)(unsafe.Pointer(raw)))
 }
 
 func AlcGetIntegerv(d *Device, param, size int32, values *int32) {
@@ -365,6 +373,40 @@ func (d *Device) makeContext(attribs []int32) (err error) {
 		err = ErrCantMakeContextCurrent
 	}
 	return
+}
+
+// StringList splits a string list. It must be NUL seperated with two NULs at
+// the end.
+func StringList(raw uintptr) []string {
+	var list []string
+	// Split memory at raw+i by NUL bytes until two consecutive ones.
+	var (
+		i       = raw
+		segment []byte
+	)
+	for {
+		b := (*byte)(unsafe.Pointer(i))
+		if *b == 0 {
+			// Do we have a non-empty segment?
+			if len(segment) > 0 {
+				list = append(list, string(segment))
+				segment = segment[:0]
+			}
+
+			// Is the next byte NUL too? If so we're done.
+			b2 := (*byte)(unsafe.Pointer(i + 1))
+			if *b2 == 0 {
+				return list
+			}
+			i++
+			continue
+		}
+
+		// Append to segment.
+		segment = append(segment, *b)
+		i++
+	}
+	return list
 }
 
 // OpenDevice opens the named device (or "" for the default device).

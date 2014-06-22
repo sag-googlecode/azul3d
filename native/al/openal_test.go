@@ -15,11 +15,15 @@ func TestOpenAL(t *testing.T) {
 	defaultCapture := AlcGetString(nil, ALC_CAPTURE_DEFAULT_DEVICE_SPECIFIER)
 	t.Log("Default Capture Device:", defaultCapture)
 
-	allDevices := AlcGetString(nil, ALC_DEVICE_SPECIFIER)
-	t.Log("All Devices:", allDevices)
+	allDevices := StringList(AlcGetRawString(nil, ALC_DEVICE_SPECIFIER))
+	for i, device := range allDevices {
+		t.Logf("device %d. %q", i, device)
+	}
 
-	captureDevices := AlcGetString(nil, ALC_CAPTURE_DEVICE_SPECIFIER)
-	t.Log("All Capture Devices:", captureDevices)
+	captureDevices := StringList(AlcGetRawString(nil, ALC_CAPTURE_DEVICE_SPECIFIER))
+	for i, device := range captureDevices {
+		t.Logf("capture device %d. %q", i, device)
+	}
 
 	extensions := AlcGetString(nil, ALC_EXTENSIONS)
 	t.Log("Extensions:", extensions)
