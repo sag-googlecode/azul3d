@@ -25,7 +25,7 @@ func loadLibrary(name string) error {
 	cname := C.CString(name)
 	defer C.free(unsafe.Pointer(cname))
 
-	lib = C.dlopen(cname, C.RTLD_NOW|C.RTLD_GLOBAL)
+	lib = C.dlopen(cname, C.RTLD_LAZY|C.RTLD_GLOBAL)
 	cerr := C.dlerror()
 	if lib == nil || cerr != nil {
 		err := C.GoString(cerr)
