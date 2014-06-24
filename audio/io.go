@@ -5,18 +5,18 @@
 package audio
 
 // Reader is a generic interface which describes any type who can have audio
-// samples read from it into an audio buffer.
+// samples read from it into an audio slice.
 type Reader interface {
-	// Read tries to read into the audio buffer, b, filling it with at max
+	// Read tries to read into the audio slice, b, filling it with at max
 	// b.Len() audio samples.
 	//
-	// Returned is the number of samples that where read into the buffer, and
+	// Returned is the number of samples that where read into the slice, and
 	// an error if any occured.
 	//
 	// It is possible for the number of samples read to be non-zero; and for an
 	// error to be returned at the same time (E.g. read 300 audio samples, but
 	// also encountered io.EOF).
-	Read(b Buffer) (read int, e error)
+	Read(b Slice) (read int, e error)
 }
 
 // ReadSeeker is the generic seekable audio reader interface.
@@ -34,12 +34,12 @@ type ReadSeeker interface {
 }
 
 // Writer is a generic interface which describes any type who can have audio
-// samples written from an audio buffer into it.
+// samples written from an audio slice into it.
 type Writer interface {
-	// Write attempts to write all, b.Len(), samples in the buffer to the
+	// Write attempts to write all, b.Len(), samples in the slice to the
 	// writer.
 	//
-	// Returned is the number of samples from the buffer that where wrote to
+	// Returned is the number of samples from the slice that where wrote to
 	// the writer, and an error if any occured.
 	//
 	// The number of samples wrote may be less than buf.Len(), in which case
@@ -48,5 +48,5 @@ type Writer interface {
 	//
 	// If any error is returned, it should be considered as fatal to the
 	// writer, no more data can subsequently be wrote to the writer.
-	Write(b Buffer) (wrote int, err error)
+	Write(b Slice) (wrote int, err error)
 }

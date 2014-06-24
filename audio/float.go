@@ -13,28 +13,28 @@ type (
 	F32Samples []F32
 )
 
-// Implements Buffer interface.
+// Implements Slice interface.
 func (p F32Samples) Len() int {
 	return len(p)
 }
 
-// Implements Buffer interface.
+// Implements Slice interface.
 func (p F32Samples) At(i int) F64 {
 	return F64(p[i])
 }
 
-// Implements Buffer interface.
+// Implements Slice interface.
 func (p F32Samples) Set(i int, s F64) {
 	p[i] = F32(s)
 }
 
-// Implements Buffer interface.
-func (p F32Samples) Slice(low, high int) Buffer {
+// Implements Slice interface.
+func (p F32Samples) Slice(low, high int) Slice {
 	return p[low:high]
 }
 
-// Implements Buffer interface.
-func (p F32Samples) Make(length, capacity int) Buffer {
+// Implements Slice interface.
+func (p F32Samples) Make(length, capacity int) Slice {
 	return make(F32Samples, length, capacity)
 }
 
@@ -47,27 +47,27 @@ type (
 	F64Samples []F64
 )
 
-// Implements Buffer interface.
+// Implements Slice interface.
 func (p F64Samples) Len() int {
 	return len(p)
 }
 
-// Implements Buffer interface.
+// Implements Slice interface.
 func (p F64Samples) At(i int) F64 {
 	return p[i]
 }
 
-// Implements Buffer interface.
+// Implements Slice interface.
 func (p F64Samples) Set(i int, s F64) {
 	p[i] = s
 }
 
-// Implements Buffer interface.
-func (p F64Samples) Slice(low, high int) Buffer {
+// Implements Slice interface.
+func (p F64Samples) Slice(low, high int) Slice {
 	return p[low:high]
 }
 
-// Implements Buffer interface.
-func (p F64Samples) Make(length, capacity int) Buffer {
+// Implements Slice interface.
+func (p F64Samples) Make(length, capacity int) Slice {
 	return make(F64Samples, length, capacity)
 }

@@ -4,33 +4,33 @@
 
 package audio
 
-// Buffer is a generic audio buffer, it can conceptually be thought of as a
+// Slice is a generic audio slice, it can conceptually be thought of as a
 // slice of some audio encoding type.
 //
-// Conversion between two encoded audio buffers is as simple as:
+// Conversion between two encoded audio slices is as simple as:
 //  dst, ok := src.(MuLawSamples)
 //  if !ok {
-//      // Create a new buffer of the target encoding and copy the samples over
+//      // Create a new slice of the target encoding and copy the samples over
 //      // because src is not MuLaw encoded.
 //      dst = make(MuLawSamples, src.Len())
 //      Copy(dst, src)
 //  }
-type Buffer interface {
-	// Len returns the number of elements in the buffer.
+type Slice interface {
+	// Len returns the number of elements in the slice.
 	//
 	// Equivilent slice syntax:
 	//
 	//  len(b)
 	Len() int
 
-	// Set sets the specified index in the buffer to the specified F64 encoded
+	// Set sets the specified index in the slice to the specified F64 encoded
 	// audio sample, s.
 	//
-	// If the buffer's audio samples are not stored in F64 encoding, then the
-	// sample should be converted to the buffer's internal format and then
+	// If the slice's audio samples are not stored in F64 encoding, then the
+	// sample should be converted to the slice's internal format and then
 	// stored.
 	//
-	// Just like slices, buffer indices must be non-negative; and no greater
+	// Just like slices, slice indices must be non-negative; and no greater
 	// than (Len() - 1), or else a panic may occur.
 	//
 	// Equivilent slice syntax:
@@ -41,12 +41,12 @@ type Buffer interface {
 	Set(index int, s F64)
 
 	// At returns the F64 encoded audio sample at the specified index in the
-	// buffer.
+	// slice.
 	//
-	// If the buffer's audio samples are not stored in F64 encoding, then the
+	// If the slice's audio samples are not stored in F64 encoding, then the
 	// sample should be converted to F64 encoding, and subsequently returned.
 	//
-	// Just like slices, buffer indices must be non-negative; and no greater
+	// Just like slices, slice indices must be non-negative; and no greater
 	// than (Len() - 1), or else a panic may occur.
 	//
 	// Equivilent slice syntax:
@@ -56,7 +56,7 @@ type Buffer interface {
 	//
 	At(index int) F64
 
-	// Slice returns a new slice of the buffer, using the low and high
+	// Slice returns a new slice of the slice, using the low and high
 	// parameters.
 	//
 	// Equivilent slice syntax:
@@ -73,10 +73,10 @@ type Buffer interface {
 	//  b[:]
 	//   -> b.Slice(0, a.Len())
 	//
-	Slice(low, high int) Buffer
+	Slice(low, high int) Slice
 
-	// Make creates and returns a new buffer of this buffers type. This allows
-	// allocating a new buffer of exactly the same type for lossless copying of
+	// Make creates and returns a new slice of this slices type. This allows
+	// allocating a new slice of exactly the same type for lossless copying of
 	// data without knowing about the underlying type.
 	//
 	// It is exactly the same syntax as the make builtin:
@@ -84,13 +84,13 @@ type Buffer interface {
 	//  make(MuLawSamples, len, cap)
 	//
 	// Where cap cannot be less than len.
-	Make(length, capacity int) Buffer
+	Make(length, capacity int) Slice
 }
 
-// Copy copies copies audio samples from the source buffer to the destination
-// buffer. Returns the number of elements copied, which is the minimum of
+// Copy copies copies audio samples from the source slice to the destination
+// slice. Returns the number of elements copied, which is the minimum of
 // the dst.Len() and src.Len() values.
-func Copy(dst Buffer, src Buffer) int {
+func Copy(dst Slice, src Slice) int {
 	var i int
 	for i = 0; i < src.Len() && i < dst.Len(); i++ {
 		dst.Set(i, src.At(i))

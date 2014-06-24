@@ -35,28 +35,28 @@ func F64ToPCM8(s F64) PCM8 {
 	return PCM8(math.Floor(float64((s * F64(math.MaxUint8)) + 0.5)))
 }
 
-// Implements Buffer interface.
+// Implements Slice interface.
 func (p PCM8Samples) Len() int {
 	return len(p)
 }
 
-// Implements Buffer interface.
+// Implements Slice interface.
 func (p PCM8Samples) At(i int) F64 {
 	return PCM8ToF64(p[i])
 }
 
-// Implements Buffer interface.
+// Implements Slice interface.
 func (p PCM8Samples) Set(i int, s F64) {
 	p[i] = F64ToPCM8(s)
 }
 
-// Implements Buffer interface.
-func (p PCM8Samples) Slice(low, high int) Buffer {
+// Implements Slice interface.
+func (p PCM8Samples) Slice(low, high int) Slice {
 	return p[low:high]
 }
 
-// Implements Buffer interface.
-func (p PCM8Samples) Make(length, capacity int) Buffer {
+// Implements Slice interface.
+func (p PCM8Samples) Make(length, capacity int) Slice {
 	return make(PCM8Samples, length, capacity)
 }
 
@@ -78,28 +78,28 @@ func F64ToPCM16(s F64) PCM16 {
 	return PCM16(math.Floor(float64((s * F64(math.MaxInt16)) + 0.5)))
 }
 
-// Implements Buffer interface.
+// Implements Slice interface.
 func (p PCM16Samples) Len() int {
 	return len(p)
 }
 
-// Implements Buffer interface.
+// Implements Slice interface.
 func (p PCM16Samples) At(i int) F64 {
 	return PCM16ToF64(p[i])
 }
 
-// Implements Buffer interface.
+// Implements Slice interface.
 func (p PCM16Samples) Set(i int, s F64) {
 	p[i] = F64ToPCM16(s)
 }
 
-// Implements Buffer interface.
-func (p PCM16Samples) Slice(low, high int) Buffer {
+// Implements Slice interface.
+func (p PCM16Samples) Slice(low, high int) Slice {
 	return p[low:high]
 }
 
-// Implements Buffer interface.
-func (p PCM16Samples) Make(length, capacity int) Buffer {
+// Implements Slice interface.
+func (p PCM16Samples) Make(length, capacity int) Slice {
 	return make(PCM16Samples, length, capacity)
 }
 
@@ -131,17 +131,17 @@ func (p PCM32Samples) At(i int) F64 {
 	return PCM32ToF64(p[i])
 }
 
-// Implements Buffer interface.
+// Implements Slice interface.
 func (p PCM32Samples) Set(i int, s F64) {
 	p[i] = F64ToPCM32(s)
 }
 
-// Implements Buffer interface.
-func (p PCM32Samples) Slice(low, high int) Buffer {
+// Implements Slice interface.
+func (p PCM32Samples) Slice(low, high int) Slice {
 	return p[low:high]
 }
 
-// Implements Buffer interface.
-func (p PCM32Samples) Make(length, capacity int) Buffer {
+// Implements Slice interface.
+func (p PCM32Samples) Make(length, capacity int) Slice {
 	return make(PCM32Samples, length, capacity)
 }
