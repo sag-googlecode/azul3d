@@ -168,7 +168,7 @@ func checkError() {
 		err = ErrOutOfMemory
 	}
 	if err != nil {
-		go ErrorHandler()(err)
+		ErrorHandler()(err)
 	}
 	return
 }

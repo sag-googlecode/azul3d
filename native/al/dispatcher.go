@@ -20,19 +20,22 @@ func init() {
 	go dispatcher()
 }
 
-var dispatchChan = make(chan func())
+var dispatchChan = make(chan chan func())
 
 func dispatcher() {
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 	for {
-		f := <-dispatchChan
+		ch := <-dispatchChan
+		f := <-ch
 		f()
-		dispatchChan <- nil
+		ch <- nil
 	}
 }
 
 func dispatch(f func()) {
-	dispatchChan <- f
-	<-dispatchChan
+	ch := make(chan func())
+	dispatchChan <- ch
+	ch <- f
+	<-ch
 }
