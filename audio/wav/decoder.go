@@ -93,7 +93,7 @@ func (d *decoder) Seek(sample uint64) error {
 	return nil
 }
 
-func (d *decoder) readPCM8(b audio.Buffer) (read int, err error) {
+func (d *decoder) readPCM8(b audio.Slice) (read int, err error) {
 	bb, bbOk := b.(audio.PCM8Samples)
 
 	for read = 0; read < b.Len(); read++ {
@@ -116,7 +116,7 @@ func (d *decoder) readPCM8(b audio.Buffer) (read int, err error) {
 	return
 }
 
-func (d *decoder) readPCM16(b audio.Buffer) (read int, err error) {
+func (d *decoder) readPCM16(b audio.Slice) (read int, err error) {
 	bb, bbOk := b.(audio.PCM16Samples)
 
 	for read = 0; read < b.Len(); read++ {
@@ -139,7 +139,7 @@ func (d *decoder) readPCM16(b audio.Buffer) (read int, err error) {
 	return
 }
 
-func (d *decoder) readPCM24(b audio.Buffer) (read int, err error) {
+func (d *decoder) readPCM24(b audio.Slice) (read int, err error) {
 	bb, bbOk := b.(audio.PCM32Samples)
 
 	for read = 0; read < b.Len(); read++ {
@@ -167,7 +167,7 @@ func (d *decoder) readPCM24(b audio.Buffer) (read int, err error) {
 	return
 }
 
-func (d *decoder) readPCM32(b audio.Buffer) (read int, err error) {
+func (d *decoder) readPCM32(b audio.Slice) (read int, err error) {
 	bb, bbOk := b.(audio.PCM32Samples)
 
 	for read = 0; read < b.Len(); read++ {
@@ -190,7 +190,7 @@ func (d *decoder) readPCM32(b audio.Buffer) (read int, err error) {
 	return
 }
 
-func (d *decoder) readF32(b audio.Buffer) (read int, err error) {
+func (d *decoder) readF32(b audio.Slice) (read int, err error) {
 	bb, bbOk := b.(audio.F32Samples)
 
 	for read = 0; read < b.Len(); read++ {
@@ -212,7 +212,7 @@ func (d *decoder) readF32(b audio.Buffer) (read int, err error) {
 	return
 }
 
-func (d *decoder) readF64(b audio.Buffer) (read int, err error) {
+func (d *decoder) readF64(b audio.Slice) (read int, err error) {
 	for read = 0; read < b.Len(); read++ {
 		// Pull one sample from the data stream
 		var sample audio.F64
@@ -228,7 +228,7 @@ func (d *decoder) readF64(b audio.Buffer) (read int, err error) {
 	return
 }
 
-func (d *decoder) readMuLaw(b audio.Buffer) (read int, err error) {
+func (d *decoder) readMuLaw(b audio.Slice) (read int, err error) {
 	bb, bbOk := b.(audio.MuLawSamples)
 
 	for read = 0; read < b.Len(); read++ {
@@ -251,7 +251,7 @@ func (d *decoder) readMuLaw(b audio.Buffer) (read int, err error) {
 	return
 }
 
-func (d *decoder) readALaw(b audio.Buffer) (read int, err error) {
+func (d *decoder) readALaw(b audio.Slice) (read int, err error) {
 	bb, bbOk := b.(audio.ALawSamples)
 
 	for read = 0; read < b.Len(); read++ {
@@ -274,7 +274,7 @@ func (d *decoder) readALaw(b audio.Buffer) (read int, err error) {
 	return
 }
 
-func (d *decoder) Read(b audio.Buffer) (read int, err error) {
+func (d *decoder) Read(b audio.Slice) (read int, err error) {
 	if b.Len() == 0 {
 		return
 	}
