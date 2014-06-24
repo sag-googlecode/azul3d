@@ -87,10 +87,10 @@ type Slice interface {
 	Make(length, capacity int) Slice
 }
 
-// Copy copies copies audio samples from the source slice to the destination
-// slice. Returns the number of elements copied, which is the minimum of
-// the dst.Len() and src.Len() values.
-func Copy(dst Slice, src Slice) int {
+// SliceCopy copies copies audio samples from the source slice to the
+// destination slice. Returns the number of elements copied, which is the
+// minimum of the dst.Len() and src.Len() values.
+func SliceCopy(dst, src Slice) int {
 	var i int
 	for i = 0; i < src.Len() && i < dst.Len(); i++ {
 		dst.Set(i, src.At(i))
