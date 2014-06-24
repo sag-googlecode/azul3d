@@ -22,6 +22,11 @@ func (p ALawSamples) Len() int {
 }
 
 // Implements Slice interface.
+func (p ALawSamples) Cap() int {
+	return cap(p)
+}
+
+// Implements Slice interface.
 func (p ALawSamples) At(i int) F64 {
 	p16 := ALawToPCM16(p[i])
 	return F64(p16) / F64(math.MaxInt16)

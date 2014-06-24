@@ -22,6 +22,11 @@ func (p MuLawSamples) Len() int {
 }
 
 // Implements Slice interface.
+func (p MuLawSamples) Cap() int {
+	return cap(p)
+}
+
+// Implements Slice interface.
 func (p MuLawSamples) At(i int) F64 {
 	p16 := MuLawToPCM16(p[i])
 	return F64(p16) / F64(math.MaxInt16)

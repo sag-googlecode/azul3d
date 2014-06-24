@@ -19,6 +19,11 @@ func (p F32Samples) Len() int {
 }
 
 // Implements Slice interface.
+func (p F32Samples) Cap() int {
+	return cap(p)
+}
+
+// Implements Slice interface.
 func (p F32Samples) At(i int) F64 {
 	return F64(p[i])
 }
@@ -50,6 +55,11 @@ type (
 // Implements Slice interface.
 func (p F64Samples) Len() int {
 	return len(p)
+}
+
+// Implements Slice interface.
+func (p F64Samples) Cap() int {
+	return cap(p)
 }
 
 // Implements Slice interface.

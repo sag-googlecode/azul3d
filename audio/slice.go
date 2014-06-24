@@ -23,6 +23,13 @@ type Slice interface {
 	//  len(b)
 	Len() int
 
+	// Cap returns the number of elements in the slice.
+	//
+	// Equivilent slice syntax:
+	//
+	//  cap(b)
+	Cap() int
+
 	// Set sets the specified index in the slice to the specified F64 encoded
 	// audio sample, s.
 	//

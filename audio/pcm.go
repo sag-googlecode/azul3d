@@ -41,6 +41,11 @@ func (p PCM8Samples) Len() int {
 }
 
 // Implements Slice interface.
+func (p PCM8Samples) Cap() int {
+	return cap(p)
+}
+
+// Implements Slice interface.
 func (p PCM8Samples) At(i int) F64 {
 	return PCM8ToF64(p[i])
 }
@@ -84,6 +89,11 @@ func (p PCM16Samples) Len() int {
 }
 
 // Implements Slice interface.
+func (p PCM16Samples) Cap() int {
+	return cap(p)
+}
+
+// Implements Slice interface.
 func (p PCM16Samples) At(i int) F64 {
 	return PCM16ToF64(p[i])
 }
@@ -124,6 +134,11 @@ func F64ToPCM32(s F64) PCM32 {
 // Implements Samples interface.
 func (p PCM32Samples) Len() int {
 	return len(p)
+}
+
+// Implements Slice interface.
+func (p PCM32Samples) Cap() int {
+	return cap(p)
 }
 
 // Implements Samples interface.
