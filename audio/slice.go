@@ -13,7 +13,7 @@ package audio
 //      // Create a new slice of the target encoding and copy the samples over
 //      // because src is not MuLaw encoded.
 //      dst = make(MuLawSamples, src.Len())
-//      Copy(dst, src)
+//      SliceCopy(dst, src)
 //  }
 type Slice interface {
 	// Len returns the number of elements in the slice.
