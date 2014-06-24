@@ -48,6 +48,15 @@ func (p MuLawSamples) Make(length, capacity int) Slice {
 	return make(MuLawSamples, length, capacity)
 }
 
+// Implements Slice interface.
+func (p MuLawSamples) CopyTo(dst Slice) int {
+	d, ok := dst.(MuLawSamples)
+	if ok {
+		return copy(d, p)
+	}
+	return sliceCopy(dst, p)
+}
+
 const (
 	muLawCBias = 0x84
 	muLawCClip = 32635

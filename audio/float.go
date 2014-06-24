@@ -43,6 +43,15 @@ func (p F32Samples) Make(length, capacity int) Slice {
 	return make(F32Samples, length, capacity)
 }
 
+// Implements Slice interface.
+func (p F32Samples) CopyTo(dst Slice) int {
+	d, ok := dst.(F32Samples)
+	if ok {
+		return copy(d, p)
+	}
+	return sliceCopy(dst, p)
+}
+
 type (
 	// F64 represents an 64-bit floating-point linear audio sample in the range
 	// of -1 to +1.
@@ -80,4 +89,13 @@ func (p F64Samples) Slice(low, high int) Slice {
 // Implements Slice interface.
 func (p F64Samples) Make(length, capacity int) Slice {
 	return make(F64Samples, length, capacity)
+}
+
+// Implements Slice interface.
+func (p F64Samples) CopyTo(dst Slice) int {
+	d, ok := dst.(F64Samples)
+	if ok {
+		return copy(d, p)
+	}
+	return sliceCopy(dst, p)
 }

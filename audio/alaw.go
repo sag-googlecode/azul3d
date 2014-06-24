@@ -48,6 +48,15 @@ func (p ALawSamples) Make(length, capacity int) Slice {
 	return make(ALawSamples, length, capacity)
 }
 
+// Implements Slice interface.
+func (p ALawSamples) CopyTo(dst Slice) int {
+	d, ok := dst.(ALawSamples)
+	if ok {
+		return copy(d, p)
+	}
+	return sliceCopy(dst, p)
+}
+
 const (
 	alawCBias = 0x84
 	alawCClip = 32635

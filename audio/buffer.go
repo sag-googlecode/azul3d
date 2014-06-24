@@ -56,7 +56,7 @@ func (b *Buffer) grow(n int) int {
 	if b.buf.Len()+n > b.buf.Cap() {
 		newLength := 2*b.buf.Cap() + n
 		buf := b.buf.Make(newLength, newLength)
-		SliceCopy(buf, b.buf.Slice(b.off, b.buf.Len()))
+		b.buf.Slice(b.off, b.buf.Len()).CopyTo(buf)
 		b.buf = buf
 		b.off = 0
 	}
@@ -80,7 +80,7 @@ func (b *Buffer) Grow(n int) {
 // needed. The return value n is the length of p; err is always nil.
 func (b *Buffer) Write(p Slice) (n int, err error) {
 	m := b.grow(p.Len())
-	return SliceCopy(b.buf.Slice(m, b.buf.Len()), p), nil
+	return p.CopyTo(b.buf.Slice(m, b.buf.Len())), nil
 }
 
 // MinRead is the minimum slice size passed to a Read call by
@@ -107,7 +107,7 @@ func (b *Buffer) ReadFrom(r Reader) (n int64, err error) {
 				newLen := 2*b.buf.Cap() + minRead
 				newBuf = b.buf.Make(newLen, newLen)
 			}
-			SliceCopy(newBuf, b.buf.Slice(b.off, b.buf.Len()))
+			b.buf.Slice(b.off, b.buf.Len()).CopyTo(newBuf)
 			b.buf = newBuf.Slice(0, b.buf.Len()-b.off)
 			b.off = 0
 		}
@@ -170,7 +170,7 @@ func (b *Buffer) Read(p Slice) (n int, err error) {
 		}
 		return 0, io.EOF
 	}
-	n = SliceCopy(p, b.buf.Slice(b.off, b.buf.Len()))
+	n = b.buf.Slice(b.off, b.buf.Len()).CopyTo(p)
 	b.off += n
 	return
 }

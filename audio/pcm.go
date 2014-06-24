@@ -65,6 +65,15 @@ func (p PCM8Samples) Make(length, capacity int) Slice {
 	return make(PCM8Samples, length, capacity)
 }
 
+// Implements Slice interface.
+func (p PCM8Samples) CopyTo(dst Slice) int {
+	d, ok := dst.(PCM8Samples)
+	if ok {
+		return copy(d, p)
+	}
+	return sliceCopy(dst, p)
+}
+
 type (
 	// PCM16 represents an signed 16-bit linear PCM audio sample.
 	PCM16 int16
@@ -113,6 +122,15 @@ func (p PCM16Samples) Make(length, capacity int) Slice {
 	return make(PCM16Samples, length, capacity)
 }
 
+// Implements Slice interface.
+func (p PCM16Samples) CopyTo(dst Slice) int {
+	d, ok := dst.(PCM16Samples)
+	if ok {
+		return copy(d, p)
+	}
+	return sliceCopy(dst, p)
+}
+
 type (
 	// PCM32 represents an signed 32-bit linear PCM audio sample.
 	PCM32 int32
@@ -131,7 +149,7 @@ func F64ToPCM32(s F64) PCM32 {
 	return PCM32(math.Floor(float64((s * F64(math.MaxInt32)) + 0.5)))
 }
 
-// Implements Samples interface.
+// Implements Slice interface.
 func (p PCM32Samples) Len() int {
 	return len(p)
 }
@@ -141,7 +159,7 @@ func (p PCM32Samples) Cap() int {
 	return cap(p)
 }
 
-// Implements Samples interface.
+// Implements Slice interface.
 func (p PCM32Samples) At(i int) F64 {
 	return PCM32ToF64(p[i])
 }
@@ -159,4 +177,13 @@ func (p PCM32Samples) Slice(low, high int) Slice {
 // Implements Slice interface.
 func (p PCM32Samples) Make(length, capacity int) Slice {
 	return make(PCM32Samples, length, capacity)
+}
+
+// Implements Slice interface.
+func (p PCM32Samples) CopyTo(dst Slice) int {
+	d, ok := dst.(PCM32Samples)
+	if ok {
+		return copy(d, p)
+	}
+	return sliceCopy(dst, p)
 }

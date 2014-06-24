@@ -92,12 +92,20 @@ type Slice interface {
 	//
 	// Where cap cannot be less than len.
 	Make(length, capacity int) Slice
+
+	// CopyTo operates exactly like the copy builtin, but this slice is always
+	// the source operand. Equivilent slice syntax:
+	//
+	//  copy(dst, src)
+	//   -> src.CopyTo(dst)
+	//
+	CopyTo(dst Slice) int
 }
 
-// SliceCopy copies copies audio samples from the source slice to the
+// sliceCopy copies copies audio samples from the source slice to the
 // destination slice. Returns the number of elements copied, which is the
 // minimum of the dst.Len() and src.Len() values.
-func SliceCopy(dst, src Slice) int {
+func sliceCopy(dst, src Slice) int {
 	var i int
 	for i = 0; i < src.Len() && i < dst.Len(); i++ {
 		dst.Set(i, src.At(i))
