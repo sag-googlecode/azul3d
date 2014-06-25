@@ -312,11 +312,11 @@ func (d *decoder) Read(b audio.Slice) (read int, err error) {
 	return
 }
 
-func (d *decoder) Config() *audio.Config {
+func (d *decoder) Config() audio.Config {
 	d.access.RLock()
 	defer d.access.RUnlock()
 
-	return d.config
+	return *d.config
 }
 
 // ErrUnsupported defines an error for decoding wav data that is valid (by the
