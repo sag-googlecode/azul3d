@@ -27,7 +27,7 @@ type Config struct {
 }
 
 // String returns an string representation of this audio config.
-func (c *Config) String() string {
+func (c Config) String() string {
 	return fmt.Sprintf("Config(SampleRate=%v, Channels=%v)", c.SampleRate, c.Channels)
 }
 
@@ -36,11 +36,7 @@ func (c *Config) String() string {
 type Decoder interface {
 	ReadSeeker
 
-	// Config returns the audio stream configuration of this decoder.
-	//
-	// This function must never return nil at any point in time. Instead, at
-	// creation time of a new decoder, the decoder should block untill at least
-	// the stream configuration has been read (or ErrInvalidData could be
-	// returned if the decoder does not understand the data in the stream).
-	Config() *Config
+	// Config returns the audio stream configuration of this decoder. It may
+	// block until at least the configuration part of the stream has been read.
+	Config() Config
 }
