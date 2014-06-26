@@ -4,10 +4,6 @@
 
 package audio
 
-import (
-	"io"
-)
-
 // A Buffer is a variable-sized buffer of audio samples with Read and Write
 // methods. Buffers must be allocated via the NewBuffer function.
 type Buffer struct {
@@ -89,9 +85,9 @@ func (b *Buffer) Write(p Slice) (n int, err error) {
 // underlying buffer.
 const minRead = 512
 
-// ReadFrom reads data from r until EOF and appends it to the buffer, growing
+// ReadFrom reads data from r until EOS and appends it to the buffer, growing
 // the buffer as needed. The return value n is the number of samples read. Any
-// error except io.EOF encountered during the read is also returned.
+// error except EOS encountered during the read is also returned.
 func (b *Buffer) ReadFrom(r Reader) (n int64, err error) {
 	// If buffer is empty, reset to recover space.
 	if b.off >= b.buf.Len() {
@@ -114,19 +110,19 @@ func (b *Buffer) ReadFrom(r Reader) (n int64, err error) {
 		m, e := r.Read(b.buf.Slice(b.buf.Len(), b.buf.Cap()))
 		b.buf = b.buf.Slice(0, b.buf.Len()+m)
 		n += int64(m)
-		if e == io.EOF {
+		if e == EOS {
 			break
 		}
 		if e != nil {
 			return n, e
 		}
 	}
-	return n, nil // err is EOF, so return nil explicitly
+	return n, nil // err is EOS, so return nil explicitly
 }
 
 // WriteTo writes data to w until the buffer is drained or an error occurs.
 // The return value n is the number of samples written; it always fits into an
-// int, but it is int64 to match the io.WriterTo interface. Any error
+// int, but it is int64 to match the WriterTo interface. Any error
 // encountered during the write is also returned.
 func (b *Buffer) WriteTo(w Writer) (n int64, err error) {
 	if b.off < b.buf.Len() {
@@ -143,7 +139,7 @@ func (b *Buffer) WriteTo(w Writer) (n int64, err error) {
 		// all samples should have been written, by definition of
 		// Write method in Writer
 		if m != nSamples {
-			return n, io.ErrShortWrite
+			return n, ErrShortWrite
 		}
 	}
 	// Buffer is now empty; reset.
@@ -159,7 +155,7 @@ func (b *Buffer) WriteSample(c F64) {
 
 // Read reads the next p.Len() samples from the buffer or until the buffer
 // is drained.  The return value n is the number of samples read.  If the
-// buffer has no data to return, err is io.EOF (unless len(p) is zero);
+// buffer has no data to return, err is EOS (unless len(p) is zero);
 // otherwise it is nil.
 func (b *Buffer) Read(p Slice) (n int, err error) {
 	if b.off >= b.buf.Len() {
@@ -168,7 +164,7 @@ func (b *Buffer) Read(p Slice) (n int, err error) {
 		if p.Len() == 0 {
 			return
 		}
-		return 0, io.EOF
+		return 0, EOS
 	}
 	n = b.buf.Slice(b.off, b.buf.Len()).CopyTo(p)
 	b.off += n
@@ -190,12 +186,12 @@ func (b *Buffer) Next(n int) Slice {
 }
 
 // ReadSample reads and returns the next sample from the buffer.
-// If no sample is available, it returns error io.EOF.
+// If no sample is available, it returns error EOS.
 func (b *Buffer) ReadSample() (c F64, err error) {
 	if b.off >= b.buf.Len() {
 		// Buffer is empty, reset to recover space.
 		b.Truncate(0)
-		return 0, io.EOF
+		return 0, EOS
 	}
 	c = b.buf.At(b.off)
 	b.off++
@@ -207,10 +203,10 @@ func (b *Buffer) ReadSample() (c F64, err error) {
 // the specified sample.
 //
 // If offset > b.Len(), then the offset is unchanged and the seek operation
-// fails returning error == io.EOF.
+// fails returning error == EOS.
 func (b *Buffer) Seek(offset uint64) error {
 	if int(offset) > b.Len() {
-		return io.EOF
+		return EOS
 	}
 	b.off = int(offset)
 	return nil

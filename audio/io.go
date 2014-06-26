@@ -4,7 +4,23 @@
 
 package audio
 
-import "io"
+import (
+	"errors"
+)
+
+// EOS is the error returned by Read when no more input is available. Functions
+// should return EOS only to signal a graceful end of input. If the EOS occurs
+// unexpectedly in a structured data stream, the appropriate error is either
+// ErrUnexpectedEOS or some other error giving more detail.
+var EOS = errors.New("end of stream")
+
+// ErrUnexpectedEOS means that EOS was encountered in the middle of reading a
+// fixed-size block or data structure.
+var ErrUnexpectedEOS = errors.New("unexpected end of stream")
+
+// ErrShortWrite means that a write accepted fewer bytes than requested but
+// failed to return an explicit error.
+var ErrShortWrite = errors.New("short write")
 
 // Reader is a generic interface which describes any type who can have audio
 // samples read from it into an audio slice.
@@ -17,7 +33,7 @@ type Reader interface {
 	//
 	// It is possible for the number of samples read to be non-zero; and for an
 	// error to be returned at the same time (E.g. read 300 audio samples, but
-	// also encountered io.EOF).
+	// also encountered EOS).
 	Read(b Slice) (read int, e error)
 }
 
@@ -64,8 +80,8 @@ type WriterTo interface {
 
 // ReaderFrom is the interface that wraps the ReadFrom method.
 //
-// ReadFrom reads data from r until io.EOF or error. The return value n is the
-// number of bytes read. Any error except io.EOF encountered during the read is
+// ReadFrom reads data from r until EOS or error. The return value n is the
+// number of bytes read. Any error except EOS encountered during the read is
 // also returned.
 //
 // The Copy function uses ReaderFrom if available.
@@ -73,12 +89,12 @@ type ReaderFrom interface {
 	ReadFrom(r Reader) (n int64, err error)
 }
 
-// Copy copies from src to dst until either io.EOF is reached on src or an
+// Copy copies from src to dst until either EOS is reached on src or an
 // error occurs.  It returns the number of samples copied and the first error
 // encountered while copying, if any.
 //
-// A successful Copy returns err == nil, not err == io.EOF. Because Copy is
-// defined to read from src until EOF, it does not treat an io.EOF from Read as
+// A successful Copy returns err == nil, not err == EOS. Because Copy is
+// defined to read from src until EOS, it does not treat an EOS from Read as
 // an error to be reported.
 //
 // If src implements the WriterTo interface, the copy is implemented by calling
@@ -107,11 +123,11 @@ func Copy(dst Writer, src Reader) (written int64, err error) {
 				break
 			}
 			if nr != nw {
-				err = io.ErrShortWrite
+				err = ErrShortWrite
 				break
 			}
 		}
-		if er == io.EOF {
+		if er == EOS {
 			break
 		}
 		if er != nil {
