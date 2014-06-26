@@ -48,7 +48,7 @@ func (d *decoder) bRead(data interface{}, sz uintptr) error {
 	d.currentCount += uint32(sz)
 	if d.chunkSize > 0 {
 		if d.currentCount > d.chunkSize {
-			return io.EOF
+			return audio.EOS
 		}
 	} else {
 		d.dataChunkBegin += int32(sz)
