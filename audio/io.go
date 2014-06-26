@@ -44,12 +44,10 @@ type Writer interface {
 	// Returned is the number of samples from the slice that where wrote to
 	// the writer, and an error if any occured.
 	//
-	// The number of samples wrote may be less than buf.Len(), in which case
-	// you should subsequently write b.Slice(wrote, b.Len()) until you have
-	// finished sending all data or an error occurs.
-	//
-	// If any error is returned, it should be considered as fatal to the
-	// writer, no more data can subsequently be wrote to the writer.
+	// If the number of samples wrote is less than buf.Len() then the returned
+	// error must be non-nil. If any error occurs it should be considered fatal
+	// with regards to the writer: no more data can be subsequently wrote after
+	// an error.
 	Write(b Slice) (wrote int, err error)
 }
 
