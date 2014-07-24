@@ -467,6 +467,15 @@ func (t *Transform) Destroy() {
 	transformPool.Put(t)
 }
 
+// New returns a new transform whose child is this one. It is short-handed for:
+//  ret := NewTransform()
+//  ret.SetParent(t)
+func (t *Transform) New() *Transform {
+	ret := NewTransform()
+	ret.SetParent(t)
+	return ret
+}
+
 var transformPool = sync.Pool{
 	New: func() interface{} {
 		return &Transform{
