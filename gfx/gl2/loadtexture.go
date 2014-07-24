@@ -360,8 +360,11 @@ func (r *Renderer) LoadTexture(t *gfx.Texture, done chan *gfx.Texture) {
 		// Unbind texture to avoid carrying OpenGL state.
 		r.loader.BindTexture(gl.TEXTURE_2D, 0)
 
-		// Flush and execute OpenGL commands.
+		// Flush, Finish and execute OpenGL commands.
 		r.loader.Flush()
+		// Use Finish() to avoid accessing the texture before upload has completed, see:
+		//  http://higherorderfun.com/blog/2011/05/26/multi-thread-opengl-texture-loading/
+		r.loader.Finish()
 		r.loader.Execute()
 
 		// Mark the texture as loaded.
